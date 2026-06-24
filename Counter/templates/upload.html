@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Subir Reportes | ELI{% endblock %}
+
+{% block content %}
+
+{% load widget_tweaks %}
+
+
+<!-- Overlay de carga oculto inicialmente -->
+<div id="loadingOverlay" class="fixed inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center text-white text-center text-xl font-bold z-50 hidden px-4">
+    <svg class="animate-spin h-12 w-12 mb-6 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+      <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+    </svg>
+    <p class="max-w-md font-bold text-2xl">
+      Procesando reporte, por favor espere... <br> Si el archivo contiene una imagen esto puede tomar más de lo normal.
+    </p>
+</div>
+
+
+<div class="container mx-auto px-6 max-w-3xl py-8">
+
+    <div class="mb-6">
+        <!-- !Panel de administración -->
+        <a href="{% url 'panel' %}"
+        class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 10h18M3 6h18M3 14h18M3 18h18"/>
+            </svg>
+            Panel de administración
+        </a>
+        <!-- !Todos los reportes -->
+        <a href="{% url 'reports' %}"
+        class="inline-flex items-center gap-2 bg-gradient-to-r from-purple-400 to-purple-600 hover:from-blue-500 hover:to-blue-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M15.75 17.25v3.375c0 .621-.504 1.125-1.125 1.125h-9.75a1.125 1.125 0 0 1-1.125-1.125V7.875c0-.621.504-1.125 1.125-1.125H6.75a9.06 9.06 0 0 1 1.5.124m7.5 10.376h3.375c.621 0 1.125-.504 1.125-1.125V11.25c0-4.46-3.243-8.161-7.5-8.876a9.06 9.06 0 0 0-1.5-.124H9.375c-.621 0-1.125.504-1.125 1.125v3.5m7.5 10.375H9.375a1.125 1.125 0 0 1-1.125-1.125v-9.25m12 6.625v-1.875a3.375 3.375 0 0 0-3.375-3.375h-1.5a1.125 1.125 0 0 1-1.125-1.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H9.75" />
+            </svg>
+            Todos los Reportes
+        </a>
+    </div>
+
+    <h1 class="text-4xl font-extrabold mb-8 text-gray-900">Subida de Reportes</h1>
+
+    {% if messages %}
+    <div class="mb-8 space-y-3">
+        {% for message in messages %}
+        <div class="p-4 rounded-lg
+                    {% if message.tags == 'success' %}
+                        bg-green-50 text-green-800 border border-green-200
+                    {% elif message.tags == 'error' %}
+                        bg-red-50 text-red-800 border border-red-200
+                    {% else %}
+                        bg-gray-50 text-gray-700 border border-gray-200
+                    {% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Formulario individual -->
+    <section class="bg-white p-8 rounded-3xl shadow-lg mb-10">
+        <h2 class="text-2xl font-semibold mb-6 text-gray-800 border-b pb-2">Subir Reporte Individual</h2>
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            {% if individual_form.non_field_errors %}
+                <div class="mb-4 text-red-600 text-sm">
+                    {{ individual_form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <div class="mb-5">
+                <label for="{{ individual_form.company.id_for_label }}" class="block mb-2 font-medium text-gray-700">Empresa</label>
+                {{ individual_form.company|add_class:"w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" }}
+                {% if individual_form.company.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ individual_form.company.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="mb-5">
+                <label for="{{ individual_form.year.id_for_label }}" class="block mb-2 font-medium text-gray-700">Año</label>
+                {{ individual_form.year|add_class:"w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" }}
+                {% if individual_form.year.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ individual_form.year.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="mb-5">
+                <label for="{{ individual_form.name.id_for_label }}" class="block mb-2 font-medium text-gray-700">Nombre</label>
+                {{ individual_form.name|add_class:"w-full rounded-md border border-gray-300 px-3 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500" }}
+                {% if individual_form.name.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ individual_form.name.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <div class="mb-6">
+                <label for="{{ individual_form.file.id_for_label }}" class="block mb-2 font-medium text-gray-700">Archivo</label>
+                {{ individual_form.file|add_class:"w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" }}
+                {% if individual_form.file.errors %}
+                    <p class="text-red-600 text-sm mt-1">{{ individual_form.file.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <button type="submit" name="upload_individual"
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg shadow-md transition">
+                Subir Individual
+            </button>
+        </form>
+    </section>
+
+
+    <!-- Formulario ZIP -->
+    <section class="bg-white p-8 rounded-3xl shadow-lg">
+        <h2 class="text-2xl font-semibold mb-6 text-gray-800 border-b pb-2">Subir Múltiples Reportes (ZIP)</h2>
+        <form method="post" enctype="multipart/form-data" novalidate>
+            {% csrf_token %}
+
+            <div class="mb-5 block min-w-full">
+                <label for="{{ zip_form.company.id_for_label }}" class="block mb-2 font-medium text-gray-700">Empresa</label>
+                {{ zip_form.company }}
+            </div>
+            <div class="mb-6">
+                <label for="zip_file" class="block mb-2 font-medium text-gray-700">Archivo ZIP</label>
+                <input type="file" name="zip_file" id="zip_file" accept=".zip"
+                    class="w-full rounded-md border border-gray-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-500" />
+            </div>
+
+            <button type="submit" name="upload_zip"
+                class="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg shadow-md transition">
+                Subir ZIP
+            </button>
+        </form>
+    </section>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const loadingOverlay = document.getElementById('loadingOverlay');
+
+    // Selecciona ambos formularios de subida (individual y ZIP)
+    const forms = document.querySelectorAll('form[method="post"][enctype="multipart/form-data"]');
+
+    forms.forEach(form => {
+        form.addEventListener('submit', () => {
+            loadingOverlay.classList.remove('hidden');
+        });
+    });
+});
+</script>
+{% endblock %}

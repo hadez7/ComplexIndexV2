@@ -1,0 +1,44 @@
+# Entorno virtual
+venv/
+env/
+ENV/
+.venv/
+
+# Archivos de Python compilados
+*.pyc
+__pycache__/
+
+# Configuración de VS Code u otros editores
+.vscode/
+.idea/
+
+# Archivos de base de datos
+*.sqlite3
+
+# Archivos de log
+*.log
+
+# Archivos de migraciones generados (opcional, si usas un esquema de producción diferente)
+# puedes ignorar solo los archivos `__pycache__` dentro de estas carpetas, o dejarlas para control de versiones
+# */migrations/*.pyc
+# */migrations/__pycache__/
+
+# Archivos generados por Django
+staticfiles/
+*.pot
+*.mo
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de Tailwind CSS si los compilas localmente
+node_modules/
+*.css.map
+
+# Entorno de producción o archivos de secrets
+.env
+*.env
+
+# Archivos de reportes temporales o exportaciones
+

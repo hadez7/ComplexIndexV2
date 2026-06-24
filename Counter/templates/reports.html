@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+
+{% block title %}Reportes | ELI{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4">
+    <!-- !Panel de administración -->
+    <div class="mb-6">
+        <a href="{% url 'panel' %}"
+        class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M3 10h18M3 6h18M3 14h18M3 18h18"/>
+            </svg>
+            Panel de administración
+        </a>
+        <!-- *Botón crear -->
+        <a href="{% url 'upload' %}">
+            <button class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded justify-center mt-4">
+            Subir Reporte
+            </button>
+        </a>
+    </div>
+
+    <h1 class="text-3xl font-bold mb-6">Lista de Reportes</h1>
+
+    <!-- !Modal Detalles reporte-->
+    <div id="detailsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-xl w-full max-w-md shadow-lg relative">
+            <h2 class="text-xl font-bold mb-4">Detalles del reporte</h2>
+            <p><strong>Id:</strong> <span id="detail-id"></span></p>
+            <p><strong>Nombre:</strong> <span id="detail-name"></span></p>
+            <p><strong>Año:</strong> <span id="detail-year"></span></p>
+            <p><strong>Empresa:</strong> <span id="detail-company"></span></p>
+            <div class="flex justify-end mt-4">
+                <button onclick="closeDetailsModal()" class="px-3 py-1 rounded bg-gray-300">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- !Modal Editar reporte-->
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white p-6 rounded-xl w-full max-w-md shadow-lg">
+        <h2 class="text-xl font-bold mb-4">Editar reporte</h2>
+        <form id="editReportForm" onsubmit="submitEditForm(event)">
+        <input type="hidden" id="edit-id">
+        <div class="mb-4">
+            <label class="block mb-1 font-medium">Nombre:</label>
+            <input type="text" id="edit-name" class="w-full border px-3 py-2 rounded" required>
+        </div>
+        <div class="mb-4">
+            <label class="block mb-1 font-medium">Año:</label>
+            <input type="number" id="edit-year" class="w-full border px-3 py-2 rounded" required>
+        </div>
+        <div class="mb-4">
+            <label class="block mb-1 font-medium">Empresa:</label>
+            <select id="edit-company" class="w-full border px-3 py-2 rounded" required>
+            {% for company in companies %}
+                <option value="{{ company.id }}">{{ company.name }}</option>
+            {% endfor %}
+            </select>
+        </div>
+        <div class="flex justify-end space-x-2">
+            <button type="button" onclick="closeEditModal()" class="bg-gray-300 px-4 py-2 rounded">Cancelar</button>
+            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Guardar</button>
+        </div>
+        </form>
+    </div>
+    </div>
+
+    <!-- !Modal Borrar reporte-->
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+        <div class="bg-white p-6 rounded-xl w-full max-w-sm shadow-lg">
+            <h2 class="text-lg font-bold mb-4">¿Eliminar reporte?</h2>
+            <p class="mb-4">¿Estás seguro de eliminar el reporte?</p>
+            <div class="flex justify-end space-x-2">
+                <button onclick="closeDeleteModal()" class="bg-gray-300 px-3 py-1 rounded">Cancelar</button>
+                <button onclick="deleteReport()" class="bg-red-500 text-white px-3 py-1 rounded">Eliminar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- !Tabla -->
+    <div class="bg-white shadow rounded-2xl overflow-x-auto overflow-y-auto h-[400px]" style="height: 500px;">
+        <table class="min-w-full table-auto text-sm text-gray-700">
+            <thead class="bg-gray-200 text-gray-700 sticky top-0 z-10">
+                <tr>
+                    <th class="px-4 py-2 text-left">ID</th>
+                    <th class="px-4 py-2 text-left">Nombre</th>
+                    <th class="px-4 py-2 text-left">Año</th>
+                    <th class="px-4 py-2 text-left">Empresa</th>
+                    <th class="px-4 py-2 text-left">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr id="reporte-{{ report.id }}" class="border-t hover:bg-gray-100">
+                    <td class="px-4 py-2">{{ report.id }}</td>
+                    <td class="px-4 py-2">{{ report.name }}</td>
+                    <td class="px-4 py-2">
+                        {% if report.year %}
+                            {{ report.year }}
+                        {% else %}
+                            Año no asignado
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-2">
+                        {% if report.company %}
+                            {{ report.company.name }}
+                        {% else %}
+                            Empresa no asignada
+                        {% endif %}
+                    </td>
+                    <td class="px-4 py-2">
+                        {% if report %}
+                            <button class="bg-purple-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded inline-flex items-center"
+                            title="Ver">
+                                <a href="{% url 'report_count' report.id %}" class="flex items-center">
+                                    <!-- Icono: Chart Bar -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm-6.928 4.485A9.969 9.969 0 0112 4.5c2.485 0 4.735.909 6.485 2.485M12 4.5C9.515 4.5 7.265 5.409 5.515 6.985M12 19.5c-2.485 0-4.735-.909-6.485-2.485M12 19.5c2.485 0 4.735-.909 6.485-2.485" />
+                                    </svg>
+                                </a>
+                            </button>
+                            <button onclick="openEditModal({{ report.id }})"
+                                title="Editar"
+                                class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-1 px-3 rounded inline-flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z" />
+                                </svg>
+                            </button>
+                            <button onclick="openDeleteModal({{ report.id }})"
+                                title="Eliminar"
+                                class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded inline-flex items-center">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        {% endif %}
+                    </td>
+
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-4 py-4 text-center text-gray-500">No hay reportes disponibles.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>    
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+{% load static %}
+<script src="{% static 'js/reports.js' %}"></script>
+
+{% endblock %}

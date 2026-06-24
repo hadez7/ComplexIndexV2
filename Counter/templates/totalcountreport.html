@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Conteo por reporte | ELI{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+
+    <!-- !Botones -->
+    <div class="mb-6">
+        <!-- !Botón volver -->
+        <a href="{% url 'reports' %}"
+        class="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white font-semibold py-2.5 px-6 rounded-xl shadow-md transition duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="m11.25 9-3 3m0 0 3 3m-3-3h7.5M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+            </svg>
+            Volver
+        </a>
+        <!-- !Botón para volver al panel -->
+        <a href="{% url 'panel' %}"
+        class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-medium py-2.5 px-6 rounded-xl shadow-md transition-all duration-300">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M3 10h18M3 6h18M3 14h18M3 18h18"/>
+            </svg>
+            Panel de administración
+        </a>
+    </div>
+
+    <!-- !Modal gráfico -->
+    <div id="chartModal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex items-center justify-center">
+        <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-xl relative">
+            <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl">&times;</button>
+            <h2 class="text-xl font-semibold text-center mb-4 text-gray-800">Top 10 palabras más frecuentes</h2>
+            <canvas id="wordPieChart"></canvas>
+        </div>
+    </div>
+
+    <!-- !Título del reporte -->
+    <h1 class="text-3xl font-bold mb-2 text-gray-800 text-center">Resultado del Conteo</h1>
+    {% if report %}
+        <p class="text-lg text-gray-600 mb-6 text-center">
+            Nombre del reporte: <strong>{{ report.name }}</strong> | Año: <strong>{{ report.year }}</strong>
+        </p>
+    {% endif %}
+
+    <!-- !Botón generar gráfico -->
+    <div class="text-center my-6">
+        <button onclick="openModal()" class="bg-purple-600 hover:bg-purple-700 text-2xl text-white font-semibold py-2 px-5 rounded-xl shadow-md transition duration-300">
+            Generar Gráfico de pastel
+        </button>
+    </div>
+
+    <!-- !Tabla -->
+    <div class="bg-white shadow-lg rounded-3xl overflow-x-auto max-w-5xl mx-auto p-6">
+        <table class="w-full table-auto text-sm text-gray-900">
+            <thead class="bg-blue-100 text-blue-800 uppercase text-xs font-semibold tracking-wide">
+                <tr>
+                    <th class="px-6 py-3 text-left rounded-tl-xl">Palabra</th>
+                    <th class="px-6 py-3 text-left">Cantidad</th>
+                    <th class="px-6 py-3 text-left">Palabra</th>
+                    <th class="px-6 py-3 text-left rounded-tr-xl">Cantidad</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for left, right in paired_results %}
+                <tr class="border-b border-gray-200 hover:bg-blue-50 transition">
+                    <td class="px-6 py-3 font-semibold">
+                        {% if left %}
+                            {{ left.word }}
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-3">
+                        {% if left %}
+                            {{ left.quantity }}
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-3 font-semibold">
+                        {% if right %}
+                            {{ right.word }}
+                        {% endif %}
+                    </td>
+                    <td class="px-6 py-3">
+                        {% if right %}
+                            {{ right.quantity }}
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="px-6 py-4 text-center text-gray-500 italic">No se ha procesado el archivo.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    let chartInstance = null;
+
+    function openModal() {
+        document.getElementById('chartModal').classList.remove('hidden');
+
+        // Solo crea el gráfico si aún no existe
+        if (!chartInstance) {
+            const ctx = document.getElementById('wordPieChart').getContext('2d');
+
+            const data = {
+                labels: [
+                    {% for item in top10_words %}
+                        "{{ item.word }}"{% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ],
+                datasets: [{
+                    label: 'Frecuencia',
+                    data: [
+                        {% for item in top10_words %}
+                            {{ item.quantity }}{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ],
+                    backgroundColor: [
+                        '#60a5fa', '#34d399', '#fbbf24', '#f87171',
+                        '#a78bfa', '#fb7185', '#facc15', '#4ade80',
+                        '#38bdf8', '#c084fc'
+                    ],
+                    borderWidth: 1
+                }]
+            };
+
+            const config = {
+                type: 'pie',
+                data: data,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#1f2937',
+                                font: {
+                                    size: 14
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            chartInstance = new Chart(ctx, config);
+        }
+    }
+
+    function closeModal() {
+        document.getElementById('chartModal').classList.add('hidden');
+    }
+</script>
+
+{% endblock %}

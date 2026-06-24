@@ -1,0 +1,8 @@
+from django.urls import path
+from ..views import concealment_detection_views as views
+
+urlpatterns = [
+    path("", views.concealment_detection_view, name="concealment_detection"),
+    path("ajax/report-words/", views.get_report_words, name="get_report_words"),
+    path("ajax/reports-by-year/", views.get_reports_by_year, name="get_reports_by_year"),
+]

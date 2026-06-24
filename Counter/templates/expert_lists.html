@@ -1,0 +1,224 @@
+{% extends "base.html" %}
+
+{% block title %}Listas de expertos | ELI{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 py-6">
+
+  <!-- Botón volver al panel -->
+  <div class="mb-6">
+    <a href="{% url 'panel' %}"
+       class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800
+              text-white font-medium py-2.5 px-6 rounded-xl shadow-md transition-all duration-300">
+      <!-- icono (hamburger) -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 10h18M3 6h18M3 14h18M3 18h18"/>
+      </svg>
+      Panel de administración
+    </a>
+    <button onclick="openExpertModal()" class="bg-green-600 text-white px-4 py-2 rounded-lg"> + Crear Experto
+    </button>
+  </div>
+
+  {% if experts %}
+    {% for expert in experts %}
+
+      <div class="bg-white shadow rounded-xl p-6 border border-gray-200 space-y-4 mb-8">
+
+        <!-- Cabecera de experto -->
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div class="flex items-center space-x-4">
+            {% if expert.user.profile.picture %}
+              <img src="{{ expert.user.profile.picture.url }}"
+                   alt="Foto de {{ expert.user.username }}"
+                   class="w-14 h-14 rounded-full object-cover">
+            {% else %}
+              <div class="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                <!-- icono usuario -->
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
+                     stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5.121 17.804A4 4 0 017 16h10a4 4 0 011.879.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+              </div>
+            {% endif %}
+            <div>
+              <h2 class="text-xl font-semibold text-gray-800">Listas de {{ expert.user.username }}</h2>
+              <p class="text-sm text-gray-500">{{ expert.profession }}</p>
+            </div>
+          </div>
+
+          <!-- Botón Nueva lista -->
+          <button
+            class="bg-blue-600 font-semibold text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex-shrink-0"
+            data-expert-id="{{ expert.id }}"
+            onclick="openNewListModal(this)">
+            + Nueva Lista
+          </button>
+        </div>
+
+        <!-- Listas del experto -->
+        {% if expert.word_lists.all %}
+          <div class="space-y-4 mt-4 overflow-y-auto" style="max-height: 350px;">
+            {% for lista in expert.word_lists.all %}
+              <div id="list-row-{{ lista.id }}" class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
+                  <p class="font-medium text-gray-700">{{ lista.name }}</p>
+
+                  <div class="flex flex-wrap gap-2">
+                    <button class="edit-list-btn text-blue-600 hover:underline text-sm"
+                            data-id="{{ lista.id }}"
+                            data-expert-id="{{ expert.id }}"
+                            data-name="{{ lista.name }}"
+                            data-words="{{ lista.words|join:', '|escapejs }}">
+                      Editar
+                    </button>
+                    <button class="delete-list-btn text-red-600 hover:underline text-sm"
+                            data-id="{{ lista.id }}">
+                      Eliminar
+                    </button>
+                  </div>
+                </div>
+
+                {% if lista.words %}
+                  <div class="flex flex-wrap gap-2 mt-2">
+                    {% for word in lista.words %}
+                      <span class="inline-flex items-center bg-blue-50 text-blue-700 text-sm font-medium px-3 py-1 rounded-full border border-blue-100">
+                        {{ word }}
+                      </span>
+                    {% endfor %}
+                  </div>
+                {% else %}
+                  <p class="text-sm text-gray-500">Sin palabras en esta lista.</p>
+                {% endif %}
+
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p class="text-sm text-gray-500 mt-2">Sin listas asociadas.</p>
+        {% endif %}
+      </div>
+
+    {% endfor %}
+  {% else %}
+    <p class="text-gray-600">No hay listas de expertos registradas.</p>
+  {% endif %}
+</div>
+
+<!-- Modal Crear Experto -->
+<div id="expertCreateModal"
+     class="fixed inset-0 bg-black/40 hidden flex items-center justify-center z-50">
+
+    <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
+
+        <h3 class="text-xl font-semibold mb-4">
+            Crear Experto
+        </h3>
+
+        <form id="expert-form">
+
+            <div class="space-y-3">
+
+                <div>
+                    <label>Usuario</label>
+
+                    <select id="expert-user"
+                            class="w-full border rounded-lg px-3 py-2"
+                            {% if not available_users %}disabled{% endif %}>
+
+                        {% if available_users %}
+                            {% for user in available_users %}
+                                <option value="{{ user.id }}">
+                                    {{ user.username }}
+                                </option>
+                            {% endfor %}
+                        {% else %}
+                            <option value="">
+                                No hay usuarios disponibles
+                            </option>
+                        {% endif %}
+
+                    </select>
+
+                    {% if not available_users %}
+                    <p class="text-sm text-red-500 mt-2">
+                        Todos los usuarios ya tienen un experto asignado.
+                    </p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label>Profesión</label>
+
+                    <input type="text"
+                           id="expert-profession"
+                           class="w-full border rounded-lg px-3 py-2">
+                </div>
+
+            </div>
+
+            <div class="flex justify-end mt-4 gap-2">
+
+                <button type="button"
+                        onclick="closeExpertModal()">
+                    Cancelar
+                </button>
+
+                <button type="submit"
+                        class="bg-green-600 text-white px-4 py-2 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        {% if not available_users %}disabled{% endif %}>
+                    Guardar
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- Modal Crear/Editar -->
+<div id="expertModal"
+  class="fixed inset-0 bg-black/40 hidden flex items-center justify-center z-50">
+  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
+    <h3 id="modalTitle" class="text-xl font-semibold mb-4 text-gray-800">Nueva Lista de Expertos</h3>
+
+    <!-- Un único formulario reutilizable -->
+    <form id="list-form" data-expert-id="">
+   {% csrf_token %}
+   <input type="hidden" id="list-id">
+
+   <div class="mb-4 space-y-3">
+     <div>
+    <label for="list-name" class="block text-sm font-medium text-gray-700 mb-1">Nombre de la lista</label>
+    <input type="text" id="list-name"
+        class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 text-gray-800"
+        required>
+     </div>
+     <div>
+    <label for="list-words" class="block text-sm font-medium text-gray-700 mb-1">Palabras (separadas por coma)</label>
+    <input type="text" id="list-words" name="words"
+       class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 text-gray-800"
+       placeholder="ej: alerta, sensor, cámara">
+     </div>
+   </div>
+
+   <div class="flex justify-end space-x-2 pt-2">
+     <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-gray-700 px-4 py-2 rounded-lg transition">Cancelar</button>
+     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Guardar</button>
+   </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+
+{% load static %}
+
+<script src="{% static 'js/expert_lists.js' %}"></script>
+{% endblock %}
