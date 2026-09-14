@@ -4,6 +4,9 @@ Para procesar PDFs escaneados es necesario instalar Poppler.
 
 ### Windows
 
+Link githun poppler:
+https://github.com/oschwartz10612/poppler-windows.git
+
 1. Descargar Poppler.
 2. Extraer la carpeta.
 3. Agregar la ruta de `Library\bin` al archivo `.env`:
