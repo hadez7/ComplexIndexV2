@@ -1,0 +1,5 @@
+cd..
+venv\Scripts\activate
+cd ComplexIndexV2
+python manage.py runserver
+
