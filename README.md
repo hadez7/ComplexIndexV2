@@ -284,3 +284,153 @@ La nueva funcionalidad se integra seamlessly con:
 
 versión: 1.0  
 fecha: 2026-06-24
+
+# ELI - Enterprise Lex Index
+
+Aplicación Django para analizar reportes financieros, extraer texto y calcular métricas como índice de complejidad, legibilidad, diversidad léxica y densidad técnica.
+
+## Requisitos
+
+- Git
+- Python 3.12+ (recomendado 3.12 o 3.13)
+- `pip`
+
+## 1. Clonar el repositorio
+
+```bash
+git clone <URL_DEL_REPOSITORIO>
+cd ELI
+```
+
+## 2. Crear y activar entorno virtual
+
+### Windows (PowerShell)
+
+```powershell
+python -m venv venv
+.\venv\Scripts\Activate.ps1
+```
+
+### Windows (CMD)
+
+```bat
+python -m venv venv
+venv\Scripts\activate.bat
+```
+
+### Linux / macOS
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+## 3. Instalar dependencias
+
+```bash
+pip install -r requirements.txt
+```
+
+## 4. Configurar variables de entorno
+
+Crea un archivo `.env` en la raíz del proyecto:
+
+```env
+OPENAI_API_KEY=sk-tu-api-key-aqui
+```
+
+Sin esta variable, el procesamiento OCR con OpenAI no funcionaría.
+
+## 5. Ejecutar migraciones
+
+```bash
+python manage.py migrate
+```
+
+## 6. (Opcional) Crear superusuario
+
+```bash
+python manage.py createsuperuser
+```
+
+## 7. (Opcional) Cargar cat�logo de empresas desde Excel
+
+Si usarás la carga inicial de empresas:
+
+```bash
+python manage.py import_companies --file Empresas.xlsx
+```
+
+## 8. Levantar el servidor
+
+```bash
+python manage.py runserver
+```
+
+Abre en navegador:
+
+```text
+http://127.0.0.1:8000/
+```
+
+---
+
+## Flujo rápido de uso
+
+1. Inicia sesión.
+2. Sube reportes PDF (individual o ZIP).
+3. El sistema procesa texto y calcula métricas.
+4. Revisa:
+   - Conteos globales
+   - Conteo por reporte
+   - índice de complejidad
+   - Módulo de listas de expertos
+
+---
+
+## Comandos útiles
+
+Recalcular métricas faltantes en reportes:
+
+```bash
+python manage.py recalculate_report_metrics --solo-faltantes
+```
+
+Simular sin cambios (dry-run):
+
+```bash
+python manage.py recalculate_report_metrics --dry-run
+```
+
+---
+
+## Solución de problemas
+
+### Error: `No module named django`
+
+No está activo el entorno virtual o faltan dependencias.
+
+```bash
+pip install -r requirements.txt
+```
+
+### Error: `OPENAI_API_KEY no configurada`
+
+Verifica que `.env` exista en la raíz y contenga:
+
+```env
+OPENAI_API_KEY=...
+```
+
+### Archivos estáticos JS/CSS no reflejan cambios
+
+Haz recarga dura del navegador (`Ctrl + F5`).
+
+---
+
+## Estructura principal
+
+- `WordCounter/` - configuración de Django
+- `Counter/` - lógica principal del análisis
+- `User/` - autenticación, perfiles y expertos
+- `media/` - archivos subidos (local)
