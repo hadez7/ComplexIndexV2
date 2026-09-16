@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     update       : '/users/update/',
     toggleActive : id => `/users/${id}/toggle-active/`,
     expert       : id => `/users/${id}/expert/`,
+    del          : id => `/users/${id}/delete/`,
   };
 
   const showError = (el, msg) => {
@@ -199,5 +200,29 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (err) {
       showError(expertError, 'Error de conexión.');
     }
+  });
+
+  /* ------------------------------------------------------------------ */
+  /* Eliminar usuario                                                    */
+  /* ------------------------------------------------------------------ */
+  document.querySelectorAll('.delete-user-btn').forEach((btn) => {
+    btn.addEventListener('click', async () => {
+      if (!window.confirm(`¿Eliminar al usuario "${btn.dataset.username}"? Esta acción no se puede deshacer.`)) return;
+
+      try {
+        const res = await fetch(routes.del(btn.dataset.id), {
+          method: 'POST',
+          headers: { 'X-CSRFToken': getCSRF() },
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          window.alert(data.error || 'No se pudo eliminar el usuario.');
+          return;
+        }
+        window.location.reload();
+      } catch (err) {
+        window.alert('Error de conexión.');
+      }
+    });
   });
 });

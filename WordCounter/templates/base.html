@@ -40,24 +40,30 @@
                 Panel de administración
               </a>
             </li>
-            <li>
-              <a href="{% url 'profile' %}" class="flex justify-center md:justify-start items-center">
-                {% if user.profile.picture %}
+            <li class="relative">
+              <button type="button" id="userMenuBtn" aria-haspopup="true" aria-expanded="false"
+                      class="flex justify-center md:justify-start items-center focus:outline-none">
+                {% if user.profile.picture.name != 'profile_pics/default.jpg' %}
                 <img src="{{ user.profile.picture.url }}" alt="Foto de perfil" class="w-10 h-10 rounded-full object-cover border-2 border-blue-500 shadow-sm">
                 {% else %}
-                <div class="w-10 h-10 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 shadow-inner">
-                  <span class="text-base">👤</span>
+                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold border-2 border-blue-500 shadow-sm">
+                  {{ user.username|slice:":1"|upper }}
                 </div>
                 {% endif %}
-              </a>
-            </li>
-            <li>
-              <form action="{% url 'logout' %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="text-red-600 hover:underline font-medium transition">
-                  Cerrar sesión
-                </button>
-              </form>
+              </button>
+
+              <!-- Menú desplegable -->
+              <div id="userMenu" class="hidden absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-200 z-50 py-1">
+                <a href="{% url 'profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition">
+                  Editar usuario
+                </a>
+                <form action="{% url 'logout' %}" method="post">
+                  {% csrf_token %}
+                  <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
+                    Cerrar sesión
+                  </button>
+                </form>
+              </div>
             </li>
             {% else %}
             <li>
@@ -85,6 +91,39 @@
     <footer class="bg-gray-200 text-center py-4">
         © 2025 Enterprise Lex Index. Todos los derechos reservados.
     </footer>
+
+    <!-- Menú usuario -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function () {
+        const btn = document.getElementById('userMenuBtn');
+        const menu = document.getElementById('userMenu');
+        if (!btn || !menu) return;
+
+        btn.addEventListener('click', function (e) {
+          e.stopPropagation();
+          const open = !menu.classList.contains('hidden');
+          menu.classList.toggle('hidden', open);
+          btn.setAttribute('aria-expanded', String(!open));
+        });
+
+        function closeMenu() {
+          menu.classList.add('hidden');
+          btn.setAttribute('aria-expanded', 'false');
+        }
+
+        document.addEventListener('click', function (e) {
+          if (!menu.contains(e.target) && !btn.contains(e.target)) closeMenu();
+        });
+
+        document.addEventListener('keydown', function (e) {
+          if (e.key === 'Escape') closeMenu();
+        });
+
+        menu.querySelectorAll('a, button[type="submit"]').forEach(function (el) {
+          el.addEventListener('click', closeMenu);
+        });
+      });
+    </script>
 
     {% block scripts %}
     {% endblock %}

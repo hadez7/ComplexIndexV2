@@ -362,3 +362,30 @@ def assign_expert(request, user_id):
 
     _set_expert(user, profession)
     return JsonResponse({"success": True, "expert": True})
+
+
+@login_required
+@admin_required
+def delete_user(request, user_id):
+    if request.method != "POST":
+        return HttpResponseNotAllowed(["POST"])
+
+    user = User.objects.filter(id=user_id).first()
+    if not user:
+        return JsonResponse({"success": False, "error": "Usuario no encontrado."}, status=404)
+
+    if user.id == request.user.id:
+        return JsonResponse(
+            {"success": False, "error": "No puedes eliminar tu propia cuenta."},
+            status=400,
+        )
+
+    if user.is_superuser:
+        return JsonResponse(
+            {"success": False, "error": "No puedes eliminar un superusuario."},
+            status=400,
+        )
+
+    username = user.username
+    user.delete()
+    return JsonResponse({"success": True, "username": username})

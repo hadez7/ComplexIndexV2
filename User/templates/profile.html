@@ -17,8 +17,15 @@
                 </div>
 
                 <div class="flex justify-center items-center mb-4">
+                    {% if user.profile.picture.name != 'profile_pics/default.jpg' %}
                     <img id="profilePreview" src="{{ user.profile.picture.url }}" alt="Foto de perfil"
                         class="w-32 h-32 rounded-full object-cover border-2 border-blue-500 shadow">
+                    <div id="profileInitial" class="hidden w-32 h-32 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-5xl font-bold border-2 border-blue-500 shadow">{{ user.username|slice:":1"|upper }}</div>
+                    {% else %}
+                    <div id="profileInitial" class="w-32 h-32 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-5xl font-bold border-2 border-blue-500 shadow">{{ user.username|slice:":1"|upper }}</div>
+                    <img id="profilePreview" src="" alt="Foto de perfil"
+                        class="hidden w-32 h-32 rounded-full object-cover border-2 border-blue-500 shadow">
+                    {% endif %}
                 </div>
 
                 <!-- Botón de subida personalizado centrado -->
@@ -58,6 +65,9 @@
   input.addEventListener('change', function () {
     const file = this.files[0];
     if (file && preview) {
+      preview.classList.remove('hidden');
+      const initial = document.getElementById('profileInitial');
+      if (initial) initial.classList.add('hidden');
       const reader = new FileReader();
       reader.onload = function (e) {
         preview.src = e.target.result;
