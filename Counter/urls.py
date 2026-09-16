@@ -8,6 +8,10 @@ urlpatterns = [
     path("upload/", views.upload_view, name="upload"),
     path("comparative_analysis/", views.comparative_analysis_view, name="comparative_analysis"),
     path("users/", views.user_view, name="users"),
+    path("users/create/", views.create_user, name="users_create"),
+    path("users/update/", views.update_user, name="users_update"),
+    path("users/<int:user_id>/toggle-active/", views.toggle_user_active, name="users_toggle_active"),
+    path("users/<int:user_id>/expert/", views.assign_expert, name="users_assign_expert"),
     path("reports-by-year/", views.reports_by_year, name="reports_by_year"),
     
     # Included URLConfs

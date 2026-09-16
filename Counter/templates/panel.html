@@ -91,6 +91,7 @@
             <a href="{% url 'comparative_analysis' %}" class="inline-block bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">Empezar</a>
         </div>
         <!-- !Usuarios -->
+        {% if user.is_staff %}
         <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl shadow-md hover:shadow-xl transform hover:-translate-y-1 transition duration-300">
             <div class="mb-4">
                 <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -101,6 +102,7 @@
             <p class="text-gray-700 mb-4">Administración de usuarios y roles de usuarios.</p>
             <a href="{% url 'users' %}" class="inline-block bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-500 transition">Empezar</a>
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
