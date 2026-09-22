@@ -135,6 +135,32 @@ class ConcealmentDetectionFilterTests(TestCase):
         self.assertContains(resp, 'gastos')
         self.assertContains(resp, self.user.username)
 
+        # Test filter by year
+        resp_year = self.client.get(history_url + '?year=2024')
+        self.assertEqual(resp_year.status_code, 200)
+        self.assertEqual(len(resp_year.context['reviews']), 1)
+        self.assertIn(self.company2, resp_year.context['companies'])
+
+        # Test filter by year + company ID
+        resp_year_company = self.client.get(f'{history_url}?year=2024&company={self.company2.id}')
+        self.assertEqual(resp_year_company.status_code, 200)
+        self.assertEqual(len(resp_year_company.context['reviews']), 1)
+
+        # Test filter by year + other company with no reviews
+        resp_other_company = self.client.get(f'{history_url}?year=2024&company={self.company1.id}')
+        self.assertEqual(resp_other_company.status_code, 200)
+        self.assertEqual(len(resp_other_company.context['reviews']), 0)
+
+        # Test filter by non-existent year
+        resp_wrong_year = self.client.get(history_url + '?year=2020')
+        self.assertEqual(resp_wrong_year.status_code, 200)
+        self.assertEqual(len(resp_wrong_year.context['reviews']), 0)
+
+        # Test filter by auditor
+        resp_auditor = self.client.get(history_url + f'?user={self.user.username}')
+        self.assertEqual(resp_auditor.status_code, 200)
+        self.assertEqual(len(resp_auditor.context['reviews']), 1)
+
         # Test filter by word
         resp_word = self.client.get(history_url + '?word=gastos')
         self.assertEqual(resp_word.status_code, 200)

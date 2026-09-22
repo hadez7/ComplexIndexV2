@@ -4,6 +4,7 @@ from django.db.models import Sum
 from django.db.models.functions import Trim
 from django.http import JsonResponse
 from ..models import (
+    Company,
     Report,
     ConcealmentReview,
     ConcealmentParagraphReview,
@@ -328,6 +329,8 @@ def get_reports_by_year(request):
 
 @login_required
 def concealment_history_view(request):
+    from django.contrib.auth.models import User
+
     reviews_qs = (
         ConcealmentReview.objects
         .select_related("report", "report__company", "user")
@@ -343,7 +346,10 @@ def concealment_history_view(request):
     if year_filter:
         reviews_qs = reviews_qs.filter(report__year=year_filter)
     if company_filter:
-        reviews_qs = reviews_qs.filter(report__company__name__icontains=company_filter)
+        if company_filter.isdigit():
+            reviews_qs = reviews_qs.filter(report__company_id=int(company_filter))
+        else:
+            reviews_qs = reviews_qs.filter(report__company__name__icontains=company_filter)
     if word_filter:
         reviews_qs = reviews_qs.filter(word__icontains=word_filter)
     if user_filter:
@@ -356,6 +362,21 @@ def concealment_history_view(request):
         .order_by("-year")
     )
 
+    # Empresas para el selector desplegable
+    companies_qs = Company.objects.filter(report__isnull=False)
+    if year_filter:
+        companies_qs = companies_qs.filter(report__year=year_filter)
+
+    companies = (
+        companies_qs
+        .distinct()
+        .annotate(clean_name=Trim("name"))
+        .order_by("clean_name")
+    )
+
+    # Lista de auditores registrados
+    auditors = User.objects.filter(is_active=True).order_by("username")
+
     total_reviews_count = reviews_qs.count()
     total_words_validated = reviews_qs.aggregate(sum_valid=Sum("total_valid"))["sum_valid"] or 0
     total_words_discarded = reviews_qs.aggregate(sum_discarded=Sum("total_discarded"))["sum_discarded"] or 0
@@ -366,6 +387,8 @@ def concealment_history_view(request):
         {
             "reviews": reviews_qs[:100],
             "years": years,
+            "companies": companies,
+            "auditors": auditors,
             "year_filter": year_filter,
             "company_filter": company_filter,
             "word_filter": word_filter,
