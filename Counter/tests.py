@@ -180,3 +180,42 @@ class ConcealmentDetectionFilterTests(TestCase):
         self.assertEqual(len(json_data['paragraphs']), 2)
         self.assertEqual(json_data['paragraphs'][0]['discarded'], False)
         self.assertEqual(json_data['paragraphs'][1]['discarded'], True)
+
+
+class ComparativeAnalysisTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='analyst', password='password')
+        self.client.login(username='analyst', password='password')
+        self.company = Company.objects.create(name='ACME CORP S.A.', ruc='0990000004001')
+        self.report = Report.objects.create(
+            company=self.company,
+            name='2024',
+            year=2024
+        )
+
+    def test_reports_by_year_returns_company_name(self):
+        url = reverse('reports_by_year') + '?year=2024'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]['id'], self.report.id)
+        # Verify it does not just return '2024'
+        self.assertEqual(data[0]['name'], 'ACME CORP S.A.')
+
+    def test_comparative_form_report_label_shows_company(self):
+        from Counter.forms import ComparativeAnalysisForm
+        form = ComparativeAnalysisForm(data={'year': '2024'})
+        choices = list(form.fields['report'].choices)
+        # First choice is the empty label
+        self.assertEqual(choices[0][0], '')
+        # Second choice should have ACME CORP S.A. as label
+        self.assertEqual(choices[1][0], self.report.id)
+        self.assertEqual(choices[1][1], 'ACME CORP S.A.')
+
+    def test_comparative_analysis_view_renders(self):
+        url = reverse('comparative_analysis')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Análisis comparativo')
+        self.assertContains(response, 'Comparar reporte con lista de experto')

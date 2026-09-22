@@ -2,12 +2,42 @@
 
 {% block title %}Empresas | ELI{% endblock %}
 
+{% block custom_css %}
+<style>
+body {
+    font-family: 'Poppins', sans-serif;
+}
+/* Colores de las iniciales en función de la primera letra */
+.avatar-A, .avatar-B { background-color: #818cf8; color: #fff; }
+.avatar-C, .avatar-D { background-color: #34d399; color: #fff; }
+.avatar-E, .avatar-F { background-color: #f87171; color: #fff; }
+.avatar-G, .avatar-H { background-color: #fbbf24; color: #fff; }
+.avatar-I, .avatar-J { background-color: #60a5fa; color: #fff; }
+.avatar-K, .avatar-L { background-color: #a78bfa; color: #fff; }
+.avatar-M, .avatar-N { background-color: #f472b6; color: #fff; }
+.avatar-O, .avatar-P { background-color: #2dd4bf; color: #fff; }
+.avatar-Q, .avatar-R { background-color: #fb923c; color: #fff; }
+.avatar-S, .avatar-T { background-color: #38bdf8; color: #fff; }
+.avatar-U, .avatar-V { background-color: #c084fc; color: #fff; }
+.avatar-W, .avatar-X { background-color: #4ade80; color: #fff; }
+.avatar-Y, .avatar-Z { background-color: #e879f9; color: #fff; }
+.avatar-default { background-color: #94a3b8; color: #fff; }
+
+.company-row {
+    transition: background-color 0.15s ease;
+}
+.company-row:hover {
+    background-color: #f8fafc;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="container mx-auto px-4">
-    <!-- !Panel de administración -->
-    <div class="mb-6">
+    <!-- !Barra de acciones superior -->
+    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <a href="{% url 'panel' %}"
-        class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
+           class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 ease-in-out text-sm">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -15,16 +45,47 @@
             </svg>
             Panel de administración
         </a>
-        <!-- *Botón crear -->
-        <a>
-            <button onclick="openCreateModal()" class="bg-green-600 font-semibold hover:bg-green-700 text-white px-4 py-2 rounded justify-center mt-4">Crear Empresa</button>
-        </a>
+        <button onclick="openCreateModal()"
+                class="inline-flex items-center justify-center gap-2 bg-green-600 font-semibold hover:bg-green-700 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 text-sm">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Crear Empresa
+        </button>
     </div>
 
-    <h1 class="text-3xl font-bold mb-6">Lista de Empresas</h1>
+    <!-- !Filtros de búsqueda: Barra de texto + Dropdown de provincia -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6">
+        <form method="get" action="{% url 'companies' %}" id="filterForm" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4">
+            <!-- Buscador de texto -->
+            <div class="flex-1 relative">
+                <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 pointer-events-none">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </span>
+                <input type="text" name="q" value="{{ search }}" placeholder="Buscar por RUC, razón social o provincia..."
+                       class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
+            </div>
+            <!-- Filtro de provincia -->
+            <div class="sm:w-56">
+                <select name="province" id="provinceFilter"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white transition">
+                    <option value="">Todas las provincias</option>
+                    {% for province in provinces %}
+                    <option value="{{ province.id }}" {% if province_filter == province.id|stringformat:"s" %}selected{% endif %}>
+                        {{ province.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <!-- Botón filtrar (oculto: el select auto-envía) -->
+            <button type="submit" class="hidden">Filtrar</button>
+        </form>
+    </div>
 
-    <!-- !Modal Crear empresa-->
-    <div id="createModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <!-- !Modal Crear empresa -->
+    <div id="createModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 px-4">
         <div class="bg-white p-6 rounded-xl w-full max-w-md shadow-lg relative">
             <h2 class="text-xl font-bold mb-4">Nueva Empresa</h2>
             <form id="createForm">
@@ -48,19 +109,19 @@
                     </select>
                     <p class="text-red-500 text-sm" id="error-province"></p>
                 </div>
-                <div class="flex justify-end mt-4">
+                <div class="flex justify-end mt-4 space-x-2">
                     <button type="button" onclick="closeCreateModal()"
-                        class="mr-2 px-3 py-1 rounded bg-gray-300">Cancelar</button>
+                        class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 transition text-sm font-medium">Cancelar</button>
                     <button type="submit"
-                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded">Guardar</button>
+                        class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded transition text-sm font-medium">Guardar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- !Modal Editar empresa-->
-    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
-    <div class="bg-white p-6 rounded-xl w-full max-w-md shadow-lg">
+    <!-- !Modal Editar empresa -->
+    <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 px-4">
+    <div class="bg-white p-6 rounded-xl w-full max-w-md shadow-lg relative">
         <h2 class="text-xl font-bold mb-4">Editar Empresa</h2>
         <form id="editCompanyForm" onsubmit="submitEditForm(event)">
         <input type="hidden" id="edit-id">
@@ -81,100 +142,147 @@
             </select>
         </div>
         <div class="flex justify-end space-x-2">
-            <button type="button" onclick="closeEditModal()" class="bg-gray-300 px-4 py-2 rounded">Cancelar</button>
-            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Guardar</button>
+            <button type="button" onclick="closeEditModal()" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded transition text-sm font-medium">Cancelar</button>
+            <button type="submit" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded transition text-sm font-medium">Guardar</button>
         </div>
         </form>
     </div>
     </div>
 
-    <!-- !Modal Detalles empresa-->
-    <div id="detailsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <!-- !Modal Detalles empresa -->
+    <div id="detailsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 px-4">
         <div class="bg-white p-6 rounded-xl w-full max-w-md shadow-lg relative">
             <h2 class="text-xl font-bold mb-4">Detalles de la Empresa</h2>
             <p><strong>RUC:</strong> <span id="detail-ruc"></span></p>
             <p><strong>Nombre:</strong> <span id="detail-name"></span></p>
             <p><strong>Provincia:</strong> <span id="detail-province"></span></p>
             <div class="flex justify-end mt-4">
-                <button onclick="closeDetailsModal()" class="px-3 py-1 rounded bg-gray-300">Cerrar</button>
+                <button onclick="closeDetailsModal()" class="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 transition text-sm font-medium">Cerrar</button>
             </div>
         </div>
     </div>
 
-    <!-- !Modal Borrar empresa-->
-    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+    <!-- !Modal Borrar empresa -->
+    <div id="deleteModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50 px-4">
         <div class="bg-white p-6 rounded-xl w-full max-w-sm shadow-lg">
             <h2 class="text-lg font-bold mb-4">¿Eliminar Empresa?</h2>
             <p class="mb-4">¿Estás seguro de eliminar esta empresa?</p>
             <div class="flex justify-end space-x-2">
-                <button onclick="closeDeleteModal()" class="bg-gray-300 px-3 py-1 rounded">Cancelar</button>
-                <button onclick="deleteCompany()" class="bg-red-500 text-white px-3 py-1 rounded">Eliminar</button>
+                <button onclick="closeDeleteModal()" class="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded transition text-sm font-medium">Cancelar</button>
+                <button onclick="deleteCompany()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded transition text-sm font-medium">Eliminar</button>
             </div>
         </div>
     </div>
 
-
-    <!-- !Tabla -->
-    <div class="bg-white shadow rounded-2xl overflow-hidden">
-        <div class="overflow-y-auto" style="height: 500px;">
-            <table class="min-w-full table-auto text-sm text-gray-700">
-                <thead class="bg-gray-200 text-gray-700 sticky top-0 z-10">
-                    <tr>
-                        <th class="px-2 py-2 text-left w-1/2">Nombre</th>
-                        <th class="px-4 py-2 text-left">Provincia</th>
-                        {% if companies %}
-                        <th class="px-4 py-2 text-left">Acciones</th>
-                        {% endif %}
-                    </tr>
-                </thead>
-                <tbody id="companyTableBody">
-                    {% if companies %}
-                        {% for company in companies %}
-                        <tr id="empresa-{{ company.id }}" class="border-t hover:bg-gray-100">
-                            <td class="px-4 py-2">{{ company.name }}</td>
-                            <td class="px-4 py-2">{{ company.province.name }}</td>
-                            <td class="px-4 py-2 space-x-2">
-                                <button onclick="showDetails({{ company.id }})"
-                                        title="Ver detalles"
-                                        class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded inline-flex items-center">
-                                        <!-- Icono: Eye -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm-6.928 4.485A9.969 9.969 0 0112 4.5c2.485 0 4.735.909 6.485 2.485M12 4.5C9.515 4.5 7.265 5.409 5.515 6.985M12 19.5c-2.485 0-4.735-.909-6.485-2.485M12 19.5c2.485 0 4.735-.909 6.485-2.485" />
-                                        </svg>
-                                </button>
-                                
-                                <button onclick="openEditModal({{ company.id }})"
-                                        title="Editar"
-                                        class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-1 px-3 rounded inline-flex items-center">
-                                        <!-- Icono: Pencil -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z" />
-                                        </svg>
-                                        
-                                </button>
-                                <button onclick="openDeleteModal({{ company.id }})"
-                                        title="Eliminar"
-                                        class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded inline-flex items-center">
-                                        <!-- Icono: Trash -->
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                        
-                                    </button>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    {% else %}
-                        <tr>
-                            <td colspan="2" class="px-4 py-4 text-center text-gray-500">No hay empresas registradas.</td>
-                        </tr>
-                    {% endif %}
-                </tbody>
-            </table>
+    <!-- !Lista de empresas estilo tarjeta -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <!-- Encabezado de columnas -->
+        <div class="hidden sm:grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+            <div class="col-span-3">RUC</div>
+            <div class="col-span-5">Empresa</div>
+            <div class="col-span-2 text-right">Provincia</div>
+            <div class="col-span-2 text-right">Acciones</div>
         </div>
+
+        <!-- Filas de empresas -->
+        <div id="companyListBody">
+            {% if companies %}
+                {% for company in companies %}
+                <div id="empresa-{{ company.id }}" class="company-row grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 items-center px-6 py-4 border-b border-gray-100">
+                    <!-- RUC -->
+                    <div class="sm:col-span-3">
+                        <span class="text-xs text-gray-500 sm:hidden font-medium">RUC: </span>
+                        <span class="text-sm text-gray-600 font-mono">{{ company.ruc }}</span>
+                    </div>
+
+                    <!-- Empresa: Iniciales + Nombre -->
+                    <div class="sm:col-span-5 flex items-center gap-3">
+                        {% with company.name|make_list as letters %}
+                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 avatar-{{ letters.0|default:'?' }}">
+                            {{ letters.0|default:"?" }}{{ letters.1|default:"" }}
+                        </div>
+                        {% endwith %}
+                        <div class="min-w-0">
+                            <p class="text-sm font-semibold text-gray-900 leading-tight truncate">{{ company.name }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Provincia -->
+                    <div class="sm:col-span-2 sm:text-right">
+                        <span class="text-xs text-gray-500 sm:hidden font-medium">Provincia: </span>
+                        <span class="text-sm text-gray-600">{{ company.province.name }}</span>
+                    </div>
+
+                    <!-- Acciones -->
+                    <div class="sm:col-span-2 flex items-center justify-end gap-1.5">
+                        <button onclick="showDetails({{ company.id }})" title="Ver detalles"
+                                class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                            </svg>
+                        </button>
+                        <button onclick="openEditModal({{ company.id }})" title="Editar"
+                                class="p-2 rounded-lg bg-yellow-50 text-yellow-600 hover:bg-yellow-100 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z"></path>
+                            </svg>
+                        </button>
+                        <button onclick="openDeleteModal({{ company.id }})" title="Eliminar"
+                                class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="px-6 py-12 text-center text-gray-500">
+                    <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path>
+                    </svg>
+                    <p class="text-sm">No se encontraron empresas que coincidan con los filtros.</p>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Paginación -->
+        {% if page_obj.paginator.num_pages > 1 %}
+        <div class="flex flex-col sm:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t border-gray-200 gap-3">
+            <p class="text-sm text-gray-500">
+                Mostrando {{ page_obj.start_index }} a {{ page_obj.end_index }} de {{ page_obj.paginator.count }} empresas
+            </p>
+            <nav class="flex items-center gap-1" aria-label="Paginación">
+                {% if page_obj.has_previous %}
+                <a href="?page={{ page_obj.previous_page_number }}{% if search %}&q={{ search }}{% endif %}{% if province_filter %}&province={{ province_filter }}{% endif %}"
+                   class="px-3 py-1.5 text-sm rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition">&lsaquo;</a>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <span class="px-3 py-1.5 text-sm rounded-lg bg-blue-600 text-white font-semibold">{{ num }}</span>
+                    {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                    <a href="?page={{ num }}{% if search %}&q={{ search }}{% endif %}{% if province_filter %}&province={{ province_filter }}{% endif %}"
+                       class="px-3 py-1.5 text-sm rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition">{{ num }}</a>
+                    {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
+                    <span class="px-2 text-gray-400 text-sm">…</span>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}{% if search %}&q={{ search }}{% endif %}{% if province_filter %}&province={{ province_filter }}{% endif %}"
+                   class="px-3 py-1.5 text-sm rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition">&rsaquo;</a>
+                {% endif %}
+            </nav>
+        </div>
+        {% elif page_obj.paginator.count > 0 %}
+        <div class="px-6 py-3 bg-gray-50 border-t border-gray-200">
+            <p class="text-sm text-gray-500">Mostrando {{ page_obj.paginator.count }} empresa{{ page_obj.paginator.count|pluralize:"s" }}</p>
+        </div>
+        {% endif %}
     </div>
 </div>
-
 
 {% endblock %}
 
@@ -182,6 +290,16 @@
 
 <script>
     const createCompanyUrl = "{% url 'create_company' %}";
+
+    // Auto-submit cuando se cambia la provincia
+    document.addEventListener("DOMContentLoaded", function() {
+        const provinceSelect = document.getElementById("provinceFilter");
+        if (provinceSelect) {
+            provinceSelect.addEventListener("change", function() {
+                document.getElementById("filterForm").submit();
+            });
+        }
+    });
 </script>
 
 {% load static %}

@@ -103,8 +103,17 @@ def comparative_analysis_view(request):
                 expert_list.words or []
             )
 
+            report_label = (
+                report.company.name.strip()
+                if report.company and report.company.name
+                else (report.name or f"Reporte {report.id}")
+            )
+            if report.company and report.name and report.name != str(report.year) and report.name.lower() != "reporte":
+                report_label = f"{report.company.name.strip()} - {report.name}"
+
             resultado = {
                 "report": report,
+                "report_label": report_label,
                 "expert_list": expert_list,
 
                 "comunes": sorted(
@@ -134,22 +143,31 @@ def comparative_analysis_view(request):
 
 @login_required
 def reports_by_year(request):
-
     year = request.GET.get("year")
+    if not year:
+        return JsonResponse([], safe=False)
 
     reports = (
         Report.objects
         .filter(year=year)
-        .order_by("name")
+        .select_related("company")
+        .order_by("company__name", "name")
     )
 
-    data = [
-        {
+    data = []
+    for report in reports:
+        company_name = report.company.name.strip() if report.company and report.company.name else ""
+        if company_name:
+            label = company_name
+            if report.name and report.name != str(report.year) and report.name.lower() != "reporte":
+                label = f"{company_name} - {report.name}"
+        else:
+            label = report.name or f"Reporte {report.id}"
+
+        data.append({
             "id": report.id,
-            "name": report.name
-        }
-        for report in reports
-    ]
+            "name": label,
+        })
 
     return JsonResponse(data, safe=False)
 

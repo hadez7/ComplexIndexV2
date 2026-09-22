@@ -5,10 +5,10 @@
 {% block content %}
 
 <div class="container mx-auto px-4">
-    <!-- !Botón para volver al panel -->
-    <div class="mb-6">
+    <!-- !Barra de navegación superior -->
+    <div class="mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         <a href="{% url 'panel' %}"
-           class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-medium py-2.5 px-6 rounded-xl shadow-md transition-all duration-300">
+           class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -19,34 +19,46 @@
     </div>
 
     <!-- Formulario de comparación -->
-    <div class="bg-white rounded-xl shadow p-6 mb-6">
-        <h2 class="text-xl font-semibold text-gray-800 mb-4">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
             Comparar reporte con lista de experto
         </h2>
 
         <form method="post">
             {% csrf_token %}
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
 
                 <div>
-                    {{ form.year.label_tag }}
+                    <label for="id_year" class="block text-sm font-medium text-gray-700 mb-1.5">
+                        Año del reporte
+                    </label>
                     {{ form.year }}
                 </div>
 
                 <div>
-                    {{ form.report.label_tag }}
+                    <label for="id_report" class="block text-sm font-medium text-gray-700 mb-1.5">
+                        Reporte / Empresa
+                    </label>
                     {{ form.report }}
                 </div>
 
                 <div>
-                    {{ form.expert_list.label_tag }}
+                    <label for="id_expert_list" class="block text-sm font-medium text-gray-700 mb-1.5">
+                        Lista de experto
+                    </label>
                     {{ form.expert_list }}
                 </div>
 
-                <div class="flex items-end">
+                <div>
                     <button type="submit"
-                            class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded">
+                            class="w-full inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-xl shadow transition duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
                         Comparar
                     </button>
                 </div>
@@ -58,47 +70,47 @@
     {% if resultado %}
     <div class="grid md:grid-cols-3 gap-6">
 
-        <div>
-            <h3 class="font-semibold text-blue-700 mb-2">
-                Palabras encontradas en ambos
-                ({{ resultado.comunes|length }})
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <h3 class="font-semibold text-blue-700 mb-3 flex items-center justify-between">
+                <span>Palabras encontradas en ambos</span>
+                <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-0.5 rounded-full font-bold">{{ resultado.comunes|length }}</span>
             </h3>
 
-            <ul class="bg-white p-4 rounded-xl shadow text-sm space-y-1 max-h-64 overflow-y-auto">
+            <ul class="text-sm space-y-1 max-h-72 overflow-y-auto divide-y divide-gray-100">
                 {% for word in resultado.comunes %}
-                    <li>{{ word }}</li>
+                    <li class="py-1 text-gray-700">{{ word }}</li>
                 {% empty %}
-                    <li class="text-gray-500">Ninguna</li>
+                    <li class="py-2 text-gray-400 italic">Ninguna</li>
                 {% endfor %}
             </ul>
         </div>
 
-        <div>
-            <h3 class="font-semibold text-green-700 mb-2">
-                Solo en el reporte
-                ({{ resultado.report.name }})
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <h3 class="font-semibold text-green-700 mb-3 flex items-center justify-between">
+                <span class="truncate" title="{% if resultado.report_label %}{{ resultado.report_label }}{% elif resultado.report.company %}{{ resultado.report.company.name }}{% else %}{{ resultado.report.name }}{% endif %}">Solo en reporte ({% if resultado.report_label %}{{ resultado.report_label }}{% elif resultado.report.company %}{{ resultado.report.company.name }}{% else %}{{ resultado.report.name }}{% endif %})</span>
+                <span class="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full font-bold ml-2">{{ resultado.solo_documento|length }}</span>
             </h3>
 
-            <ul class="bg-white p-4 rounded-xl shadow text-sm space-y-1 max-h-64 overflow-y-auto">
+            <ul class="text-sm space-y-1 max-h-72 overflow-y-auto divide-y divide-gray-100">
                 {% for word in resultado.solo_documento %}
-                    <li>{{ word }}</li>
+                    <li class="py-1 text-gray-700">{{ word }}</li>
                 {% empty %}
-                    <li class="text-gray-500">Ninguna</li>
+                    <li class="py-2 text-gray-400 italic">Ninguna</li>
                 {% endfor %}
             </ul>
         </div>
 
-        <div>
-            <h3 class="font-semibold text-red-700 mb-2">
-                Solo en la lista
-                ({{ resultado.expert_list.name }})
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+            <h3 class="font-semibold text-red-700 mb-3 flex items-center justify-between">
+                <span class="truncate" title="{{ resultado.expert_list.name }}">Solo en lista ({{ resultado.expert_list.name }})</span>
+                <span class="bg-red-100 text-red-800 text-xs px-2.5 py-0.5 rounded-full font-bold ml-2">{{ resultado.solo_lista|length }}</span>
             </h3>
 
-            <ul class="bg-white p-4 rounded-xl shadow text-sm space-y-1 max-h-64 overflow-y-auto">
+            <ul class="text-sm space-y-1 max-h-72 overflow-y-auto divide-y divide-gray-100">
                 {% for word in resultado.solo_lista %}
-                    <li>{{ word }}</li>
+                    <li class="py-1 text-gray-700">{{ word }}</li>
                 {% empty %}
-                    <li class="text-gray-500">Ninguna</li>
+                    <li class="py-2 text-gray-400 italic">Ninguna</li>
                 {% endfor %}
             </ul>
         </div>

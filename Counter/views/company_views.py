@@ -2,20 +2,50 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render
+from django.core.paginator import Paginator
+from django.db.models import Q
+from django.db.models.functions import Trim
 import json
 from ..models import Company, Province
 
 
 @login_required
 def company_view(request):
-    companies = Company.objects.all()
-    provinces = Province.objects.all()
+    search = request.GET.get("q", "").strip()
+    province_filter = request.GET.get("province", "").strip()
+    page_number = request.GET.get("page", 1)
+
+    companies_qs = (
+        Company.objects
+        .select_related("province")
+        .annotate(clean_name=Trim("name"))
+        .order_by("clean_name")
+    )
+
+    if search:
+        companies_qs = companies_qs.filter(
+            Q(ruc__icontains=search)
+            | Q(name__icontains=search)
+            | Q(province__name__icontains=search)
+        )
+
+    if province_filter:
+        companies_qs = companies_qs.filter(province_id=province_filter)
+
+    paginator = Paginator(companies_qs, 10)
+    page_obj = paginator.get_page(page_number)
+
+    provinces = Province.objects.all().order_by("name")
+
     return render(
         request,
         "companies.html",
         {
-            "companies": companies,
+            "companies": page_obj,
+            "page_obj": page_obj,
             "provinces": provinces,
+            "search": search,
+            "province_filter": province_filter,
         },
     )
 
@@ -23,7 +53,7 @@ def company_view(request):
 @login_required
 def see_company_json(request, company_id):
     company = Company.objects.get(id=company_id)
-    data = {"ruc": company.ruc, "name": company.name, "province": company.province.name}
+    data = {"ruc": company.ruc, "name": company.name, "province": company.province.name, "province_id": company.province_id}
     return JsonResponse(data)
 
 

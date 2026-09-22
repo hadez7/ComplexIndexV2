@@ -3,6 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Enterprise Lex Index{% endblock %}</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -17,68 +18,173 @@
 
 <body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
 
-    <!-- !Navegación -->
-    <nav class="bg-white shadow-md border-b border-gray-200">
+    <!-- !Navegación Responsiva (Opción 3 Híbrida) -->
+    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between py-4 space-y-4 md:space-y-0">
+        <div class="flex items-center justify-between h-16">
         
-          <!-- Logo + Bienvenida -->
-          <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-center sm:text-left">
-            <a href="{% url 'index' %}" class="text-3xl font-extrabold text-blue-600">ELI</a>
-            {% if user.is_authenticated %}
-            <span class="text-gray-700 font-medium text-sm sm:text-base">
-              ¡Bienvenido, <span class="font-bold text-blue-600">{{ user.username }}</span>!
+          <!-- Izquierda: Logo + Bienvenida (Escritorio) -->
+          <div class="flex items-center space-x-3">
+            <a href="{% url 'index' %}" class="flex items-center space-x-2 text-2xl font-black text-blue-600 hover:text-blue-700 tracking-tight transition">
+              <span>ELI</span>
+            </a>
+            <span class="hidden sm:inline-block text-xs text-gray-400 font-medium pl-2 border-l border-gray-200">
+              Enterprise Lex Index
             </span>
+            {% if user.is_authenticated %}
+            <div class="hidden md:flex items-center pl-3 border-l border-gray-200 text-sm text-gray-600">
+              <span>¡Bienvenido, <strong class="text-blue-600 font-semibold">{{ user.username }}</strong>!</span>
+            </div>
             {% endif %}
           </div>
         
-          <!-- Menú -->
-          <ul class="flex flex-col md:flex-row md:items-center md:space-x-6 space-y-4 md:space-y-0 text-center md:text-left">
+          <!-- Derecha en ESCRITORIO (>= md) -->
+          <div class="hidden md:flex items-center space-x-4">
             {% if user.is_authenticated %}
-            <li>
-              <a href="{% url 'panel' %}" class="text-gray-700 hover:text-blue-600 font-medium transition">
-                Panel de administración
-              </a>
-            </li>
-            <li class="relative">
-              <button type="button" id="userMenuBtn" aria-haspopup="true" aria-expanded="false"
-                      class="flex justify-center md:justify-start items-center focus:outline-none">
+            <a href="{% url 'panel' %}" class="text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg font-medium text-sm transition flex items-center space-x-1.5">
+              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+              </svg>
+              <span>Panel de administración</span>
+            </a>
+
+            <!-- Avatar con Menú Desplegable (Escritorio) -->
+            <div class="relative">
+              <button type="button" id="userMenuBtnDesktop" aria-haspopup="true" aria-expanded="false"
+                      class="flex items-center p-1 rounded-full hover:ring-2 hover:ring-blue-400 focus:outline-none transition">
                 {% if user.profile.picture.name != 'profile_pics/default.jpg' %}
-                <img src="{{ user.profile.picture.url }}" alt="Foto de perfil" class="w-10 h-10 rounded-full object-cover border-2 border-blue-500 shadow-sm">
+                <img src="{{ user.profile.picture.url }}" alt="Foto de perfil" class="w-9 h-9 rounded-full object-cover border-2 border-blue-500 shadow-sm">
                 {% else %}
-                <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold border-2 border-blue-500 shadow-sm">
+                <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-blue-500 shadow-sm text-sm">
                   {{ user.username|slice:":1"|upper }}
                 </div>
                 {% endif %}
               </button>
 
-              <!-- Menú desplegable -->
-              <div id="userMenu" class="hidden absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-200 z-50 py-1">
-                <a href="{% url 'profile' %}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition">
-                  Editar usuario
-                </a>
-                <form action="{% url 'logout' %}" method="post">
-                  {% csrf_token %}
-                  <button type="submit" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
-                    Cerrar sesión
-                  </button>
-                </form>
+              <!-- Menú flotante desplegable Escritorio -->
+              <div id="userMenuDesktop" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 z-50 py-1 divide-y divide-gray-100">
+                <div class="px-4 py-3 bg-gray-50 rounded-t-xl">
+                  <p class="text-xs text-gray-500 font-medium">Sesión iniciada como</p>
+                  <p class="text-sm font-bold text-gray-800 truncate">{{ user.username }}</p>
+                </div>
+                <div class="py-1">
+                  <a href="{% url 'profile' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition">
+                    <svg class="w-4 h-4 mr-2.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    Editar usuario
+                  </a>
+                </div>
+                <div class="py-1">
+                  <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full flex items-center text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
+                      <svg class="w-4 h-4 mr-2.5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                      </svg>
+                      Cerrar sesión
+                    </button>
+                  </form>
+                </div>
               </div>
-            </li>
+            </div>
             {% else %}
-            <li>
-              <a href="{% url 'login' %}" class="text-gray-700 hover:text-blue-600 font-medium transition">
-                Iniciar sesión
-              </a>
-            </li>
-            <li>
-              <a href="{% url 'register' %}" class="text-gray-700 hover:text-blue-600 font-medium transition">
-                Registrarse
-              </a>
-            </li>
+            <a href="{% url 'login' %}" class="text-gray-700 hover:text-blue-600 font-medium text-sm px-3 py-2 transition">
+              Iniciar sesión
+            </a>
+            <a href="{% url 'register' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-4 py-2 rounded-lg shadow-sm transition">
+              Registrarse
+            </a>
             {% endif %}
-          </ul>
+          </div>
+
+          <!-- Derecha en MÓVIL (< md) - Híbrido: Avatar Rápido + Botón Hamburguesa -->
+          <div class="flex md:hidden items-center space-x-2">
+            {% if user.is_authenticated %}
+            <!-- Acceso directo al Avatar en Móvil -->
+            <div class="relative">
+              <button type="button" id="userMenuBtnMobile" aria-haspopup="true" aria-expanded="false"
+                      class="flex items-center p-1 rounded-full hover:ring-2 hover:ring-blue-400 focus:outline-none transition">
+                {% if user.profile.picture.name != 'profile_pics/default.jpg' %}
+                <img src="{{ user.profile.picture.url }}" alt="Foto de perfil" class="w-8 h-8 rounded-full object-cover border-2 border-blue-500 shadow-sm">
+                {% else %}
+                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-blue-500 shadow-sm text-xs">
+                  {{ user.username|slice:":1"|upper }}
+                </div>
+                {% endif %}
+              </button>
+
+              <!-- Menú flotante de cuenta en Móvil -->
+              <div id="userMenuMobile" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 py-1 divide-y divide-gray-100">
+                <div class="px-4 py-3 bg-gray-50 rounded-t-xl">
+                  <p class="text-xs text-gray-500 font-medium">Sesión activa</p>
+                  <p class="text-sm font-bold text-gray-800 truncate">{{ user.username }}</p>
+                </div>
+                <div class="py-1">
+                  <a href="{% url 'profile' %}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition">
+                    <svg class="w-4 h-4 mr-2.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                    </svg>
+                    Editar usuario
+                  </a>
+                </div>
+                <div class="py-1">
+                  <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full flex items-center text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition">
+                      <svg class="w-4 h-4 mr-2.5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                      </svg>
+                      Cerrar sesión
+                    </button>
+                  </form>
+                </div>
+              </div>
+            </div>
+            {% endif %}
+
+            <!-- Botón Hamburguesa Móvil -->
+            <button type="button" id="mobileNavBtn" aria-expanded="false" aria-controls="mobileNavPanel"
+                    class="p-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
+              <span class="sr-only">Abrir menú de navegación</span>
+              <!-- Icono Hamburguesa (3 barras) -->
+              <svg id="hamburgerIcon" class="w-6 h-6 block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+              </svg>
+              <!-- Icono Cerrar (X) -->
+              <svg id="closeIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+          </div>
+        
         </div>
+      </div>
+
+      <!-- Panel Desplegable de Navegación Móvil -->
+      <div id="mobileNavPanel" class="hidden md:hidden border-t border-gray-200 bg-white px-4 pt-3 pb-5 space-y-3 shadow-lg">
+        {% if user.is_authenticated %}
+        <div class="px-3 py-2 bg-blue-50 rounded-lg text-xs text-blue-800 font-medium flex items-center justify-between">
+          <span>Conectado como <strong class="font-bold">{{ user.username }}</strong></span>
+        </div>
+        <div class="space-y-1">
+          <a href="{% url 'panel' %}" class="flex items-center space-x-3 px-3 py-3 rounded-lg text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 transition">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+            </svg>
+            <span>Panel de administración</span>
+          </a>
+        </div>
+        {% else %}
+        <div class="space-y-2 pt-2">
+          <a href="{% url 'login' %}" class="block text-center w-full px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">
+            Iniciar sesión
+          </a>
+          <a href="{% url 'register' %}" class="block text-center w-full px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition">
+            Registrarse
+          </a>
+        </div>
+        {% endif %}
       </div>
     </nav>
 
@@ -92,35 +198,96 @@
         © 2025 Enterprise Lex Index. Todos los derechos reservados.
     </footer>
 
-    <!-- Menú usuario -->
+    <!-- Control de menús y navegación responsiva -->
     <script>
       document.addEventListener('DOMContentLoaded', function () {
-        const btn = document.getElementById('userMenuBtn');
-        const menu = document.getElementById('userMenu');
-        if (!btn || !menu) return;
+        // Desktop user menu
+        const desktopBtn = document.getElementById('userMenuBtnDesktop');
+        const desktopMenu = document.getElementById('userMenuDesktop');
 
-        btn.addEventListener('click', function (e) {
-          e.stopPropagation();
-          const open = !menu.classList.contains('hidden');
-          menu.classList.toggle('hidden', open);
-          btn.setAttribute('aria-expanded', String(!open));
-        });
+        // Mobile quick user menu
+        const mobileUserBtn = document.getElementById('userMenuBtnMobile');
+        const mobileUserMenu = document.getElementById('userMenuMobile');
 
-        function closeMenu() {
-          menu.classList.add('hidden');
-          btn.setAttribute('aria-expanded', 'false');
+        // Mobile hamburger nav panel
+        const mobileNavBtn = document.getElementById('mobileNavBtn');
+        const mobileNavPanel = document.getElementById('mobileNavPanel');
+        const hamburgerIcon = document.getElementById('hamburgerIcon');
+        const closeIcon = document.getElementById('closeIcon');
+
+        function closeAllMenus() {
+          if (desktopMenu) desktopMenu.classList.add('hidden');
+          if (desktopBtn) desktopBtn.setAttribute('aria-expanded', 'false');
+
+          if (mobileUserMenu) mobileUserMenu.classList.add('hidden');
+          if (mobileUserBtn) mobileUserBtn.setAttribute('aria-expanded', 'false');
+
+          if (mobileNavPanel) mobileNavPanel.classList.add('hidden');
+          if (mobileNavBtn) mobileNavBtn.setAttribute('aria-expanded', 'false');
+          if (hamburgerIcon) hamburgerIcon.classList.remove('hidden');
+          if (closeIcon) closeIcon.classList.add('hidden');
         }
 
+        // Toggle Desktop User Menu
+        if (desktopBtn && desktopMenu) {
+          desktopBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isOpen = !desktopMenu.classList.contains('hidden');
+            closeAllMenus();
+            if (!isOpen) {
+              desktopMenu.classList.remove('hidden');
+              desktopBtn.setAttribute('aria-expanded', 'true');
+            }
+          });
+        }
+
+        // Toggle Mobile Quick User Menu
+        if (mobileUserBtn && mobileUserMenu) {
+          mobileUserBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isOpen = !mobileUserMenu.classList.contains('hidden');
+            closeAllMenus();
+            if (!isOpen) {
+              mobileUserMenu.classList.remove('hidden');
+              mobileUserBtn.setAttribute('aria-expanded', 'true');
+            }
+          });
+        }
+
+        // Toggle Mobile Hamburger Nav Panel
+        if (mobileNavBtn && mobileNavPanel) {
+          mobileNavBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isOpen = !mobileNavPanel.classList.contains('hidden');
+            closeAllMenus();
+            if (!isOpen) {
+              mobileNavPanel.classList.remove('hidden');
+              mobileNavBtn.setAttribute('aria-expanded', 'true');
+              if (hamburgerIcon) hamburgerIcon.classList.add('hidden');
+              if (closeIcon) closeIcon.classList.remove('hidden');
+            }
+          });
+        }
+
+        // Close on click outside
         document.addEventListener('click', function (e) {
-          if (!menu.contains(e.target) && !btn.contains(e.target)) closeMenu();
+          const inDesktop = desktopMenu && desktopMenu.contains(e.target);
+          const inDesktopBtn = desktopBtn && desktopBtn.contains(e.target);
+          const inMobileUser = mobileUserMenu && mobileUserMenu.contains(e.target);
+          const inMobileUserBtn = mobileUserBtn && mobileUserBtn.contains(e.target);
+          const inMobileNav = mobileNavPanel && mobileNavPanel.contains(e.target);
+          const inMobileNavBtn = mobileNavBtn && mobileNavBtn.contains(e.target);
+
+          if (!inDesktop && !inDesktopBtn && !inMobileUser && !inMobileUserBtn && !inMobileNav && !inMobileNavBtn) {
+            closeAllMenus();
+          }
         });
 
+        // Close on Escape key
         document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape') closeMenu();
-        });
-
-        menu.querySelectorAll('a, button[type="submit"]').forEach(function (el) {
-          el.addEventListener('click', closeMenu);
+          if (e.key === 'Escape') {
+            closeAllMenus();
+          }
         });
       });
     </script>

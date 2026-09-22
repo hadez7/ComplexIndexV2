@@ -4,36 +4,35 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-6">
-    <!-- Botón para volver al panel e Historial -->
-    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
-        <div class="flex items-center gap-3">
-            <a href="{% url 'panel' %}"
-               class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-medium py-2.5 px-6 rounded-xl shadow transition-all duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M3 10h18M3 6h18M3 14h18M3 18h18"/>
-                </svg>
-                Volver al panel
-            </a>
-            <a href="{% url 'concealment_history' %}"
-               class="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 to-purple-700 hover:from-purple-600 hover:to-purple-800 text-white font-medium py-2.5 px-6 rounded-xl shadow transition-all duration-300">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                Historial de auditoría
-            </a>
-        </div>
+    <!-- Barra de navegación superior -->
+    <div class="mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+        <a href="{% url 'panel' %}"
+           class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 6h18M3 14h18M3 18h18"/>
+            </svg>
+            Panel de administración
+        </a>
+        <a href="{% url 'concealment_history' %}"
+           class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            Historial de auditoría
+        </a>
     </div>
 
     <!-- Formulario de búsqueda -->
-    <div class="bg-white rounded-xl shadow p-6 mb-10">
-        <h1 class="text-2xl font-bold mb-4 text-gray-800">Detección de ocultamiento</h1>
-        <form method="get" class="grid md:grid-cols-3 gap-4 items-end">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            Filtros de búsqueda
+        </h2>
+        <form method="get" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end">
             <div>
-                <label for="year" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="year" class="block text-sm font-medium text-gray-700 mb-1.5">
                     Año del reporte
                 </label>
 
@@ -41,7 +40,7 @@
                     id="year"
                     name="year"
                     data-selected="{{ selected_year }}"
-                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
 
                     <option value="">
                         Seleccione un año
@@ -60,10 +59,12 @@
                 </select>
             </div>
             <div>
-                <label for="report" class="block text-sm font-medium text-gray-700 mb-1">Selecciona una empresa:</label>
+                <label for="report" class="block text-sm font-medium text-gray-700 mb-1.5">
+                    Selecciona una empresa:
+                </label>
                 <select name="report_id" id="report" required
                         data-selected="{% if selected_report %}{{ selected_report.id }}{% endif %}"
-                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
                     {% for report in reports %}
                         <option value="{{ report.id }}" {% if selected_report and report.id == selected_report.id %}selected{% endif %}>
                             {% if report.company %}{% if report.clean_company %}{{ report.clean_company }}{% else %}{{ report.company.name }}{% endif %}{% if report.name and report.name != report.year|stringformat:"s" and report.name.lower != "reporte" %} - {{ report.name }}{% endif %}{% else %}{{ report.name }}{% endif %}
@@ -73,13 +74,14 @@
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="origen-palabras" class="block text-sm font-medium text-gray-700 mb-1.5">
                     Origen de palabras
                 </label>
 
                 <select
                     id="origen-palabras"
-                    name="origen_palabras">
+                    name="origen_palabras"
+                    class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
 
                     <option value="reporte"
                         {% if origen_palabras == "reporte" %}
@@ -105,13 +107,14 @@
                     style="display:none;"
                 {% endif %}
             >
-                <label class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="lista-experto" class="block text-sm font-medium text-gray-700 mb-1.5">
                     Lista de experto
                 </label>
 
                 <select
                     id="lista-experto"
-                    name="lista_experto">
+                    name="lista_experto"
+                    class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
 
                     <option value="">
                         Seleccione una lista
@@ -132,15 +135,15 @@
             </div>
 
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">
-                    Palabra
+                <label for="palabra" class="block text-sm font-medium text-gray-700 mb-1.5">
+                    Palabra a auditar
                 </label>
 
                 <select name="palabra"
                         id="palabra"
                         data-selected="{{ palabra }}"
                         required
-                        class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                        class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
 
                     {% for word in report_words %}
                         <option
@@ -156,9 +159,16 @@
                 </select>
             </div>
 
-            <div class="flex justify-end">
+            <div class="col-span-full flex justify-end gap-3 pt-2">
+                <a href="{% url 'concealment_detection' %}"
+                   class="inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2.5 px-5 rounded-xl transition duration-200">
+                    Limpiar
+                </a>
                 <button type="submit"
-                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-lg shadow transition">
+                        class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-xl shadow transition duration-200">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
                     Buscar
                 </button>
             </div>
@@ -211,7 +221,10 @@
         </div>
         <div class="mt-6 justify-end flex">
             <button type="submit"
-                    class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg">
+                    class="inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-6 rounded-xl shadow transition duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
                 Aceptar revisión
             </button>
         </div>

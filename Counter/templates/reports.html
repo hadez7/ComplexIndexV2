@@ -4,22 +4,21 @@
 
 {% block content %}
 <div class="container mx-auto px-4">
-    <!-- !Panel de administración -->
-    <div class="mb-6">
+    <!-- !Barra de acciones superior -->
+    <div class="mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         <a href="{% url 'panel' %}"
-        class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 ease-in-out">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M3 10h18M3 6h18M3 14h18M3 18h18"/>
+           class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 6h18M3 14h18M3 18h18"/>
             </svg>
             Panel de administración
         </a>
-        <!-- *Botón crear -->
-        <a href="{% url 'upload' %}">
-            <button class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded justify-center mt-4">
+        <a href="{% url 'upload' %}"
+           class="inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+            </svg>
             Subir Reporte
-            </button>
         </a>
     </div>
 
@@ -34,7 +33,7 @@
             <p><strong>Año:</strong> <span id="detail-year"></span></p>
             <p><strong>Empresa:</strong> <span id="detail-company"></span></p>
             <div class="flex justify-end mt-4">
-                <button onclick="closeDetailsModal()" class="px-3 py-1 rounded bg-gray-300">Cerrar</button>
+                <button onclick="closeDetailsModal()" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition">Cerrar</button>
             </div>
         </div>
     </div>
@@ -61,9 +60,9 @@
             {% endfor %}
             </select>
         </div>
-        <div class="flex justify-end space-x-2">
-            <button type="button" onclick="closeEditModal()" class="bg-gray-300 px-4 py-2 rounded">Cancelar</button>
-            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Guardar</button>
+        <div class="flex justify-end gap-3 pt-2">
+            <button type="button" onclick="closeEditModal()" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition">Cancelar</button>
+            <button type="submit" class="px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white font-semibold shadow transition">Guardar</button>
         </div>
         </form>
     </div>
@@ -74,9 +73,9 @@
         <div class="bg-white p-6 rounded-xl w-full max-w-sm shadow-lg">
             <h2 class="text-lg font-bold mb-4">¿Eliminar reporte?</h2>
             <p class="mb-4">¿Estás seguro de eliminar el reporte?</p>
-            <div class="flex justify-end space-x-2">
-                <button onclick="closeDeleteModal()" class="bg-gray-300 px-3 py-1 rounded">Cancelar</button>
-                <button onclick="deleteReport()" class="bg-red-500 text-white px-3 py-1 rounded">Eliminar</button>
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="closeDeleteModal()" class="px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium transition">Cancelar</button>
+                <button onclick="deleteReport()" class="px-5 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold shadow transition">Eliminar</button>
             </div>
         </div>
     </div>
@@ -114,29 +113,29 @@
                     </td>
                     <td class="px-4 py-2">
                         {% if report %}
-                            <button class="bg-purple-500 hover:bg-blue-600 text-white font-semibold py-1 px-3 rounded inline-flex items-center"
-                            title="Ver">
-                                <a href="{% url 'report_count' report.id %}" class="flex items-center">
-                                    <!-- Icono: Chart Bar -->
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zm-6.928 4.485A9.969 9.969 0 0112 4.5c2.485 0 4.735.909 6.485 2.485M12 4.5C9.515 4.5 7.265 5.409 5.515 6.985M12 19.5c-2.485 0-4.735-.909-6.485-2.485M12 19.5c2.485 0 4.735-.909 6.485-2.485" />
+                            <div class="flex items-center gap-1.5">
+                                <a href="{% url 'report_count' report.id %}"
+                                   title="Ver conteo de palabras"
+                                   class="p-2 rounded-lg text-purple-600 hover:bg-purple-50 transition inline-flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                     </svg>
                                 </a>
-                            </button>
-                            <button onclick="openEditModal({{ report.id }})"
-                                title="Editar"
-                                class="bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-1 px-3 rounded inline-flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z" />
-                                </svg>
-                            </button>
-                            <button onclick="openDeleteModal({{ report.id }})"
-                                title="Eliminar"
-                                class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded inline-flex items-center">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                                </svg>
-                            </button>
+                                <button onclick="openEditModal({{ report.id }})"
+                                        title="Editar"
+                                        class="p-2 rounded-lg text-yellow-600 hover:bg-yellow-50 transition inline-flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z" />
+                                    </svg>
+                                </button>
+                                <button onclick="openDeleteModal({{ report.id }})"
+                                        title="Eliminar"
+                                        class="p-2 rounded-lg text-red-600 hover:bg-red-50 transition inline-flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
                         {% endif %}
                     </td>
 

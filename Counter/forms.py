@@ -48,7 +48,18 @@ class CompanyForm(forms.ModelForm):
         }
 
 
+class ReportModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        company_name = obj.company.name.strip() if obj.company and obj.company.name else ""
+        if company_name:
+            if obj.name and obj.name != str(obj.year) and obj.name.lower() != "reporte":
+                return f"{company_name} - {obj.name}"
+            return company_name
+        return obj.name or f"Reporte {obj.id}"
+
+
 class ComparativeAnalysisForm(forms.Form):
+    SELECT_CLASSES = "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition"
 
     year = forms.ChoiceField(
         label="Año",
@@ -56,17 +67,18 @@ class ComparativeAnalysisForm(forms.Form):
         choices=[],
         widget=forms.Select(
             attrs={
-                "class": "w-full border border-gray-300 rounded px-3 py-2"
+                "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition"
             }
         )
     )
 
-    report = forms.ModelChoiceField(
+    report = ReportModelChoiceField(
         queryset=Report.objects.none(),
         label="Reporte",
+        empty_label="Seleccione un reporte",
         widget=forms.Select(
             attrs={
-                "class": "w-full border border-gray-300 rounded px-3 py-2"
+                "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition"
             }
         )
     )
@@ -74,9 +86,10 @@ class ComparativeAnalysisForm(forms.Form):
     expert_list = forms.ModelChoiceField(
         queryset=ExpertWord.objects.all(),
         label="Lista de experto",
+        empty_label="Seleccione una lista",
         widget=forms.Select(
             attrs={
-                "class": "w-full border border-gray-300 rounded px-3 py-2"
+                "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition"
             }
         )
     )
@@ -103,5 +116,5 @@ class ComparativeAnalysisForm(forms.Form):
         if self.data.get("year"):
             self.fields["report"].queryset = Report.objects.filter(
                 year=self.data.get("year")
-            ).order_by("name")
+            ).select_related("company").order_by("company__name", "name")
 

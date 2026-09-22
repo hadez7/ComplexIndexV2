@@ -4,10 +4,10 @@
 {% load dict_filters %}
 
 <div class="container mx-auto px-4">
-    <!-- !Botón para volver al panel -->
-    <div class="mb-6">
+    <!-- !Barra de acciones superior -->
+    <div class="mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         <a href="{% url 'panel' %}"
-           class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-medium py-2.5 px-6 rounded-xl shadow-md transition-all duration-300">
+           class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                 stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -17,18 +17,26 @@
         </a>
     </div>
 
-    <h1 class="text-3xl font-bold mb-4">Conteo total</h1>
-    <h2 class="text-2xl font-semibold mb-4">Filtros</h2>
+    <div class="mb-6">
+        <h1 class="text-3xl font-bold text-gray-800">Conteo Total</h1>
+        <p class="text-gray-600 text-sm mt-1">Frecuencia y distribución de vocabulario consolidado</p>
+    </div>
     
-    <!-- !Filtros Mejorados -->
-    <div class="bg-white shadow rounded-2xl p-8 mb-10">
-        <form method="get" class="flex flex-wrap gap-6 items-end">
+    <!-- !Filtros de búsqueda -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            Filtros de búsqueda
+        </h2>
+        <form method="get" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
             <!-- !Año -->
-            <div class="flex flex-col w-44">
-                <label for="years" class="mb-1 text-sm font-medium text-gray-700">Año:</label>
+            <div>
+                <label for="years" class="block text-sm font-medium text-gray-700 mb-1.5">Año:</label>
                 <select name="selected_year" id="years"
-                        class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition w-full text-gray-800 shadow-sm">
-                    <option value="">-- Todos --</option>
+                        class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
+                    <option value="">-- Todos los años --</option>
                     {% for year in years %}
                         <option value="{{ year }}" {% if year|stringformat:"s" == selected_year %}selected{% endif %}>
                             {{ year }}
@@ -38,11 +46,11 @@
             </div>
 
             <!-- !Empresa -->
-            <div class="flex flex-col w-56">
-                <label for="company" class="mb-1 text-sm font-medium text-gray-700">Empresa:</label>
+            <div>
+                <label for="company" class="block text-sm font-medium text-gray-700 mb-1.5">Empresa:</label>
                 <select name="company" id="company"
-                        class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition w-full text-gray-800 shadow-sm">
-                    <option value="">-- Todas --</option>
+                        class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
+                    <option value="">-- Todas las empresas --</option>
                     {% for company in companies %}
                         <option value="{{ company.id }}" {% if request.GET.company == company.id|stringformat:"s" %}selected{% endif %}>
                             {{ company.name }}
@@ -52,11 +60,11 @@
             </div>
 
             <!-- !Listas de experto -->
-            <div class="flex flex-col w-56">
-                <label for="expert_lists" class="mb-1 text-sm font-medium text-gray-700">Lista de experto:</label>
+            <div>
+                <label for="expert_lists" class="block text-sm font-medium text-gray-700 mb-1.5">Lista de experto:</label>
                 <select name="selected_list" id="expert_lists"
-                        class="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition w-full text-gray-800 shadow-sm">
-                    <option value="">-- Todas --</option>
+                        class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
+                    <option value="">-- Todas las listas --</option>
                     {% for expert_list in expert_lists %}
                         <option value="{{ expert_list.name }}" {% if expert_list.name == selected_list_name %}selected{% endif %}> 
                             {{ expert_list.name }}
@@ -66,9 +74,9 @@
             </div>
 
             <!-- !Botones -->
-            <div class="flex gap-3 mt-6 min-w-max">
+            <div class="flex items-center gap-2">
                 <button type="submit"
-                        class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-5 py-2.5 rounded-lg shadow transition font-medium">
+                        class="flex-1 inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-xl shadow transition duration-200">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2H3V4zm0 4h18v2H3V8zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
@@ -77,12 +85,13 @@
                 </button>
 
                 <a href="{% url 'export_excel' %}?selected_year={{ request.GET.selected_year }}&company={{ request.GET.company }}&selected_list={{ request.GET.selected_list }}"
-                class="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-5 py-2.5 rounded-lg shadow transition font-medium">
+                   title="Exportar a Excel"
+                   class="inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-xl shadow transition duration-200">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 4v16m8-8H4"/>
                     </svg>
-                    Exportar a Excel
+                    Excel
                 </a>
             </div>
         </form>
