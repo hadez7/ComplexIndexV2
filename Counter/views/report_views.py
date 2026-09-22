@@ -7,7 +7,10 @@ from ..models import Report, Company
 
 @login_required
 def report_view(request):
+    query = request.GET.get("q", "")
     reports = Report.objects.select_related("company").all()
+    if query:
+        reports = reports.filter(name__icontains=query)
     companies = Company.objects.all()
     return render(
         request,
@@ -15,6 +18,7 @@ def report_view(request):
         {
             "reports": reports,
             "companies": companies,
+            "query": query,
         },
     )
 
