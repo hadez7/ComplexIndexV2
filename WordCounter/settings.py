@@ -137,7 +137,7 @@ LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = '/'
 
 # (opcional) A dónde redirige después de cerrar sesión
-LOGOUT_REDIRECT_URL = 'login'
+LOGOUT_REDIRECT_URL = 'index'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 
