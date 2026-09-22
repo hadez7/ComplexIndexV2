@@ -14,6 +14,7 @@ urlpatterns = [
     path("users/<int:user_id>/expert/", views.assign_expert, name="users_assign_expert"),
     path("users/<int:user_id>/delete/", views.delete_user, name="users_delete"),
     path("reports-by-year/", views.reports_by_year, name="reports_by_year"),
+    path("audit-history/", views.audit_history_view, name="audit_history"),
     
     # Included URLConfs
     path("totalcount/", include("Counter.other.urls_total_count")),

@@ -77,7 +77,8 @@ def concealment_detection_view(request):
             word=palabra,
             total_found=total_found,
             total_valid=0,
-            total_discarded=0
+            total_discarded=0,
+            reviewed_by=request.user
         )
 
         for indice, p in enumerate(paragraphs):

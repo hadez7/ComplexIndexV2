@@ -7,7 +7,7 @@ from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.conf import settings
 from django.db import IntegrityError
-from ..models import Company
+from ..models import Company, ConcealmentReview, ConcealmentParagraphReview
 from ..forms import IndividualReportUploadForm, ZipUploadForm, ComparativeAnalysisForm
 from ..main import process_report, process_zip
 from ..models import TotalCountReport
@@ -389,3 +389,30 @@ def delete_user(request, user_id):
     username = user.username
     user.delete()
     return JsonResponse({"success": True, "username": username})
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def audit_history_view(request):
+    reviews = ConcealmentReview.objects.select_related(
+        "reviewed_by", "report", "report__company"
+    ).order_by("-reviewed_at")
+
+    reviews_data = []
+    for review in reviews:
+        paragraph_count = ConcealmentParagraphReview.objects.filter(review=review).count()
+        reviews_data.append({
+            "id": review.id,
+            "word": review.word,
+            "report_name": review.report.name,
+            "report_year": review.report.year,
+            "company_name": review.report.company.name if review.report.company else "Sin empresa",
+            "reviewed_by": review.reviewed_by.username if review.reviewed_by else "Desconocido",
+            "reviewed_at": review.reviewed_at,
+            "total_found": review.total_found,
+            "total_valid": review.total_valid,
+            "total_discarded": review.total_discarded,
+            "paragraph_count": paragraph_count,
+        })
+
+    return render(request, "audit_history.html", {"reviews": reviews_data})

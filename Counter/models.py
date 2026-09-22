@@ -74,12 +74,17 @@ class ExpertWord(models.Model):
 class ConcealmentReview(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
     word = models.CharField(max_length=100)
-
     total_found = models.IntegerField()
     total_valid = models.IntegerField()
     total_discarded = models.IntegerField()
+    reviewed_at = models.DateTimeField(auto_now=True)
+    reviewed_by = models.ForeignKey('auth.User', on_delete=models.CASCADE, null=True, blank=True, related_name='concealment_reviews')
 
-    reviewed_at = models.DateTimeField(auto_now=True)      
+    class Meta:
+        ordering = ['-reviewed_at']
+
+    def __str__(self):
+        return f"Revisión '{self.word}' en {self.report.name} por {self.reviewed_by.username if self.reviewed_by else 'N/A'}"
 
 class ConcealmentParagraphReview(models.Model):
     review = models.ForeignKey(ConcealmentReview,on_delete=models.CASCADE)
