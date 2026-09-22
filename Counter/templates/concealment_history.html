@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block title %}Historial de Auditoría | ELI{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-6">
+    <!-- Botones de navegación superior -->
+    <div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+        <div class="flex items-center gap-3">
+            <a href="{% url 'concealment_detection' %}"
+               class="inline-flex items-center gap-2 bg-gradient-to-r from-pink-500 to-pink-700 hover:from-pink-600 hover:to-pink-800 text-white font-medium py-2 px-5 rounded-xl shadow transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Detección de ocultamiento
+            </a>
+            <a href="{% url 'panel' %}"
+               class="inline-flex items-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 hover:from-blue-600 hover:to-blue-800 text-white font-medium py-2 px-5 rounded-xl shadow transition-all duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 6h18M3 14h18M3 18h18" />
+                </svg>
+                Panel de control
+            </a>
+        </div>
+    </div>
+
+    <!-- Título y tarjetas de resumen de métricas -->
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-800 mb-2">Historial de Auditoría de Ocultamiento</h1>
+        <p class="text-gray-600">Trazabilidad de revisiones efectuadas, auditores responsables y párrafos discriminados.</p>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-xl p-5 shadow border-l-4 border-blue-500">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Revisiones totales</p>
+            <p class="text-2xl font-bold text-gray-800 mt-1">{{ total_reviews_count }}</p>
+        </div>
+        <div class="bg-white rounded-xl p-5 shadow border-l-4 border-green-500">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Ocurrencias validadas</p>
+            <p class="text-2xl font-bold text-green-600 mt-1">{{ total_words_validated }}</p>
+        </div>
+        <div class="bg-white rounded-xl p-5 shadow border-l-4 border-red-500">
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Ocurrencias descartadas</p>
+            <p class="text-2xl font-bold text-red-600 mt-1">{{ total_words_discarded }}</p>
+        </div>
+    </div>
+
+    <!-- Filtros de búsqueda -->
+    <div class="bg-white rounded-xl shadow p-6 mb-8">
+        <h2 class="text-lg font-semibold text-gray-800 mb-4">Filtrar historial</h2>
+        <form method="get" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
+            <div>
+                <label for="year" class="block text-sm font-medium text-gray-700 mb-1">Año del reporte</label>
+                <select name="year" id="year" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                    <option value="">Todos los años</option>
+                    {% for y in years %}
+                    <option value="{{ y }}" {% if year_filter == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label for="company" class="block text-sm font-medium text-gray-700 mb-1">Empresa</label>
+                <input type="text" name="company" id="company" value="{{ company_filter }}" placeholder="Buscar por empresa..."
+                       class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 border">
+            </div>
+            <div>
+                <label for="word" class="block text-sm font-medium text-gray-700 mb-1">Palabra auditada</label>
+                <input type="text" name="word" id="word" value="{{ word_filter }}" placeholder="Palabra..."
+                       class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 border">
+            </div>
+            <div>
+                <label for="user" class="block text-sm font-medium text-gray-700 mb-1">Auditor</label>
+                <input type="text" name="user" id="user" value="{{ user_filter }}" placeholder="Usuario auditor..."
+                       class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 border">
+            </div>
+            <div class="sm:col-span-2 md:col-span-4 flex justify-end gap-3 pt-2">
+                <a href="{% url 'concealment_history' %}"
+                   class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg transition">
+                    Limpiar
+                </a>
+                <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg shadow transition">
+                    Filtrar
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Tabla de historial -->
+    <div class="bg-white rounded-xl shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 text-left text-sm">
+                <thead class="bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
+                    <tr>
+                        <th class="py-3.5 px-4 font-semibold">Fecha y Hora</th>
+                        <th class="py-3.5 px-4 font-semibold">Auditor</th>
+                        <th class="py-3.5 px-4 font-semibold">Empresa / Año</th>
+                        <th class="py-3.5 px-4 font-semibold">Palabra</th>
+                        <th class="py-3.5 px-4 font-semibold text-center">Detectadas</th>
+                        <th class="py-3.5 px-4 font-semibold text-center">Válidas</th>
+                        <th class="py-3.5 px-4 font-semibold text-center">Descartadas</th>
+                        <th class="py-3.5 px-4 font-semibold text-right">Detalle</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 text-gray-700">
+                    {% for r in reviews %}
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="py-3 px-4 whitespace-nowrap text-gray-500">
+                            {{ r.reviewed_at|date:"d/m/Y H:i" }}
+                        </td>
+                        <td class="py-3 px-4 whitespace-nowrap">
+                            {% if r.user %}
+                            <span class="inline-flex items-center gap-1.5 font-medium text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full text-xs">
+                                <svg class="w-3.5 h-3.5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                </svg>
+                                {{ r.user.username }}
+                            </span>
+                            {% else %}
+                            <span class="text-xs text-gray-400 italic">Sin registrar</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4 font-medium text-gray-900">
+                            {% if r.report and r.report.company %}
+                                {{ r.clean_company|default:r.report.company.name }}
+                                {% if r.report.year %}
+                                <span class="text-xs text-gray-500">({{ r.report.year }})</span>
+                                {% endif %}
+                            {% else %}
+                                {{ r.report.name|default:"Reporte" }}
+                            {% endif %}
+                        </td>
+                        <td class="py-3 px-4 font-semibold text-blue-600">
+                            "{{ r.word }}"
+                        </td>
+                        <td class="py-3 px-4 text-center font-medium text-gray-700">
+                            {{ r.total_found }}
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                                {{ r.total_valid }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-center">
+                            <span class="inline-block bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                                {{ r.total_discarded }}
+                            </span>
+                        </td>
+                        <td class="py-3 px-4 text-right">
+                            <button type="button"
+                                    onclick="abrirModalDetalle({{ r.id }})"
+                                    class="text-blue-600 hover:text-blue-800 font-medium text-xs bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition">
+                                Ver párrafos
+                            </button>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="8" class="py-8 text-center text-gray-500">
+                            No se encontraron registros de auditoría que coincidan con los filtros.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver detalle de párrafos auditados -->
+<div id="modalDetalle" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden">
+        <div class="p-5 border-b flex items-center justify-between bg-gray-50">
+            <div>
+                <h3 class="text-lg font-bold text-gray-800" id="modalTitulo">Detalle de la auditoría</h3>
+                <p class="text-xs text-gray-500" id="modalSubtitulo"></p>
+            </div>
+            <button type="button" onclick="cerrarModalDetalle()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+            </button>
+        </div>
+        <div class="p-6 overflow-y-auto space-y-4 flex-1" id="modalContenido">
+            <p class="text-gray-500 text-center py-4">Cargando detalle...</p>
+        </div>
+        <div class="p-4 border-t bg-gray-50 flex justify-end">
+            <button type="button" onclick="cerrarModalDetalle()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg transition">
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+function abrirModalDetalle(reviewId) {
+    const modal = document.getElementById("modalDetalle");
+    const titulo = document.getElementById("modalTitulo");
+    const subtitulo = document.getElementById("modalSubtitulo");
+    const contenido = document.getElementById("modalContenido");
+
+    modal.classList.remove("hidden");
+    contenido.innerHTML = '<p class="text-gray-500 text-center py-4">Cargando párrafos...</p>';
+
+    fetch(`/concealment_detection/historial/${reviewId}/detalle/`)
+        .then(response => {
+            if (!response.ok) throw new Error("HTTP " + response.status);
+            return response.json();
+        })
+        .then(data => {
+            titulo.textContent = `Auditoría: "${data.word}" en ${data.company} (${data.year})`;
+            subtitulo.textContent = `Realizada por ${data.user} el ${data.reviewed_at} | ${data.total_valid} válidas, ${data.total_discarded} descartadas`;
+
+            if (!data.paragraphs || data.paragraphs.length === 0) {
+                contenido.innerHTML = '<p class="text-gray-500 text-center py-4">No hay detalle de párrafos guardado para esta revisión.</p>';
+                return;
+            }
+
+            let html = "";
+            data.paragraphs.forEach((p, idx) => {
+                const esDescartado = p.discarded;
+                const borderClass = esDescartado ? "border-red-300 bg-red-50" : "border-green-300 bg-green-50";
+                const badge = esDescartado
+                    ? '<span class="text-xs font-semibold px-2 py-0.5 rounded bg-red-200 text-red-800">Descartado</span>'
+                    : '<span class="text-xs font-semibold px-2 py-0.5 rounded bg-green-200 text-green-800">Válido</span>';
+
+                html += `
+                    <div class="border rounded-xl p-4 ${borderClass} transition">
+                        <div class="flex items-center justify-between mb-2">
+                            <span class="text-xs font-bold text-gray-600">Párrafo #${idx + 1} (${p.occurrences} ocurrencia${p.occurrences > 1 ? 's' : ''})</span>
+                            ${badge}
+                        </div>
+                        <p class="text-sm text-gray-800 leading-relaxed">${p.paragraph_text}</p>
+                    </div>
+                `;
+            });
+
+            contenido.innerHTML = html;
+        })
+        .catch(err => {
+            contenido.innerHTML = '<p class="text-red-500 text-center py-4">Error al cargar el detalle de la revisión.</p>';
+            console.error(err);
+        });
+}
+
+function cerrarModalDetalle() {
+    document.getElementById("modalDetalle").classList.add("hidden");
+}
+
+document.addEventListener("keydown", function(e) {
+    if (e.key === "Escape") {
+        cerrarModalDetalle();
+    }
+});
+</script>
+{% endblock %}

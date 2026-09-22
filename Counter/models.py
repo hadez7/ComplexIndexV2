@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import JSONField
 from User.models import Expert
@@ -73,6 +74,7 @@ class ExpertWord(models.Model):
 
 class ConcealmentReview(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='concealment_reviews')
     word = models.CharField(max_length=100)
 
     total_found = models.IntegerField()

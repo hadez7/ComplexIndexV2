@@ -202,17 +202,26 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
+            const selectedId = reportSelect.dataset.selected || "";
+            let encontrada = false;
+
             data.forEach(report => {
-
-                const option =
-                    document.createElement("option");
-
+                const option = document.createElement("option");
                 option.value = report.id;
                 option.textContent = report.name;
 
-                reportSelect.appendChild(option);
+                if (selectedId && String(report.id) === String(selectedId)) {
+                    option.selected = true;
+                    encontrada = true;
+                }
 
+                reportSelect.appendChild(option);
             });
+
+            if (!encontrada && reportSelect.options.length > 0) {
+                reportSelect.selectedIndex = 0;
+            }
+            reportSelect.dataset.selected = reportSelect.value;
 
             if (origen.value === "reporte") {
 
@@ -242,6 +251,8 @@ document.addEventListener("DOMContentLoaded", function () {
         "change",
         function () {
 
+            this.dataset.selected = this.value;
+
             if (
                 origen.value === "reporte"
             ) {
@@ -252,6 +263,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
             }
 
+        }
+    );
+
+    // ==========================================
+    // Cambio de palabra
+    // ==========================================
+
+    palabraSelect.addEventListener(
+        "change",
+        function () {
+            this.dataset.selected = this.value;
         }
     );
 
@@ -359,14 +381,18 @@ document.addEventListener("DOMContentLoaded", function () {
 
     actualizarVisibilidad();
 
-    if (
-        origen.value === "reporte"
-    ) {
+    if (reportSelect.dataset.selected) {
+        reportSelect.value = reportSelect.dataset.selected;
+    }
 
+    if (
+        origen.value === "reporte" &&
+        reportSelect.value &&
+        (!palabraSelect || palabraSelect.options.length <= 1)
+    ) {
         cargarPalabrasReporte(
             reportSelect.value
         );
-
     }
 
     if (
@@ -383,13 +409,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (
         yearSelect &&
-        yearSelect.value
+        yearSelect.value &&
+        reportSelect.options.length === 0
     ) {
-
         cargarReportes(
             yearSelect.value
         );
-
     }
     
     if (yearSelect) {
@@ -398,6 +423,7 @@ document.addEventListener("DOMContentLoaded", function () {
             "change",
             function () {
 
+                reportSelect.dataset.selected = "";
                 cargarReportes(
                     this.value
                 );
