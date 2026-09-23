@@ -5,81 +5,103 @@
 {% block content %}
 <div class="max-w-6xl mx-auto px-4 py-6">
 
-  <!-- Encabezado -->
-  <div class="mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-    <a href="{% url 'panel' %}"
-       class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 6h18M3 14h18M3 18h18"/>
-      </svg>
-      Panel de administración
-    </a>
-    <button onclick="openCreateModal()"
-            class="inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-      </svg>
-      Nuevo Usuario
-    </button>
+  <!-- Cabecera de Página / Breadcrumb y Acciones -->
+  <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200">
+    <div>
+      <div class="flex items-center space-x-2 text-xs text-gray-500 mb-2">
+        <a href="{% url 'panel' %}" class="hover:text-blue-600 transition flex items-center space-x-1 font-medium">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          <span>Panel de administración</span>
+        </a>
+        <span>/</span>
+        <span class="text-gray-700 font-semibold">Usuarios</span>
+      </div>
+
+      <div class="flex items-center space-x-3">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+          Gestión de Usuarios
+        </h1>
+        <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2.5 py-0.5 rounded-full border border-blue-200">
+          {{ users|length }} Usuario{{ users|length|pluralize }}
+        </span>
+      </div>
+      <p class="text-sm text-gray-500 mt-1">
+        Administra cuentas de acceso, roles de auditor y perfiles de expertos en el sistema.
+      </p>
+    </div>
+
+    <div class="flex items-center space-x-3 flex-shrink-0">
+      <button onclick="openCreateModal()"
+              class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        <span>Nuevo Usuario</span>
+      </button>
+    </div>
   </div>
 
   <!-- Tabla de usuarios -->
   {% if users %}
-  <div class="bg-white shadow rounded-xl border border-gray-200 overflow-hidden">
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden mb-8">
     <div class="overflow-x-auto">
-      <table class="min-w-full min-w-[760px] divide-y divide-gray-200">
+      <table class="min-w-full divide-y divide-gray-200 text-sm">
       <thead class="bg-gray-50">
         <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-          <th class="px-6 py-3">Usuario</th>
-          <th class="px-6 py-3">Correo</th>
-          <th class="px-6 py-3">Rol</th>
-          <th class="px-6 py-3">Experto</th>
-          <th class="px-6 py-3">Estado</th>
-          <th class="px-6 py-3">Creado</th>
-          <th class="px-6 py-3 text-right">Acciones</th>
+          <th class="px-6 py-3.5">Usuario</th>
+          <th class="px-6 py-3.5">Correo</th>
+          <th class="px-6 py-3.5">Rol</th>
+          <th class="px-6 py-3.5">Experto</th>
+          <th class="px-6 py-3.5">Estado</th>
+          <th class="px-6 py-3.5">Creado</th>
+          <th class="px-6 py-3.5 text-right">Acciones</th>
         </tr>
       </thead>
-      <tbody class="divide-y divide-gray-200">
+      <tbody class="divide-y divide-gray-100 bg-white">
         {% for u in users %}
-        <tr class="hover:bg-gray-50">
+        <tr class="hover:bg-gray-50/80 transition-colors">
           <td class="px-6 py-4">
             <div class="flex items-center space-x-3">
-              <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold">
+              <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-sm shadow-xs">
                 {{ u.username|slice:":1"|upper }}
               </div>
-              <span class="font-medium text-gray-800">{{ u.username }}</span>
+              <span class="font-bold text-gray-900">{{ u.username }}</span>
               {% if u.id == request.user.id %}
-              <span class="text-xs text-gray-400">(tú)</span>
+              <span class="text-xs text-blue-600 font-medium">(tú)</span>
               {% endif %}
             </div>
           </td>
-          <td class="px-6 py-4 text-sm text-gray-600">{{ u.email }}</td>
+          <td class="px-6 py-4 text-sm text-gray-600 font-medium">{{ u.email }}</td>
           <td class="px-6 py-4">
             {% if u.is_staff %}
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700">Administrador</span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 border border-blue-200">Administrador</span>
             {% else %}
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Normal</span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-700">Auditor</span>
             {% endif %}
           </td>
-          <td class="px-6 py-4 text-sm text-gray-600">
+          <td class="px-6 py-4 text-sm text-gray-700 font-medium">
             {% if u.profession %}
-            {{ u.profession }}
+            <span class="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-medium bg-indigo-50 text-indigo-700 border border-indigo-100">
+              {{ u.profession }}
+            </span>
             {% else %}
             <span class="text-gray-400">—</span>
             {% endif %}
           </td>
           <td class="px-6 py-4">
             {% if u.is_active %}
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Activo</span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-green-50 text-green-700 border border-green-200">Activo</span>
             {% else %}
-            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700">Inactivo</span>
+            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-50 text-red-700 border border-red-200">Inactivo</span>
             {% endif %}
           </td>
-          <td class="px-6 py-4 text-sm text-gray-500">{{ u.creation_date|date:"d/m/Y" }}</td>
-          <td class="px-6 py-4">
-            <div class="flex items-center justify-end gap-2 whitespace-nowrap">
+          <td class="px-6 py-4 text-xs text-gray-500 font-medium">{{ u.creation_date|date:"d/m/Y" }}</td>
+          <td class="px-6 py-4 text-right whitespace-nowrap">
+            <div class="flex items-center justify-end gap-1.5">
               <!-- Editar -->
-              <button class="edit-user-btn bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-1 px-3 rounded inline-flex items-center"
+              <button class="edit-user-btn p-2 rounded-lg bg-yellow-50 text-yellow-600 hover:bg-yellow-100 transition inline-flex items-center"
                       title="Editar"
                       data-id="{{ u.id }}"
                       data-username="{{ u.username }}"
@@ -87,36 +109,36 @@
                       data-is-staff="{{ u.is_staff|yesno:'1,0' }}"
                       data-is-active="{{ u.is_active|yesno:'1,0' }}"
                       data-profession="{{ u.profession }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z"/>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z"/>
                 </svg>
               </button>
               <!-- Experto -->
-              <button class="expert-user-btn bg-indigo-500 hover:bg-indigo-600 text-white font-semibold py-1 px-3 rounded inline-flex items-center"
+              <button class="expert-user-btn p-2 rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-100 transition inline-flex items-center"
                       title="Asignar experto"
                       data-id="{{ u.id }}"
                       data-username="{{ u.username }}"
                       data-profession="{{ u.profession }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A4 4 0 017 16h10a4 4 0 011.879.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A4 4 0 017 16h10a4 4 0 011.879.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
               </button>
               <!-- Activar/Desactivar -->
-              <button class="toggle-user-btn {{ u.is_active|yesno:'bg-red-500 hover:bg-red-600,bg-green-500 hover:bg-green-600' }} text-white font-semibold py-1 px-3 rounded inline-flex items-center"
+              <button class="toggle-user-btn p-2 rounded-lg {{ u.is_active|yesno:'bg-red-50 text-red-600 hover:bg-red-100,bg-green-50 text-green-600 hover:bg-green-100' }} transition inline-flex items-center"
                       title="{{ u.is_active|yesno:'Desactivar,Activar' }}"
                       data-id="{{ u.id }}"
                       data-active="{{ u.is_active|yesno:'1,0' }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636a9 9 0 11-12.728 0M12 3v9"/>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 5.636a9 9 0 11-12.728 0M12 3v9"/>
                 </svg>
               </button>
               <!-- Eliminar -->
-              <button class="delete-user-btn bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded inline-flex items-center"
+              <button class="delete-user-btn p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition inline-flex items-center"
                       title="Eliminar"
                       data-id="{{ u.id }}"
                       data-username="{{ u.username }}">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"/>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                 </svg>
               </button>
             </div>
@@ -126,133 +148,160 @@
       </tbody>
     </table>
   </div>
+  </div>
   {% else %}
-  <div class="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-xl p-6 text-center">
-    No hay usuarios registrados.
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-12 text-center text-gray-500 mb-8">
+    No hay usuarios registrados en el sistema.
   </div>
   {% endif %}
 </div>
 
 <!-- Modal Crear Usuario -->
-<div id="createUserModal" class="fixed inset-0 bg-black/40 hidden flex items-center justify-center z-50">
-  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
-    <h3 class="text-xl font-semibold mb-4 text-gray-800">Nuevo Usuario</h3>
-    <form id="create-user-form">
-      {% csrf_token %}
-      <div class="space-y-3">
-        <div>
-          <label for="cu-username" class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
-          <input type="text" id="cu-username" required
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2">
+<div id="createUserModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+  <div class="bg-white p-6 sm:p-7 rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 relative">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+          </svg>
         </div>
-        <div>
-          <label for="cu-email" class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
-          <input type="email" id="cu-email" required
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2">
-        </div>
-        <div>
-          <label for="cu-password" class="block text-sm font-medium text-gray-700 mb-1">Contraseña</label>
-          <input type="password" id="cu-password" required
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2">
-        </div>
-        <div>
-          <label for="cu-profession" class="block text-sm font-medium text-gray-700 mb-1">Profesión (para experto, opcional)</label>
-          <input type="text" id="cu-profession"
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2">
-        </div>
-        <div class="flex items-center space-x-4">
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" id="cu-is-staff" class="rounded">
-            <span class="text-sm text-gray-700">Administrador</span>
-          </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" id="cu-is-active" checked class="rounded">
-            <span class="text-sm text-gray-700">Activo</span>
-          </label>
-        </div>
+        <h3 class="text-lg font-bold text-gray-900">Nuevo Usuario</h3>
       </div>
-      <div class="flex justify-end mt-4 gap-2">
-        <button type="button" onclick="closeCreateModal()" class="text-gray-500 hover:text-gray-700 px-4 py-2 rounded-lg transition">Cancelar</button>
-        <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition">Guardar</button>
+      <button type="button" onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+    </div>
+    <form id="create-user-form" class="space-y-4">
+      {% csrf_token %}
+      <div>
+        <label for="cu-username" class="block text-sm font-semibold text-gray-700 mb-1">Usuario</label>
+        <input type="text" id="cu-username" required
+               placeholder="Ej. auditor_mendoza"
+               class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+      </div>
+      <div>
+        <label for="cu-email" class="block text-sm font-semibold text-gray-700 mb-1">Correo electrónico</label>
+        <input type="email" id="cu-email" required
+               placeholder="usuario@ejemplo.com"
+               class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+      </div>
+      <div>
+        <label for="cu-password" class="block text-sm font-semibold text-gray-700 mb-1">Contraseña</label>
+        <input type="password" id="cu-password" required
+               placeholder="••••••••"
+               class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+      </div>
+      <div>
+        <label for="cu-profession" class="block text-sm font-semibold text-gray-700 mb-1">Profesión (para experto, opcional)</label>
+        <input type="text" id="cu-profession"
+               placeholder="Ej. Abogado Tributario"
+               class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+      </div>
+      <div class="flex items-center space-x-6 pt-1">
+        <label class="inline-flex items-center space-x-2 text-sm text-gray-700 cursor-pointer">
+          <input type="checkbox" id="cu-is-staff" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+          <span>Administrador</span>
+        </label>
+        <label class="inline-flex items-center space-x-2 text-sm text-gray-700 cursor-pointer">
+          <input type="checkbox" id="cu-is-active" checked class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+          <span>Activo</span>
+        </label>
+      </div>
+      <div class="flex justify-end pt-3 border-t border-gray-100 gap-2">
+        <button type="button" onclick="closeCreateModal()" class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">Cancelar</button>
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-xl text-sm shadow-md transition">Guardar Usuario</button>
       </div>
     </form>
-    <p id="create-error" class="hidden text-sm text-red-600 mt-3"></p>
+    <p id="create-error" class="hidden text-xs text-red-600 mt-2 font-medium"></p>
   </div>
 </div>
 
 <!-- Modal Editar Usuario -->
-<div id="editUserModal" class="fixed inset-0 bg-black/40 hidden flex items-center justify-center z-50">
-  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
-    <h3 class="text-xl font-semibold mb-4 text-gray-800">Editar Usuario</h3>
-    <form id="edit-user-form">
+<div id="editUserModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+  <div class="bg-white p-6 sm:p-7 rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 relative">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 rounded-lg bg-yellow-50 text-yellow-600 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z"/>
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900">Editar Usuario</h3>
+      </div>
+      <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+    </div>
+    <form id="edit-user-form" class="space-y-4">
       {% csrf_token %}
       <input type="hidden" id="eu-user-id">
-      <div class="space-y-3">
-        <div>
-          <label for="eu-username" class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
-          <input type="text" id="eu-username" required
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2">
-        </div>
-        <div>
-          <label for="eu-email" class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
-          <input type="email" id="eu-email" required
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2">
-        </div>
-        <div>
-          <label for="eu-profession" class="block text-sm font-medium text-gray-700 mb-1">Profesión (para experto)</label>
-          <input type="text" id="eu-profession"
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2">
-        </div>
-        <div class="flex items-center space-x-4">
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" id="eu-is-staff" class="rounded">
-            <span class="text-sm text-gray-700">Administrador</span>
-          </label>
-          <label class="inline-flex items-center space-x-2">
-            <input type="checkbox" id="eu-is-active" class="rounded">
-            <span class="text-sm text-gray-700">Activo</span>
-          </label>
-        </div>
+      <div>
+        <label for="eu-username" class="block text-sm font-semibold text-gray-700 mb-1">Usuario</label>
+        <input type="text" id="eu-username" required
+               class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
       </div>
-      <div class="flex justify-end mt-4 gap-2">
-        <button type="button" onclick="closeEditModal()" class="text-gray-500 hover:text-gray-700 px-4 py-2 rounded-lg transition">Cancelar</button>
-        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition">Guardar</button>
+      <div>
+        <label for="eu-email" class="block text-sm font-semibold text-gray-700 mb-1">Correo electrónico</label>
+        <input type="email" id="eu-email" required
+               class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+      </div>
+      <div>
+        <label for="eu-profession" class="block text-sm font-semibold text-gray-700 mb-1">Profesión (para experto)</label>
+        <input type="text" id="eu-profession"
+               class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+      </div>
+      <div class="flex items-center space-x-6 pt-1">
+        <label class="inline-flex items-center space-x-2 text-sm text-gray-700 cursor-pointer">
+          <input type="checkbox" id="eu-is-staff" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+          <span>Administrador</span>
+        </label>
+        <label class="inline-flex items-center space-x-2 text-sm text-gray-700 cursor-pointer">
+          <input type="checkbox" id="eu-is-active" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+          <span>Activo</span>
+        </label>
+      </div>
+      <div class="flex justify-end pt-3 border-t border-gray-100 gap-2">
+        <button type="button" onclick="closeEditModal()" class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">Cancelar</button>
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-xl text-sm shadow-md transition">Guardar Cambios</button>
       </div>
     </form>
-    <p id="edit-error" class="hidden text-sm text-red-600 mt-3"></p>
+    <p id="edit-error" class="hidden text-xs text-red-600 mt-2 font-medium"></p>
   </div>
 </div>
 
 <!-- Modal Experto -->
-<div id="expertUserModal" class="fixed inset-0 bg-black/40 hidden flex items-center justify-center z-50">
-  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
-    <h3 class="text-xl font-semibold mb-4 text-gray-800">Asignar Experto</h3>
-    <form id="expert-user-form">
+<div id="expertUserModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+  <div class="bg-white p-6 sm:p-7 rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 relative">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A4 4 0 017 16h10a4 4 0 011.879.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+        </div>
+        <h3 class="text-lg font-bold text-gray-900">Asignar Rol de Experto</h3>
+      </div>
+      <button type="button" onclick="closeExpertUserModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+    </div>
+    <form id="expert-user-form" class="space-y-4">
       {% csrf_token %}
       <input type="hidden" id="xu-user-id">
-      <div class="space-y-3">
-        <p class="text-sm text-gray-500">Usuario: <span id="xu-username" class="font-medium text-gray-800"></span></p>
-        <div>
-          <label for="xu-profession" class="block text-sm font-medium text-gray-700 mb-1">Profesión</label>
-          <input type="text" id="xu-profession" required
-                 class="w-full border border-gray-300 rounded-lg px-3 py-2">
-        </div>
+      <div class="bg-gray-50 p-3.5 rounded-xl border border-gray-100 text-sm">
+        <span class="text-gray-500 font-medium">Usuario:</span>
+        <strong id="xu-username" class="font-bold text-gray-900 ml-1"></strong>
       </div>
-      <div class="flex justify-between mt-4 gap-2">
-        <button type="button" id="xu-remove" class="text-red-600 hover:underline px-4 py-2 rounded-lg transition">Quitar experto</button>
+      <div>
+        <label for="xu-profession" class="block text-sm font-semibold text-gray-700 mb-1">Especialidad / Profesión</label>
+        <input type="text" id="xu-profession" required
+               placeholder="Ej. Perito Legal, Auditor Contable"
+               class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+      </div>
+      <div class="flex items-center justify-between pt-3 border-t border-gray-100 gap-2">
+        <button type="button" id="xu-remove" class="text-red-600 hover:text-red-700 text-xs font-semibold px-2 py-1 transition">Quitar rol de experto</button>
         <div class="flex gap-2">
-          <button type="button" onclick="closeExpertUserModal()" class="text-gray-500 hover:text-gray-700 px-4 py-2 rounded-lg transition">Cancelar</button>
-          <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition">Guardar</button>
+          <button type="button" onclick="closeExpertUserModal()" class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">Cancelar</button>
+          <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-xl text-sm shadow-md transition">Guardar</button>
         </div>
       </div>
     </form>
-    <p id="expert-error" class="hidden text-sm text-red-600 mt-3"></p>
+    <p id="expert-error" class="hidden text-xs text-red-600 mt-2 font-medium"></p>
   </div>
 </div>
-
-{% endblock %}
-
-{% block scripts %}
-{% load static %}
-<script src="{% static 'js/users.js' %}"></script>
 {% endblock %}

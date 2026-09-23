@@ -1,27 +1,294 @@
 {% extends 'base.html' %}
-
 {% load widget_tweaks %}
-{% block title %}Registrarse | WordCounter{% endblock %}
+
+{% block title %}Crear cuenta | ELI - Enterprise Lex Index{% endblock %}
 
 {% block content %}
-<div class="flex justify-center items-center min-h-[60vh]">
-    <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-md">
-        <h2 class="text-3xl font-extrabold text-center text-blue-700 mb-6">Crear cuenta</h2>
-        <form method="post" class="space-y-5">
-            {% csrf_token %}
-            {% for field in form %}
-                <div>
-                    <label for="{{ field.id_for_label }}" class="block mb-1 font-semibold text-gray-700">{{ field.label }}</label>
-                    {{ field|add_class:"w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-800" }}
-                    {% if field.errors %}
-                        <p class="text-red-600 text-sm mt-1">{{ field.errors|striptags }}</p>
-                    {% endif %}
+<div class="max-w-5xl mx-auto my-6 px-4">
+    <div class="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100 grid grid-cols-1 lg:grid-cols-12 min-h-[640px]">
+        
+        <!-- Columna Izquierda: Beneficios y Roles -->
+        <div class="lg:col-span-5 bg-gradient-to-br from-blue-700 via-indigo-800 to-blue-900 text-white p-8 lg:p-10 flex flex-col justify-between relative overflow-hidden">
+            <!-- Formas decorativas de fondo -->
+            <div class="absolute -top-12 -right-12 w-48 h-48 bg-blue-500 rounded-full opacity-20 filter blur-2xl pointer-events-none"></div>
+            <div class="absolute -bottom-12 -left-12 w-48 h-48 bg-indigo-500 rounded-full opacity-20 filter blur-2xl pointer-events-none"></div>
+
+            <div class="relative z-10">
+                <!-- Logotipo e Identidad -->
+                <div class="flex items-center space-x-3 mb-6">
+                    <div class="w-11 h-11 bg-white bg-opacity-15 backdrop-filter backdrop-blur-md rounded-2xl flex items-center justify-center border border-white border-opacity-20 shadow-inner">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-black tracking-tight text-white block leading-none">ELI</span>
+                        <span class="text-xs text-blue-200 font-medium">Enterprise Lex Index</span>
+                    </div>
                 </div>
-            {% endfor %}
-            <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition duration-300">
-                Registrarse
-            </button>
-        </form>
+
+                <h3 class="text-xl font-bold text-white mb-2 leading-snug">
+                    Comienza a auditar contratos con precisión
+                </h3>
+                <p class="text-blue-100 text-sm mb-6 leading-relaxed">
+                    Regístrate para acceder al motor de análisis de complejidad, carga de documentos y generación de reportes comparativos.
+                </p>
+
+                <!-- Información de Perfil / Roles -->
+                <div class="space-y-4">
+                    <div class="bg-blue-800 bg-opacity-40 p-3.5 rounded-2xl border border-blue-400 border-opacity-25">
+                        <div class="flex items-center space-x-2.5 mb-1">
+                            <span class="w-2 h-2 rounded-full bg-green-400"></span>
+                            <h4 class="text-sm font-semibold text-white">Perfil Auditor</h4>
+                        </div>
+                        <p class="text-xs text-blue-200 leading-relaxed">
+                            Tu cuenta iniciará con privilegios de auditor para crear análisis, consultar empresas e inspeccionar cláusulas.
+                        </p>
+                    </div>
+
+                    <div class="bg-blue-800 bg-opacity-40 p-3.5 rounded-2xl border border-blue-400 border-opacity-25">
+                        <div class="flex items-center space-x-2.5 mb-1">
+                            <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
+                            <h4 class="text-sm font-semibold text-white">¿Eres Experto Legal?</h4>
+                        </div>
+                        <p class="text-xs text-blue-200 leading-relaxed">
+                            Si eres abogado especialista o perito, el administrador podrá asignarte permisos de validación técnica tras tu registro.
+                        </p>
+                    </div>
+
+                    <div class="flex items-center space-x-2 text-xs text-blue-200 pt-2">
+                        <svg class="w-4 h-4 text-green-300 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
+                        <span>Trazabilidad institucional garantizada</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer del panel izquierdo -->
+            <div class="relative z-10 pt-6 mt-6 border-t border-white border-opacity-15 flex items-center justify-between text-xs text-blue-200">
+                <span>Registro seguro SSL</span>
+                <span>ELI v2.0</span>
+            </div>
+        </div>
+
+        <!-- Columna Derecha: Formulario de Registro -->
+        <div class="lg:col-span-7 p-8 lg:p-12 flex flex-col justify-center bg-white">
+            <div class="max-w-lg w-full mx-auto">
+                
+                <!-- Encabezado del Formulario -->
+                <div class="mb-6">
+                    <span class="inline-block py-1 px-3 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 mb-2 border border-blue-100">
+                        Nuevo usuario
+                    </span>
+                    <h2 class="text-2xl lg:text-3xl font-extrabold text-gray-900 tracking-tight">Crear cuenta</h2>
+                    <p class="text-gray-500 text-sm mt-1">Completa los campos a continuación para darte de alta en la plataforma.</p>
+                </div>
+
+                <!-- Alerta de Errores Globales (non_field_errors) -->
+                {% if form.non_field_errors %}
+                <div class="mb-5 p-4 rounded-xl bg-red-50 border border-red-200 text-red-800 text-sm flex items-start space-x-3">
+                    <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                    </svg>
+                    <div>
+                        <p class="font-semibold text-red-900">Revisa los siguientes detalles</p>
+                        <ul class="mt-1 list-disc list-inside space-y-0.5 text-xs text-red-700">
+                            {% for error in form.non_field_errors %}
+                            <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Formulario -->
+                <form method="post" novalidate class="space-y-4">
+                    {% csrf_token %}
+
+                    <!-- Fila 1: Nombre de usuario -->
+                    <div>
+                        <label for="{{ form.username.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
+                            Nombre de usuario <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative rounded-xl shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                            {{ form.username|add_class:"w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm" }}
+                        </div>
+                        {% if form.username.errors %}
+                        <p class="text-red-600 text-xs mt-1 font-medium">{{ form.username.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Fila 2: Nombre(s) y Apellidos (en dos columnas) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
+                                Nombre(s)
+                            </label>
+                            <div class="relative rounded-xl shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                {{ form.first_name|add_class:"w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm" }}
+                            </div>
+                            {% if form.first_name.errors %}
+                            <p class="text-red-600 text-xs mt-1 font-medium">{{ form.first_name.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
+                                Apellidos
+                            </label>
+                            <div class="relative rounded-xl shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                </div>
+                                {{ form.last_name|add_class:"w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm" }}
+                            </div>
+                            {% if form.last_name.errors %}
+                            <p class="text-red-600 text-xs mt-1 font-medium">{{ form.last_name.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Fila 3: Correo electrónico -->
+                    <div>
+                        <label for="{{ form.email.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
+                            Correo electrónico <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative rounded-xl shadow-sm">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            {{ form.email|add_class:"w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm" }}
+                        </div>
+                        {% if form.email.errors %}
+                        <p class="text-red-600 text-xs mt-1 font-medium">{{ form.email.errors|striptags }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Fila 4: Contraseñas en dos columnas con toggle -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ form.password1.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
+                                Contraseña <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative rounded-xl shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                    </svg>
+                                </div>
+                                {{ form.password1|add_class:"w-full pl-10 pr-10 py-2 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm" }}
+                                <button type="button" onclick="togglePasswordVisibility('{{ form.password1.id_for_label }}', this)" 
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                                        aria-label="Mostrar u ocultar contraseña">
+                                    <svg class="w-4 h-4 eye-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                    <svg class="w-4 h-4 eye-off-icon hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            {% if form.password1.errors %}
+                            <p class="text-red-600 text-xs mt-1 font-medium">{{ form.password1.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label for="{{ form.password2.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
+                                Confirmar contraseña <span class="text-red-500">*</span>
+                            </label>
+                            <div class="relative rounded-xl shadow-sm">
+                                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                    </svg>
+                                </div>
+                                {{ form.password2|add_class:"w-full pl-10 pr-10 py-2 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm" }}
+                                <button type="button" onclick="togglePasswordVisibility('{{ form.password2.id_for_label }}', this)" 
+                                        class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
+                                        aria-label="Mostrar u ocultar contraseña">
+                                    <svg class="w-4 h-4 eye-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                    </svg>
+                                    <svg class="w-4 h-4 eye-off-icon hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            {% if form.password2.errors %}
+                            <p class="text-red-600 text-xs mt-1 font-medium">{{ form.password2.errors|striptags }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Indicador sutil de requisitos de contraseña -->
+                    <div class="bg-gray-50 rounded-xl p-3 border border-gray-200 text-xs text-gray-500">
+                        <span class="font-medium text-gray-700">Requisitos de seguridad:</span>
+                        <ul class="list-disc list-inside mt-1 space-y-0.5 text-gray-500">
+                            <li>Mínimo 8 caracteres que no sean enteramente numéricos.</li>
+                            <li>Evita contraseñas comunes o similares a tus datos personales.</li>
+                        </ul>
+                    </div>
+
+                    <!-- Botón de Envío -->
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition duration-200 flex items-center justify-center space-x-2 text-sm mt-2">
+                        <span>Crear mi cuenta de auditor</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                        </svg>
+                    </button>
+                </form>
+
+                <!-- Separador y Enlace a Login -->
+                <div class="mt-6 pt-5 border-t border-gray-100 text-center">
+                    <p class="text-sm text-gray-600">
+                        ¿Ya tienes una cuenta registrada?
+                        <a href="{% url 'login' %}" class="font-bold text-blue-600 hover:text-blue-700 transition ml-1 hover:underline">
+                            Inicia sesión
+                        </a>
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 </div>
+
+<script>
+function togglePasswordVisibility(fieldId, button) {
+    const input = document.getElementById(fieldId);
+    if (!input) return;
+    
+    const eyeIcon = button.querySelector('.eye-icon');
+    const eyeOffIcon = button.querySelector('.eye-off-icon');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        if (eyeIcon) eyeIcon.classList.add('hidden');
+        if (eyeOffIcon) eyeOffIcon.classList.remove('hidden');
+    } else {
+        input.type = 'password';
+        if (eyeIcon) eyeIcon.classList.remove('hidden');
+        if (eyeOffIcon) eyeOffIcon.classList.add('hidden');
+    }
+}
+</script>
 {% endblock %}

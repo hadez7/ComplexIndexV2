@@ -251,3 +251,21 @@ class ReportSearchTests(TestCase):
         self.assertContains(resp, 'No se encontraron reportes que coincidan con')
         self.assertNotContains(resp, f'id="reporte-{self.rep1.id}"')
         self.assertNotContains(resp, f'id="reporte-{self.rep2.id}"')
+
+
+class PanelViewTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='paneluser', password='password123')
+        self.client = Client()
+
+    def test_panel_requires_login(self):
+        resp = self.client.get(reverse('panel'))
+        self.assertEqual(resp.status_code, 302)
+
+    def test_panel_authenticated_renders(self):
+        self.client.login(username='paneluser', password='password123')
+        resp = self.client.get(reverse('panel'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Panel de Administración')
+        self.assertContains(resp, 'Empresas')
+        self.assertContains(resp, 'Reportes')

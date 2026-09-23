@@ -4,28 +4,39 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-6">
-    <!-- Barra de navegación superior -->
-    <div class="mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-        <a href="{% url 'panel' %}"
-           class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 6h18M3 14h18M3 18h18" />
-            </svg>
-            Panel de administración
-        </a>
-        <a href="{% url 'concealment_detection' %}"
-           class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-pink-600 to-rose-700 hover:from-pink-700 hover:to-rose-800 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            Detección de ocultamiento
-        </a>
-    </div>
+    <!-- Cabecera de Página / Breadcrumb y Acciones -->
+    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200">
+        <div>
+            <div class="flex items-center space-x-2 text-xs text-gray-500 mb-2">
+                <a href="{% url 'panel' %}" class="hover:text-blue-600 transition flex items-center space-x-1 font-medium">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    <span>Panel de administración</span>
+                </a>
+                <span>/</span>
+                <a href="{% url 'concealment_detection' %}" class="hover:text-blue-600 transition">Detección de ocultamiento</a>
+                <span>/</span>
+                <span class="text-gray-700 font-semibold">Historial</span>
+            </div>
 
-    <!-- Título y tarjetas de resumen de métricas -->
-    <div class="mb-8">
-        <h1 class="text-3xl font-bold text-gray-800 mb-2">Historial de Auditoría de Ocultamiento</h1>
-        <p class="text-gray-600">Trazabilidad de revisiones efectuadas, auditores responsables y párrafos discriminados.</p>
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+                Historial de Auditoría de Ocultamiento
+            </h1>
+            <p class="text-sm text-gray-500 mt-1">
+                Trazabilidad de revisiones efectuadas, auditores responsables y párrafos analizados.
+            </p>
+        </div>
+
+        <div class="flex items-center space-x-3 flex-shrink-0">
+            <a href="{% url 'concealment_detection' %}"
+               class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow-sm hover:shadow transition-all text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                <span>Volver a Detección</span>
+            </a>
+        </div>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
@@ -107,7 +118,7 @@
     </div>
 
     <!-- Tabla de historial -->
-    <div class="bg-white rounded-xl shadow overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-left text-sm">
                 <thead class="bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
@@ -188,7 +199,7 @@
 </div>
 
 <!-- Modal para ver detalle de párrafos auditados -->
-<div id="modalDetalle" class="fixed inset-0 z-50 hidden bg-black bg-opacity-50 flex items-center justify-center p-4">
+<div id="modalDetalle" class="fixed inset-0 z-50 hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden">
         <div class="p-5 border-b flex items-center justify-between bg-gray-50">
             <div>
@@ -205,7 +216,7 @@
             <p class="text-gray-500 text-center py-4">Cargando detalle...</p>
         </div>
         <div class="p-4 border-t bg-gray-50 flex justify-end">
-            <button type="button" onclick="cerrarModalDetalle()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium px-4 py-2 rounded-lg transition">
+            <button type="button" onclick="cerrarModalDetalle()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-xl text-sm transition">
                 Cerrar
             </button>
         </div>

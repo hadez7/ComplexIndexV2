@@ -7,13 +7,6 @@ from django.contrib.auth.models import User
 
 
 @login_required
-def expert_list_view(request):
-    """Muestra el template con todos los expertos y sus listas."""
-    experts = Expert.objects.prefetch_related("word_lists")
-    
-    return render(request, "expert_lists.html", {"experts": experts})
-
-@login_required
 def create_list(request):
     if request.method == 'POST':
         data = json.loads(request.body)
@@ -132,11 +125,9 @@ def create_expert(request):
     return JsonResponse({"success": False}, status=400)
 
 
-
 @login_required
 def expert_list_view(request):
-
-    experts = Expert.objects.prefetch_related("word_lists")
+    experts = Expert.objects.prefetch_related("word_lists").select_related("user", "user__profile")
 
     expert_users = Expert.objects.values_list(
         "user_id",

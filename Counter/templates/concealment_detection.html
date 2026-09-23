@@ -4,22 +4,37 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-6">
-    <!-- Barra de navegación superior -->
-    <div class="mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-        <a href="{% url 'panel' %}"
-           class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 6h18M3 14h18M3 18h18"/>
-            </svg>
-            Panel de administración
-        </a>
-        <a href="{% url 'concealment_history' %}"
-           class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-purple-600 to-purple-800 hover:from-purple-700 hover:to-purple-900 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-            </svg>
-            Historial de auditoría
-        </a>
+    <!-- Cabecera de Página / Breadcrumb y Acciones -->
+    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200">
+        <div>
+            <div class="flex items-center space-x-2 text-xs text-gray-500 mb-2">
+                <a href="{% url 'panel' %}" class="hover:text-blue-600 transition flex items-center space-x-1 font-medium">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                    </svg>
+                    <span>Panel de administración</span>
+                </a>
+                <span>/</span>
+                <span class="text-gray-700 font-semibold">Detector de ocultamiento</span>
+            </div>
+
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+                Detector de Ocultamiento de Información
+            </h1>
+            <p class="text-sm text-gray-500 mt-1">
+                Identifica fragmentos y párrafos en reportes corporativos con potenciales patrones de opacidad o lenguaje ambiguo.
+            </p>
+        </div>
+
+        <div class="flex items-center space-x-3 flex-shrink-0">
+            <a href="{% url 'concealment_history' %}"
+               class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow-sm hover:shadow transition-all text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <span>Historial de Auditoría</span>
+            </a>
+        </div>
     </div>
 
     <!-- Formulario de búsqueda -->

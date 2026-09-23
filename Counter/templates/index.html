@@ -2,10 +2,9 @@
 
 {% load static %}
 
-{% block title %}Inicio | ELI{% endblock %}
+{% block title %}Inicio | ELI - Enterprise Lex Index{% endblock %}
 
 {% block custom_css %}
-<link rel="stylesheet" href="{% static 'css/index.css' %}">
 <style>
     body {
         font-family: 'Poppins', sans-serif;
@@ -15,59 +14,107 @@
 
 {% block content %}
  
-<!-- !Hero principal -->
-<section id="MainHero" class="text-center py-24 px-6 bg-gradient-to-r from-blue-100 via-white to-blue-100 shadow-inner">
-    <h1 class="text-4xl sm:text-5xl font-extrabold text-blue-400 mb-4 drop-shadow-md">Bienvenido a Enterprise Lex Index</h1>
-    <p class="text-lg sm:text-xl text-white mb-10 max-w-3xl mx-auto leading-relaxed">
-        Sube tus reportes y descubre las palabras más usadas en ellos, año por año, con análisis precisos y visualmente intuitivos.
-    </p>
-    <a href="{% url 'panel' %}" class="bg-blue-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-700 shadow-lg transition duration-300">
-        Empezar ahora
-    </a>
-</section>
+<!-- Hero principal -->
+<section id="MainHero" class="text-center py-20 lg:py-28 px-4 sm:px-6 relative overflow-hidden bg-gradient-to-b from-blue-50/80 via-white to-gray-50 border-b border-gray-100">
+    <div class="max-w-4xl mx-auto relative z-10">
+        <span class="inline-flex items-center gap-1.5 py-1 px-3.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 mb-6 border border-blue-200 shadow-xs">
+            <svg class="w-3.5 h-3.5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+            </svg>
+            Plataforma Integral de Auditoría & Complejidad Contractual
+        </span>
 
-<!-- !Sección de características -->
-<section class="bg-gray-100 py-20 px-6">
-    <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-10 text-center">
-        <div class="bg-white rounded-3xl p-8 shadow-md hover:shadow-xl transition duration-300">
-            <h2 class="text-xl font-semibold text-blue-600 mb-3">📊 Análisis Automático</h2>
-            <p class="text-gray-600 leading-relaxed">Detecta y visualiza las palabras más repetidas por año de forma instantánea.</p>
-        </div>
-        <div class="bg-white rounded-3xl p-8 shadow-md hover:shadow-xl transition duration-300">
-            <h2 class="text-xl font-semibold text-blue-600 mb-3">📁 Informes Detallados</h2>
-            <p class="text-gray-600 leading-relaxed">Exporta estadísticas clave con gráficos y tablas para presentaciones o análisis.</p>
-        </div>
-        <div class="bg-white rounded-3xl p-8 shadow-md hover:shadow-xl transition duration-300">
-            <h2 class="text-xl font-semibold text-blue-600 mb-3">🖥️ Interfaz Intuitiva</h2>
-            <p class="text-gray-600 leading-relaxed">Diseñada para que cualquier usuario suba y analice archivos en pocos pasos.</p>
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 tracking-tight mb-6 leading-tight">
+            Análisis y Control Léxico en <span class="text-blue-600">Enterprise Lex Index</span>
+        </h1>
+
+        <p class="text-lg sm:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed font-normal">
+            Evalúa la complejidad lingüística, detecta riesgos normativos y audita reportes corporativos mediante algoritmos cuantitativos y vocabularios de expertos.
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+            {% if user.is_authenticated %}
+            <a href="{% url 'panel' %}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition duration-200 text-base">
+                <span>Ir al Panel de Administración</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+            </a>
+            <a href="{% url 'upload' %}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-800 font-semibold px-6 py-3.5 rounded-xl border border-gray-300 shadow-xs transition duration-200 text-base">
+                Subir Reporte
+            </a>
+            {% else %}
+            <a href="{% url 'login' %}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition duration-200 text-base">
+                <span>Iniciar Sesión</span>
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                </svg>
+            </a>
+            <a href="{% url 'register' %}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-800 font-semibold px-6 py-3.5 rounded-xl border border-gray-300 shadow-xs transition duration-200 text-base">
+                Crear Cuenta de Auditor
+            </a>
+            {% endif %}
         </div>
     </div>
 </section>
 
-<!-- !Sección de beneficios -->
-<section class="py-20 px-6 bg-white">
-    <div class="max-w-4xl mx-auto text-center">
-        <h2 class="text-3xl font-bold text-gray-800 mb-6">¿Por qué usar ELI?</h2>
-        <p class="text-gray-700 mb-10 leading-relaxed text-lg">
-            Optimiza tu tiempo analizando documentos extensos. ELI te ayuda a encontrar patrones, temas recurrentes
-            y palabras clave con solo unos clics. Ideal para investigadores, empresas y estudiantes.
+<!-- Sección de características -->
+<section class="py-16 lg:py-24 px-4 sm:px-6 bg-gray-50">
+    <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-12">
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Capacidades del Sistema</h2>
+            <p class="text-gray-500 text-sm mt-2 max-w-xl mx-auto">Herramientas especializadas para equipos de auditoría, firmas legales y analistas corporativos.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md border border-gray-200 transition duration-200">
+                <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-5">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Métricas de Complejidad</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Cálculo automatizado de índices de legibilidad (Inflesz), densidad léxica y recuento silábico por documento.</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md border border-gray-200 transition duration-200">
+                <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-5">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638-0-8.573-3.007-9.963-7.178Z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Detección de Ocultamiento</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Inspección de fragmentos y cláusulas con patrones de lenguaje complejo u omisión de información crítica.</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md border border-gray-200 transition duration-200">
+                <div class="w-12 h-12 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center mb-5">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">Validación de Expertos</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">Asignación de vocabularios controlados y supervisión por especialistas en derecho y auditoría contable.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Llamado final a la acción -->
+<section class="py-16 px-4 sm:px-6 bg-white border-t border-gray-100 text-center">
+    <div class="max-w-3xl mx-auto">
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">Comienza a auditar tus documentos</h2>
+        <p class="text-gray-500 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed">
+            Accede a las herramientas de análisis comparativo, histórico de reportes y gestión de empresas.
         </p>
-        <a href="{% url 'register' %}" class="bg-green-500 text-white px-6 py-3 rounded-full text-lg hover:bg-green-600 font-semibold shadow-md transition duration-300">
-            Crear una cuenta gratis
+        <a href="{% url 'panel' %}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition duration-200 text-sm">
+            <span>Ir al Panel de Administración</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+            </svg>
         </a>
     </div>
 </section>
 
-<!-- !Llamado final a la acción -->
-<section class="bg-blue-50 py-16 px-6 text-center">
-    <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-4">¿Listo para comenzar?</h2>
-    <p class="text-gray-600 mb-6 text-lg max-w-2xl mx-auto">Sube tu primer reporte y deja que ELI haga el trabajo por ti.</p>
-    <a href="{% url 'panel' %}" class="bg-blue-600 text-white px-8 py-3 rounded-full text-lg hover:bg-blue-700 font-medium transition duration-300 shadow-lg">
-        Ir al panel
-    </a>
-</section>
-
-{% endblock %}
-
-{% block scripts %}
 {% endblock %}

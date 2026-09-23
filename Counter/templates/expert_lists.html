@@ -1,218 +1,348 @@
 {% extends "base.html" %}
 
-{% block title %}Listas de expertos | ELI{% endblock %}
+{% block title %}Vocabularios y Listas de Expertos | ELI{% endblock %}
 
 {% block content %}
-<div class="max-w-5xl mx-auto px-4 py-6">
+<div class="max-w-6xl mx-auto px-4 py-4 sm:py-6">
 
-  <!-- Barra de acciones superior -->
-  <div class="mb-6 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-    <a href="{% url 'panel' %}"
-       class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium py-2.5 px-6 rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M3 10h18M3 6h18M3 14h18M3 18h18"/>
-      </svg>
-      Panel de administración
-    </a>
-    <button onclick="openExpertModal()"
-            class="inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-      </svg>
-      Crear Experto
-    </button>
-  </div>
-
-  {% if experts %}
-    {% for expert in experts %}
-
-      <div class="bg-white shadow rounded-xl p-6 border border-gray-200 space-y-4 mb-8">
-
-        <!-- Cabecera de experto -->
-        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
-          <div class="flex items-center space-x-4">
-            {% if expert.user.profile.picture %}
-              <img src="{{ expert.user.profile.picture.url }}"
-                   alt="Foto de {{ expert.user.username }}"
-                   class="w-14 h-14 rounded-full object-cover">
-            {% else %}
-              <div class="w-14 h-14 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
-                <!-- icono usuario -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24"
-                     stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M5.121 17.804A4 4 0 017 16h10a4 4 0 011.879.804M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                </svg>
-              </div>
-            {% endif %}
-            <div>
-              <h2 class="text-xl font-semibold text-gray-800">Listas de {{ expert.user.username }}</h2>
-              <p class="text-sm text-gray-500">{{ expert.profession }}</p>
-            </div>
-          </div>
-
-          <!-- Botón Nueva lista -->
-          <button
-            class="bg-blue-600 font-semibold text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex-shrink-0"
-            data-expert-id="{{ expert.id }}"
-            onclick="openNewListModal(this)">
-            + Nueva Lista
-          </button>
-        </div>
-
-        <!-- Listas del experto -->
-        {% if expert.word_lists.all %}
-          <div class="space-y-4 mt-4 overflow-y-auto" style="max-height: 350px;">
-            {% for lista in expert.word_lists.all %}
-              <div id="list-row-{{ lista.id }}" class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
-                  <p class="font-medium text-gray-700">{{ lista.name }}</p>
-
-                  <div class="flex flex-wrap gap-2">
-                    <button class="edit-list-btn text-blue-600 hover:underline text-sm"
-                            data-id="{{ lista.id }}"
-                            data-expert-id="{{ expert.id }}"
-                            data-name="{{ lista.name }}"
-                            data-words="{{ lista.words|join:', '|escapejs }}">
-                      Editar
-                    </button>
-                    <button class="delete-list-btn text-red-600 hover:underline text-sm"
-                            data-id="{{ lista.id }}">
-                      Eliminar
-                    </button>
-                  </div>
-                </div>
-
-                {% if lista.words %}
-                  <div class="flex flex-wrap gap-2 mt-2">
-                    {% for word in lista.words %}
-                      <span class="inline-flex items-center bg-blue-50 text-blue-700 text-sm font-medium px-3 py-1 rounded-full border border-blue-100">
-                        {{ word }}
-                      </span>
-                    {% endfor %}
-                  </div>
-                {% else %}
-                  <p class="text-sm text-gray-500">Sin palabras en esta lista.</p>
-                {% endif %}
-
-              </div>
-            {% endfor %}
-          </div>
-        {% else %}
-          <p class="text-sm text-gray-500 mt-2">Sin listas asociadas.</p>
-        {% endif %}
+  <!-- Cabecera de Página / Breadcrumb y Acciones -->
+  <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200">
+    <div>
+      <div class="flex items-center space-x-2 text-xs text-gray-500 mb-2">
+        <a href="{% url 'panel' %}" class="hover:text-blue-600 transition flex items-center space-x-1 font-medium">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+          </svg>
+          <span>Panel de administración</span>
+        </a>
+        <span>/</span>
+        <span class="text-gray-700 font-semibold">Listas de expertos</span>
       </div>
 
-    {% endfor %}
+      <div class="flex items-center space-x-3">
+        <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+          Vocabularios y Listas de Control
+        </h1>
+        <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2.5 py-0.5 rounded-full border border-blue-200">
+          {{ experts|length }} Experto{{ experts|length|pluralize }}
+        </span>
+      </div>
+      <p class="text-sm text-gray-500 mt-1 max-w-2xl">
+        Gestiona los vocabularios controlados, cláusulas de referencia y palabras clave asociadas a cada especialista legal para auditoría contractual.
+      </p>
+    </div>
+
+    <!-- Botones de Acción Global -->
+    <div class="flex items-center space-x-3 flex-shrink-0">
+      <a href="{% url 'panel' %}" 
+         class="hidden sm:inline-flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 px-4 rounded-xl transition text-sm">
+        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 9 9 0 01-18 0z"></path>
+        </svg>
+        <span>Volver al Panel</span>
+      </a>
+
+      <button onclick="openExpertModal()"
+              class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 text-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        <span>Asignar Nuevo Experto</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Contenedor Principal de Expertos -->
+  {% if experts %}
+    <div class="space-y-6">
+      {% for expert in experts %}
+        <div class="bg-white rounded-2xl shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200 overflow-hidden">
+          
+          <!-- Cabecera de la Tarjeta del Experto -->
+          <div class="p-5 sm:p-6 bg-gray-50 border-b border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div class="flex items-center space-x-4">
+              
+              <!-- Avatar con Fallback Robusto -->
+              <div class="relative flex-shrink-0">
+                {% if expert.user.profile.picture and expert.user.profile.picture.name != 'profile_pics/default.jpg' %}
+                  <img src="{{ expert.user.profile.picture.url }}"
+                       alt="{{ expert.user.username }}"
+                       class="w-13 h-13 rounded-2xl object-cover border-2 border-blue-500 shadow-sm"
+                       onerror="this.style.display='none'; this.nextElementSibling.classList.remove('hidden');">
+                  <div class="hidden w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-black shadow text-lg">
+                    {{ expert.user.username|slice:":1"|upper }}
+                  </div>
+                {% else %}
+                  <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-black shadow text-lg">
+                    {{ expert.user.username|slice:":1"|upper }}
+                  </div>
+                {% endif %}
+              </div>
+
+              <!-- Información del Experto -->
+              <div>
+                <div class="flex flex-wrap items-center gap-2">
+                  <h2 class="text-lg font-bold text-gray-900 leading-tight">
+                    {% if expert.user.first_name or expert.user.last_name %}
+                      {{ expert.user.first_name }} {{ expert.user.last_name }}
+                    {% else %}
+                      {{ expert.user.username }}
+                    {% endif %}
+                  </h2>
+
+                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100">
+                    <svg class="w-3 h-3 mr-1 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path>
+                    </svg>
+                    {{ expert.profession|default:"Especialista Legal" }}
+                  </span>
+                </div>
+
+                <div class="flex flex-wrap items-center text-xs text-gray-500 mt-1 gap-x-3 gap-y-1">
+                  <span class="font-medium text-gray-600">@{{ expert.user.username }}</span>
+                  {% if expert.user.email %}
+                    <span>•</span>
+                    <span>{{ expert.user.email }}</span>
+                  {% endif %}
+                  <span>•</span>
+                  <span class="text-blue-600 font-semibold">{{ expert.word_lists.all|length }} Lista{{ expert.word_lists.all|length|pluralize }} registrada{{ expert.word_lists.all|length|pluralize }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Botón Nueva Lista para este experto -->
+            <button class="inline-flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-sm hover:shadow transition flex-shrink-0"
+                    data-expert-id="{{ expert.id }}"
+                    onclick="openNewListModal(this)">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              <span>Nueva Lista</span>
+            </button>
+          </div>
+
+          <!-- Cuerpo de la Tarjeta: Listas Asociadas -->
+          <div class="p-5 sm:p-6">
+            {% if expert.word_lists.all %}
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% for lista in expert.word_lists.all %}
+                  <div id="list-row-{{ lista.id }}" class="bg-gray-50 hover:bg-white border border-gray-200 hover:border-blue-300 rounded-xl p-4 transition-all duration-200 shadow-xs flex flex-col justify-between">
+                    <div>
+                      <!-- Cabecera de la Lista -->
+                      <div class="flex items-center justify-between gap-2 mb-2.5">
+                        <div class="flex items-center space-x-2">
+                          <svg class="w-4 h-4 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                          </svg>
+                          <h3 class="font-bold text-gray-800 text-sm truncate" title="{{ lista.name }}">
+                            {{ lista.name }}
+                          </h3>
+                        </div>
+
+                        <!-- Acciones Editar / Eliminar -->
+                        <div class="flex items-center space-x-1.5 flex-shrink-0">
+                          <button class="edit-list-btn inline-flex items-center text-xs font-semibold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 px-2 py-1 rounded-lg border border-blue-100 transition"
+                                  data-id="{{ lista.id }}"
+                                  data-expert-id="{{ expert.id }}"
+                                  data-name="{{ lista.name }}"
+                                  data-words="{{ lista.words|join:', '|escapejs }}"
+                                  title="Editar lista">
+                            <svg class="w-3.5 h-3.5 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                            <span>Editar</span>
+                          </button>
+                          
+                          <button class="delete-list-btn inline-flex items-center text-xs font-semibold text-red-600 hover:text-red-800 bg-red-50 hover:bg-red-100 px-2 py-1 rounded-lg border border-red-100 transition"
+                                  data-id="{{ lista.id }}"
+                                  title="Eliminar lista">
+                            <svg class="w-3.5 h-3.5 mr-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            <span>Eliminar</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Etiquetas de Palabras -->
+                      {% if lista.words %}
+                        <div class="flex flex-wrap gap-1.5 mt-2">
+                          {% for word in lista.words %}
+                            <span class="inline-flex items-center bg-white text-blue-700 text-xs font-medium px-2.5 py-0.5 rounded-lg border border-blue-200 shadow-xs">
+                              {{ word }}
+                            </span>
+                          {% endfor %}
+                        </div>
+                      {% else %}
+                        <p class="text-xs text-gray-400 italic mt-2">Sin palabras asignadas a esta lista.</p>
+                      {% endif %}
+                    </div>
+
+                    <div class="mt-3 pt-2 border-t border-gray-100 text-right">
+                      <span class="text-xs text-gray-400 font-medium">
+                        {{ lista.words|length }} palabra{{ lista.words|length|pluralize }} registrada{{ lista.words|length|pluralize }}
+                      </span>
+                    </div>
+
+                  </div>
+                {% endfor %}
+              </div>
+            {% else %}
+              <!-- Empty State para experto sin listas -->
+              <div class="text-center py-8 px-4 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
+                <svg class="mx-auto h-8 w-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <p class="text-sm font-semibold text-gray-700">Sin listas de vocabulario asignadas</p>
+                <p class="text-xs text-gray-500 mt-0.5 mb-3">Comienza creando una lista de términos de referencia para este experto.</p>
+                <button class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-sm transition"
+                        data-expert-id="{{ expert.id }}"
+                        onclick="openNewListModal(this)">
+                  + Nueva Lista
+                </button>
+              </div>
+            {% endif %}
+          </div>
+
+        </div>
+      {% endfor %}
+    </div>
   {% else %}
-    <p class="text-gray-600">No hay listas de expertos registradas.</p>
+    <!-- Empty State Global: Sin expertos -->
+    <div class="text-center py-16 px-4 bg-white rounded-3xl border border-gray-200 shadow-sm max-w-xl mx-auto">
+      <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-100 shadow-inner">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+        </svg>
+      </div>
+      <h3 class="text-xl font-bold text-gray-900 tracking-tight">No hay expertos registrados</h3>
+      <p class="text-sm text-gray-500 mt-2 mb-6 max-w-md mx-auto leading-relaxed">
+        Para gestionar vocabularios especializados y cláusulas de auditoría, debes asignar el rol de experto a uno o más usuarios de la plataforma.
+      </p>
+      <button onclick="openExpertModal()"
+              class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-5 py-2.5 rounded-xl shadow-md transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        <span>Asignar Primer Experto</span>
+      </button>
+    </div>
   {% endif %}
+
 </div>
 
-<!-- Modal Crear Experto -->
+<!-- Modal 1: Asignar / Crear Experto -->
 <div id="expertCreateModal"
-     class="fixed inset-0 bg-black/40 hidden flex items-center justify-center z-50">
-
-    <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
-
-        <h3 class="text-xl font-semibold mb-4">
-            Crear Experto
-        </h3>
+     class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl border border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+          <div class="flex items-center space-x-2">
+            <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900">Asignar Rol de Experto</h3>
+          </div>
+          <button type="button" onclick="closeExpertModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+        </div>
 
         <form id="expert-form">
-
-            <div class="space-y-3">
-
+            <div class="space-y-4">
                 <div>
-                    <label>Usuario</label>
-
+                    <label for="expert-user" class="block text-sm font-semibold text-gray-700 mb-1">Usuario del sistema</label>
                     <select id="expert-user"
-                            class="w-full border rounded-lg px-3 py-2"
+                            class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
                             {% if not available_users %}disabled{% endif %}>
-
                         {% if available_users %}
                             {% for user in available_users %}
                                 <option value="{{ user.id }}">
-                                    {{ user.username }}
+                                    {{ user.username }} {% if user.first_name %}({{ user.first_name }} {{ user.last_name }}){% endif %}
                                 </option>
                             {% endfor %}
                         {% else %}
-                            <option value="">
-                                No hay usuarios disponibles
-                            </option>
+                            <option value="">No hay usuarios disponibles</option>
                         {% endif %}
-
                     </select>
 
                     {% if not available_users %}
-                    <p class="text-sm text-red-500 mt-2">
-                        Todos los usuarios ya tienen un experto asignado.
+                    <p class="text-xs text-red-500 mt-1.5 font-medium">
+                        Todos los usuarios registrados ya tienen asignado un perfil de experto.
                     </p>
                     {% endif %}
                 </div>
 
                 <div>
-                    <label>Profesión</label>
-
+                    <label for="expert-profession" class="block text-sm font-semibold text-gray-700 mb-1">Especialidad / Profesión</label>
                     <input type="text"
                            id="expert-profession"
-                           class="w-full border rounded-lg px-3 py-2">
+                           placeholder="Ej. Abogado Laboral, Perito Contable"
+                           class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
                 </div>
-
             </div>
 
-            <div class="flex justify-end mt-4 gap-2">
-
+            <div class="flex justify-end mt-6 gap-2 pt-2 border-t border-gray-100">
                 <button type="button"
-                        onclick="closeExpertModal()">
+                        onclick="closeExpertModal()"
+                        class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">
                     Cancelar
                 </button>
-
                 <button type="submit"
-                        class="bg-green-600 text-white px-4 py-2 rounded-lg disabled:bg-gray-400 disabled:cursor-not-allowed"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl text-sm shadow-md transition disabled:bg-gray-400 disabled:cursor-not-allowed"
                         {% if not available_users %}disabled{% endif %}>
-                    Guardar
+                    Guardar Experto
                 </button>
-
             </div>
-
         </form>
-
     </div>
-
 </div>
 
-<!-- Modal Crear/Editar -->
+<!-- Modal 2: Crear / Editar Lista de Palabras -->
 <div id="expertModal"
-  class="fixed inset-0 bg-black/40 hidden flex items-center justify-center z-50">
-  <div class="bg-white rounded-xl p-6 w-full max-w-md shadow-lg">
-    <h3 id="modalTitle" class="text-xl font-semibold mb-4 text-gray-800">Nueva Lista de Expertos</h3>
+     class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm hidden flex items-center justify-center z-50 p-4">
+  <div class="bg-white rounded-2xl p-6 w-full max-w-md shadow-2xl border border-gray-100">
+    <div class="flex items-center justify-between mb-4">
+      <div class="flex items-center space-x-2">
+        <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+        </div>
+        <h3 id="modalTitle" class="text-lg font-bold text-gray-900">Nueva Lista de Expertos</h3>
+      </div>
+      <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+    </div>
 
-    <!-- Un único formulario reutilizable -->
+    <!-- Formulario único reutilizable -->
     <form id="list-form" data-expert-id="">
-   {% csrf_token %}
-   <input type="hidden" id="list-id">
+      {% csrf_token %}
+      <input type="hidden" id="list-id">
 
-   <div class="mb-4 space-y-3">
-     <div>
-    <label for="list-name" class="block text-sm font-medium text-gray-700 mb-1">Nombre de la lista</label>
-    <input type="text" id="list-name"
-        class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 text-gray-800"
-        required>
-     </div>
-     <div>
-    <label for="list-words" class="block text-sm font-medium text-gray-700 mb-1">Palabras (separadas por coma)</label>
-    <input type="text" id="list-words" name="words"
-       class="mt-1 block w-full border border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 px-3 py-2 text-gray-800"
-       placeholder="ej: alerta, sensor, cámara">
-     </div>
-   </div>
+      <div class="space-y-4">
+        <div>
+          <label for="list-name" class="block text-sm font-semibold text-gray-700 mb-1">Nombre de la lista</label>
+          <input type="text" id="list-name"
+                 class="block w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                 placeholder="Ej. Cláusulas de Confidencialidad"
+                 required>
+        </div>
+        <div>
+          <label for="list-words" class="block text-sm font-semibold text-gray-700 mb-1">Palabras clave (separadas por coma)</label>
+          <textarea id="list-words" name="words" rows="3"
+                    class="block w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                    placeholder="ej: secreto, confidencial, no divulgación, penalidad"></textarea>
+          <p class="text-xs text-gray-400 mt-1">Escribe los términos separados por comas.</p>
+        </div>
+      </div>
 
-   <div class="flex justify-end space-x-2 pt-2">
-     <button type="button" onclick="closeModal()" class="text-gray-500 hover:text-gray-700 px-4 py-2 rounded-lg transition">Cancelar</button>
-     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Guardar</button>
-   </div>
+      <div class="flex justify-end space-x-2 mt-6 pt-2 border-t border-gray-100">
+        <button type="button" onclick="closeModal()" class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">
+          Cancelar
+        </button>
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded-xl text-sm shadow-md transition">
+          Guardar Lista
+        </button>
+      </div>
     </form>
   </div>
 </div>
@@ -220,8 +350,6 @@
 {% endblock %}
 
 {% block scripts %}
-
 {% load static %}
-
 <script src="{% static 'js/expert_lists.js' %}"></script>
 {% endblock %}

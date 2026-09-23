@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.conf import settings
-from django.db import IntegrityError
+from django.db import models, IntegrityError
 from ..models import Company
 from ..forms import IndividualReportUploadForm, ZipUploadForm, ComparativeAnalysisForm
 from ..main import process_report, process_zip
@@ -21,7 +21,18 @@ def index_view(request):
 
 @login_required
 def panel_view(request):
-    return render(request, "panel.html")
+    total_companies = Company.objects.count()
+    total_reports = Report.objects.count()
+    total_words_agg = Report.objects.aggregate(models.Sum('total_words'))['total_words__sum'] or 0
+    total_experts = Expert.objects.count()
+
+    context = {
+        'total_companies': total_companies,
+        'total_reports': total_reports,
+        'total_palabras': f'{total_words_agg:,}'.replace(',', '.'),
+        'total_experts': total_experts,
+    }
+    return render(request, 'panel.html', context)
 
 
 @login_required
