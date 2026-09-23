@@ -22,7 +22,38 @@
         </a>
     </div>
 
-    <h1 class="text-3xl font-bold mb-6">Lista de Reportes</h1>
+    <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">Lista de Reportes</h1>
+            <p class="text-gray-500 text-sm mt-1">Consulta y administra los reportes procesados en el sistema</p>
+        </div>
+
+        <!-- Barra de búsqueda -->
+        <form method="GET" class="flex items-center gap-2 max-w-md w-full md:w-auto">
+            <div class="relative flex-1 md:w-80">
+                <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
+                <input type="text"
+                       name="q"
+                       value="{{ query }}"
+                       placeholder="Buscar por reporte o empresa..."
+                       class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-sm transition">
+            </div>
+            <button type="submit"
+                    class="inline-flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-xl shadow transition duration-200 text-sm">
+                Buscar
+            </button>
+            {% if query %}
+            <a href="{% url 'reports' %}"
+               class="inline-flex items-center justify-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-3 rounded-xl transition duration-200 text-sm">
+                Limpiar
+            </a>
+            {% endif %}
+        </form>
+    </div>
 
     <!-- !Modal Detalles reporte-->
     <div id="detailsModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
@@ -142,7 +173,13 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="px-4 py-4 text-center text-gray-500">No hay reportes disponibles.</td>
+                        <td colspan="5" class="px-4 py-8 text-center text-gray-500">
+                            {% if query %}
+                                No se encontraron reportes que coincidan con "<span class="font-semibold text-gray-700">{{ query }}</span>".
+                            {% else %}
+                                No hay reportes disponibles.
+                            {% endif %}
+                        </td>
                     </tr>
                     {% endfor %}
                 </tbody>

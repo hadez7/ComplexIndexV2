@@ -219,3 +219,35 @@ class ComparativeAnalysisTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Análisis comparativo')
         self.assertContains(response, 'Comparar reporte con lista de experto')
+
+
+class ReportSearchTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='admin_reports', password='password')
+        self.client.login(username='admin_reports', password='password')
+        self.company1 = Company.objects.create(name='ALPHA LOGISTICS S.A.', ruc='0990000005001')
+        self.company2 = Company.objects.create(name='OMEGA HOLDINGS S.A.', ruc='0990000006001')
+        self.rep1 = Report.objects.create(company=self.company1, name='Memoria Anual 2024', year=2024)
+        self.rep2 = Report.objects.create(company=self.company2, name='Balance 2023', year=2023)
+
+    def test_search_reports_by_name(self):
+        url = reverse('reports') + '?q=Memoria'
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, f'id="reporte-{self.rep1.id}"')
+        self.assertNotContains(resp, f'id="reporte-{self.rep2.id}"')
+
+    def test_search_reports_by_company(self):
+        url = reverse('reports') + '?q=OMEGA'
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, f'id="reporte-{self.rep2.id}"')
+        self.assertNotContains(resp, f'id="reporte-{self.rep1.id}"')
+
+    def test_search_reports_no_results(self):
+        url = reverse('reports') + '?q=Inexistente'
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'No se encontraron reportes que coincidan con')
+        self.assertNotContains(resp, f'id="reporte-{self.rep1.id}"')
+        self.assertNotContains(resp, f'id="reporte-{self.rep2.id}"')
