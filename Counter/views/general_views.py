@@ -248,7 +248,6 @@ def user_view(request):
 
     total_users = len(users)
     active_users = sum(1 for u in users if u["is_active"] and not u["is_deleted"])
-    inactive_users = sum(1 for u in users if not u["is_active"] and not u["is_deleted"])
     deleted_users = sum(1 for u in users if u["is_deleted"])
     admin_users = sum(1 for u in users if u["is_staff"])
 
@@ -259,7 +258,6 @@ def user_view(request):
             "users": users,
             "total_users": total_users,
             "active_users": active_users,
-            "inactive_users": inactive_users,
             "deleted_users": deleted_users,
             "admin_users": admin_users,
         }

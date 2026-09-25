@@ -125,8 +125,11 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.toggle-user-btn').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const isCurrentlyActive = btn.dataset.active === '1';
-      const actionText = isCurrentlyActive ? 'pausar temporalmente el acceso de' : 'restablecer el acceso de';
-      if (!window.confirm(`¿Estás seguro de que deseas ${actionText} a este usuario?`)) return;
+      const username = btn.dataset.username || 'este usuario';
+      const confirmMsg = isCurrentlyActive
+        ? `¿Suspender temporalmente a "${username}"?\n\nEl usuario no podrá iniciar sesión mientras permanezca suspendido.`
+        : `¿Reactivar el acceso de "${username}"?`;
+      if (!window.confirm(confirmMsg)) return;
 
       try {
         const res = await fetch(routes.toggleActive(btn.dataset.id), {
