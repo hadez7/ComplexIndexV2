@@ -43,12 +43,37 @@ def upload_view(request):
 
     if request.method == "POST":
         if "upload_individual" in request.POST:
-            print(request.POST)
             individual_form = IndividualReportUploadForm(request.POST, request.FILES)
             if individual_form.is_valid():
-                reporte = individual_form.save()
-                process_report(reporte.file.path, reporte)
-                messages.success(request, f"Reporte subido y procesado correctamente.")
+                company = individual_form.cleaned_data.get("company")
+                year = individual_form.cleaned_data.get("year")
+                overwrite = individual_form.cleaned_data.get("overwrite")
+                file = individual_form.cleaned_data.get("file")
+                name = individual_form.cleaned_data.get("name") or file.name
+
+                existing_report = None
+                if company and year:
+                    existing_report = Report.objects.filter(company=company, year=year).first()
+
+                if existing_report and overwrite:
+                    existing_report.name = name
+                    existing_report.file = file
+                    existing_report.save()
+                    reporte = existing_report
+                else:
+                    reporte = individual_form.save()
+
+                res = process_report(reporte.file.path, reporte)
+                if res.get("success"):
+                    messages.success(
+                        request,
+                        f"Reporte '{reporte.name}' procesado con éxito: {res.get('total_words', 0):,} palabras analizadas."
+                    )
+                elif res.get("warning"):
+                    messages.warning(request, f"Reporte guardado con observaciones: {res['warning']}")
+                else:
+                    messages.error(request, f"Error al procesar el reporte: {res.get('error', 'Error desconocido')}")
+
                 return redirect("upload")
 
         elif "upload_zip" in request.POST:
@@ -56,6 +81,7 @@ def upload_view(request):
             if zip_form.is_valid():
                 zip_file = zip_form.cleaned_data["zip_file"]
                 company = zip_form.cleaned_data["company"]
+                overwrite = zip_form.cleaned_data.get("overwrite", False)
 
                 zip_dir = os.path.join(settings.MEDIA_ROOT, "zip_uploads")
                 os.makedirs(zip_dir, exist_ok=True)
@@ -65,9 +91,17 @@ def upload_view(request):
                     for chunk in zip_file.chunks():
                         destination.write(chunk)
 
-                process_zip(zip_path, company)
+                stats = process_zip(zip_path, company, overwrite=overwrite)
 
-                messages.success(request, f"Archivo ZIP subido y procesado correctamente.")
+                msg_parts = [f"Archivo ZIP procesado: {stats['processed']} reporte(s) importado(s) exitosamente."]
+                if stats['skipped'] > 0:
+                    msg_parts.append(f"{stats['skipped']} reporte(s) omitido(s) por ya existir.")
+                if stats['errors']:
+                    msg_parts.append(f"{len(stats['errors'])} archivo(s) con advertencias o errores.")
+                    messages.warning(request, ' '.join(msg_parts))
+                else:
+                    messages.success(request, ' '.join(msg_parts))
+
                 return redirect("upload")
 
     return render(

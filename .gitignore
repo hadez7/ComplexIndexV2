@@ -42,3 +42,5 @@ node_modules/
 
 # Archivos de reportes temporales o exportaciones
 
+*.sqlite3*
+*.backup*

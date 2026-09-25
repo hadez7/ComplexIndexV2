@@ -269,3 +269,97 @@ class PanelViewTests(TestCase):
         self.assertContains(resp, 'Panel de Administración')
         self.assertContains(resp, 'Empresas')
         self.assertContains(resp, 'Reportes')
+
+
+class UploadModuleTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='uploaduser', password='password123')
+        self.client.login(username='uploaduser', password='password123')
+        self.company = Company.objects.create(name='BETA CORP S.A.', ruc='0990000007001')
+
+    def test_upload_view_requires_login(self):
+        self.client.logout()
+        resp = self.client.get(reverse('upload'))
+        self.assertEqual(resp.status_code, 302)
+
+    def test_upload_view_renders_correctly(self):
+        resp = self.client.get(reverse('upload'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Subida y Procesamiento de Reportes')
+        self.assertContains(resp, 'Subir Reporte Individual (PDF)')
+        self.assertContains(resp, 'Subir Múltiples Reportes (Lote ZIP)')
+        self.assertContains(resp, 'Sobrescribir si ya existe')
+
+    def test_form_rejects_non_pdf_file(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from Counter.forms import IndividualReportUploadForm
+
+        fake_txt = SimpleUploadedFile("documento.txt", b"Texto plano de prueba", content_type="text/plain")
+        form = IndividualReportUploadForm(
+            data={"company": self.company.id, "year": 2024},
+            files={"file": fake_txt}
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("file", form.errors)
+        self.assertIn("PDF", form.errors["file"][0])
+
+    def test_form_rejects_invalid_pdf_header(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from Counter.forms import IndividualReportUploadForm
+
+        fake_pdf = SimpleUploadedFile("falso.pdf", b"NO ES UN PDF REAL", content_type="application/pdf")
+        form = IndividualReportUploadForm(
+            data={"company": self.company.id, "year": 2024},
+            files={"file": fake_pdf}
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("file", form.errors)
+
+    def test_form_detects_duplicate_company_year_without_overwrite(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from Counter.forms import IndividualReportUploadForm
+
+        # Create existing report
+        Report.objects.create(company=self.company, year=2024, name="Existente 2024")
+
+        valid_pdf_content = b"%PDF-1.4\n%trailer\n%%EOF"
+        pdf_file = SimpleUploadedFile("nuevo.pdf", valid_pdf_content, content_type="application/pdf")
+
+        form = IndividualReportUploadForm(
+            data={"company": self.company.id, "year": 2024, "overwrite": False},
+            files={"file": pdf_file}
+        )
+        self.assertFalse(form.is_valid())
+        self.assertIn("Ya existe un reporte registrado", str(form.errors))
+
+    def test_form_allows_duplicate_company_year_with_overwrite(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        from Counter.forms import IndividualReportUploadForm
+
+        Report.objects.create(company=self.company, year=2024, name="Existente 2024")
+
+        valid_pdf_content = b"%PDF-1.4\n%trailer\n%%EOF"
+        pdf_file = SimpleUploadedFile("nuevo.pdf", valid_pdf_content, content_type="application/pdf")
+
+        form = IndividualReportUploadForm(
+            data={"company": self.company.id, "year": 2024, "overwrite": True},
+            files={"file": pdf_file}
+        )
+        self.assertTrue(form.is_valid())
+
+    def test_delete_report_decrements_total_count(self):
+        from Counter.models import TotalCount, TotalCountReport
+
+        report = Report.objects.create(company=self.company, year=2024, name="Reporte Prueba")
+        TotalCountReport.objects.create(report=report, word="palabraprueba", quantity=15)
+        TotalCount.objects.create(word="palabraprueba", quantity=15)
+
+        # Ensure TotalCount starts at 15
+        self.assertEqual(TotalCount.objects.get(word="palabraprueba").quantity, 15)
+
+        # Delete the report via endpoint
+        del_resp = self.client.delete(reverse('delete_report', args=[report.id]))
+        self.assertEqual(del_resp.status_code, 204)
+
+        # TotalCount record should now be deleted since total quantity is 0
+        self.assertFalse(TotalCount.objects.filter(word="palabraprueba").exists())
