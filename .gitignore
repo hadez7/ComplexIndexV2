@@ -44,3 +44,4 @@ node_modules/
 
 *.sqlite3*
 *.backup*
+*.zip
