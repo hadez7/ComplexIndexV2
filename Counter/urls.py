@@ -13,6 +13,7 @@ urlpatterns = [
     path("users/<int:user_id>/toggle-active/", views.toggle_user_active, name="users_toggle_active"),
     path("users/<int:user_id>/expert/", views.assign_expert, name="users_assign_expert"),
     path("users/<int:user_id>/delete/", views.delete_user, name="users_delete"),
+    path("users/audit-logs/", views.user_audit_logs, name="users_audit_logs"),
     path("reports-by-year/", views.reports_by_year, name="reports_by_year"),
     
     # Included URLConfs
