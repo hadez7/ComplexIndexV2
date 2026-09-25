@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.toggle-user-btn').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const isCurrentlyActive = btn.dataset.active === '1';
-      const actionText = isCurrentlyActive ? 'desactivar temporalmente' : 'activar';
+      const actionText = isCurrentlyActive ? 'pausar temporalmente el acceso de' : 'restablecer el acceso de';
       if (!window.confirm(`¿Estás seguro de que deseas ${actionText} a este usuario?`)) return;
 
       try {
@@ -243,8 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      // Confirmación informativa de baja lógica
-      const confirmMsg = `¿Dar de baja lógica al usuario "${username}"?\n\n• Su cuenta será desactivada y no podrá iniciar sesión.\n• Su historial de auditorías, documentos y reportes se conservará intacto.`;
+      // Confirmación informativa de baja lógica (eliminación segura)
+      const confirmMsg = `¿Eliminar al usuario "${username}"?\n\n• Se aplicará una baja lógica: la cuenta quedará inhabilitada para acceder.\n• Su historial de reportes, auditorías y documentos se conservará intacto por trazabilidad.\n• Podrás restaurar su cuenta en cualquier momento.`;
       if (!window.confirm(confirmMsg)) return;
 
       try {
