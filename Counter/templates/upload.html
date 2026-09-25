@@ -252,9 +252,12 @@
             {% endif %}
 
             <div class="mb-5">
-                <label for="{{ zip_form.company.id_for_label }}" class="block mb-1.5 text-sm font-semibold text-gray-700">
-                    Empresa para todos los archivos <span class="text-xs font-normal text-gray-400">(opcional si el texto o nombre los identifica)</span>
+                <label for="{{ zip_form.company.id_for_label }}" class="block mb-1 text-sm font-semibold text-gray-700">
+                    Asignar una sola empresa a todo el lote <span class="text-xs font-normal text-gray-400">(opcional)</span>
                 </label>
+                <p class="text-xs text-gray-500 mb-2 leading-relaxed">
+                    Si todos los PDFs del ZIP pertenecen a la misma empresa, selecciónala aquí. Si el ZIP incluye documentos de varias empresas distintas, déjalo vacío para que el sistema las identifique automáticamente por el contenido del PDF.
+                </p>
                 {{ zip_form.company }}
                 {% if zip_form.company.errors %}
                     <p class="text-red-600 text-xs mt-1">{{ zip_form.company.errors.0 }}</p>

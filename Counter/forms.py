@@ -3,7 +3,37 @@ from django import forms
 from .models import Report, Company, ExpertWord
 
 
+YEAR_CHOICES = [
+    ("", "-- Detección automática desde el documento --"),
+] + [(str(y), str(y)) for y in range(2025, 2015, -1)]
+
+
 class IndividualReportUploadForm(forms.ModelForm):
+    company = forms.ModelChoiceField(
+        queryset=Company.objects.all().order_by("name"),
+        required=False,
+        empty_label="-- Detección automática desde el documento --",
+        label="Empresa",
+        widget=forms.Select(
+            attrs={
+                "class": "w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            }
+        )
+    )
+
+    year = forms.TypedChoiceField(
+        choices=YEAR_CHOICES,
+        coerce=int,
+        empty_value=None,
+        required=False,
+        label="Año del Reporte",
+        widget=forms.Select(
+            attrs={
+                "class": "w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+            }
+        )
+    )
+
     overwrite = forms.BooleanField(
         required=False,
         label="Sobrescribir si ya existe",
@@ -17,19 +47,6 @@ class IndividualReportUploadForm(forms.ModelForm):
         model = Report
         fields = ["company", "year", "name", "file"]
         widgets = {
-            "company": forms.Select(
-                attrs={
-                    "class": "w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                }
-            ),
-            "year": forms.NumberInput(
-                attrs={
-                    "min": 1990,
-                    "max": 2099,
-                    "placeholder": "Ej: 2024",
-                    "class": "w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-                }
-            ),
             "name": forms.TextInput(
                 attrs={
                     "placeholder": "Nombre descriptivo del reporte (opcional)",
@@ -107,10 +124,10 @@ class ZipUploadForm(forms.Form):
         ),
     )
     company = forms.ModelChoiceField(
-        queryset=Company.objects.all(),
+        queryset=Company.objects.all().order_by("name"),
         required=False,
-        label="Empresa (opcional si los nombres contienen la empresa)",
-        empty_label="-- Detección automática por texto / reporte --",
+        label="Asignar una sola empresa a todo el lote (Opcional)",
+        empty_label="-- Detección automática desde el documento --",
         widget=forms.Select(
             attrs={
                 "class": "w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white shadow-xs focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
