@@ -47,23 +47,60 @@
         
           <!-- Derecha en ESCRITORIO (>= md) -->
           <div class="hidden md:flex items-center space-x-3">
-            <!-- Selector de Idioma (Desktop) -->
-            <form action="{% url 'set_language' %}" method="post" class="inline-flex items-center">
-              {% csrf_token %}
-              <input name="next" type="hidden" value="{{ request.get_full_path }}">
-              <div class="inline-flex rounded-xl bg-gray-100 p-0.5 border border-gray-200 text-xs font-semibold">
-                <button type="submit" name="language" value="es"
-                        class="px-2.5 py-1 rounded-lg transition-all {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-white text-blue-600 shadow-xs font-bold{% else %}text-gray-500 hover:text-gray-900{% endif %}"
-                        title="Español">
-                  ES
-                </button>
-                <button type="submit" name="language" value="en"
-                        class="px-2.5 py-1 rounded-lg transition-all {% if LANGUAGE_CODE == 'en' %}bg-white text-blue-600 shadow-xs font-bold{% else %}text-gray-500 hover:text-gray-900{% endif %}"
-                        title="English">
-                  EN
-                </button>
+            <!-- Selector de Idioma con Botón Mundo (Desktop) -->
+            <div class="relative">
+              <button type="button" id="langMenuBtnDesktop" aria-haspopup="true" aria-expanded="false"
+                      class="flex items-center space-x-1.5 py-2 px-2.5 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-gray-100 border border-gray-200 transition focus:outline-none"
+                      title="{% trans 'Cambiar idioma' %}">
+                <!-- Icono Mundo -->
+                <svg class="w-4 h-4 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                </svg>
+                <span class="text-xs font-bold uppercase tracking-wider">
+                  {{ LANGUAGE_CODE|default:'es' }}
+                </span>
+                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+
+              <!-- Menú flotante desplegable de idioma Desktop -->
+              <div id="langMenuDesktop" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 z-50 py-1 divide-y divide-gray-100">
+                <div class="px-3.5 py-2 bg-gray-50 rounded-t-xl">
+                  <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{% trans "Idioma" %}</p>
+                </div>
+                <form action="{% url 'set_language' %}" method="post" class="py-1">
+                  {% csrf_token %}
+                  <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                  
+                  <button type="submit" name="language" value="es"
+                          class="w-full flex items-center justify-between px-3.5 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-blue-50/70 font-bold text-blue-700{% endif %}">
+                    <span class="flex items-center space-x-2">
+                      <span class="text-base leading-none">🇪🇸</span>
+                      <span>Español</span>
+                    </span>
+                    {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    {% endif %}
+                  </button>
+
+                  <button type="submit" name="language" value="en"
+                          class="w-full flex items-center justify-between px-3.5 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition {% if LANGUAGE_CODE == 'en' %}bg-blue-50/70 font-bold text-blue-700{% endif %}">
+                    <span class="flex items-center space-x-2">
+                      <span class="text-base leading-none">🇺🇸</span>
+                      <span>English</span>
+                    </span>
+                    {% if LANGUAGE_CODE == 'en' %}
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    {% endif %}
+                  </button>
+                </form>
               </div>
-            </form>
+            </div>
 
             {% if user.is_authenticated %}
             <a href="{% url 'panel' %}" class="text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg font-medium text-sm transition flex items-center space-x-1.5">
@@ -123,8 +160,59 @@
             {% endif %}
           </div>
 
-          <!-- Derecha en MÓVIL (< md) - Híbrido: Avatar Rápido + Botón Hamburguesa -->
+          <!-- Derecha en MÓVIL (< md) - Híbrido: Botón Mundo + Avatar Rápido + Botón Hamburguesa -->
           <div class="flex md:hidden items-center space-x-2">
+            <!-- Botón Mundo Móvil Rápido -->
+            <div class="relative">
+              <button type="button" id="langMenuBtnMobile" aria-haspopup="true" aria-expanded="false"
+                      class="flex items-center space-x-1 py-1.5 px-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-100 border border-gray-200 transition focus:outline-none"
+                      title="{% trans 'Cambiar idioma' %}">
+                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
+                </svg>
+                <span class="text-xs font-bold uppercase tracking-wider">
+                  {{ LANGUAGE_CODE|default:'es' }}
+                </span>
+              </button>
+
+              <!-- Menú flotante de idioma en Móvil -->
+              <div id="langMenuMobile" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 py-1 divide-y divide-gray-100">
+                <div class="px-3.5 py-2 bg-gray-50 rounded-t-xl">
+                  <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{% trans "Idioma" %}</p>
+                </div>
+                <form action="{% url 'set_language' %}" method="post" class="py-1">
+                  {% csrf_token %}
+                  <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                  
+                  <button type="submit" name="language" value="es"
+                          class="w-full flex items-center justify-between px-3.5 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-blue-50/70 font-bold text-blue-700{% endif %}">
+                    <span class="flex items-center space-x-2">
+                      <span class="text-base leading-none">🇪🇸</span>
+                      <span>Español</span>
+                    </span>
+                    {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    {% endif %}
+                  </button>
+
+                  <button type="submit" name="language" value="en"
+                          class="w-full flex items-center justify-between px-3.5 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition {% if LANGUAGE_CODE == 'en' %}bg-blue-50/70 font-bold text-blue-700{% endif %}">
+                    <span class="flex items-center space-x-2">
+                      <span class="text-base leading-none">🇺🇸</span>
+                      <span>English</span>
+                    </span>
+                    {% if LANGUAGE_CODE == 'en' %}
+                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    {% endif %}
+                  </button>
+                </form>
+              </div>
+            </div>
+
             {% if user.is_authenticated %}
             <!-- Acceso directo al Avatar en Móvil -->
             <div class="relative">
@@ -247,6 +335,14 @@
         const desktopBtn = document.getElementById('userMenuBtnDesktop');
         const desktopMenu = document.getElementById('userMenuDesktop');
 
+        // Language menu Desktop
+        const langBtnDesktop = document.getElementById('langMenuBtnDesktop');
+        const langMenuDesktop = document.getElementById('langMenuDesktop');
+
+        // Language menu Mobile
+        const langBtnMobile = document.getElementById('langMenuBtnMobile');
+        const langMenuMobile = document.getElementById('langMenuMobile');
+
         // Mobile quick user menu
         const mobileUserBtn = document.getElementById('userMenuBtnMobile');
         const mobileUserMenu = document.getElementById('userMenuMobile');
@@ -261,6 +357,12 @@
           if (desktopMenu) desktopMenu.classList.add('hidden');
           if (desktopBtn) desktopBtn.setAttribute('aria-expanded', 'false');
 
+          if (langMenuDesktop) langMenuDesktop.classList.add('hidden');
+          if (langBtnDesktop) langBtnDesktop.setAttribute('aria-expanded', 'false');
+
+          if (langMenuMobile) langMenuMobile.classList.add('hidden');
+          if (langBtnMobile) langBtnMobile.setAttribute('aria-expanded', 'false');
+
           if (mobileUserMenu) mobileUserMenu.classList.add('hidden');
           if (mobileUserBtn) mobileUserBtn.setAttribute('aria-expanded', 'false');
 
@@ -268,6 +370,32 @@
           if (mobileNavBtn) mobileNavBtn.setAttribute('aria-expanded', 'false');
           if (hamburgerIcon) hamburgerIcon.classList.remove('hidden');
           if (closeIcon) closeIcon.classList.add('hidden');
+        }
+
+        // Toggle Desktop Language Menu
+        if (langBtnDesktop && langMenuDesktop) {
+          langBtnDesktop.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isOpen = !langMenuDesktop.classList.contains('hidden');
+            closeAllMenus();
+            if (!isOpen) {
+              langMenuDesktop.classList.remove('hidden');
+              langBtnDesktop.setAttribute('aria-expanded', 'true');
+            }
+          });
+        }
+
+        // Toggle Mobile Language Menu
+        if (langBtnMobile && langMenuMobile) {
+          langBtnMobile.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isOpen = !langMenuMobile.classList.contains('hidden');
+            closeAllMenus();
+            if (!isOpen) {
+              langMenuMobile.classList.remove('hidden');
+              langBtnMobile.setAttribute('aria-expanded', 'true');
+            }
+          });
         }
 
         // Toggle Desktop User Menu
@@ -315,12 +443,16 @@
         document.addEventListener('click', function (e) {
           const inDesktop = desktopMenu && desktopMenu.contains(e.target);
           const inDesktopBtn = desktopBtn && desktopBtn.contains(e.target);
+          const inLangDesktop = langMenuDesktop && langMenuDesktop.contains(e.target);
+          const inLangBtnDesktop = langBtnDesktop && langBtnDesktop.contains(e.target);
+          const inLangMobile = langMenuMobile && langMenuMobile.contains(e.target);
+          const inLangBtnMobile = langBtnMobile && langBtnMobile.contains(e.target);
           const inMobileUser = mobileUserMenu && mobileUserMenu.contains(e.target);
           const inMobileUserBtn = mobileUserBtn && mobileUserBtn.contains(e.target);
           const inMobileNav = mobileNavPanel && mobileNavPanel.contains(e.target);
           const inMobileNavBtn = mobileNavBtn && mobileNavBtn.contains(e.target);
 
-          if (!inDesktop && !inDesktopBtn && !inMobileUser && !inMobileUserBtn && !inMobileNav && !inMobileNavBtn) {
+          if (!inDesktop && !inDesktopBtn && !inLangDesktop && !inLangBtnDesktop && !inLangMobile && !inLangBtnMobile && !inMobileUser && !inMobileUserBtn && !inMobileNav && !inMobileNavBtn) {
             closeAllMenus();
           }
         });

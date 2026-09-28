@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-28 14:45+0000\n"
+"POT-Creation-Date: 2026-09-28 15:04+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,8 +25,8 @@ msgstr "Companies"
 
 #: Counter/templates/companies.html:46 Counter/templates/panel.html:16
 #: Counter/templates/reports.html:16 Counter/templates/upload.html:38
-#: Counter/templates/users.html:17 WordCounter/templates/base.html:73
-#: WordCounter/templates/base.html:217
+#: Counter/templates/users.html:17 WordCounter/templates/base.html:110
+#: WordCounter/templates/base.html:305
 msgid "Panel de administración"
 msgstr "Admin Panel"
 
@@ -85,7 +85,9 @@ msgstr "Home"
 msgid ""
 "Plataforma central para auditoría contractual, análisis de legibilidad y "
 "gestión de documentos corporativos."
-msgstr "Central platform for contractual auditing, readability analysis, and corporate document management."
+msgstr ""
+"Central platform for contractual auditing, readability analysis, and "
+"corporate document management."
 
 #: Counter/templates/panel.html:46 Counter/templates/panel.html:84
 #: Counter/templates/reports.html:4 Counter/templates/reports.html:19
@@ -155,7 +157,8 @@ msgstr "Report List"
 msgid ""
 "Consulta, filtra y analiza los reportes procesados en el sistema con sus "
 "métricas de complejidad."
-msgstr "Browse, filter, and analyze processed reports with their complexity metrics."
+msgstr ""
+"Browse, filter, and analyze processed reports with their complexity metrics."
 
 #: Counter/templates/reports.html:48
 msgid "Buscar por reporte o empresa..."
@@ -185,7 +188,9 @@ msgstr "Processing document..."
 msgid ""
 "Extrayendo texto digital, oraciones, palabras únicas y calculando índices de "
 "complejidad y legibilidad."
-msgstr "Extracting digital text, sentences, unique words, and calculating complexity and readability indexes."
+msgstr ""
+"Extracting digital text, sentences, unique words, and calculating complexity "
+"and readability indexes."
 
 #: Counter/templates/upload.html:23
 msgid "Por favor, no recargues la página"
@@ -203,7 +208,9 @@ msgstr "Report Upload & Processing"
 msgid ""
 "Carga documentos individuales en PDF o archivos masivos en formato ZIP para "
 "calcular índices de complejidad."
-msgstr "Upload individual PDF documents or bulk ZIP files to calculate complexity indexes."
+msgstr ""
+"Upload individual PDF documents or bulk ZIP files to calculate complexity "
+"indexes."
 
 #: Counter/templates/upload.html:58
 msgid "Ver Reportes"
@@ -217,7 +224,8 @@ msgstr "Upload Individual Report (PDF)"
 msgid ""
 "Procesa un único informe financiero o de sostenibilidad en formato PDF "
 "digital."
-msgstr "Process a single financial or sustainability report in digital PDF format."
+msgstr ""
+"Process a single financial or sustainability report in digital PDF format."
 
 #: Counter/templates/upload.html:130 Counter/templates/upload.html:140
 msgid "opcional si está en el texto"
@@ -259,7 +267,9 @@ msgstr "Overwrite if a report already exists for the same company and year"
 msgid ""
 "Si ya está registrado, reemplazará el archivo y recalculará las palabras "
 "clave sin duplicar las estadísticas globales."
-msgstr "If already registered, it will replace the file and recalculate keywords without duplicating global statistics."
+msgstr ""
+"If already registered, it will replace the file and recalculate keywords "
+"without duplicating global statistics."
 
 #: Counter/templates/upload.html:227
 msgid "Subir y Procesar PDF"
@@ -273,7 +283,9 @@ msgstr "Upload Multiple Reports (ZIP Batch)"
 msgid ""
 "Carga un archivo ZIP comprimido que contenga varios PDFs para procesarlos en "
 "lote."
-msgstr "Upload a compressed ZIP file containing multiple PDFs to process them in batch."
+msgstr ""
+"Upload a compressed ZIP file containing multiple PDFs to process them in "
+"batch."
 
 #: Counter/templates/users.html:4 Counter/templates/users.html:25
 msgid "Gestión de Usuarios"
@@ -283,7 +295,8 @@ msgstr "User Management"
 msgid ""
 "Administra cuentas, roles de auditor, asignación de expertos y trazabilidad "
 "de eventos."
-msgstr "Manage accounts, auditor roles, expert assignments, and action traceability."
+msgstr ""
+"Manage accounts, auditor roles, expert assignments, and action traceability."
 
 #: Counter/templates/users.html:43
 msgid "Registro de Auditoría"
@@ -368,8 +381,8 @@ msgstr "Never"
 msgid "Historial de auditoría y trazabilidad"
 msgstr "Audit and traceability history"
 
-#: Counter/templates/users.html:214 WordCounter/templates/base.html:100
-#: WordCounter/templates/base.html:153
+#: Counter/templates/users.html:214 WordCounter/templates/base.html:137
+#: WordCounter/templates/base.html:241
 msgid "Editar usuario"
 msgstr "Edit user"
 
@@ -458,7 +471,7 @@ msgid "Guardar"
 msgstr "Save"
 
 #: User/templates/login.html:5 User/templates/login.html:94
-#: WordCounter/templates/base.html:118 WordCounter/templates/base.html:223
+#: WordCounter/templates/base.html:155 WordCounter/templates/base.html:311
 msgid "Iniciar sesión"
 msgstr "Log In"
 
@@ -470,7 +483,9 @@ msgstr "Intelligent Auditing & Contract Analysis"
 msgid ""
 "Accede a la plataforma para evaluar la complejidad lingüística, mitigar "
 "riesgos y auditar contratos corporativos con métricas precisas."
-msgstr "Access the platform to evaluate linguistic complexity, mitigate risks, and audit corporate contracts with accurate metrics."
+msgstr ""
+"Access the platform to evaluate linguistic complexity, mitigate risks, and "
+"audit corporate contracts with accurate metrics."
 
 #: User/templates/login.html:47
 msgid "Métricas y Densidad Léxica"
@@ -536,7 +551,9 @@ msgstr "Start auditing contracts with precision"
 msgid ""
 "Regístrate para acceder al motor de análisis de complejidad, carga de "
 "documentos y generación de reportes comparativos."
-msgstr "Register to access the complexity analysis engine, document upload, and comparative reporting."
+msgstr ""
+"Register to access the complexity analysis engine, document upload, and "
+"comparative reporting."
 
 #: User/templates/register.html:43
 msgid "Perfil Auditor"
@@ -546,7 +563,9 @@ msgstr "Auditor Profile"
 msgid ""
 "Tu cuenta iniciará con privilegios de auditor para crear análisis, consultar "
 "empresas e inspeccionar cláusulas."
-msgstr "Your account will start with auditor privileges to create analyses, browse companies, and inspect clauses."
+msgstr ""
+"Your account will start with auditor privileges to create analyses, browse "
+"companies, and inspect clauses."
 
 #: User/templates/register.html:53
 msgid "¿Eres Experto Legal?"
@@ -556,7 +575,9 @@ msgstr "Are You a Legal Expert?"
 msgid ""
 "Si eres abogado especialista o perito, el administrador podrá asignarte "
 "permisos de validación técnica tras tu registro."
-msgstr "If you are a specialized lawyer or expert, the administrator can assign you technical validation permissions after registration."
+msgstr ""
+"If you are a specialized lawyer or expert, the administrator can assign you "
+"technical validation permissions after registration."
 
 #: User/templates/register.html:132
 msgid "Nombre(s)"
@@ -579,29 +600,35 @@ msgstr "English"
 msgid ""
 "¡Bienvenido, <strong class=\"text-blue-600 font-semibold\">%(username)s</"
 "strong>!"
-msgstr "Welcome, <strong class=\"text-blue-600 font-semibold\">%(username)s</strong>!"
+msgstr ""
+"Welcome, <strong class=\"text-blue-600 font-semibold\">%(username)s</strong>!"
 
-#: WordCounter/templates/base.html:92
-msgid "Sesión iniciada como"
-msgstr "Signed in as"
+#: WordCounter/templates/base.html:54 WordCounter/templates/base.html:169
+msgid "Cambiar idioma"
+msgstr "Change language"
 
-#: WordCounter/templates/base.html:110 WordCounter/templates/base.html:163
-msgid "Cerrar sesión"
-msgstr "Log Out"
-
-#: WordCounter/templates/base.html:121 WordCounter/templates/base.html:226
-msgid "Registrarse"
-msgstr "Register"
-
-#: WordCounter/templates/base.html:195
+#: WordCounter/templates/base.html:70 WordCounter/templates/base.html:181
+#: WordCounter/templates/base.html:283
 msgid "Idioma"
 msgstr "Language"
 
-#: WordCounter/templates/base.html:210
+#: WordCounter/templates/base.html:129
+msgid "Sesión iniciada como"
+msgstr "Signed in as"
+
+#: WordCounter/templates/base.html:147 WordCounter/templates/base.html:251
+msgid "Cerrar sesión"
+msgstr "Log Out"
+
+#: WordCounter/templates/base.html:158 WordCounter/templates/base.html:314
+msgid "Registrarse"
+msgstr "Register"
+
+#: WordCounter/templates/base.html:298
 #, python-format
 msgid "Conectado como <strong class=\"font-bold\">%(username)s</strong>"
 msgstr "Connected as <strong class=\"font-bold\">%(username)s</strong>"
 
-#: WordCounter/templates/base.html:240
+#: WordCounter/templates/base.html:328
 msgid "Todos los derechos reservados."
 msgstr "All rights reserved."
