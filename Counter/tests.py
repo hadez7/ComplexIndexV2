@@ -410,3 +410,57 @@ class InternationalizationTests(TestCase):
         content = panel_resp.content.decode('utf-8')
         self.assertIn('Panel de administración', content)
         self.assertIn('Empresas', content)
+
+    def test_all_modules_rendered_in_english(self):
+        self.client.login(username='admin_i18n', password='AdminPassword123!')
+        self.client.post(reverse('set_language'), {'language': 'en', 'next': reverse('panel')})
+
+        # Landing page
+        resp = self.client.get(reverse('index'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Comprehensive Audit & Contract Complexity Platform', resp.content.decode('utf-8'))
+
+        # Companies
+        resp = self.client.get(reverse('companies'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Company Directory', resp.content.decode('utf-8'))
+
+        # Total count
+        resp = self.client.get(reverse('totalcount'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Consolidated Lexical Frequency & Distribution', resp.content.decode('utf-8'))
+
+        # Concealment detection
+        resp = self.client.get(reverse('concealment_detection'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Information Concealment Detector', resp.content.decode('utf-8'))
+
+        # Concealment history
+        resp = self.client.get(reverse('concealment_history'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Concealment Audit History', resp.content.decode('utf-8'))
+
+        # Expert lists
+        resp = self.client.get(reverse('expert_lists'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Vocabularies and Control Lists', resp.content.decode('utf-8'))
+
+        # Comparative analysis
+        resp = self.client.get(reverse('comparative_analysis'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Comparative Vocabulary Analysis', resp.content.decode('utf-8'))
+
+        # Profile
+        resp = self.client.get(reverse('profile'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('User Profile', resp.content.decode('utf-8'))
+
+        # Upload
+        resp = self.client.get(reverse('upload'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('Upload Individual Report (PDF)', resp.content.decode('utf-8'))
+
+        # Users
+        resp = self.client.get(reverse('users'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertIn('User Management', resp.content.decode('utf-8'))

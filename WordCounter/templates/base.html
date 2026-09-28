@@ -21,6 +21,7 @@
     }
     </style>
     {% endblock %}
+    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 </head>
 
 <body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
@@ -115,7 +116,7 @@
               <button type="button" id="userMenuBtnDesktop" aria-haspopup="true" aria-expanded="false"
                       class="flex items-center p-1 rounded-full hover:ring-2 hover:ring-blue-400 focus:outline-none transition">
                 {% if user.profile.picture.name != 'profile_pics/default.jpg' %}
-                <img src="{{ user.profile.picture.url }}" alt="Foto de perfil" class="w-9 h-9 rounded-full object-cover border-2 border-blue-500 shadow-sm">
+                <img src="{{ user.profile.picture.url }}" alt="{% trans "Foto de perfil" %}" class="w-9 h-9 rounded-full object-cover border-2 border-blue-500 shadow-sm">
                 {% else %}
                 <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-blue-500 shadow-sm text-sm">
                   {{ user.username|slice:":1"|upper }}
@@ -219,7 +220,7 @@
               <button type="button" id="userMenuBtnMobile" aria-haspopup="true" aria-expanded="false"
                       class="flex items-center p-1 rounded-full hover:ring-2 hover:ring-blue-400 focus:outline-none transition">
                 {% if user.profile.picture.name != 'profile_pics/default.jpg' %}
-                <img src="{{ user.profile.picture.url }}" alt="Foto de perfil" class="w-8 h-8 rounded-full object-cover border-2 border-blue-500 shadow-sm">
+                <img src="{{ user.profile.picture.url }}" alt="{% trans "Foto de perfil" %}" class="w-8 h-8 rounded-full object-cover border-2 border-blue-500 shadow-sm">
                 {% else %}
                 <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-blue-500 shadow-sm text-xs">
                   {{ user.username|slice:":1"|upper }}
@@ -230,7 +231,7 @@
               <!-- Menú flotante de cuenta en Móvil -->
               <div id="userMenuMobile" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 py-1 divide-y divide-gray-100">
                 <div class="px-4 py-3 bg-gray-50 rounded-t-xl">
-                  <p class="text-xs text-gray-500 font-medium">Sesión activa</p>
+                  <p class="text-xs text-gray-500 font-medium">{% trans "Sesión activa" %}</p>
                   <p class="text-sm font-bold text-gray-800 truncate">{{ user.username }}</p>
                 </div>
                 <div class="py-1">
@@ -259,7 +260,7 @@
             <!-- Botón Hamburguesa Móvil -->
             <button type="button" id="mobileNavBtn" aria-expanded="false" aria-controls="mobileNavPanel"
                     class="p-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-              <span class="sr-only">Abrir menú de navegación</span>
+              <span class="sr-only">{% trans "Abrir menú de navegación" %}</span>
               <!-- Icono Hamburguesa (3 barras) -->
               <svg id="hamburgerIcon" class="w-6 h-6 block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>

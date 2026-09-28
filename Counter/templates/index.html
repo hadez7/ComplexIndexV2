@@ -1,8 +1,7 @@
 {% extends "base.html" %}
+{% load static i18n %}
 
-{% load static %}
-
-{% block title %}Inicio | ELI - Enterprise Lex Index{% endblock %}
+{% block title %}{% trans "Inicio" %} | ELI - Enterprise Lex Index{% endblock %}
 
 {% block custom_css %}
 <style>
@@ -21,37 +20,37 @@
             <svg class="w-3.5 h-3.5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
             </svg>
-            Plataforma Integral de Auditoría & Complejidad Contractual
+            {% trans "Plataforma Integral de Auditoría & Complejidad Contractual" %}
         </span>
 
         <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-gray-900 tracking-tight mb-6 leading-tight">
-            Análisis y Control Léxico en <span class="text-blue-600">Enterprise Lex Index</span>
+            {% trans "Análisis y Control Léxico en" %} <span class="text-blue-600">Enterprise Lex Index</span>
         </h1>
 
         <p class="text-lg sm:text-xl text-gray-600 mb-10 max-w-2xl mx-auto leading-relaxed font-normal">
-            Evalúa la complejidad lingüística, detecta riesgos normativos y audita reportes corporativos mediante algoritmos cuantitativos y vocabularios de expertos.
+            {% trans "Evalúa la complejidad lingüística, detecta riesgos normativos y audita reportes corporativos mediante algoritmos cuantitativos y vocabularios de expertos." %}
         </p>
 
         <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
             {% if user.is_authenticated %}
             <a href="{% url 'panel' %}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition duration-200 text-base">
-                <span>Ir al Panel de Administración</span>
+                <span>{% trans "Ir al Panel de Administración" %}</span>
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                 </svg>
             </a>
             <a href="{% url 'upload' %}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-800 font-semibold px-6 py-3.5 rounded-xl border border-gray-300 shadow-xs transition duration-200 text-base">
-                Subir Reporte
+                {% trans "Subir Reporte" %}
             </a>
             {% else %}
             <a href="{% url 'login' %}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition duration-200 text-base">
-                <span>Iniciar Sesión</span>
+                <span>{% trans "Iniciar Sesión" %}</span>
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                 </svg>
             </a>
             <a href="{% url 'register' %}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-800 font-semibold px-6 py-3.5 rounded-xl border border-gray-300 shadow-xs transition duration-200 text-base">
-                Crear Cuenta de Auditor
+                {% trans "Crear Cuenta de Auditor" %}
             </a>
             {% endif %}
         </div>
@@ -62,8 +61,8 @@
 <section class="py-16 lg:py-24 px-4 sm:px-6 bg-gray-50">
     <div class="max-w-6xl mx-auto">
         <div class="text-center mb-12">
-            <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Capacidades del Sistema</h2>
-            <p class="text-gray-500 text-sm mt-2 max-w-xl mx-auto">Herramientas especializadas para equipos de auditoría, firmas legales y analistas corporativos.</p>
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">{% trans "Capacidades del Sistema" %}</h2>
+            <p class="text-gray-500 text-sm mt-2 max-w-xl mx-auto">{% trans "Herramientas especializadas para equipos de auditoría, firmas legales y analistas corporativos." %}</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -73,8 +72,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                     </svg>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Métricas de Complejidad</h3>
-                <p class="text-gray-600 text-sm leading-relaxed">Cálculo automatizado de índices de legibilidad (Inflesz), densidad léxica y recuento silábico por documento.</p>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">{% trans "Métricas de Complejidad" %}</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">{% trans "Cálculo automatizado de índices de legibilidad (Inflesz), densidad léxica y recuento silábico por documento." %}</p>
             </div>
 
             <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md border border-gray-200 transition duration-200">
@@ -84,8 +83,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"></path>
                     </svg>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Detección de Ocultamiento</h3>
-                <p class="text-gray-600 text-sm leading-relaxed">Inspección de fragmentos y cláusulas con patrones de lenguaje complejo u omisión de información crítica.</p>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">{% trans "Detección de Ocultamiento" %}</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">{% trans "Inspección de fragmentos y cláusulas con patrones de lenguaje complejo u omisión de información crítica." %}</p>
             </div>
 
             <div class="bg-white rounded-2xl p-8 shadow-sm hover:shadow-md border border-gray-200 transition duration-200">
@@ -94,8 +93,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                     </svg>
                 </div>
-                <h3 class="text-lg font-bold text-gray-900 mb-2">Validación de Expertos</h3>
-                <p class="text-gray-600 text-sm leading-relaxed">Asignación de vocabularios controlados y supervisión por especialistas en derecho y auditoría contable.</p>
+                <h3 class="text-lg font-bold text-gray-900 mb-2">{% trans "Validación de Expertos" %}</h3>
+                <p class="text-gray-600 text-sm leading-relaxed">{% trans "Asignación de vocabularios controlados y supervisión por especialistas en derecho y auditoría contable." %}</p>
             </div>
         </div>
     </div>
@@ -104,12 +103,12 @@
 <!-- Llamado final a la acción -->
 <section class="py-16 px-4 sm:px-6 bg-white border-t border-gray-100 text-center">
     <div class="max-w-3xl mx-auto">
-        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">Comienza a auditar tus documentos</h2>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight mb-3">{% trans "Comienza a auditar tus documentos" %}</h2>
         <p class="text-gray-500 text-sm sm:text-base mb-8 max-w-xl mx-auto leading-relaxed">
-            Accede a las herramientas de análisis comparativo, histórico de reportes y gestión de empresas.
+            {% trans "Accede a las herramientas de análisis comparativo, histórico de reportes y gestión de empresas." %}
         </p>
         <a href="{% url 'panel' %}" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-8 py-3.5 rounded-xl shadow-md hover:shadow-lg transition duration-200 text-sm">
-            <span>Ir al Panel de Administración</span>
+            <span>{% trans "Ir al Panel de Administración" %}</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
             </svg>

@@ -80,10 +80,10 @@
                 <!-- Encabezado del Formulario -->
                 <div class="mb-6">
                     <span class="inline-block py-1 px-3 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 mb-2 border border-blue-100">
-                        Nuevo usuario
+                        {% trans "Nuevo usuario" %}
                     </span>
                     <h2 class="text-2xl lg:text-3xl font-extrabold text-gray-900 tracking-tight">{% trans "Crear cuenta" %}</h2>
-                    <p class="text-gray-500 text-sm mt-1">Completa los campos a continuación para darte de alta en la plataforma.</p>
+                    <p class="text-gray-500 text-sm mt-1">{% trans "Completa los campos a continuación para darte de alta en la plataforma." %}</p>
                 </div>
 
                 <!-- Alerta de Errores Globales (non_field_errors) -->
@@ -93,7 +93,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                     </svg>
                     <div>
-                        <p class="font-semibold text-red-900">Revisa los siguientes detalles</p>
+                        <p class="font-semibold text-red-900">{% trans "Revisa los siguientes detalles" %}</p>
                         <ul class="mt-1 list-disc list-inside space-y-0.5 text-xs text-red-700">
                             {% for error in form.non_field_errors %}
                             <li>{{ error }}</li>
@@ -241,16 +241,16 @@
 
                     <!-- Indicador sutil de requisitos de contraseña -->
                     <div class="bg-gray-50 rounded-xl p-3 border border-gray-200 text-xs text-gray-500">
-                        <span class="font-medium text-gray-700">Requisitos de seguridad:</span>
+                        <span class="font-medium text-gray-700">{% trans "Requisitos de seguridad:" %}</span>
                         <ul class="list-disc list-inside mt-1 space-y-0.5 text-gray-500">
-                            <li>Mínimo 8 caracteres que no sean enteramente numéricos.</li>
-                            <li>Evita contraseñas comunes o similares a tus datos personales.</li>
+                            <li>{% trans "Mínimo 8 caracteres que no sean enteramente numéricos." %}</li>
+                            <li>{% trans "Evita contraseñas comunes o similares a tus datos personales." %}</li>
                         </ul>
                     </div>
 
                     <!-- Botón de Envío -->
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition duration-200 flex items-center justify-center space-x-2 text-sm mt-2">
-                        <span>Crear mi cuenta de auditor</span>
+                        <span>{% trans "Crear mi cuenta de auditor" %}</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                         </svg>

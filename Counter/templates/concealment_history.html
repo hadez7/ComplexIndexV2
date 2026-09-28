@@ -1,7 +1,9 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}Historial de Auditoría | ELI{% endblock %}
 
+{% load i18n %}
 {% block content %}
 <div class="container mx-auto px-4 py-6">
     <!-- Cabecera de Página / Breadcrumb y Acciones -->
@@ -12,19 +14,19 @@
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                    <span>Panel de administración</span>
+                    <span>{% trans "Panel de administración" %}</span>
                 </a>
                 <span>/</span>
-                <a href="{% url 'concealment_detection' %}" class="hover:text-blue-600 transition">Detección de ocultamiento</a>
+                <a href="{% url 'concealment_detection' %}" class="hover:text-blue-600 transition">{% trans "Detección de ocultamiento" %}</a>
                 <span>/</span>
-                <span class="text-gray-700 font-semibold">Historial</span>
+                <span class="text-gray-700 font-semibold">{% trans "Historial" %}</span>
             </div>
 
             <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-                Historial de Auditoría de Ocultamiento
+                {% trans "Historial de Auditoría de Ocultamiento" %}
             </h1>
             <p class="text-sm text-gray-500 mt-1">
-                Trazabilidad de revisiones efectuadas, auditores responsables y párrafos analizados.
+                {% trans "Trazabilidad de revisiones efectuadas, auditores responsables y párrafos analizados." %}
             </p>
         </div>
 
@@ -34,22 +36,22 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                <span>Volver a Detección</span>
+                <span>{% trans "Volver a Detección" %}</span>
             </a>
         </div>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
         <div class="bg-white rounded-xl p-5 shadow border-l-4 border-blue-500">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Revisiones encontradas</p>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{% trans "Revisiones encontradas" %}</p>
             <p class="text-2xl font-bold text-gray-800 mt-1">{{ total_reviews_count }}</p>
         </div>
         <div class="bg-white rounded-xl p-5 shadow border-l-4 border-green-500">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Ocurrencias validadas</p>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{% trans "Ocurrencias validadas" %}</p>
             <p class="text-2xl font-bold text-green-600 mt-1">{{ total_words_validated }}</p>
         </div>
         <div class="bg-white rounded-xl p-5 shadow border-l-4 border-red-500">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Ocurrencias descartadas</p>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{% trans "Ocurrencias descartadas" %}</p>
             <p class="text-2xl font-bold text-red-600 mt-1">{{ total_words_discarded }}</p>
         </div>
     </div>
@@ -60,24 +62,24 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
-            Filtros de búsqueda
+            {% trans "Filtros de búsqueda" %}
         </h2>
         <form id="filterForm" method="get" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
             <div>
-                <label for="year" class="block text-sm font-medium text-gray-700 mb-1.5">Año del reporte</label>
+                <label for="year" class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Año del reporte" %}</label>
                 <select name="year" id="year"
                         class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
-                    <option value="">Todos los años</option>
+                    <option value="">{% trans "Todos los años" %}</option>
                     {% for y in years %}
                     <option value="{{ y }}" {% if year_filter == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div>
-                <label for="company" class="block text-sm font-medium text-gray-700 mb-1.5">Empresa</label>
+                <label for="company" class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Empresa" %}</label>
                 <select name="company" id="company"
                         class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
-                    <option value="">Todas las empresas</option>
+                    <option value="">{% trans "Todas las empresas" %}</option>
                     {% for c in companies %}
                     <option value="{{ c.id }}" {% if company_filter == c.id|stringformat:"s" or company_filter == c.name or company_filter == c.clean_name %}selected{% endif %}>
                         {{ c.clean_name|default:c.name }}
@@ -86,10 +88,10 @@
                 </select>
             </div>
             <div>
-                <label for="user" class="block text-sm font-medium text-gray-700 mb-1.5">Auditor</label>
+                <label for="user" class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Auditor" %}</label>
                 <select name="user" id="user"
                         class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
-                    <option value="">Todos los auditores</option>
+                    <option value="">{% trans "Todos los auditores" %}</option>
                     {% for a in auditors %}
                     <option value="{{ a.username }}" {% if user_filter == a.username %}selected{% endif %}>
                         {{ a.username }}
@@ -98,14 +100,14 @@
                 </select>
             </div>
             <div>
-                <label for="word" class="block text-sm font-medium text-gray-700 mb-1.5">Palabra auditada</label>
+                <label for="word" class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Palabra auditada" %}</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </div>
-                    <input type="text" name="word" id="word" value="{{ word_filter }}" placeholder="Buscar palabra..."
+                    <input type="text" name="word" id="word" value="{{ word_filter }}" placeholder="{% trans "Buscar palabra..." %}"
                            class="w-full pl-10 pr-3.5 py-2.5 border border-gray-300 rounded-lg shadow-sm text-sm text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition">
                 </div>
             </div>
@@ -116,7 +118,7 @@
                     <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
-                    <span>Limpiar filtros</span>
+                    <span>{% trans "Limpiar filtros" %}</span>
                 </a>
                 {% endif %}
                 <button type="submit"
@@ -124,7 +126,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                     </svg>
-                    <span>Filtrar</span>
+                    <span>{% trans "Filtrar" %}</span>
                 </button>
             </div>
         </form>
@@ -136,14 +138,14 @@
             <table class="min-w-full divide-y divide-gray-200 text-left text-sm">
                 <thead class="bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
                     <tr>
-                        <th class="py-3.5 px-4 font-semibold">Fecha y Hora</th>
-                        <th class="py-3.5 px-4 font-semibold">Auditor</th>
-                        <th class="py-3.5 px-4 font-semibold">Empresa / Año</th>
-                        <th class="py-3.5 px-4 font-semibold">Palabra</th>
-                        <th class="py-3.5 px-4 font-semibold text-center">Detectadas</th>
-                        <th class="py-3.5 px-4 font-semibold text-center">Válidas</th>
-                        <th class="py-3.5 px-4 font-semibold text-center">Descartadas</th>
-                        <th class="py-3.5 px-4 font-semibold text-right">Detalle</th>
+                        <th class="py-3.5 px-4 font-semibold">{% trans "Fecha y Hora" %}</th>
+                        <th class="py-3.5 px-4 font-semibold">{% trans "Auditor" %}</th>
+                        <th class="py-3.5 px-4 font-semibold">{% trans "Empresa / Año" %}</th>
+                        <th class="py-3.5 px-4 font-semibold">{% trans "Palabra" %}</th>
+                        <th class="py-3.5 px-4 font-semibold text-center">{% trans "Detectadas" %}</th>
+                        <th class="py-3.5 px-4 font-semibold text-center">{% trans "Válidas" %}</th>
+                        <th class="py-3.5 px-4 font-semibold text-center">{% trans "Descartadas" %}</th>
+                        <th class="py-3.5 px-4 font-semibold text-right">{% trans "Detalle" %}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 text-gray-700">
@@ -161,7 +163,7 @@
                                 {{ r.user.username }}
                             </span>
                             {% else %}
-                            <span class="text-xs text-gray-400 italic">Sin registrar</span>
+                            <span class="text-xs text-gray-400 italic">{% trans "Sin registrar" %}</span>
                             {% endif %}
                         </td>
                         <td class="py-3 px-4 font-medium text-gray-900">
@@ -194,14 +196,14 @@
                             <button type="button"
                                     onclick="abrirModalDetalle({{ r.id }})"
                                     class="text-blue-600 hover:text-blue-800 font-medium text-xs bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition">
-                                Ver párrafos
+                                {% trans "Ver párrafos" %}
                             </button>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
                         <td colspan="8" class="py-8 text-center text-gray-500">
-                            No se encontraron registros de auditoría que coincidan con los filtros seleccionados.
+                            {% trans "No se encontraron registros de auditoría que coincidan con los filtros seleccionados." %}
                         </td>
                     </tr>
                     {% endfor %}
@@ -216,7 +218,7 @@
     <div class="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden">
         <div class="p-5 border-b flex items-center justify-between bg-gray-50">
             <div>
-                <h3 class="text-lg font-bold text-gray-800" id="modalTitulo">Detalle de la auditoría</h3>
+                <h3 class="text-lg font-bold text-gray-800" id="modalTitulo">{% trans "Detalle de la auditoría" %}</h3>
                 <p class="text-xs text-gray-500" id="modalSubtitulo"></p>
             </div>
             <button type="button" onclick="cerrarModalDetalle()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg">
@@ -226,11 +228,11 @@
             </button>
         </div>
         <div class="p-6 overflow-y-auto space-y-4 flex-1" id="modalContenido">
-            <p class="text-gray-500 text-center py-4">Cargando detalle...</p>
+            <p class="text-gray-500 text-center py-4">{% trans "Cargando detalle..." %}</p>
         </div>
         <div class="p-4 border-t bg-gray-50 flex justify-end">
             <button type="button" onclick="cerrarModalDetalle()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-xl text-sm transition">
-                Cerrar
+                {% trans "Cerrar" %}
             </button>
         </div>
     </div>

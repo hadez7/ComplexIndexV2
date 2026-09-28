@@ -1,7 +1,9 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block title %}Conteo por reporte | ELI{% endblock %}
 
+{% load i18n %}
 {% block content %}
 <div class="container mx-auto px-4 py-8">
 
@@ -13,19 +15,19 @@
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                    <span>Panel de administración</span>
+                    <span>{% trans "Panel de administración" %}</span>
                 </a>
                 <span>/</span>
-                <a href="{% url 'reports' %}" class="hover:text-blue-600 transition">Reportes</a>
+                <a href="{% url 'reports' %}" class="hover:text-blue-600 transition">{% trans "Reportes" %}</a>
                 <span>/</span>
-                <span class="text-gray-700 font-semibold">Conteo por reporte</span>
+                <span class="text-gray-700 font-semibold">{% trans "Conteo por reporte" %}</span>
             </div>
 
             <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-                Frecuencia Léxica del Reporte
+                {% trans "Frecuencia Léxica del Reporte" %}
             </h1>
             <p class="text-sm text-gray-500 mt-1">
-                Distribución detallada de frecuencias y porcentajes para el reporte seleccionado.
+                {% trans "Distribución detallada de frecuencias y porcentajes para el reporte seleccionado." %}
             </p>
         </div>
 
@@ -35,7 +37,7 @@
                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                <span>Volver a Reportes</span>
+                <span>{% trans "Volver a Reportes" %}</span>
             </a>
         </div>
     </div>
@@ -44,23 +46,23 @@
     <div id="chartModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-xl relative">
             <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl">&times;</button>
-            <h2 class="text-xl font-semibold text-center mb-4 text-gray-800">Top 10 palabras más frecuentes</h2>
+            <h2 class="text-xl font-semibold text-center mb-4 text-gray-800">{% trans "Top 10 palabras más frecuentes" %}</h2>
             <canvas id="wordPieChart"></canvas>
         </div>
     </div>
 
     <!-- !Título del reporte -->
-    <h1 class="text-3xl font-bold mb-2 text-gray-800 text-center">Resultado del Conteo</h1>
+    <h1 class="text-3xl font-bold mb-2 text-gray-800 text-center">{% trans "Resultado del Conteo" %}</h1>
     {% if report %}
         <p class="text-lg text-gray-600 mb-6 text-center">
-            Nombre del reporte: <strong>{{ report.name }}</strong> | Año: <strong>{{ report.year }}</strong>
+            {% trans "Nombre del reporte" %}: <strong>{{ report.name }}</strong> | {% trans "Año" %}: <strong>{{ report.year }}</strong>
         </p>
     {% endif %}
 
     <!-- !Botón generar gráfico -->
     <div class="text-center my-6">
         <button onclick="openModal()" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-sm text-white font-semibold py-2.5 px-6 rounded-xl shadow-md transition duration-200">
-            Generar Gráfico de pastel
+            {% trans "Generar Gráfico de pastel" %}
         </button>
     </div>
 
@@ -69,10 +71,10 @@
         <table class="w-full table-auto text-sm text-gray-900">
             <thead class="bg-gray-50 border-b border-gray-200 uppercase text-xs font-semibold text-gray-500 tracking-wider">
                 <tr>
-                    <th class="px-6 py-3 text-left rounded-tl-xl">Palabra</th>
-                    <th class="px-6 py-3 text-left">Cantidad</th>
-                    <th class="px-6 py-3 text-left">Palabra</th>
-                    <th class="px-6 py-3 text-left rounded-tr-xl">Cantidad</th>
+                    <th class="px-6 py-3 text-left rounded-tl-xl">{% trans "Palabra" %}</th>
+                    <th class="px-6 py-3 text-left">{% trans "Cantidad" %}</th>
+                    <th class="px-6 py-3 text-left">{% trans "Palabra" %}</th>
+                    <th class="px-6 py-3 text-left rounded-tr-xl">{% trans "Cantidad" %}</th>
                 </tr>
             </thead>
             <tbody>
@@ -101,7 +103,7 @@
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="4" class="px-6 py-4 text-center text-gray-500 italic">No se ha procesado el archivo.</td>
+                    <td colspan="4" class="px-6 py-4 text-center text-gray-500 italic">{% trans "No se ha procesado el archivo." %}</td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -131,7 +133,7 @@
                     {% endfor %}
                 ],
                 datasets: [{
-                    label: 'Frecuencia',
+                    label: "{% trans "Frecuencia" %}",
                     data: [
                         {% for item in top10_words %}
                             {{ item.quantity }}{% if not forloop.last %},{% endif %}

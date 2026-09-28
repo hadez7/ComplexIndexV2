@@ -1,7 +1,9 @@
 {% extends "base.html" %}
+{% load i18n %}
 
-{% block title %}Detección de ocultamiento | ELI{% endblock %}
+{% block title %}{% trans "Detección de ocultamiento" %} | ELI{% endblock %}
 
+{% load i18n %}
 {% block content %}
 <div class="container mx-auto px-4 py-6">
     <!-- Cabecera de Página / Breadcrumb y Acciones -->
@@ -12,17 +14,17 @@
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                    <span>Panel de administración</span>
+                    <span>{% trans "Panel de administración" %}</span>
                 </a>
                 <span>/</span>
-                <span class="text-gray-700 font-semibold">Detector de ocultamiento</span>
+                <span class="text-gray-700 font-semibold">{% trans "Detector de ocultamiento" %}</span>
             </div>
 
             <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-                Detector de Ocultamiento de Información
+                {% trans "Detector de Ocultamiento de Información" %}
             </h1>
             <p class="text-sm text-gray-500 mt-1">
-                Identifica fragmentos y párrafos en reportes corporativos con potenciales patrones de opacidad o lenguaje ambiguo.
+                {% trans "Identifica fragmentos y párrafos en reportes corporativos con potenciales patrones de opacidad o lenguaje ambiguo." %}
             </p>
         </div>
 
@@ -32,7 +34,7 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                 </svg>
-                <span>Historial de Auditoría</span>
+                <span>{% trans "Historial de Auditoría" %}</span>
             </a>
         </div>
     </div>
@@ -43,12 +45,12 @@
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
-            Filtros de búsqueda
+            {% trans "Filtros de búsqueda" %}
         </h2>
         <form method="get" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 items-end">
             <div>
                 <label for="year" class="block text-sm font-medium text-gray-700 mb-1.5">
-                    Año del reporte
+                    {% trans "Año del reporte" %}
                 </label>
 
                 <select
@@ -58,7 +60,7 @@
                     class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
 
                     <option value="">
-                        Seleccione un año
+                        {% trans "Seleccione un año" %}
                     </option>
 
                     {% for year in years %}
@@ -75,7 +77,7 @@
             </div>
             <div>
                 <label for="report" class="block text-sm font-medium text-gray-700 mb-1.5">
-                    Selecciona una empresa:
+                    {% trans "Selecciona una empresa:" %}
                 </label>
                 <select name="report_id" id="report" required
                         data-selected="{% if selected_report %}{{ selected_report.id }}{% endif %}"
@@ -90,7 +92,7 @@
 
             <div>
                 <label for="origen-palabras" class="block text-sm font-medium text-gray-700 mb-1.5">
-                    Origen de palabras
+                    {% trans "Origen de palabras" %}
                 </label>
 
                 <select
@@ -102,14 +104,14 @@
                         {% if origen_palabras == "reporte" %}
                             selected
                         {% endif %}>
-                        Palabras del reporte
+                        {% trans "Palabras del reporte" %}
                     </option>
 
                     <option value="experto"
                         {% if origen_palabras == "experto" %}
                             selected
                         {% endif %}>
-                        Lista de experto
+                        {% trans "Lista de experto" %}
                     </option>
 
                 </select>
@@ -123,7 +125,7 @@
                 {% endif %}
             >
                 <label for="lista-experto" class="block text-sm font-medium text-gray-700 mb-1.5">
-                    Lista de experto
+                    {% trans "Lista de experto" %}
                 </label>
 
                 <select
@@ -132,7 +134,7 @@
                     class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
 
                     <option value="">
-                        Seleccione una lista
+                        {% trans "Seleccione una lista" %}
                     </option>
 
                     {% for lista in expert_lists %}
@@ -151,7 +153,7 @@
 
             <div>
                 <label for="palabra" class="block text-sm font-medium text-gray-700 mb-1.5">
-                    Palabra a auditar
+                    {% trans "Palabra a auditar" %}
                 </label>
 
                 <select name="palabra"
@@ -177,14 +179,14 @@
             <div class="col-span-full flex justify-end gap-3 pt-2">
                 <a href="{% url 'concealment_detection' %}"
                    class="inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2.5 px-5 rounded-xl transition duration-200">
-                    Limpiar
+                    {% trans "Limpiar" %}
                 </a>
                 <button type="submit"
                         class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-6 rounded-xl shadow transition duration-200">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
-                    Buscar
+                    {% trans "Buscar" %}
                 </button>
             </div>
         </form>
@@ -204,16 +206,16 @@
             value="{{ palabra }}">
     <div>
         <h2 class="text-xl font-semibold text-gray-800 mb-4">
-            Párrafos encontrados para:
+            {% trans "Párrafos encontrados para:" %}
             <span class="text-blue-600">"{{ palabra }}"</span>
-            en
+            {% trans "en" %}
             <span class="italic font-semibold text-gray-900">{% if selected_report.company %}{% if selected_report.clean_company %}{{ selected_report.clean_company }}{% else %}{{ selected_report.company.name }}{% endif %}{% if selected_report.year %} ({{ selected_report.year }}){% endif %}{% else %}{{ selected_report.name }}{% endif %}</span>
         </h2>
 
         <div class="space-y-4">
-            <p>Total encontrados: {{ paragraphs|length }}</p>
+            <p>{% trans "Total encontrados" %}: {{ paragraphs|length }}</p>
             <div class="mb-4">
-                Total de ocurrencias válidas:
+                {% trans "Total de ocurrencias válidas" %}:
                 <span id="total-ocurrencias">
                     {{ total_ocurrencias }}
                 </span>
@@ -228,7 +230,7 @@
                     <input type="checkbox" class="parrafo-check w-6 h-6 accent-blue-600 cursor-pointer" data-count="{{ p.count }}" name="parrafos_validos" value="{{ forloop.counter0 }}" {% if p.checked %}checked{% endif %}>
 
                     <span class="text-sm font-medium text-red-600 text-center whitespace-nowrap">
-                        {{ p.count }} ocurrencias
+                        {{ p.count }} {% trans "ocurrencias" %}
                     </span>
                 </div>
             </div>
@@ -240,7 +242,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                 </svg>
-                Aceptar revisión
+                {% trans "Aceptar revisión" %}
             </button>
         </div>
     </div>
@@ -254,23 +256,23 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                Últimas revisiones en este reporte
+                {% trans "Últimas revisiones en este reporte" %}
             </h2>
             <a href="{% url 'concealment_history' %}?company={% if selected_report.company %}{{ selected_report.company.name|urlencode }}{% endif %}"
                class="text-xs font-semibold text-purple-600 hover:text-purple-800 underline">
-                Ver historial completo &rarr;
+                {% trans "Ver historial completo" %} &rarr;
             </a>
         </div>
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm text-left">
                 <thead class="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider">
                     <tr>
-                        <th class="py-2.5 px-3 font-semibold">Fecha</th>
-                        <th class="py-2.5 px-3 font-semibold">Auditor</th>
-                        <th class="py-2.5 px-3 font-semibold">Palabra</th>
-                        <th class="py-2.5 px-3 text-center font-semibold">Detectadas</th>
-                        <th class="py-2.5 px-3 text-center font-semibold">Válidas</th>
-                        <th class="py-2.5 px-3 text-center font-semibold">Descartadas</th>
+                        <th class="py-2.5 px-3 font-semibold">{% trans "Fecha" %}</th>
+                        <th class="py-2.5 px-3 font-semibold">{% trans "Auditor" %}</th>
+                        <th class="py-2.5 px-3 font-semibold">{% trans "Palabra" %}</th>
+                        <th class="py-2.5 px-3 text-center font-semibold">{% trans "Detectadas" %}</th>
+                        <th class="py-2.5 px-3 text-center font-semibold">{% trans "Válidas" %}</th>
+                        <th class="py-2.5 px-3 text-center font-semibold">{% trans "Descartadas" %}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 text-gray-700">
@@ -283,7 +285,7 @@
                                     {{ rev.user.username }}
                                 </span>
                             {% else %}
-                                <span class="text-gray-400 italic">Sin registrar</span>
+                                <span class="text-gray-400 italic">{% trans "Sin registrar" %}</span>
                             {% endif %}
                         </td>
                         <td class="py-2 px-3 font-semibold text-blue-600">"{{ rev.word }}"</td>

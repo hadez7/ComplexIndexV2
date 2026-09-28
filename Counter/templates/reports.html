@@ -81,15 +81,15 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
                     </div>
-                    <h2 class="text-lg font-bold text-gray-900">Detalles del Reporte</h2>
+                    <h2 class="text-lg font-bold text-gray-900">{% trans "Detalles del Reporte" %}</h2>
                 </div>
                 <button type="button" onclick="closeDetailsModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
             </div>
             <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-100 text-sm mb-4">
                 <p class="flex justify-between"><span class="text-gray-500 font-medium">ID:</span> <span id="detail-id" class="font-mono font-bold text-gray-800"></span></p>
-                <p class="flex justify-between"><span class="text-gray-500 font-medium">Nombre:</span> <span id="detail-name" class="font-semibold text-gray-800 text-right"></span></p>
-                <p class="flex justify-between"><span class="text-gray-500 font-medium">Año:</span> <span id="detail-year" class="text-gray-700 font-medium"></span></p>
-                <p class="flex justify-between"><span class="text-gray-500 font-medium">Empresa:</span> <span id="detail-company" class="text-gray-700 font-medium text-right"></span></p>
+                <p class="flex justify-between"><span class="text-gray-500 font-medium">{% trans "Nombre" %}:</span> <span id="detail-name" class="font-semibold text-gray-800 text-right"></span></p>
+                <p class="flex justify-between"><span class="text-gray-500 font-medium">{% trans "Año" %}:</span> <span id="detail-year" class="text-gray-700 font-medium"></span></p>
+                <p class="flex justify-between"><span class="text-gray-500 font-medium">{% trans "Empresa" %}:</span> <span id="detail-company" class="text-gray-700 font-medium text-right"></span></p>
             </div>
             <div class="flex justify-end pt-2">
                 <button onclick="closeDetailsModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-xl text-sm transition">{% trans "Cerrar" %}</button>
@@ -107,22 +107,22 @@
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z" />
                         </svg>
                     </div>
-                    <h2 class="text-lg font-bold text-gray-900">Editar Reporte</h2>
+                    <h2 class="text-lg font-bold text-gray-900">{% trans "Editar Reporte" %}</h2>
                 </div>
                 <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
             </div>
             <form id="editReportForm" onsubmit="submitEditForm(event)" class="space-y-4">
                 <input type="hidden" id="edit-id">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nombre del Reporte:</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">{% trans "Nombre del Reporte" %}:</label>
                     <input type="text" id="edit-name" class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Año:</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">{% trans "Año" %}:</label>
                     <input type="number" id="edit-year" class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Empresa:</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">{% trans "Empresa" %}:</label>
                     <select id="edit-company" class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition" required>
                         {% for company in companies %}
                             <option value="{{ company.id }}">{{ company.name }}</option>
@@ -145,8 +145,8 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                 </svg>
             </div>
-            <h2 class="text-lg font-bold text-gray-900 text-center mb-1">¿Eliminar Reporte?</h2>
-            <p class="text-sm text-gray-500 text-center mb-6 leading-relaxed">¿Estás seguro de eliminar este reporte del sistema?</p>
+            <h2 class="text-lg font-bold text-gray-900 text-center mb-1">{% trans "¿Eliminar Reporte?" %}</h2>
+            <p class="text-sm text-gray-500 text-center mb-6 leading-relaxed">{% trans "¿Estás seguro de eliminar este reporte del sistema?" %}</p>
             <div class="flex justify-center gap-3">
                 <button onclick="closeDeleteModal()" class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">{% trans "Cancelar" %}</button>
                 <button onclick="deleteReport()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-xl text-sm shadow-md transition">{% trans "Eliminar" %}</button>
@@ -187,16 +187,16 @@
                                     {{ report.year }}
                                 </span>
                             {% else %}
-                                <span class="text-xs text-gray-400 italic">No asignado</span>
+                                <span class="text-xs text-gray-400 italic">{% trans "No asignado" %}</span>
                             {% endif %}
                         </td>
                         <td class="px-6 py-4 text-sm text-gray-600 font-medium">
-                            {{ report.company.name|default:"Empresa no asignada" }}
+                            {% if report.company.name %}{{ report.company.name }}{% else %}{% trans "Empresa no asignada" %}{% endif %}
                         </td>
                         <td class="px-6 py-4 text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-1.5">
                                 <button onclick="showDetails({{ report.id }})"
-                                        title="Ver detalles"
+                                        title="{% trans 'Ver detalles' %}"
                                         class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition inline-flex items-center">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -204,21 +204,21 @@
                                     </svg>
                                 </button>
                                 <a href="{% url 'report_count' report.id %}"
-                                   title="Ver conteo de palabras"
+                                   title="{% trans 'Ver conteo de palabras' %}"
                                    class="p-2 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100 transition inline-flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                                     </svg>
                                 </a>
                                 <button onclick="openEditModal({{ report.id }})"
-                                        title="Editar"
+                                        title="{% trans 'Editar' %}"
                                         class="p-2 rounded-lg bg-yellow-50 text-yellow-600 hover:bg-yellow-100 transition inline-flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z" />
                                     </svg>
                                 </button>
                                 <button onclick="openDeleteModal({{ report.id }})"
-                                        title="Eliminar"
+                                        title="{% trans 'Eliminar' %}"
                                         class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition inline-flex items-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -234,9 +234,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
                             {% if query %}
-                                <p class="text-sm">No se encontraron reportes que coincidan con "<strong class="text-gray-700">{{ query }}</strong>".</p>
+                                <p class="text-sm">{% blocktrans %}No se encontraron reportes que coincidan con "<strong class="text-gray-700">{{ query }}</strong>".{% endblocktrans %}</p>
                             {% else %}
-                                <p class="text-sm">No hay reportes disponibles en este momento.</p>
+                                <p class="text-sm">{% trans "No hay reportes disponibles en este momento." %}</p>
                             {% endif %}
                         </td>
                     </tr>
