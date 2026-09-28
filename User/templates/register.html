@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load widget_tweaks %}
 
-{% block title %}Crear cuenta | ELI - Enterprise Lex Index{% endblock %}
+{% block title %}{% trans "Crear cuenta" %} | ELI - Enterprise Lex Index{% endblock %}
 
 {% block content %}
 <div class="max-w-5xl mx-auto my-6 px-4">
@@ -28,10 +29,10 @@
                 </div>
 
                 <h3 class="text-xl font-bold text-white mb-2 leading-snug">
-                    Comienza a auditar contratos con precisión
+                    {% trans "Comienza a auditar contratos con precisión" %}
                 </h3>
                 <p class="text-blue-100 text-sm mb-6 leading-relaxed">
-                    Regístrate para acceder al motor de análisis de complejidad, carga de documentos y generación de reportes comparativos.
+                    {% trans "Regístrate para acceder al motor de análisis de complejidad, carga de documentos y generación de reportes comparativos." %}
                 </p>
 
                 <!-- Información de Perfil / Roles -->
@@ -39,20 +40,20 @@
                     <div class="bg-blue-800 bg-opacity-40 p-3.5 rounded-2xl border border-blue-400 border-opacity-25">
                         <div class="flex items-center space-x-2.5 mb-1">
                             <span class="w-2 h-2 rounded-full bg-green-400"></span>
-                            <h4 class="text-sm font-semibold text-white">Perfil Auditor</h4>
+                            <h4 class="text-sm font-semibold text-white">{% trans "Perfil Auditor" %}</h4>
                         </div>
                         <p class="text-xs text-blue-200 leading-relaxed">
-                            Tu cuenta iniciará con privilegios de auditor para crear análisis, consultar empresas e inspeccionar cláusulas.
+                            {% trans "Tu cuenta iniciará con privilegios de auditor para crear análisis, consultar empresas e inspeccionar cláusulas." %}
                         </p>
                     </div>
 
                     <div class="bg-blue-800 bg-opacity-40 p-3.5 rounded-2xl border border-blue-400 border-opacity-25">
                         <div class="flex items-center space-x-2.5 mb-1">
                             <span class="w-2 h-2 rounded-full bg-yellow-400"></span>
-                            <h4 class="text-sm font-semibold text-white">¿Eres Experto Legal?</h4>
+                            <h4 class="text-sm font-semibold text-white">{% trans "¿Eres Experto Legal?" %}</h4>
                         </div>
                         <p class="text-xs text-blue-200 leading-relaxed">
-                            Si eres abogado especialista o perito, el administrador podrá asignarte permisos de validación técnica tras tu registro.
+                            {% trans "Si eres abogado especialista o perito, el administrador podrá asignarte permisos de validación técnica tras tu registro." %}
                         </p>
                     </div>
 
@@ -81,7 +82,7 @@
                     <span class="inline-block py-1 px-3 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 mb-2 border border-blue-100">
                         Nuevo usuario
                     </span>
-                    <h2 class="text-2xl lg:text-3xl font-extrabold text-gray-900 tracking-tight">Crear cuenta</h2>
+                    <h2 class="text-2xl lg:text-3xl font-extrabold text-gray-900 tracking-tight">{% trans "Crear cuenta" %}</h2>
                     <p class="text-gray-500 text-sm mt-1">Completa los campos a continuación para darte de alta en la plataforma.</p>
                 </div>
 
@@ -128,7 +129,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="{{ form.first_name.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
-                                Nombre(s)
+                                {% trans "Nombre(s)" %}
                             </label>
                             <div class="relative rounded-xl shadow-sm">
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
@@ -145,7 +146,7 @@
 
                         <div>
                             <label for="{{ form.last_name.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
-                                Apellidos
+                                {% trans "Apellidos" %}
                             </label>
                             <div class="relative rounded-xl shadow-sm">
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">

@@ -1,7 +1,8 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% load widget_tweaks %}
 
-{% block title %}Subida de Reportes | ELI{% endblock %}
+{% block title %}{% trans "Subida de Reportes" %} | ELI{% endblock %}
 
 {% block content %}
 
@@ -14,12 +15,12 @@
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
             </svg>
         </div>
-        <h3 class="text-xl font-bold text-gray-900 mb-2">Procesando documento...</h3>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">{% trans "Procesando documento..." %}</h3>
         <p class="text-sm text-gray-600 mb-4 leading-relaxed">
-            Extrayendo texto digital, oraciones, palabras únicas y calculando índices de complejidad y legibilidad.
+            {% trans "Extrayendo texto digital, oraciones, palabras únicas y calculando índices de complejidad y legibilidad." %}
         </p>
         <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-200">
-            Por favor, no recargues la página
+            {% trans "Por favor, no recargues la página" %}
         </span>
     </div>
 </div>
@@ -34,17 +35,17 @@
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                    <span>Panel de administración</span>
+                    <span>{% trans "Panel de administración" %}</span>
                 </a>
                 <span>/</span>
-                <span class="text-gray-700 font-semibold">Subida de reportes</span>
+                <span class="text-gray-700 font-semibold">{% trans "Subida de reportes" %}</span>
             </div>
 
             <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-                Subida y Procesamiento de Reportes
+                {% trans "Subida y Procesamiento de Reportes" %}
             </h1>
             <p class="text-sm text-gray-500 mt-1">
-                Carga documentos individuales en PDF o archivos masivos en formato ZIP para calcular índices de complejidad.
+                {% trans "Carga documentos individuales en PDF o archivos masivos en formato ZIP para calcular índices de complejidad." %}
             </p>
         </div>
 
@@ -54,7 +55,7 @@
                 <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                 </svg>
-                <span>Ver Reportes</span>
+                <span>{% trans "Ver Reportes" %}</span>
             </a>
         </div>
     </div>
@@ -109,8 +110,8 @@
                 </svg>
             </div>
             <div>
-                <h2 class="text-xl font-bold text-gray-900">Subir Reporte Individual (PDF)</h2>
-                <p class="text-xs text-gray-500">Procesa un único informe financiero o de sostenibilidad en formato PDF digital.</p>
+                <h2 class="text-xl font-bold text-gray-900">{% trans "Subir Reporte Individual (PDF)" %}</h2>
+                <p class="text-xs text-gray-500">{% trans "Procesa un único informe financiero o de sostenibilidad en formato PDF digital." %}</p>
             </div>
         </div>
 
@@ -126,7 +127,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                 <div>
                     <label for="{{ individual_form.company.id_for_label }}" class="block mb-1.5 text-sm font-semibold text-gray-700">
-                        Empresa <span class="text-xs font-normal text-gray-400">(opcional si está en el texto)</span>
+                        {% trans "Empresa" %} <span class="text-xs font-normal text-gray-400">({% trans "opcional si está en el texto" %})</span>
                     </label>
                     {{ individual_form.company }}
                     {% if individual_form.company.errors %}
@@ -136,7 +137,7 @@
 
                 <div>
                     <label for="{{ individual_form.year.id_for_label }}" class="block mb-1.5 text-sm font-semibold text-gray-700">
-                        Año del Reporte <span class="text-xs font-normal text-gray-400">(opcional si está en el texto)</span>
+                        {% trans "Año del Reporte" %} <span class="text-xs font-normal text-gray-400">({% trans "opcional si está en el texto" %})</span>
                     </label>
                     {{ individual_form.year }}
                     {% if individual_form.year.errors %}
@@ -147,7 +148,7 @@
 
             <div class="mb-5">
                 <label for="{{ individual_form.name.id_for_label }}" class="block mb-1.5 text-sm font-semibold text-gray-700">
-                    Título o Nombre del Reporte <span class="text-xs font-normal text-gray-400">(opcional)</span>
+                    {% trans "Título o Nombre del Reporte" %} <span class="text-xs font-normal text-gray-400">({% trans "opcional" %})</span>
                 </label>
                 {{ individual_form.name }}
                 {% if individual_form.name.errors %}
@@ -158,7 +159,7 @@
             <!-- Zona Drag & Drop para PDF -->
             <div class="mb-6">
                 <label class="block mb-1.5 text-sm font-semibold text-gray-700">
-                    Archivo PDF <span class="text-red-500">*</span>
+                    {% trans "Archivo PDF" %} <span class="text-red-500">*</span>
                 </label>
 
                 <div id="pdfDropzone"
@@ -173,9 +174,9 @@
                             </svg>
                         </div>
                         <p class="text-sm font-semibold text-gray-700">
-                            Arrastra tu documento PDF aquí, o <span class="text-blue-600 hover:underline">haz clic para examinar</span>
+                            {% trans "Arrastra tu documento PDF aquí, o" %} <span class="text-blue-600 hover:underline">{% trans "haz clic para examinar" %}</span>
                         </p>
-                        <p class="text-xs text-gray-400 mt-1">Formato permitido: solo .PDF (hasta 100 MB)</p>
+                        <p class="text-xs text-gray-400 mt-1">{% trans "Formato permitido: solo .PDF (hasta 100 MB)" %}</p>
                     </div>
 
                     <!-- Previsualización de archivo seleccionado -->
@@ -210,10 +211,10 @@
                 </div>
                 <div class="text-xs">
                     <label for="{{ individual_form.overwrite.id_for_label }}" class="font-semibold text-gray-800 cursor-pointer">
-                        Sobrescribir si ya existe un reporte para la misma empresa y año
+                        {% trans "Sobrescribir si ya existe un reporte para la misma empresa y año" %}
                     </label>
                     <p class="text-gray-500 mt-0.5">
-                        Si ya está registrado, reemplazará el archivo y recalculará las palabras clave sin duplicar las estadísticas globales.
+                        {% trans "Si ya está registrado, reemplazará el archivo y recalculará las palabras clave sin duplicar las estadísticas globales." %}
                     </p>
                 </div>
             </div>
@@ -223,7 +224,7 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
                 </svg>
-                <span>Subir y Procesar PDF</span>
+                <span>{% trans "Subir y Procesar PDF" %}</span>
             </button>
         </form>
     </section>
@@ -237,8 +238,8 @@
                 </svg>
             </div>
             <div>
-                <h2 class="text-xl font-bold text-gray-900">Subir Múltiples Reportes (Lote ZIP)</h2>
-                <p class="text-xs text-gray-500">Carga un archivo ZIP comprimido que contenga varios PDFs para procesarlos en lote.</p>
+                <h2 class="text-xl font-bold text-gray-900">{% trans "Subir Múltiples Reportes (Lote ZIP)" %}</h2>
+                <p class="text-xs text-gray-500">{% trans "Carga un archivo ZIP comprimido que contenga varios PDFs para procesarlos en lote." %}</p>
             </div>
         </div>
 

@@ -363,3 +363,50 @@ class UploadModuleTests(TestCase):
 
         # TotalCount record should now be deleted since total quantity is 0
         self.assertFalse(TotalCount.objects.filter(word="palabraprueba").exists())
+
+
+class InternationalizationTests(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_superuser(
+            username='admin_i18n',
+            email='admin@example.com',
+            password='AdminPassword123!'
+        )
+
+    def test_default_language_is_spanish(self):
+        self.client.login(username='admin_i18n', password='AdminPassword123!')
+        response = self.client.get(reverse('panel'))
+        self.assertEqual(response.status_code, 200)
+        content = response.content.decode('utf-8')
+        self.assertIn('Panel de administración', content)
+        self.assertIn('Empresas', content)
+        self.assertIn('Reportes', content)
+
+    def test_switch_language_to_english_and_render_translated_content(self):
+        self.client.login(username='admin_i18n', password='AdminPassword123!')
+        # Post to set_language
+        setlang_url = reverse('set_language')
+        response = self.client.post(setlang_url, {'language': 'en', 'next': reverse('panel')})
+        self.assertEqual(response.status_code, 302)
+
+        # Get panel with the cookie set
+        panel_resp = self.client.get(reverse('panel'))
+        self.assertEqual(panel_resp.status_code, 200)
+        content = panel_resp.content.decode('utf-8')
+        self.assertIn('Admin Panel', content)
+        self.assertIn('Companies', content)
+        self.assertIn('Reports', content)
+
+    def test_switch_language_back_to_spanish(self):
+        self.client.login(username='admin_i18n', password='AdminPassword123!')
+        setlang_url = reverse('set_language')
+        # First switch to EN
+        self.client.post(setlang_url, {'language': 'en', 'next': reverse('panel')})
+        # Then switch back to ES
+        self.client.post(setlang_url, {'language': 'es', 'next': reverse('panel')})
+
+        panel_resp = self.client.get(reverse('panel'))
+        content = panel_resp.content.decode('utf-8')
+        self.assertIn('Panel de administración', content)
+        self.assertIn('Empresas', content)
