@@ -19,6 +19,32 @@
     body {
         font-family: 'Poppins', sans-serif;
     }
+
+    /* Estilos estéticos unificados para placeholders de inputs */
+    ::placeholder,
+    input::placeholder,
+    textarea::placeholder {
+        color: #9ca3af !important;
+        font-weight: 400 !important;
+        opacity: 1;
+    }
+
+    /* Estética placeholder para selectores en opción vacía */
+    select:has(option[value=""]:checked),
+    select.placeholder-active {
+        color: #9ca3af !important;
+        font-weight: 400 !important;
+    }
+
+    /* Opciones dentro del menú desplegable */
+    select option {
+        color: #1f2937 !important;
+        font-weight: 400;
+    }
+
+    select option[value=""] {
+        color: #9ca3af !important;
+    }
     </style>
     {% endblock %}
     <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
@@ -464,6 +490,25 @@
             closeAllMenus();
           }
         });
+
+        // Control visual estético de placeholders en selectores
+        function syncSelectPlaceholders() {
+          document.querySelectorAll('select').forEach(function (sel) {
+            function updateState() {
+              if (!sel.value || sel.value === '') {
+                sel.classList.add('placeholder-active', 'text-gray-400');
+                sel.classList.remove('text-gray-800', 'text-gray-900', 'text-gray-700');
+              } else {
+                sel.classList.remove('placeholder-active', 'text-gray-400');
+                sel.classList.add('text-gray-800');
+              }
+            }
+            updateState();
+            sel.addEventListener('change', updateState);
+          });
+        }
+        window.syncSelectPlaceholders = syncSelectPlaceholders;
+        syncSelectPlaceholders();
       });
     </script>
 

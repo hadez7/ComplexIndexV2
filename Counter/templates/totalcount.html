@@ -42,7 +42,7 @@
                 <label for="years" class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Año" %}:</label>
                 <select name="selected_year" id="years"
                         class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
-                    <option value="">-- {% trans "Todos los años" %} --</option>
+                    <option value="">{% trans "Todos los años" %}</option>
                     {% for year in years %}
                         <option value="{{ year }}" {% if year|stringformat:"s" == selected_year %}selected{% endif %}>
                             {{ year }}
@@ -56,7 +56,7 @@
                 <label for="company" class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Empresa" %}:</label>
                 <select name="company" id="company"
                         class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
-                    <option value="">-- {% trans "Todas las empresas" %} --</option>
+                    <option value="">{% trans "Todas las empresas" %}</option>
                     {% for company in companies %}
                         <option value="{{ company.id }}" {% if request.GET.company == company.id|stringformat:"s" %}selected{% endif %}>
                             {{ company.name }}
@@ -70,7 +70,7 @@
                 <label for="expert_lists" class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Lista de experto" %}:</label>
                 <select name="selected_list" id="expert_lists"
                         class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
-                    <option value="">-- {% trans "Todas las listas" %} --</option>
+                    <option value="">{% trans "Todas las listas" %}</option>
                     {% for expert_list in expert_lists %}
                         <option value="{{ expert_list.name }}" {% if expert_list.name == selected_list_name %}selected{% endif %}> 
                             {{ expert_list.name }}

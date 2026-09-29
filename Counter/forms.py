@@ -1,10 +1,11 @@
+from django.utils.translation import gettext_lazy as _
 import zipfile
 from django import forms
 from .models import Report, Company, ExpertWord
 
 
 YEAR_CHOICES = [
-    ("", "-- Detección automática desde el documento --"),
+    ("", _("Detección automática desde el documento")),
 ] + [(str(y), str(y)) for y in range(2025, 2015, -1)]
 
 
@@ -12,7 +13,7 @@ class IndividualReportUploadForm(forms.ModelForm):
     company = forms.ModelChoiceField(
         queryset=Company.objects.all().order_by("name"),
         required=False,
-        empty_label="-- Detección automática desde el documento --",
+        empty_label=_("Detección automática desde el documento"),
         label="Empresa",
         widget=forms.Select(
             attrs={
@@ -127,7 +128,7 @@ class ZipUploadForm(forms.Form):
         queryset=Company.objects.all().order_by("name"),
         required=False,
         label="Asignar una sola empresa a todo el lote (Opcional)",
-        empty_label="-- Detección automática desde el documento --",
+        empty_label=_("Detección automática desde el documento"),
         widget=forms.Select(
             attrs={
                 "class": "w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white shadow-xs focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
