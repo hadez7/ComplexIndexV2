@@ -317,7 +317,7 @@
     <!-- Filtro rápido por tipo de acción -->
     <div class="px-6 py-3 bg-white border-b border-gray-100 flex items-center justify-between text-xs">
       <span class="text-gray-500 font-medium">{% trans "Filtrar por evento:" %}</span>
-      <select id="auditFilterAction" class="border border-gray-200 rounded-lg px-2.5 py-1 text-xs text-gray-700 focus:ring-blue-500">
+      <div class="w-56"><select id="auditFilterAction" data-custom-select="true" class="border border-gray-200 rounded-lg px-2.5 py-1 text-xs text-gray-700 focus:ring-blue-500">
         <option value="">{% trans "Todos los eventos" %}</option>
         <option value="CREATE">{% trans "Creación de usuario" %}</option>
         <option value="UPDATE">{% trans "Edición de datos" %}</option>
@@ -325,7 +325,7 @@
         <option value="RESTORE">{% trans "Reactivación de cuenta" %}</option>
         <option value="ROLE_CHANGE">{% trans "Cambio de rol" %}</option>
         <option value="LOGIN">{% trans "Inicios de sesión" %}</option>
-      </select>
+      </select></div>
     </div>
 
     <!-- Lista de eventos con scroll -->

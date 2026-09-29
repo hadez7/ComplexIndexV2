@@ -99,8 +99,37 @@
 
     let highlightedIndex = -1;
 
+    function syncDisabled() {
+      trigger.disabled = select.disabled;
+      if (select.disabled) {
+        trigger.classList.add('opacity-60', 'cursor-not-allowed', 'bg-gray-50');
+      } else {
+        trigger.classList.remove('opacity-60', 'cursor-not-allowed', 'bg-gray-50');
+      }
+    }
+
+    // Interceptar setter select.value para que cambios vía JS directo actualicen el trigger
+    try {
+      const descriptor = Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value');
+      if (descriptor && descriptor.set) {
+        Object.defineProperty(select, 'value', {
+          get: function () {
+            return descriptor.get.call(this);
+          },
+          set: function (newVal) {
+            descriptor.set.call(this, newVal);
+            updateTriggerDisplay();
+          },
+          configurable: true
+        });
+      }
+    } catch (e) {
+      // Ignorar si el motor restringe redefinición
+    }
+
     // Renderizar opciones desde el select nativo
     function buildOptions() {
+      syncDisabled();
       optionsList.innerHTML = '';
       const options = Array.from(select.options);
 
@@ -160,6 +189,7 @@
     }
 
     function updateTriggerDisplay() {
+      syncDisabled();
       const selectedOption = select.options[select.selectedIndex];
       const isPlaceholder = !selectedOption || !selectedOption.value || selectedOption.value === '';
 
@@ -212,6 +242,8 @@
     }
 
     function openDropdown() {
+      if (select.disabled) return;
+
       // Cerrar otros dropdowns abiertos en la página
       document.querySelectorAll('.custom-select-dropdown:not(.hidden)').forEach(function (d) {
         if (d !== dropdown) {
@@ -230,6 +262,7 @@
         }
       });
 
+      updateTriggerDisplay();
       adjustPosition();
 
       // Elevar z-index del wrapper activo
@@ -382,7 +415,7 @@
     const observer = new MutationObserver(function () {
       buildOptions();
     });
-    observer.observe(select, { childList: true, subtree: true });
+    observer.observe(select, { childList: true, subtree: true, attributes: true, attributeFilter: ['disabled', 'data-selected'] });
 
     // Inicializar primera construcción
     buildOptions();

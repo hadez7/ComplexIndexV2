@@ -17,7 +17,7 @@ class IndividualReportUploadForm(forms.ModelForm):
         label="Empresa",
         widget=forms.Select(
             attrs={
-                "class": "w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                "class": "w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition", "data-custom-select": "true"
             }
         )
     )
@@ -30,7 +30,7 @@ class IndividualReportUploadForm(forms.ModelForm):
         label="Año del Reporte",
         widget=forms.Select(
             attrs={
-                "class": "w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
+                "class": "w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition", "data-custom-select": "true"
             }
         )
     )
@@ -131,7 +131,7 @@ class ZipUploadForm(forms.Form):
         empty_label=_("Detección automática desde el documento"),
         widget=forms.Select(
             attrs={
-                "class": "w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white shadow-xs focus:ring-2 focus:ring-green-500 focus:border-green-500 transition"
+                "class": "w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white shadow-xs focus:ring-2 focus:ring-green-500 focus:border-green-500 transition", "data-custom-select": "true"
             }
         ),
     )
@@ -172,7 +172,7 @@ class CompanyForm(forms.ModelForm):
         widgets = {
             "ruc": forms.TextInput(attrs={"class": "border rounded px-2 py-1"}),
             "name": forms.TextInput(attrs={"class": "border rounded px-2 py-1"}),
-            "province": forms.Select(attrs={"class": "border rounded px-2 py-1"}),
+            "province": forms.Select(attrs={"class": "border rounded px-2 py-1", "data-custom-select": "true"}),
         }
 
 
@@ -195,7 +195,8 @@ class ComparativeAnalysisForm(forms.Form):
         choices=[],
         widget=forms.Select(
             attrs={
-                "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition"
+                "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition",
+                "data-custom-select": "true"
             }
         )
     )
@@ -206,7 +207,8 @@ class ComparativeAnalysisForm(forms.Form):
         empty_label="Seleccione un reporte",
         widget=forms.Select(
             attrs={
-                "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition"
+                "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition",
+                "data-custom-select": "true"
             }
         )
     )
@@ -217,7 +219,8 @@ class ComparativeAnalysisForm(forms.Form):
         empty_label="Seleccione una lista",
         widget=forms.Select(
             attrs={
-                "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition"
+                "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition",
+                "data-custom-select": "true"
             }
         )
     )
