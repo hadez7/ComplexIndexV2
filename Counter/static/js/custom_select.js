@@ -146,7 +146,7 @@
           'custom-select-item px-3.5 py-2.5 text-sm cursor-pointer flex items-center justify-between transition-colors duration-150 select-none hover:bg-blue-50 hover:text-blue-700 text-gray-700';
         item.setAttribute('role', 'option');
         item.dataset.value = opt.value;
-        item.dataset.label = opt.text;
+        item.dataset.label = (opt.text || "").trim();
         item.dataset.index = idx;
 
         const isPlaceholder = !opt.value || opt.value === '';
@@ -154,7 +154,7 @@
 
         const textSpan = document.createElement('span');
         textSpan.className = 'truncate';
-        textSpan.textContent = opt.text;
+        textSpan.textContent = (opt.text || "").trim();
 
         if (isPlaceholder) {
           textSpan.classList.add('text-gray-400', 'font-normal');

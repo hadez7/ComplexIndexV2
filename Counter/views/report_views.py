@@ -1,3 +1,4 @@
+from django.db.models.functions import Trim
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
@@ -18,7 +19,7 @@ def report_view(request):
             Q(name__icontains=query) | Q(company__name__icontains=query)
         )
 
-    companies = Company.objects.all()
+    companies = Company.objects.all().annotate(clean_name=Trim("name")).order_by("clean_name")
     return render(
         request,
         "reports.html",

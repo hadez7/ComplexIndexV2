@@ -20,7 +20,12 @@ from ..utils import quitar_tildes, recalcular_metricas_reporte
 @login_required
 def concealment_detection_view(request):
 
-    reports = Report.objects.all()
+    reports = (
+        Report.objects
+        .select_related("company")
+        .annotate(clean_company=Trim("company__name"))
+        .order_by("clean_company", "name")
+    )
     expert_lists = ExpertWord.objects.all()
 
     selected_report = None

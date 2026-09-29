@@ -18,6 +18,11 @@ class Company(models.Model):
     ruc = models.CharField(max_length=11, unique=True)
     name = models.CharField(max_length=255)
 
+    def save(self, *args, **kwargs):
+        if self.name:
+            self.name = self.name.strip()
+        super().save(*args, **kwargs)
+
     def __str__(self):
         return f"{self.name} - {self.ruc}"
 

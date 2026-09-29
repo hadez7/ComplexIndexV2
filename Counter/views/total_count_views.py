@@ -1,3 +1,4 @@
+from django.db.models.functions import Trim
 from itertools import chain
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Avg
@@ -130,7 +131,7 @@ def total_count_view(request):
     total_counts = get_filtered_total_counts(request)
 
     years = Report.objects.values_list("year", flat=True).distinct().order_by("-year")
-    companies = Company.objects.filter(report__isnull=False).distinct().order_by("name")
+    companies = Company.objects.filter(report__isnull=False).distinct().annotate(clean_name=Trim("name")).order_by("clean_name")
     expert_lists = ExpertWord.objects.all()
 
     selected_list_name = request.GET.get("selected_list")

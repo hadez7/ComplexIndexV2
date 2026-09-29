@@ -59,7 +59,7 @@
                     <option value="">{% trans "Todas las empresas" %}</option>
                     {% for company in companies %}
                         <option value="{{ company.id }}" {% if request.GET.company == company.id|stringformat:"s" %}selected{% endif %}>
-                            {{ company.name }}
+                            {{ company.clean_name|default:company.name }}
                         </option>
                     {% endfor %}
                 </select>
