@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load widget_tweaks %}
 
-{% block title %}Iniciar sesión | ELI - Enterprise Lex Index{% endblock %}
+{% block title %}Sign In | ELI - Enterprise Lex Index{% endblock %}
 
 {% block content %}
 <div class="max-w-5xl mx-auto my-6 px-4">
@@ -28,10 +28,10 @@
                 </div>
 
                 <h3 class="text-xl font-bold text-white mb-2 leading-snug">
-                    Auditoría Inteligente & Análisis Contractual
+                    Smart Auditing & Contractual Analysis
                 </h3>
                 <p class="text-blue-100 text-sm mb-8 leading-relaxed">
-                    Accede a la plataforma para evaluar la complejidad lingüística, mitigar riesgos y auditar contratos corporativos con métricas precisas.
+                    Access the platform to evaluate linguistic complexity, mitigate risks, and audit corporate contracts with precise metrics.
                 </p>
 
                 <!-- Beneficios / Características Clave -->
@@ -43,8 +43,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h4 class="text-sm font-semibold text-white">Métricas y Densidad Léxica</h4>
-                            <p class="text-xs text-blue-200">Algoritmos de medición cuantitativa de cláusulas y legibilidad.</p>
+                            <h4 class="text-sm font-semibold text-white">Metrics & Lexical Density</h4>
+                            <p class="text-xs text-blue-200">Quantitative measurement algorithms for clauses and readability.</p>
                         </div>
                     </div>
 
@@ -55,8 +55,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h4 class="text-sm font-semibold text-white">Mitigación de Riesgos</h4>
-                            <p class="text-xs text-blue-200">Detección oportuna de ambigüedades e inconsistencias normativas.</p>
+                            <h4 class="text-sm font-semibold text-white">Risk Mitigation</h4>
+                            <p class="text-xs text-blue-200">Timely detection of ambiguities and regulatory inconsistencies.</p>
                         </div>
                     </div>
 
@@ -67,8 +67,8 @@
                             </svg>
                         </div>
                         <div>
-                            <h4 class="text-sm font-semibold text-white">Validación por Expertos</h4>
-                            <p class="text-xs text-blue-200">Colaboración entre auditores y especialistas legales.</p>
+                            <h4 class="text-sm font-semibold text-white">Expert Validation</h4>
+                            <p class="text-xs text-blue-200">Collaboration between auditors and legal specialists.</p>
                         </div>
                     </div>
                 </div>
@@ -76,7 +76,7 @@
 
             <!-- Footer del panel izquierdo -->
             <div class="relative z-10 pt-6 mt-6 border-t border-white border-opacity-15 flex items-center justify-between text-xs text-blue-200">
-                <span>Sesión cifrada y segura</span>
+                <span>Secure and encrypted session</span>
                 <span>v2.0</span>
             </div>
         </div>
@@ -88,10 +88,10 @@
                 <!-- Encabezado del Formulario -->
                 <div class="mb-6">
                     <span class="inline-block py-1 px-3 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 mb-2 border border-blue-100">
-                        Acceso a la plataforma
+                        Platform Access
                     </span>
-                    <h2 class="text-2xl lg:text-3xl font-extrabold text-gray-900 tracking-tight">Iniciar sesión</h2>
-                    <p class="text-gray-500 text-sm mt-1">Ingresa tus credenciales para acceder a tus auditorías.</p>
+                    <h2 class="text-2xl lg:text-3xl font-extrabold text-gray-900 tracking-tight">Sign In</h2>
+                    <p class="text-gray-500 text-sm mt-1">Enter your credentials to access your audits.</p>
                 </div>
 
                 <!-- Alertas de mensajes de Django -->
@@ -115,7 +115,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                     </svg>
                     <div>
-                        <p class="font-semibold text-red-900">No pudimos iniciar tu sesión</p>
+                        <p class="font-semibold text-red-900">We couldn't sign you in</p>
                         <ul class="mt-1 list-disc list-inside space-y-0.5 text-xs text-red-700">
                             {% for error in form.non_field_errors %}
                             <li>{{ error }}</li>
@@ -133,7 +133,7 @@
                     <!-- Campo Usuario -->
                     <div>
                         <label for="{{ form.username.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1.5">
-                            Nombre de usuario
+                            Username
                         </label>
                         <div class="relative rounded-xl shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
@@ -141,7 +141,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                 </svg>
                             </div>
-                            {{ form.username|add_class:"w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm"|attr:"placeholder:Ingresa tu usuario"|attr:"autofocus:autofocus" }}
+                            {{ form.username|add_class:"w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm"|attr:"placeholder:Enter your username"|attr:"autofocus:autofocus" }}
                         </div>
                         {% if form.username.errors %}
                         <p class="text-red-600 text-xs mt-1.5 font-medium flex items-center">
@@ -154,10 +154,10 @@
                     <div>
                         <div class="flex items-center justify-between mb-1.5">
                             <label for="{{ form.password.id_for_label }}" class="block text-sm font-semibold text-gray-700">
-                                Contraseña
+                                Password
                             </label>
-                            <span class="text-xs text-gray-400" title="Contacta al administrador del sistema si olvidaste tu clave">
-                                ¿Problemas de acceso?
+                            <span class="text-xs text-gray-400" title="Contact the system administrator if you forgot your password">
+                                Access issues?
                             </span>
                         </div>
                         <div class="relative rounded-xl shadow-sm">
@@ -169,7 +169,7 @@
                             {{ form.password|add_class:"w-full pl-11 pr-11 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm"|attr:"placeholder:••••••••" }}
                             <button type="button" onclick="togglePasswordVisibility('{{ form.password.id_for_label }}', this)" 
                                     class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
-                                    aria-label="Mostrar u ocultar contraseña">
+                                    aria-label="Show or hide password">
                                 <svg class="w-5 h-5 eye-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -188,7 +188,7 @@
 
                     <!-- Botón de Envío -->
                     <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition duration-200 flex items-center justify-center space-x-2 text-sm">
-                        <span>Ingresar a la plataforma</span>
+                        <span>Sign in to the platform</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                         </svg>
@@ -198,9 +198,9 @@
                 <!-- Separador y Enlace a Registro -->
                 <div class="mt-8 pt-6 border-t border-gray-100 text-center">
                     <p class="text-sm text-gray-600">
-                        ¿Aún no tienes una cuenta de auditor?
+                        Don't have an auditor account yet?
                         <a href="{% url 'register' %}" class="font-bold text-blue-600 hover:text-blue-700 transition ml-1 hover:underline">
-                            Regístrate gratis
+                            Register for free
                         </a>
                     </p>
                 </div>
