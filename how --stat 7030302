@@ -1,0 +1,14 @@
+[33mcommit 7030302952310d6146592d940f6ec57a15d8c1ec[m
+Author: Jhon <lesterbic@gmail.com>
+Date:   Wed Sep 23 10:13:32 2026 -0500
+
+    feat(reports): agregar barra de busqueda por reporte y empresa
+    
+    - Filtrado en report_views.py por nombre de reporte y empresa
+    - Barra de busqueda estilizada con icono, input y boton limpiar en reports.html
+    - Pruebas unitarias ReportSearchTests en tests.py
+
+ Counter/templates/reports.html |  41 [32m++++++++++++++[m[31m-[m
+ Counter/tests.py               |  32 [32m++++++++++++[m
+ Counter/views/report_views.py  | 114 [32m++++++++++++++++++++++[m[31m-------------------[m
+ 3 files changed, 133 insertions(+), 54 deletions(-)
