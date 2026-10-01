@@ -7,15 +7,20 @@ from django.shortcuts import render
 import openpyxl
 
 from ..models import TotalCount, Company, ExpertWord, Expert, TotalCountReport, Report
+from ..workspace_utils import get_active_workspace
+from django.db.models import Q
 
-
-from django.db.models import Sum
 
 def get_filtered_total_counts(request):
     """
     Aplica filtros sobre los reportes (año, empresa, lista de experto) y devuelve un conteo agrupado por palabra.
+    Aislado por el espacio de trabajo activo.
     """
+    current_ws = get_active_workspace(request)
     queryset = TotalCountReport.objects.all()
+    if current_ws:
+        queryset = queryset.filter(report__workspace=current_ws)
+
     year = request.GET.get("selected_year")
     company_id = request.GET.get("company")
     selected_list_name = request.GET.get("selected_list")
@@ -57,19 +62,15 @@ def get_word_average(total_counts, average):
 def get_complexity_metrics(request):
     """
     Obtiene los reportes filtrados con sus métricas de complejidad calculadas.
-    Retorna una lista de diccionarios con datos por reporte.
-    
-    Escala de valores: 0-1
-    - 0: Bajo (documento simple)
-    - 0.5: Medio (complejidad moderada)
-    - 1: Alto (documento muy complejo)
-    
-    Fórmula de Complejidad General:
-    Complejidad = (Diversidad Léxica + (1 - Legibilidad) + Densidad Técnica) / 3
+    Retorna una lista de diccionarios con datos por reporte dentro del espacio de trabajo activo.
     """
     from ..utils import calcular_complejidad_general
     
+    current_ws = get_active_workspace(request)
     queryset = Report.objects.all()
+    if current_ws:
+        queryset = queryset.filter(workspace=current_ws)
+
     year = request.GET.get("selected_year")
     company_id = request.GET.get("company")
     
@@ -90,9 +91,6 @@ def get_complexity_metrics(request):
             diversity_index = round((report.unique_words / report.total_words), 3)
         
         # Calcular legibilidad (basada en longitud de oración) - Escala 0-1
-        # Normalización: máximo esperado de palabras por oración = 10
-        # Si avg_sentence_length <= 10, legibilidad alta (cercana a 1)
-        # Si avg_sentence_length > 10, legibilidad baja (cercana a 0)
         readability_index = report.inflesz_score or 0
         
         # Calcular densidad técnica (palabras técnicas / total de palabras) - Escala 0-1
@@ -128,11 +126,20 @@ def get_complexity_metrics(request):
 
 @login_required
 def total_count_view(request):
+    current_ws = get_active_workspace(request)
     total_counts = get_filtered_total_counts(request)
 
-    years = Report.objects.values_list("year", flat=True).distinct().order_by("-year")
-    companies = Company.objects.filter(report__isnull=False).distinct().annotate(clean_name=Trim("name")).order_by("clean_name")
-    expert_lists = ExpertWord.objects.all()
+    reports_qs = Report.objects.all()
+    companies_qs = Company.objects.all()
+    if current_ws:
+        reports_qs = reports_qs.filter(workspace=current_ws)
+        companies_qs = companies_qs.filter(workspace=current_ws)
+        expert_lists = ExpertWord.objects.filter(Q(workspace=current_ws) | Q(workspace__isnull=True))
+    else:
+        expert_lists = ExpertWord.objects.all()
+
+    years = reports_qs.values_list("year", flat=True).distinct().order_by("-year")
+    companies = companies_qs.filter(report__isnull=False).distinct().annotate(clean_name=Trim("name")).order_by("clean_name")
 
     selected_list_name = request.GET.get("selected_list")
     selected_year = request.GET.get("selected_year")

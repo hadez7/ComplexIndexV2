@@ -7,11 +7,10 @@ from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.conf import settings
 from django.db import models, IntegrityError
-from ..models import Company
+from ..models import Company, TotalCountReport, Report
 from ..forms import IndividualReportUploadForm, ZipUploadForm, ComparativeAnalysisForm
 from ..main import process_report, process_zip
-from ..models import TotalCountReport
-from ..models import Report
+from ..workspace_utils import get_active_workspace
 from User.models import Expert
 
 # * ---------------------------------------- VISTAS GENERALES ----------------------------------------
@@ -21,9 +20,16 @@ def index_view(request):
 
 @login_required
 def panel_view(request):
-    total_companies = Company.objects.count()
-    total_reports = Report.objects.count()
-    total_words_agg = Report.objects.aggregate(models.Sum('total_words'))['total_words__sum'] or 0
+    current_ws = get_active_workspace(request)
+    if current_ws:
+        total_companies = Company.objects.filter(workspace=current_ws).count()
+        total_reports = Report.objects.filter(workspace=current_ws).count()
+        total_words_agg = Report.objects.filter(workspace=current_ws).aggregate(models.Sum('total_words'))['total_words__sum'] or 0
+    else:
+        total_companies = Company.objects.count()
+        total_reports = Report.objects.count()
+        total_words_agg = Report.objects.aggregate(models.Sum('total_words'))['total_words__sum'] or 0
+
     total_experts = Expert.objects.count()
 
     context = {
@@ -31,19 +37,21 @@ def panel_view(request):
         'total_reports': total_reports,
         'total_palabras': f'{total_words_agg:,}'.replace(',', '.'),
         'total_experts': total_experts,
+        'current_workspace': current_ws,
     }
     return render(request, 'panel.html', context)
 
 
 @login_required
 def upload_view(request):
-    individual_form = IndividualReportUploadForm()
-    zip_form = ZipUploadForm()
-    companies = Company.objects.all()
+    current_ws = get_active_workspace(request)
+    individual_form = IndividualReportUploadForm(workspace=current_ws)
+    zip_form = ZipUploadForm(workspace=current_ws)
+    companies = Company.objects.filter(workspace=current_ws) if current_ws else Company.objects.all()
 
     if request.method == "POST":
         if "upload_individual" in request.POST:
-            individual_form = IndividualReportUploadForm(request.POST, request.FILES)
+            individual_form = IndividualReportUploadForm(request.POST, request.FILES, workspace=current_ws)
             if individual_form.is_valid():
                 company = individual_form.cleaned_data.get("company")
                 year = individual_form.cleaned_data.get("year")
@@ -53,7 +61,10 @@ def upload_view(request):
 
                 existing_report = None
                 if company and year:
-                    existing_report = Report.objects.filter(company=company, year=year).first()
+                    query = Report.objects.filter(company=company, year=year)
+                    if current_ws:
+                        query = query.filter(workspace=current_ws)
+                    existing_report = query.first()
 
                 if existing_report and overwrite:
                     existing_report.name = name
@@ -61,7 +72,9 @@ def upload_view(request):
                     existing_report.save()
                     reporte = existing_report
                 else:
-                    reporte = individual_form.save()
+                    reporte = individual_form.save(commit=False)
+                    reporte.workspace = current_ws
+                    reporte.save()
 
                 res = process_report(reporte.file.path, reporte)
                 if res.get("success"):
@@ -77,7 +90,7 @@ def upload_view(request):
                 return redirect("upload")
 
         elif "upload_zip" in request.POST:
-            zip_form = ZipUploadForm(request.POST, request.FILES)
+            zip_form = ZipUploadForm(request.POST, request.FILES, workspace=current_ws)
             if zip_form.is_valid():
                 zip_file = zip_form.cleaned_data["zip_file"]
                 company = zip_form.cleaned_data["company"]
@@ -91,7 +104,7 @@ def upload_view(request):
                     for chunk in zip_file.chunks():
                         destination.write(chunk)
 
-                stats = process_zip(zip_path, company, overwrite=overwrite)
+                stats = process_zip(zip_path, company, overwrite=overwrite, workspace=current_ws)
 
                 msg_parts = [f"Archivo ZIP procesado: {stats['processed']} reporte(s) importado(s) exitosamente."]
                 if stats['skipped'] > 0:
@@ -117,6 +130,7 @@ def upload_view(request):
 
 @login_required
 def comparative_analysis_view(request):
+    current_ws = get_active_workspace(request)
     resultado = None
 
     def normalize_words(word_list):
@@ -127,11 +141,9 @@ def comparative_analysis_view(request):
         )
 
     if request.method == "POST":
-        form = ComparativeAnalysisForm(request.POST)
-        print(form.errors)
+        form = ComparativeAnalysisForm(request.POST, workspace=current_ws)
 
         if form.is_valid():
-
             report = form.cleaned_data["report"]
             expert_list = form.cleaned_data["expert_list"]
 
@@ -175,7 +187,7 @@ def comparative_analysis_view(request):
             }
 
     else:
-        form = ComparativeAnalysisForm()
+        form = ComparativeAnalysisForm(workspace=current_ws)
 
     return render(
         request,
@@ -192,9 +204,13 @@ def reports_by_year(request):
     if not year:
         return JsonResponse([], safe=False)
 
+    current_ws = get_active_workspace(request)
+    reports_qs = Report.objects.filter(year=year)
+    if current_ws:
+        reports_qs = reports_qs.filter(workspace=current_ws)
+
     reports = (
-        Report.objects
-        .filter(year=year)
+        reports_qs
         .select_related("company")
         .order_by("company__name", "name")
     )

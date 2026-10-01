@@ -11,22 +11,34 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200">
             <div>
                 <div class="flex items-center space-x-2 text-xs text-gray-500 mb-2">
-                    <span>{% trans "Inicio" %}</span>
+                    <a href="{% url 'index' %}" class="hover:text-blue-600 transition">{% trans "Inicio" %}</a>
                     <span>/</span>
-                    <span class="text-gray-700 font-semibold">{% trans "Panel de administración" %}</span>
+                    <a href="{% url 'workspaces_list' %}" class="hover:text-blue-600 transition">{% trans "Espacios de trabajo" %}</a>
+                    <span>/</span>
+                    <span class="text-gray-700 font-semibold">{{ current_workspace.name|default:_("Panel") }}</span>
                 </div>
-                <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight flex items-center gap-3">
-                    <span>{% trans "Panel de Administración" %}</span>
-                    <span class="text-xs bg-blue-100 text-blue-800 font-bold px-3 py-1 rounded-full border border-blue-200">
-                        ELI v2.0
+                <div class="flex flex-wrap items-center gap-3">
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight flex items-center gap-3">
+                        <span>{{ current_workspace.name|default:_("Panel de Administración") }}</span>
+                    </h1>
+                    {% if current_workspace.project_type %}
+                    <span class="text-xs bg-indigo-100 text-indigo-800 font-bold px-3 py-1 rounded-full border border-indigo-200">
+                        {{ current_workspace.project_type }}
                     </span>
-                </h1>
-                <p class="text-sm text-gray-500 mt-1 max-w-2xl">
-                    {% trans "Plataforma central para auditoría contractual, análisis de legibilidad y gestión de documentos corporativos." %}
+                    {% endif %}
+                    <a href="{% url 'workspaces_list' %}" class="inline-flex items-center space-x-1 text-xs text-blue-600 hover:text-blue-800 font-semibold bg-blue-50 hover:bg-blue-100 px-2.5 py-1 rounded-lg border border-blue-200 transition">
+                        <span>{% trans "Cambiar espacio" %}</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
+                        </svg>
+                    </a>
+                </div>
+                <p class="text-sm text-gray-500 mt-1.5 max-w-2xl">
+                    {{ current_workspace.description|default:_("Auditoría documental, análisis de complejidad léxica y métricas de legibilidad.") }}
                 </p>
             </div>
 
-            <!-- Resumen de Métricas Rápidas -->
+            <!-- Resumen de Métricas Rápidas del Espacio -->
             <div class="flex flex-wrap items-center gap-3">
                 <div class="bg-white border border-gray-200 rounded-xl px-4 py-2.5 shadow-xs flex items-center space-x-3">
                     <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">
@@ -45,6 +57,16 @@
                     <div>
                         <p class="text-xs text-gray-500 font-medium leading-none">{% trans "Reportes" %}</p>
                         <p class="text-base font-bold text-gray-800 leading-tight mt-0.5">{{ total_reports|default:"0" }}</p>
+                    </div>
+                </div>
+
+                <div class="bg-white border border-gray-200 rounded-xl px-4 py-2.5 shadow-xs flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-green-50 text-green-600 flex items-center justify-center font-bold text-sm">
+                        📊
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 font-medium leading-none">{% trans "Palabras" %}</p>
+                        <p class="text-base font-bold text-gray-800 leading-tight mt-0.5">{{ total_palabras|default:"0" }}</p>
                     </div>
                 </div>
             </div>

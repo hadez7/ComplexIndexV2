@@ -1,6 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
-from django.db.models import Sum
+from django.db.models import Sum, Q
 from django.db.models.functions import Trim
 from django.http import JsonResponse
 from ..models import (
@@ -13,20 +13,27 @@ from ..models import (
     ExpertWord,
 )
 
-from ..main import find_paragraph
+from ..main import find_paragraph, sincronizar_palabras_total_count
 from ..utils import quitar_tildes, recalcular_metricas_reporte
+from ..workspace_utils import get_active_workspace
 
 
 @login_required
 def concealment_detection_view(request):
+    current_ws = get_active_workspace(request)
+    reports_qs = Report.objects.all()
+    if current_ws:
+        reports_qs = reports_qs.filter(workspace=current_ws)
+        expert_lists = ExpertWord.objects.filter(Q(workspace=current_ws) | Q(workspace__isnull=True))
+    else:
+        expert_lists = ExpertWord.objects.all()
 
     reports = (
-        Report.objects
+        reports_qs
         .select_related("company")
         .annotate(clean_company=Trim("company__name"))
         .order_by("clean_company", "name")
     )
-    expert_lists = ExpertWord.objects.all()
 
     selected_report = None
     paragraphs = []
@@ -47,11 +54,11 @@ def concealment_detection_view(request):
         )
     
     years = (
-    Report.objects
-    .values_list("year", flat=True)
-    .distinct()
-    .order_by("-year")
-)
+        reports_qs
+        .values_list("year", flat=True)
+        .distinct()
+        .order_by("-year")
+    )
 
     if request.method == "POST":
 
@@ -126,18 +133,7 @@ def concealment_detection_view(request):
             }
         )
 
-        nuevo_total = (
-            TotalCountReport.objects
-            .filter(word=palabra_normalizada)
-            .aggregate(total=Sum("quantity"))
-        )["total"] or 0
-
-        TotalCount.objects.update_or_create(
-            word=palabra_normalizada,
-            defaults={
-                "quantity": nuevo_total
-            }
-        )
+        sincronizar_palabras_total_count([palabra_normalizada], workspace=selected_report.workspace)
 
         recalcular_metricas_reporte(
             selected_report
@@ -304,9 +300,13 @@ def get_reports_by_year(request):
     if not year:
         return JsonResponse([], safe=False)
 
+    current_ws = get_active_workspace(request)
+    reports_qs = Report.objects.filter(year=year)
+    if current_ws:
+        reports_qs = reports_qs.filter(workspace=current_ws)
+
     reports_qs = (
-        Report.objects
-        .filter(year=year)
+        reports_qs
         .select_related("company")
         .annotate(clean_company=Trim("company__name"))
         .order_by("clean_company", "name")
@@ -336,9 +336,16 @@ def get_reports_by_year(request):
 def concealment_history_view(request):
     from django.contrib.auth.models import User
 
+    current_ws = get_active_workspace(request)
     reviews_qs = (
         ConcealmentReview.objects
         .select_related("report", "report__company", "user")
+    )
+    if current_ws:
+        reviews_qs = reviews_qs.filter(report__workspace=current_ws)
+
+    reviews_qs = (
+        reviews_qs
         .annotate(clean_company=Trim("report__company__name"))
         .order_by("-reviewed_at")
     )
@@ -360,8 +367,12 @@ def concealment_history_view(request):
     if user_filter:
         reviews_qs = reviews_qs.filter(user__username__icontains=user_filter)
 
+    reports_scope = Report.objects.all()
+    if current_ws:
+        reports_scope = reports_scope.filter(workspace=current_ws)
+
     years = (
-        Report.objects
+        reports_scope
         .values_list("year", flat=True)
         .distinct()
         .order_by("-year")
@@ -369,6 +380,8 @@ def concealment_history_view(request):
 
     # Empresas para el selector desplegable
     companies_qs = Company.objects.filter(report__isnull=False)
+    if current_ws:
+        companies_qs = companies_qs.filter(workspace=current_ws)
     if year_filter:
         companies_qs = companies_qs.filter(report__year=year_filter)
 

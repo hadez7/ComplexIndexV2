@@ -129,14 +129,18 @@ def contar_silabas_palabra(palabra: str) -> int:
 
 
 #Busca el nombre de empresa y una año en el texto de un PDF. Devuelve valores por defecto si no hay coincidencias
-def encontrar_compañia_año(text: str):
+def encontrar_compañia_año(text: str, workspace=None):
     year_match = re.search(r"\b(19|20)\d{2}\b", text)
     year = int(year_match.group()) if year_match else None
 
     best_score = 0
     best_company = None
 
-    companies = Company.objects.all()
+    if workspace:
+        companies = Company.objects.filter(workspace=workspace)
+    else:
+        companies = Company.objects.all()
+
     for company in companies:
         score = fuzz.partial_ratio(company.name.lower(), text.lower())
         if score > best_score and score > 60:
@@ -232,10 +236,11 @@ def calcular_metricas_complejidad(texto: str) -> dict:
     }
 
 #Contar palabras técnicas basadas en listas de expertos
-def contar_palabras_tecnicas(texto: str, year: int = None) -> int:
+def contar_palabras_tecnicas(texto: str, year: int = None, workspace=None) -> int:
     """
     Cuenta cuántas palabras del texto están en las listas de palabras técnicas de expertos.
     Si se proporciona un año, considera solo palabras técnicas relevantes para ese período.
+    Filtra por espacio de trabajo si se especifica.
     """
     if not texto or not texto.strip():
         return 0
@@ -243,8 +248,12 @@ def contar_palabras_tecnicas(texto: str, year: int = None) -> int:
     # Extraer palabras del texto
     palabras_texto = set(re.findall(r'\b[a-záéíóúñ]+(?:\'[a-záéíóúñ]+)?\b', texto.lower()))
     
-    # Obtener listas de palabras técnicas de expertos
-    listas_expertos = ExpertWord.objects.all()
+    # Obtener listas de palabras técnicas de expertos (específicas del workspace o globales)
+    if workspace:
+        from django.db.models import Q
+        listas_expertos = ExpertWord.objects.filter(Q(workspace=workspace) | Q(workspace__isnull=True))
+    else:
+        listas_expertos = ExpertWord.objects.all()
     
     palabras_tecnicas_encontradas = set()
     
@@ -379,7 +388,8 @@ def recalcular_metricas_reporte(report):
 
     report.technical_words_count = contar_palabras_tecnicas(
         texto_modificado,
-        report.year
+        report.year,
+        workspace=report.workspace
     )
 
     report.save()

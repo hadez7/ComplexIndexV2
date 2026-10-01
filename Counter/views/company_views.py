@@ -7,10 +7,12 @@ from django.db.models import Q
 from django.db.models.functions import Trim
 import json
 from ..models import Company, Province
+from ..workspace_utils import get_active_workspace
 
 
 @login_required
 def company_view(request):
+    current_ws = get_active_workspace(request)
     search = request.GET.get("q", "").strip()
     province_filter = request.GET.get("province", "").strip()
     page_number = request.GET.get("page", 1)
@@ -18,6 +20,12 @@ def company_view(request):
     companies_qs = (
         Company.objects
         .select_related("province")
+    )
+    if current_ws:
+        companies_qs = companies_qs.filter(workspace=current_ws)
+
+    companies_qs = (
+        companies_qs
         .annotate(clean_name=Trim("name"))
         .order_by("clean_name")
     )
@@ -46,6 +54,7 @@ def company_view(request):
             "provinces": provinces,
             "search": search,
             "province_filter": province_filter,
+            "current_workspace": current_ws,
         },
     )
 
@@ -60,6 +69,7 @@ def see_company_json(request, company_id):
 @csrf_exempt
 def create_company(request):
     if request.method == "POST":
+        current_ws = get_active_workspace(request)
         ruc = request.POST.get("ruc")
         name = request.POST.get("name")
         province_id = request.POST.get("province")
@@ -80,7 +90,7 @@ def create_company(request):
         if errors:
             return JsonResponse({"errors": errors}, status=400)
 
-        company = Company.objects.create(ruc=ruc, name=name, province=province)
+        company = Company.objects.create(ruc=ruc, name=name, province=province, workspace=current_ws)
 
         return JsonResponse(
             {

@@ -62,12 +62,15 @@ class IndividualReportUploadForm(forms.ModelForm):
             ),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, workspace=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.workspace = workspace
         self.fields["company"].required = False
         self.fields["year"].required = False
         self.fields["name"].required = False
         self.fields["file"].required = True
+        if workspace:
+            self.fields["company"].queryset = Company.objects.filter(workspace=workspace).order_by("name")
 
     def clean_file(self):
         file = self.cleaned_data.get("file")
@@ -102,7 +105,10 @@ class IndividualReportUploadForm(forms.ModelForm):
         overwrite = cleaned_data.get("overwrite")
 
         if company and year:
-            existing = Report.objects.filter(company=company, year=year).first()
+            query = Report.objects.filter(company=company, year=year)
+            if self.workspace:
+                query = query.filter(workspace=self.workspace)
+            existing = query.first()
             if existing and not overwrite:
                 empresa_nombre = company.name.strip()
                 raise forms.ValidationError(
@@ -138,11 +144,17 @@ class ZipUploadForm(forms.Form):
     overwrite = forms.BooleanField(
         required=False,
         label="Sobrescribir reportes existentes",
-        help_text="Reemplaza reportes con el mismo nombre si ya están registrados en la empresa.",
+        help_text="Reemplaza los reportes que coincidan en nombre o empresa/año.",
         widget=forms.CheckboxInput(
             attrs={"class": "rounded text-green-600 focus:ring-green-500 h-4 w-4 border-gray-300"}
         )
     )
+
+    def __init__(self, *args, workspace=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.workspace = workspace
+        if workspace:
+            self.fields["company"].queryset = Company.objects.filter(workspace=workspace).order_by("name")
 
     def clean_zip_file(self):
         zip_file = self.cleaned_data.get("zip_file")
@@ -225,11 +237,20 @@ class ComparativeAnalysisForm(forms.Form):
         )
     )
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, workspace=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self.workspace = workspace
+        from django.db.models import Q
+
+        reports_qs = Report.objects.all()
+        if workspace:
+            reports_qs = reports_qs.filter(workspace=workspace)
+            self.fields["expert_list"].queryset = ExpertWord.objects.filter(
+                Q(workspace=workspace) | Q(workspace__isnull=True)
+            )
 
         years = (
-            Report.objects
+            reports_qs
             .values_list("year", flat=True)
             .distinct()
             .order_by("-year")
@@ -244,6 +265,6 @@ class ComparativeAnalysisForm(forms.Form):
         ]
 
         if self.data.get("year"):
-            self.fields["report"].queryset = Report.objects.filter(
+            self.fields["report"].queryset = reports_qs.filter(
                 year=self.data.get("year")
             ).select_related("company").order_by("company__name", "name")

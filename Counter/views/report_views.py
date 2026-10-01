@@ -5,21 +5,29 @@ from django.http import JsonResponse, HttpResponse
 import json
 from ..models import Report, Company, TotalCountReport
 from ..main import sincronizar_palabras_total_count
+from ..workspace_utils import get_active_workspace
 
 
 @login_required
 def report_view(request):
     from django.db.models import Q
 
+    current_ws = get_active_workspace(request)
     query = request.GET.get("q", "").strip()
-    reports = Report.objects.select_related("company").all()
+    reports = Report.objects.select_related("company")
+    if current_ws:
+        reports = reports.filter(workspace=current_ws)
 
     if query:
         reports = reports.filter(
             Q(name__icontains=query) | Q(company__name__icontains=query)
         )
 
-    companies = Company.objects.all().annotate(clean_name=Trim("name")).order_by("clean_name")
+    companies_qs = Company.objects.all()
+    if current_ws:
+        companies_qs = companies_qs.filter(workspace=current_ws)
+    companies = companies_qs.annotate(clean_name=Trim("name")).order_by("clean_name")
+
     return render(
         request,
         "reports.html",
@@ -27,6 +35,7 @@ def report_view(request):
             "reports": reports,
             "companies": companies,
             "query": query,
+            "current_workspace": current_ws,
         },
     )
 
@@ -52,13 +61,14 @@ def see_report_json(request, report_id):
 def delete_report(request, report_id):
     try:
         report = Report.objects.get(id=report_id)
+        ws = report.workspace
         # Obtener palabras para descontarlas de TotalCount
         palabras_afectadas = list(
             TotalCountReport.objects.filter(report=report).values_list("word", flat=True)
         )
         report.delete()
-        # Sincronizar TotalCount exacto para eliminar palabras fantasma
-        sincronizar_palabras_total_count(palabras_afectadas)
+        # Sincronizar TotalCount exacto para eliminar palabras fantasma en el workspace
+        sincronizar_palabras_total_count(palabras_afectadas, workspace=ws)
         return HttpResponse(status=204)
     except Report.DoesNotExist:
         return HttpResponse(status=404)

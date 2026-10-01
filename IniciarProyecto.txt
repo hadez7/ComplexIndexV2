@@ -1,5 +1,38 @@
+== COMO INICIAR EL PROYECTO (Linux / Fedora) ==
+
+1. Ir a la carpeta del proyecto
+   cd ~/Proyectos/ComplexIndexV2
+
+2. Activar el entorno virtual
+   source venv/bin/activate
+
+3. Arrancar el servidor
+   python manage.py runserver
+
+4. Abrir en el navegador
+   http://127.0.0.1:8000/
+
+Para desactivar el entorno virtual: deactivate
+
+== COMANDOS GIT UTILES ==
+
+git status                  Ver cambios
+git pull                    Actualizar desde origin (upstream rafaellazo)
+git push                    Publicar en TU fork (mine -> hadez7/ComplexIndexV2)
+git push mine main          Publicar main en tu fork a mano
+
+== NOTAS ==
+
+- Python 3.13 y las dependencias viven en ./venv (gitignore lo excluye).
+  Si el venv se rompe, se reconstruye con:
+    rm -rf venv
+    uv venv --python 3.13 venv
+    uv pip install --python venv/bin/python -r requirements.txt
+
+- .env define OPENAI_API_KEY: solo es necesaria para OCR de PDFs escaneados.
+
+--- Version Windows (distribucion anterior) ---
 cd..
 venv\Scripts\activate
 cd ComplexIndexV2
 python manage.py runserver
-

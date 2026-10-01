@@ -464,3 +464,111 @@ class InternationalizationTests(TestCase):
         resp = self.client.get(reverse('users'))
         self.assertEqual(resp.status_code, 200)
         self.assertIn('User Management', resp.content.decode('utf-8'))
+
+
+class WorkspaceIsolationTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username='test_ws_user', password='password123', is_staff=True)
+        self.client = Client()
+        self.client.login(username='test_ws_user', password='password123')
+
+        from Counter.models import Workspace, WorkspaceMembership
+        self.ws1 = Workspace.objects.create(
+            name="Espacio Corporativo",
+            project_type="Corporativo",
+            created_by=self.user
+        )
+        WorkspaceMembership.objects.create(workspace=self.ws1, user=self.user, role="admin")
+
+        self.ws2 = Workspace.objects.create(
+            name="Espacio Legal",
+            project_type="Legal",
+            created_by=self.user
+        )
+        WorkspaceMembership.objects.create(workspace=self.ws2, user=self.user, role="admin")
+
+        # Compañías en cada workspace
+        self.comp_ws1 = Company.objects.create(name="Empresa Corp 1", ruc="11111111111", workspace=self.ws1)
+        self.comp_ws2 = Company.objects.create(name="Firma Legal 2", ruc="22222222222", workspace=self.ws2)
+
+        # Reportes en cada workspace
+        self.rep_ws1 = Report.objects.create(name="Reporte Corp", year=2024, company=self.comp_ws1, workspace=self.ws1, total_words=100)
+        self.rep_ws2 = Report.objects.create(name="Contrato Legal", year=2024, company=self.comp_ws2, workspace=self.ws2, total_words=200)
+
+        # Palabras de conteo
+        from Counter.models import TotalCount
+        TotalCount.objects.create(workspace=self.ws1, word="dividendo", quantity=25)
+        TotalCount.objects.create(workspace=self.ws2, word="clausula", quantity=40)
+
+    def test_workspaces_list_view(self):
+        resp = self.client.get(reverse('workspaces_list'))
+        self.assertEqual(resp.status_code, 200)
+        content = resp.content.decode('utf-8')
+        self.assertIn('Espacio Corporativo', content)
+        self.assertIn('Espacio Legal', content)
+        self.assertIn('Corporativo', content)
+        self.assertIn('Legal', content)
+
+    def test_workspace_select_and_filtering(self):
+        # Seleccionar Workspace 1
+        resp = self.client.get(reverse('workspace_select', args=[self.ws1.id]))
+        self.assertEqual(resp.status_code, 302)
+        session = self.client.session
+        self.assertEqual(session.get('active_workspace_id'), self.ws1.id)
+
+        # Ver panel de Workspace 1
+        resp_panel = self.client.get(reverse('panel'))
+        self.assertEqual(resp_panel.status_code, 200)
+        self.assertEqual(resp_panel.context['total_reports'], 1)
+        self.assertEqual(resp_panel.context['total_companies'], 1)
+
+        # Ver empresas de Workspace 1
+        resp_comp = self.client.get(reverse('companies'))
+        self.assertEqual(resp_comp.status_code, 200)
+        content_comp = resp_comp.content.decode('utf-8')
+        self.assertIn('Empresa Corp 1', content_comp)
+        self.assertNotIn('Firma Legal 2', content_comp)
+
+        # Ver reportes de Workspace 1
+        resp_rep = self.client.get(reverse('reports'))
+        self.assertEqual(resp_rep.status_code, 200)
+        content_rep = resp_rep.content.decode('utf-8')
+        self.assertIn('Reporte Corp', content_rep)
+        self.assertNotIn('Contrato Legal', content_rep)
+
+        # Cambiar a Workspace 2
+        resp = self.client.get(reverse('workspace_select', args=[self.ws2.id]))
+        self.assertEqual(resp.status_code, 302)
+
+        # Ver empresas de Workspace 2
+        resp_comp2 = self.client.get(reverse('companies'))
+        self.assertEqual(resp_comp2.status_code, 200)
+        content_comp2 = resp_comp2.content.decode('utf-8')
+        self.assertIn('Firma Legal 2', content_comp2)
+        self.assertNotIn('Empresa Corp 1', content_comp2)
+
+        # Ver reportes de Workspace 2
+        resp_rep2 = self.client.get(reverse('reports'))
+        self.assertEqual(resp_rep2.status_code, 200)
+        content_rep2 = resp_rep2.content.decode('utf-8')
+        self.assertIn('Contrato Legal', content_rep2)
+        self.assertNotIn('Reporte Corp', content_rep2)
+
+    def test_create_workspace_via_post(self):
+        post_data = {
+            'name': 'Auditoría Médica 2026',
+            'project_type': 'Salud / Médico',
+            'description': 'Análisis de historias clínicas',
+            'color': 'green',
+            'icon': 'medical'
+        }
+        resp = self.client.post(reverse('workspace_create'), post_data)
+        self.assertEqual(resp.status_code, 302)
+
+        from Counter.models import Workspace
+        ws_created = Workspace.objects.filter(name='Auditoría Médica 2026').first()
+        self.assertIsNotNone(ws_created)
+        self.assertEqual(ws_created.project_type, 'Salud / Médico')
+        self.assertEqual(ws_created.color, 'green')
+        self.assertEqual(ws_created.icon, 'medical')
+

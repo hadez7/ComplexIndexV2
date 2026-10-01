@@ -56,10 +56,11 @@ def find_paragraph(report: Report, palabra: str):
     return resultado
 
 
-def sincronizar_palabras_total_count(palabras):
+def sincronizar_palabras_total_count(palabras, workspace=None):
     """
     Sincroniza de forma matemáticamente exacta la tabla TotalCount
-    con la suma real de todos los TotalCountReport vigentes para las palabras dadas.
+    con la suma real de todos los TotalCountReport vigentes para las palabras dadas,
+    aislado por espacio de trabajo.
     Evita la acumulación duplicada o palabras fantasma tras eliminaciones.
     """
     if not palabras:
@@ -69,9 +70,12 @@ def sincronizar_palabras_total_count(palabras):
     chunk_size = 500  # Procesa en lotes para respetar límites de parámetros SQL en SQLite
     for i in range(0, len(palabras_lista), chunk_size):
         chunk = palabras_lista[i:i + chunk_size]
+        query = TotalCountReport.objects.filter(word__in=chunk)
+        if workspace:
+            query = query.filter(report__workspace=workspace)
+
         sumas = (
-            TotalCountReport.objects
-            .filter(word__in=chunk)
+            query
             .values("word")
             .annotate(total=Sum("quantity"))
         )
@@ -81,11 +85,12 @@ def sincronizar_palabras_total_count(palabras):
             tot = totales_dict.get(p, 0)
             if tot > 0:
                 TotalCount.objects.update_or_create(
+                    workspace=workspace,
                     word=p,
                     defaults={"quantity": tot}
                 )
             else:
-                TotalCount.objects.filter(word=p).delete()
+                TotalCount.objects.filter(workspace=workspace, word=p).delete()
 
 
 # --- Funciones principales ---
@@ -95,7 +100,7 @@ def process_report(report_path: str, report_instance: Report) -> dict:
     Procesa un reporte PDF individual:
     - Extrae texto digital u OCR si corresponde.
     - Calcula métricas lingüísticas y de complejidad.
-    - Actualiza TotalCountReport y sincroniza TotalCount sin duplicaciones.
+    - Actualiza TotalCountReport y sincroniza TotalCount sin duplicaciones para su espacio de trabajo.
     - Ejecutado en transacción atómica para consistencia total.
     """
     try:
@@ -113,7 +118,7 @@ def process_report(report_path: str, report_instance: Report) -> dict:
             texto = texto.replace('\n', ' ')
             texto = texto.replace('<<PARA>>', '\n\n')
             report_instance.extracted_text = texto
-            company, year = encontrar_compañia_año(texto)
+            company, year = encontrar_compañia_año(texto, workspace=report_instance.workspace)
 
             if not report_instance.name:
                 report_instance.name = os.path.basename(report_path)
@@ -132,8 +137,10 @@ def process_report(report_path: str, report_instance: Report) -> dict:
             report_instance.inflesz_score = metricas.get("inverted_inflesz", 0)
             report_instance.total_syllables = metricas.get("total_syllables", 0)
 
-            # Contar palabras técnicas
-            report_instance.technical_words_count = contar_palabras_tecnicas(texto, report_instance.year)
+            # Contar palabras técnicas aisladas por espacio de trabajo
+            report_instance.technical_words_count = contar_palabras_tecnicas(
+                texto, report_instance.year, workspace=report_instance.workspace
+            )
             report_instance.save()
 
             # Obtener palabras anteriores asociadas a este reporte (si se está sobrescribiendo)
@@ -155,9 +162,9 @@ def process_report(report_path: str, report_instance: Report) -> dict:
                     report=report_instance, word=palabra, defaults={"quantity": cantidad}
                 )
 
-            # Sincronizar TotalCount de forma exacta para todas las palabras afectadas
+            # Sincronizar TotalCount de forma exacta para todas las palabras afectadas en el workspace
             todas_afectadas = palabras_previas | palabras_actuales
-            sincronizar_palabras_total_count(todas_afectadas)
+            sincronizar_palabras_total_count(todas_afectadas, workspace=report_instance.workspace)
 
             return {
                 "success": True,
@@ -172,11 +179,11 @@ def process_report(report_path: str, report_instance: Report) -> dict:
         }
 
 
-def process_zip(zip_path: str, company=None, overwrite=False) -> dict:
+def process_zip(zip_path: str, company=None, overwrite=False, workspace=None) -> dict:
     """
     Manejo robusto de archivo ZIP:
     - Filtra carpetas de sistema (ej: __MACOSX) y archivos temporales (._*).
-    - Permite omitir o sobrescribir duplicados.
+    - Permite omitir o sobrescribir duplicados en el espacio de trabajo.
     - Devuelve resumen estadístico de la importación.
     """
     processed = 0
@@ -197,10 +204,12 @@ def process_zip(zip_path: str, company=None, overwrite=False) -> dict:
                 file_path = os.path.join(root, filename)
 
                 try:
-                    # Validar si ya existe un reporte con el mismo nombre para la empresa
+                    # Validar si ya existe un reporte con el mismo nombre para la empresa en el espacio de trabajo
                     existing_report = None
                     if company:
-                        existing_report = Report.objects.filter(company=company, name=filename).first()
+                        existing_report = Report.objects.filter(workspace=workspace, company=company, name=filename).first()
+                    else:
+                        existing_report = Report.objects.filter(workspace=workspace, name=filename).first()
 
                     if existing_report and not overwrite:
                         skipped += 1
@@ -212,7 +221,7 @@ def process_zip(zip_path: str, company=None, overwrite=False) -> dict:
                             report = existing_report
                             report.file.save(filename, django_file, save=False)
                         else:
-                            report = Report(company=company, name=filename)
+                            report = Report(workspace=workspace, company=company, name=filename)
                             report.file.save(filename, django_file, save=False)
                         report.save()
 

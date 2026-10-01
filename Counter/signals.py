@@ -13,7 +13,7 @@ def actualizar_totalcount_al_eliminar_reporte(sender, instance, **kwargs):
 
     for entry in report_counts:
         try:
-            total = TotalCount.objects.get(word=entry.word)
+            total = TotalCount.objects.get(workspace=instance.workspace, word=entry.word)
             total.quantity -= entry.quantity
             if total.quantity <= 0:
                 total.delete()

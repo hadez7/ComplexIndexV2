@@ -159,11 +159,81 @@
             </div>
 
             {% if user.is_authenticated %}
+            <!-- Selector de Espacio de Trabajo Activo (Dropdown) -->
+            <div class="relative">
+              <button type="button" id="workspaceMenuBtnDesktop" aria-haspopup="true" aria-expanded="false"
+                      class="flex items-center space-x-2 py-1.5 px-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-800 hover:text-blue-700 border border-gray-200 hover:border-blue-300 transition text-sm font-semibold focus:outline-none"
+                      title="{% trans 'Espacio de trabajo activo' %}">
+                <span class="text-base leading-none">
+                  {% if current_workspace.icon == 'building' %}🏢
+                  {% elif current_workspace.icon == 'scale' %}⚖️
+                  {% elif current_workspace.icon == 'medical' %}🏥
+                  {% elif current_workspace.icon == 'book' %}📚
+                  {% elif current_workspace.icon == 'chart' %}📊
+                  {% elif current_workspace.icon == 'document' %}📄
+                  {% else %}📁{% endif %}
+                </span>
+                <span class="max-w-[140px] truncate text-xs sm:text-sm font-bold">
+                  {{ current_workspace.name|default:_("Seleccionar Espacio") }}
+                </span>
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                </svg>
+              </button>
+
+              <!-- Dropdown de Espacios -->
+              <div id="workspaceMenuDesktop" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-gray-200 z-50 py-1 divide-y divide-gray-100">
+                <div class="px-4 py-2.5 bg-gray-50 rounded-t-2xl flex items-center justify-between">
+                  <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">{% trans "Espacios de Trabajo" %}</p>
+                  <a href="{% url 'workspaces_list' %}" class="text-xs text-blue-600 hover:text-blue-800 font-semibold">{% trans "Ver todos" %}</a>
+                </div>
+                <div class="max-h-60 overflow-y-auto py-1">
+                  {% for ws in user_workspaces %}
+                  <a href="{% url 'workspace_select' ws.id %}?next={{ request.path }}"
+                     class="flex items-center justify-between px-3.5 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition {% if current_workspace and ws.id == current_workspace.id %}bg-blue-50 font-bold text-blue-700{% endif %}">
+                    <div class="flex items-center space-x-2.5 truncate">
+                      <span class="text-base flex-shrink-0">
+                        {% if ws.icon == 'building' %}🏢{% elif ws.icon == 'scale' %}⚖️{% elif ws.icon == 'medical' %}🏥{% elif ws.icon == 'book' %}📚{% elif ws.icon == 'chart' %}📊{% elif ws.icon == 'document' %}📄{% else %}📁{% endif %}
+                      </span>
+                      <div class="truncate">
+                        <p class="truncate text-xs font-semibold">{{ ws.name }}</p>
+                        {% if ws.project_type %}
+                        <p class="text-[10px] text-gray-400 font-normal leading-tight">{{ ws.project_type }}</p>
+                        {% endif %}
+                      </div>
+                    </div>
+                    {% if current_workspace and ws.id == current_workspace.id %}
+                    <span class="w-2 h-2 rounded-full bg-blue-600 flex-shrink-0"></span>
+                    {% endif %}
+                  </a>
+                  {% empty %}
+                  <div class="px-4 py-3 text-xs text-gray-500 text-center">{% trans "No hay espacios disponibles" %}</div>
+                  {% endfor %}
+                </div>
+                <div class="p-2 bg-gray-50 rounded-b-2xl">
+                  <a href="{% url 'workspaces_list' %}" class="w-full inline-flex items-center justify-center space-x-1.5 py-1.5 px-3 bg-white hover:bg-blue-600 text-gray-700 hover:text-white border border-gray-200 rounded-xl text-xs font-semibold shadow-2xs transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    <span>{% trans "Gestionar Espacios" %}</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Enlace Espacios de Trabajo -->
+            <a href="{% url 'workspaces_list' %}" class="text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-2.5 py-2 rounded-lg font-medium text-sm transition flex items-center space-x-1.5" title="{% trans 'Ver todos los espacios' %}">
+              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+              </svg>
+              <span class="hidden lg:inline">{% trans "Espacios" %}</span>
+            </a>
+
             <a href="{% url 'panel' %}" class="text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg font-medium text-sm transition flex items-center space-x-1.5">
               <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
               </svg>
-              <span>{% trans "Panel de administración" %}</span>
+              <span>{% trans "Panel" %}</span>
             </a>
 
             <!-- Avatar con Menú Desplegable (Escritorio) -->
@@ -353,8 +423,20 @@
         <div class="px-3 py-2 bg-blue-50 rounded-lg text-xs text-blue-800 font-medium flex items-center justify-between">
           <span>{% blocktrans with username=user.username %}Conectado como <strong class="font-bold">{{ username }}</strong>{% endblocktrans %}</span>
         </div>
+        {% if current_workspace %}
+        <div class="px-3 py-2 bg-indigo-50 border border-indigo-100 rounded-lg text-xs text-indigo-900 font-medium flex items-center justify-between">
+          <span>{% trans "Espacio activo:" %} <strong class="font-bold">{{ current_workspace.name }}</strong></span>
+          <a href="{% url 'workspaces_list' %}" class="text-indigo-600 font-bold hover:underline">{% trans "Cambiar" %}</a>
+        </div>
+        {% endif %}
         <div class="space-y-1">
-          <a href="{% url 'panel' %}" class="flex items-center space-x-3 px-3 py-3 rounded-lg text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 transition">
+          <a href="{% url 'workspaces_list' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 transition">
+            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+            </svg>
+            <span>{% trans "Espacios de trabajo" %}</span>
+          </a>
+          <a href="{% url 'panel' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 transition">
             <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
             </svg>
@@ -387,6 +469,10 @@
     <!-- Control de menús y navegación responsiva -->
     <script>
       document.addEventListener('DOMContentLoaded', function () {
+        // Workspace menu Desktop
+        const workspaceBtnDesktop = document.getElementById('workspaceMenuBtnDesktop');
+        const workspaceMenuDesktop = document.getElementById('workspaceMenuDesktop');
+
         // Desktop user menu
         const desktopBtn = document.getElementById('userMenuBtnDesktop');
         const desktopMenu = document.getElementById('userMenuDesktop');
@@ -410,6 +496,9 @@
         const closeIcon = document.getElementById('closeIcon');
 
         function closeAllMenus() {
+          if (workspaceMenuDesktop) workspaceMenuDesktop.classList.add('hidden');
+          if (workspaceBtnDesktop) workspaceBtnDesktop.setAttribute('aria-expanded', 'false');
+
           if (desktopMenu) desktopMenu.classList.add('hidden');
           if (desktopBtn) desktopBtn.setAttribute('aria-expanded', 'false');
 
@@ -426,6 +515,19 @@
           if (mobileNavBtn) mobileNavBtn.setAttribute('aria-expanded', 'false');
           if (hamburgerIcon) hamburgerIcon.classList.remove('hidden');
           if (closeIcon) closeIcon.classList.add('hidden');
+        }
+
+        // Toggle Desktop Workspace Menu
+        if (workspaceBtnDesktop && workspaceMenuDesktop) {
+          workspaceBtnDesktop.addEventListener('click', function (e) {
+            e.stopPropagation();
+            const isOpen = !workspaceMenuDesktop.classList.contains('hidden');
+            closeAllMenus();
+            if (!isOpen) {
+              workspaceMenuDesktop.classList.remove('hidden');
+              workspaceBtnDesktop.setAttribute('aria-expanded', 'true');
+            }
+          });
         }
 
         // Toggle Desktop Language Menu

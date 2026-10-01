@@ -1,0 +1,484 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Espacios de Trabajo" %} | ELI{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- Encabezado -->
+    <div class="mb-8">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200">
+            <div>
+                <div class="flex items-center space-x-2 text-xs text-gray-500 mb-2">
+                    <a href="{% url 'index' %}" class="hover:text-blue-600 transition">{% trans "Inicio" %}</a>
+                    <span>/</span>
+                    <span class="text-gray-700 font-semibold">{% trans "Espacios de trabajo" %}</span>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight flex items-center gap-3">
+                    <span>{% trans "Espacios de Trabajo" %}</span>
+                    <span class="text-xs bg-indigo-100 text-indigo-800 font-bold px-3 py-1 rounded-full border border-indigo-200">
+                        {{ total_workspaces }} {% if total_workspaces == 1 %}{% trans "espacio" %}{% else %}{% trans "espacios" %}{% endif %}
+                    </span>
+                </h1>
+                <p class="text-sm text-gray-500 mt-1 max-w-2xl">
+                    {% trans "Organiza y analiza documentos por proyectos temáticos aislados: contratos legales, documentos médicos, informes corporativos o de cualquier otra índole con métricas independientes." %}
+                </p>
+            </div>
+
+            <!-- Botón Crear Nuevo Espacio -->
+            <div class="flex items-center space-x-3">
+                <button type="button" onclick="openCreateModal()"
+                        class="inline-flex items-center justify-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2.5 rounded-xl shadow-sm transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    <span>{% trans "Nuevo Espacio de Trabajo" %}</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de Búsqueda -->
+    <div class="mb-6 flex flex-col sm:flex-row gap-4 items-center justify-between">
+        <form method="get" class="w-full sm:w-96 relative">
+            <input type="text" name="q" value="{{ search }}"
+                   placeholder="{% trans 'Buscar por nombre, temática o descripción...' %}"
+                   class="w-full bg-white border border-gray-300 rounded-xl pl-10 pr-4 py-2.5 text-sm text-gray-800 shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+            <svg class="w-5 h-5 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            {% if search %}
+            <a href="{% url 'workspaces_list' %}" class="absolute right-3 top-2.5 text-xs text-gray-400 hover:text-gray-600 font-semibold py-1">
+                ✕ {% trans "Limpiar" %}
+            </a>
+            {% endif %}
+        </form>
+
+        {% if active_workspace %}
+        <div class="flex items-center space-x-2 text-xs text-gray-600 bg-blue-50 px-3.5 py-2 rounded-xl border border-blue-200">
+            <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+            <span>{% trans "Espacio actualmente activo en tu sesión:" %}</span>
+            <strong class="text-blue-700 font-bold">{{ active_workspace.name }}</strong>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Cuadrícula de Tarjetas de Espacios de Trabajo -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for item in workspaces_data %}
+        {% with ws=item.workspace %}
+        <div class="bg-white rounded-2xl border transition-all duration-200 flex flex-col justify-between p-6 hover:shadow-md {% if item.is_active %}border-blue-500 ring-2 ring-blue-100 shadow-sm{% else %}border-gray-200 hover:border-gray-300{% endif %}">
+            
+            <!-- Cabecera de la tarjeta -->
+            <div>
+                <div class="flex items-start justify-between gap-3 mb-4">
+                    <div class="flex items-center space-x-3">
+                        <!-- Icono con color -->
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl font-bold
+                            {% if ws.color == 'purple' %}bg-purple-100 text-purple-600
+                            {% elif ws.color == 'green' %}bg-green-100 text-green-600
+                            {% elif ws.color == 'amber' %}bg-yellow-100 text-yellow-700
+                            {% elif ws.color == 'red' %}bg-red-100 text-red-600
+                            {% elif ws.color == 'indigo' %}bg-indigo-100 text-indigo-600
+                            {% else %}bg-blue-100 text-blue-600{% endif %}">
+                            {% if ws.icon == 'building' %}🏢
+                            {% elif ws.icon == 'scale' %}⚖️
+                            {% elif ws.icon == 'medical' %}🏥
+                            {% elif ws.icon == 'book' %}📚
+                            {% elif ws.icon == 'chart' %}📊
+                            {% elif ws.icon == 'document' %}📄
+                            {% else %}📁{% endif %}
+                        </div>
+
+                        <div>
+                            <h2 class="text-base font-bold text-gray-900 leading-snug hover:text-blue-600 transition">
+                                {{ ws.name }}
+                            </h2>
+                            {% if ws.project_type %}
+                            <span class="inline-block mt-0.5 text-xs font-semibold px-2 py-0.5 rounded-md
+                                {% if ws.color == 'purple' %}bg-purple-50 text-purple-700 border border-purple-200
+                                {% elif ws.color == 'green' %}bg-green-50 text-green-700 border border-green-200
+                                {% elif ws.color == 'amber' %}bg-yellow-50 text-yellow-800 border border-yellow-200
+                                {% elif ws.color == 'red' %}bg-red-50 text-red-700 border border-red-200
+                                {% elif ws.color == 'indigo' %}bg-indigo-50 text-indigo-700 border border-indigo-200
+                                {% else %}bg-blue-50 text-blue-700 border border-blue-200{% endif %}">
+                                {{ ws.project_type }}
+                            </span>
+                            {% else %}
+                            <span class="text-xs text-gray-400">{% trans "Sin categoría" %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Indicador activo o menú -->
+                    <div class="flex items-center space-x-1">
+                        {% if item.is_active %}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-200">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5"></span>
+                            {% trans "Activo" %}
+                        </span>
+                        {% endif %}
+                        
+                        <!-- Botón opciones (Editar) -->
+                        <button type="button" 
+                                onclick="openEditModal('{{ ws.id }}', '{{ ws.name|escapejs }}', '{{ ws.description|default:''|escapejs }}', '{{ ws.project_type|default:''|escapejs }}', '{{ ws.color|default:'blue'|escapejs }}', '{{ ws.icon|default:'folder'|escapejs }}')"
+                                class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                                title="{% trans 'Editar espacio' %}">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Descripción -->
+                <p class="text-xs text-gray-500 line-clamp-2 mb-4 leading-relaxed">
+                    {{ ws.description|default:_("Sin descripción especificada.") }}
+                </p>
+
+                <!-- Resumen de Métricas del Espacio -->
+                <div class="grid grid-cols-3 gap-2 py-3 px-3 bg-gray-50 rounded-xl mb-4 border border-gray-100 text-center">
+                    <div>
+                        <p class="text-xs text-gray-500 font-medium">{% trans "Reportes" %}</p>
+                        <p class="text-sm font-bold text-gray-900 mt-0.5">{{ item.reports_count }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 font-medium">{% trans "Empresas" %}</p>
+                        <p class="text-sm font-bold text-gray-900 mt-0.5">{{ item.companies_count }}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-500 font-medium">{% trans "Palabras" %}</p>
+                        <p class="text-sm font-bold text-gray-900 mt-0.5">
+                            {% if item.total_words > 999999 %}
+                                {{ item.total_words|stringformat:".1e" }}
+                            {% else %}
+                                {{ item.total_words }}
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="pt-2 border-t border-gray-100 flex items-center justify-between gap-2">
+                <a href="{% url 'workspace_select' ws.id %}"
+                   class="flex-1 inline-flex items-center justify-center space-x-1.5 py-2 px-3 text-sm font-semibold rounded-xl transition
+                          {% if item.is_active %}
+                          bg-blue-600 hover:bg-blue-700 text-white shadow-xs
+                          {% else %}
+                          bg-gray-100 hover:bg-blue-600 hover:text-white text-gray-700
+                          {% endif %}">
+                    <span>{% if item.is_active %}{% trans "Entrar al Panel" %}{% else %}{% trans "Abrir Espacio" %}{% endif %}</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </a>
+
+                {% if total_workspaces > 1 %}
+                <button type="button" onclick="confirmDeleteWorkspace('{{ ws.id }}', '{{ ws.name|escapejs }}')"
+                        class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition"
+                        title="{% trans 'Eliminar espacio' %}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                </button>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endwith %}
+        {% empty %}
+        <div class="col-span-full bg-white rounded-2xl border border-gray-200 p-12 text-center">
+            <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                📂
+            </div>
+            <h3 class="text-lg font-bold text-gray-800 mb-1">{% trans "No se encontraron espacios de trabajo" %}</h3>
+            <p class="text-sm text-gray-500 mb-6 max-w-md mx-auto">
+                {% if search %}
+                {% trans "No hay espacios que coincidan con tu búsqueda. Intenta con otros términos." %}
+                {% else %}
+                {% trans "Comienza creando tu primer espacio de trabajo temático para organizar tus documentos." %}
+                {% endif %}
+            </p>
+            <button type="button" onclick="openCreateModal()"
+                    class="inline-flex items-center space-x-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold text-sm px-5 py-2.5 rounded-xl transition">
+                <span>{% trans "Crear Primer Espacio" %}</span>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+<!-- Modal: Crear Espacio de Trabajo -->
+<div id="createWorkspaceModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl transform transition-all">
+        <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg">
+                    ✨
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">{% trans "Nuevo Espacio de Trabajo" %}</h3>
+                    <p class="text-xs text-gray-500">{% trans "Configura una temática independiente para tus documentos" %}</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold p-1">✕</button>
+        </div>
+
+        <form id="createWorkspaceForm" method="post" action="{% url 'workspace_create' %}" class="mt-5 space-y-4">
+            {% csrf_token %}
+            
+            <!-- Nombre -->
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    {% trans "Nombre del espacio" %} <span class="text-red-500">*</span>
+                </label>
+                <input type="text" name="name" id="create_name" required
+                       placeholder="{% trans 'Ej: Contratos Legales 2026, Auditoría Médica...' %}"
+                       class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+            </div>
+
+            <!-- Tipo de Temática (Libre) -->
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    {% trans "Tipo de temática" %}
+                </label>
+                <input type="text" name="project_type" id="create_project_type"
+                       placeholder="{% trans 'Ej: Legal, Médico, Financiero, Académico, Seguros...' %}"
+                       class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                <div class="flex flex-wrap gap-1.5 mt-2">
+                    <span class="text-xs text-gray-400 self-center">{% trans "Sugerencias:" %}</span>
+                    <button type="button" onclick="setProjectType('create', 'Corporativo')" class="text-xs bg-gray-100 hover:bg-blue-50 hover:text-blue-600 text-gray-600 px-2 py-0.5 rounded-md transition">Corporativo</button>
+                    <button type="button" onclick="setProjectType('create', 'Legal')" class="text-xs bg-gray-100 hover:bg-blue-50 hover:text-blue-600 text-gray-600 px-2 py-0.5 rounded-md transition">Legal</button>
+                    <button type="button" onclick="setProjectType('create', 'Médico')" class="text-xs bg-gray-100 hover:bg-blue-50 hover:text-blue-600 text-gray-600 px-2 py-0.5 rounded-md transition">Médico</button>
+                    <button type="button" onclick="setProjectType('create', 'Académico')" class="text-xs bg-gray-100 hover:bg-blue-50 hover:text-blue-600 text-gray-600 px-2 py-0.5 rounded-md transition">Académico</button>
+                    <button type="button" onclick="setProjectType('create', 'Financiero')" class="text-xs bg-gray-100 hover:bg-blue-50 hover:text-blue-600 text-gray-600 px-2 py-0.5 rounded-md transition">Financiero</button>
+                </div>
+            </div>
+
+            <!-- Descripción -->
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    {% trans "Descripción (opcional)" %}
+                </label>
+                <textarea name="description" id="create_description" rows="2"
+                          placeholder="{% trans 'Breve propósito de este espacio de trabajo...' %}"
+                          class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></textarea>
+            </div>
+
+            <!-- Selección de Icono y Color -->
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                        {% trans "Icono" %}
+                    </label>
+                    <select name="icon" id="create_icon" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-800 bg-white">
+                        <option value="folder">📁 {% trans "Carpeta" %}</option>
+                        <option value="building">🏢 {% trans "Empresa / Edificio" %}</option>
+                        <option value="scale">⚖️ {% trans "Balanza / Legal" %}</option>
+                        <option value="medical">🏥 {% trans "Médico / Salud" %}</option>
+                        <option value="book">📚 {% trans "Libro / Académico" %}</option>
+                        <option value="chart">📊 {% trans "Gráficos / Finanzas" %}</option>
+                        <option value="document">📄 {% trans "Documento" %}</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                        {% trans "Color temático" %}
+                    </label>
+                    <select name="color" id="create_color" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-800 bg-white">
+                        <option value="blue">🔵 {% trans "Azul Corporativo" %}</option>
+                        <option value="purple">🟣 {% trans "Púrpura Legal" %}</option>
+                        <option value="green">🟢 {% trans "Verde Salud/Finanzas" %}</option>
+                        <option value="amber">🟠 {% trans "Ámbar / Naranja" %}</option>
+                        <option value="indigo">🔮 {% trans "Índigo Académico" %}</option>
+                        <option value="red">🔴 {% trans "Rojo Regulatorio" %}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-gray-100 flex items-center justify-end space-x-3">
+                <button type="button" onclick="closeCreateModal()"
+                        class="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition">
+                    {% trans "Cancelar" %}
+                </button>
+                <button type="submit"
+                        class="px-5 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-xs transition">
+                    {% trans "Crear Espacio" %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Editar Espacio de Trabajo -->
+<div id="editWorkspaceModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl transform transition-all">
+        <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+            <h3 class="text-lg font-bold text-gray-900">{% trans "Editar Espacio de Trabajo" %}</h3>
+            <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold p-1">✕</button>
+        </div>
+
+        <form id="editWorkspaceForm" onsubmit="submitEditWorkspace(event)" class="mt-5 space-y-4">
+            <input type="hidden" id="edit_workspace_id">
+
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    {% trans "Nombre del espacio" %} <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="edit_name" required
+                       class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    {% trans "Tipo de temática" %}
+                </label>
+                <input type="text" id="edit_project_type"
+                       class="w-full border border-gray-300 rounded-xl px-3.5 py-2.5 text-sm text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">
+                    {% trans "Descripción" %}
+                </label>
+                <textarea id="edit_description" rows="2"
+                          class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">{% trans "Icono" %}</label>
+                    <select id="edit_icon" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-800 bg-white">
+                        <option value="folder">📁 {% trans "Carpeta" %}</option>
+                        <option value="building">🏢 {% trans "Empresa / Edificio" %}</option>
+                        <option value="scale">⚖️ {% trans "Balanza / Legal" %}</option>
+                        <option value="medical">🏥 {% trans "Médico / Salud" %}</option>
+                        <option value="book">📚 {% trans "Libro / Académico" %}</option>
+                        <option value="chart">📊 {% trans "Gráficos / Finanzas" %}</option>
+                        <option value="document">📄 {% trans "Documento" %}</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">{% trans "Color temático" %}</label>
+                    <select id="edit_color" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm text-gray-800 bg-white">
+                        <option value="blue">🔵 {% trans "Azul Corporativo" %}</option>
+                        <option value="purple">🟣 {% trans "Púrpura Legal" %}</option>
+                        <option value="green">🟢 {% trans "Verde Salud/Finanzas" %}</option>
+                        <option value="amber">🟠 {% trans "Ámbar / Naranja" %}</option>
+                        <option value="indigo">🔮 {% trans "Índigo Académico" %}</option>
+                        <option value="red">🔴 {% trans "Rojo Regulatorio" %}</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-gray-100 flex items-center justify-end space-x-3">
+                <button type="button" onclick="closeEditModal()"
+                        class="px-4 py-2 text-sm font-semibold text-gray-600 hover:bg-gray-100 rounded-xl transition">
+                    {% trans "Cancelar" %}
+                </button>
+                <button type="submit"
+                        class="px-5 py-2 text-sm font-semibold bg-blue-600 hover:bg-blue-700 text-white rounded-xl shadow-xs transition">
+                    {% trans "Guardar Cambios" %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+function openCreateModal() {
+    document.getElementById("createWorkspaceModal").classList.remove("hidden");
+    document.getElementById("create_name").focus();
+}
+
+function closeCreateModal() {
+    document.getElementById("createWorkspaceModal").classList.add("hidden");
+}
+
+function setProjectType(formPrefix, val) {
+    document.getElementById(formPrefix + "_project_type").value = val;
+}
+
+function openEditModal(id, name, desc, projectType, color, icon) {
+    document.getElementById("edit_workspace_id").value = id;
+    document.getElementById("edit_name").value = name;
+    document.getElementById("edit_description").value = desc;
+    document.getElementById("edit_project_type").value = projectType;
+    document.getElementById("edit_color").value = color;
+    document.getElementById("edit_icon").value = icon;
+    document.getElementById("editWorkspaceModal").classList.remove("hidden");
+}
+
+function closeEditModal() {
+    document.getElementById("editWorkspaceModal").classList.add("hidden");
+}
+
+function getCsrfToken() {
+    const cookie = document.cookie.split('; ').find(row => row.startsWith('csrftoken='));
+    return cookie ? cookie.split('=')[1] : '';
+}
+
+async function submitEditWorkspace(event) {
+    event.preventDefault();
+    const id = document.getElementById("edit_workspace_id").value;
+    const payload = {
+        name: document.getElementById("edit_name").value,
+        description: document.getElementById("edit_description").value,
+        project_type: document.getElementById("edit_project_type").value,
+        color: document.getElementById("edit_color").value,
+        icon: document.getElementById("edit_icon").value,
+    };
+
+    try {
+        const response = await fetch(`/workspaces/${id}/update/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken(),
+            },
+            body: JSON.stringify(payload)
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+            window.location.reload();
+        } else {
+            alert(data.error || (data.errors && data.errors.name ? data.errors.name[0] : 'Error al actualizar espacio'));
+        }
+    } catch (err) {
+        alert('Error de conexión al actualizar.');
+    }
+}
+
+async function confirmDeleteWorkspace(id, name) {
+    if (!confirm(`¿Estás seguro de que deseas eliminar el espacio de trabajo "${name}"?\n\nEsta acción eliminará todos los reportes y conteos asociados a este espacio.`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/workspaces/${id}/delete/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken(),
+            }
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+            window.location.reload();
+        } else {
+            alert(data.error || 'No se pudo eliminar el espacio.');
+        }
+    } catch (err) {
+        alert('Error de conexión al eliminar.');
+    }
+}
+</script>
+{% endblock %}

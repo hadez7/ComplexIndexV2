@@ -22,5 +22,6 @@ urlpatterns = [
     path("reports/", include("Counter.other.urls_report")),
     path("expert_lists/", include("Counter.other.urls_expert_lists")),
     path("concealment_detection/", include("Counter.other.urls_concealment_detection")),
+    path("workspaces/", include("Counter.other.urls_workspace")),
 ]
 
