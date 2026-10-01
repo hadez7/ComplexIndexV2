@@ -6,5 +6,6 @@ urlpatterns = [
     path("create/", workspace_views.workspace_create_view, name="workspace_create"),
     path("<int:workspace_id>/select/", workspace_views.workspace_select_view, name="workspace_select"),
     path("<int:workspace_id>/update/", workspace_views.workspace_update_view, name="workspace_update"),
+    path("<int:workspace_id>/archive/", workspace_views.workspace_archive_view, name="workspace_archive"),
     path("<int:workspace_id>/delete/", workspace_views.workspace_delete_view, name="workspace_delete"),
 ]

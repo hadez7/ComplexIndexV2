@@ -134,9 +134,9 @@ def total_count_view(request):
     if current_ws:
         reports_qs = reports_qs.filter(workspace=current_ws)
         companies_qs = companies_qs.filter(workspace=current_ws)
-        expert_lists = ExpertWord.objects.filter(Q(workspace=current_ws) | Q(workspace__isnull=True))
+        expert_lists = ExpertWord.objects.filter(workspace=current_ws)
     else:
-        expert_lists = ExpertWord.objects.all()
+        expert_lists = ExpertWord.objects.none()
 
     years = reports_qs.values_list("year", flat=True).distinct().order_by("-year")
     companies = companies_qs.filter(report__isnull=False).distinct().annotate(clean_name=Trim("name")).order_by("clean_name")

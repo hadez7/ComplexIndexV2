@@ -1,7 +1,15 @@
+import json
+
+from django.db.models import ProtectedError
 from django.test import TestCase, Client
 from django.contrib.auth.models import User
 from django.urls import reverse
-from Counter.models import Company, Report, TotalCountReport, ConcealmentReview, ConcealmentParagraphReview
+from Counter.models import (
+    Company, Report, TotalCount, TotalCountReport,
+    ConcealmentReview, ConcealmentParagraphReview,
+    Workspace, WorkspaceMembership, ExpertWord,
+)
+from User.models import Expert
 
 
 class ConcealmentDetectionFilterTests(TestCase):
@@ -10,15 +18,20 @@ class ConcealmentDetectionFilterTests(TestCase):
         self.client = Client()
         self.client.login(username='testauditor', password='password123')
 
-        self.company1 = Company.objects.create(name='EMPRESA ALFA S.A.', ruc='0990000001001')
-        self.company2 = Company.objects.create(name='EMPRESA BETA S.A.', ruc='0990000002001')
+        # Todos los datos viven en un espacio de trabajo (campo obligatorio).
+        self.ws = Workspace.objects.create(name='Espacio de Auditoría', created_by=self.user)
+
+        self.company1 = Company.objects.create(workspace=self.ws, name='EMPRESA ALFA S.A.', ruc='0990000001001')
+        self.company2 = Company.objects.create(workspace=self.ws, name='EMPRESA BETA S.A.', ruc='0990000002001')
 
         self.report1 = Report.objects.create(
+            workspace=self.ws,
             company=self.company1,
             name='2024',
             year=2024
         )
         self.report2 = Report.objects.create(
+            workspace=self.ws,
             company=self.company2,
             name='2024',
             year=2024
@@ -61,8 +74,8 @@ class ConcealmentDetectionFilterTests(TestCase):
     def test_company_ordering_ignores_leading_whitespace(self):
         # Create a company with a leading space that starts with 'Z'
         # Without Trim, ASCII space (32) would sort it before 'EMPRESA ALFA S.A.' (65)
-        company_z = Company.objects.create(name=' ZETA S.A.', ruc='0990000003001')
-        report_z = Report.objects.create(company=company_z, name='2024', year=2024)
+        company_z = Company.objects.create(workspace=self.ws, name=' ZETA S.A.', ruc='0990000003001')
+        report_z = Report.objects.create(workspace=self.ws, company=company_z, name='2024', year=2024)
 
         url = reverse('concealment_detection') + '?year=2024'
         response = self.client.get(url)
@@ -186,8 +199,10 @@ class ComparativeAnalysisTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='analyst', password='password')
         self.client.login(username='analyst', password='password')
-        self.company = Company.objects.create(name='ACME CORP S.A.', ruc='0990000004001')
+        self.ws = Workspace.objects.create(name='Espacio Análisis', created_by=self.user)
+        self.company = Company.objects.create(workspace=self.ws, name='ACME CORP S.A.', ruc='0990000004001')
         self.report = Report.objects.create(
+            workspace=self.ws,
             company=self.company,
             name='2024',
             year=2024
@@ -225,10 +240,11 @@ class ReportSearchTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='admin_reports', password='password')
         self.client.login(username='admin_reports', password='password')
-        self.company1 = Company.objects.create(name='ALPHA LOGISTICS S.A.', ruc='0990000005001')
-        self.company2 = Company.objects.create(name='OMEGA HOLDINGS S.A.', ruc='0990000006001')
-        self.rep1 = Report.objects.create(company=self.company1, name='Memoria Anual 2024', year=2024)
-        self.rep2 = Report.objects.create(company=self.company2, name='Balance 2023', year=2023)
+        self.ws = Workspace.objects.create(name='Espacio Reportes', created_by=self.user)
+        self.company1 = Company.objects.create(workspace=self.ws, name='ALPHA LOGISTICS S.A.', ruc='0990000005001')
+        self.company2 = Company.objects.create(workspace=self.ws, name='OMEGA HOLDINGS S.A.', ruc='0990000006001')
+        self.rep1 = Report.objects.create(workspace=self.ws, company=self.company1, name='Memoria Anual 2024', year=2024)
+        self.rep2 = Report.objects.create(workspace=self.ws, company=self.company2, name='Balance 2023', year=2023)
 
     def test_search_reports_by_name(self):
         url = reverse('reports') + '?q=Memoria'
@@ -275,7 +291,8 @@ class UploadModuleTests(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='uploaduser', password='password123')
         self.client.login(username='uploaduser', password='password123')
-        self.company = Company.objects.create(name='BETA CORP S.A.', ruc='0990000007001')
+        self.ws = Workspace.objects.create(name='Espacio Subida', created_by=self.user)
+        self.company = Company.objects.create(workspace=self.ws, name='BETA CORP S.A.', ruc='0990000007001')
 
     def test_upload_view_requires_login(self):
         self.client.logout()
@@ -320,7 +337,7 @@ class UploadModuleTests(TestCase):
         from Counter.forms import IndividualReportUploadForm
 
         # Create existing report
-        Report.objects.create(company=self.company, year=2024, name="Existente 2024")
+        Report.objects.create(workspace=self.ws, company=self.company, year=2024, name="Existente 2024")
 
         valid_pdf_content = b"%PDF-1.4\n%trailer\n%%EOF"
         pdf_file = SimpleUploadedFile("nuevo.pdf", valid_pdf_content, content_type="application/pdf")
@@ -336,7 +353,7 @@ class UploadModuleTests(TestCase):
         from django.core.files.uploadedfile import SimpleUploadedFile
         from Counter.forms import IndividualReportUploadForm
 
-        Report.objects.create(company=self.company, year=2024, name="Existente 2024")
+        Report.objects.create(workspace=self.ws, company=self.company, year=2024, name="Existente 2024")
 
         valid_pdf_content = b"%PDF-1.4\n%trailer\n%%EOF"
         pdf_file = SimpleUploadedFile("nuevo.pdf", valid_pdf_content, content_type="application/pdf")
@@ -350,9 +367,9 @@ class UploadModuleTests(TestCase):
     def test_delete_report_decrements_total_count(self):
         from Counter.models import TotalCount, TotalCountReport
 
-        report = Report.objects.create(company=self.company, year=2024, name="Reporte Prueba")
+        report = Report.objects.create(workspace=self.ws, company=self.company, year=2024, name="Reporte Prueba")
         TotalCountReport.objects.create(report=report, word="palabraprueba", quantity=15)
-        TotalCount.objects.create(word="palabraprueba", quantity=15)
+        TotalCount.objects.create(workspace=self.ws, word="palabraprueba", quantity=15)
 
         # Ensure TotalCount starts at 15
         self.assertEqual(TotalCount.objects.get(word="palabraprueba").quantity, 15)
@@ -572,3 +589,192 @@ class WorkspaceIsolationTests(TestCase):
         self.assertEqual(ws_created.color, 'green')
         self.assertEqual(ws_created.icon, 'medical')
 
+
+
+class ExpertListWorkspaceIsolationTests(TestCase):
+    """Las listas de palabras de los expertos deben ser únicas y aisladas por espacio."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='listas_ws', password='password123', is_staff=True
+        )
+        self.client = Client()
+        self.client.login(username='listas_ws', password='password123')
+
+        self.ws1 = Workspace.objects.create(name='Espacio Listas 1', created_by=self.user)
+        self.ws2 = Workspace.objects.create(name='Espacio Listas 2', created_by=self.user)
+
+        expert_user = User.objects.create_user(username='expert1', password='x')
+        self.expert = Expert.objects.create(user=expert_user, profession='Ingeniero')
+
+    def _seleccionar(self, ws):
+        self.client.get(reverse('workspace_select', args=[ws.id]))
+
+    def _post_json(self, url, payload):
+        return self.client.post(url, json.dumps(payload), content_type='application/json')
+
+    def _crear(self, nombre, palabras=None):
+        return self._post_json(reverse('create_expert_list'), {
+            'expert_id': self.expert.id,
+            'name': nombre,
+            'words': palabras or ['ingresos', 'pasivos'],
+        })
+
+    def test_mismo_nombre_permitido_en_espacios_distintos(self):
+        self._seleccionar(self.ws1)
+        r1 = self._crear('Común')
+        self.assertEqual(r1.status_code, 200, r1.content)
+        self.assertTrue(r1.json()['success'])
+
+        # Mismo nombre, otro espacio: debe permitirse
+        self._seleccionar(self.ws2)
+        r2 = self._crear('Común')
+        self.assertEqual(r2.status_code, 200, r2.content)
+        self.assertTrue(r2.json()['success'])
+
+        self.assertEqual(ExpertWord.objects.filter(name='Común').count(), 2)
+
+    def test_nombre_duplicado_en_el_mismo_espacio_rechazado(self):
+        self._seleccionar(self.ws1)
+        self.assertEqual(self._crear('Duplicada').status_code, 200)
+        repetida = self._crear('Duplicada')
+        self.assertEqual(repetida.status_code, 400)
+        self.assertEqual(ExpertWord.objects.filter(workspace=self.ws1, name='Duplicada').count(), 1)
+
+    def test_no_puede_leer_editar_borrar_lista_de_otro_espacio(self):
+        self._seleccionar(self.ws1)
+        lista_id = self._crear('Solo del ws1').json()['id']
+
+        # Cambio al otro espacio: la lista de ws1 no debe ser visible ni manipulable
+        self._seleccionar(self.ws2)
+        self.assertEqual(
+            self.client.get(reverse('get_list_json', args=[lista_id])).status_code, 404
+        )
+        self.assertEqual(
+            self._post_json(reverse('update_expert_list', args=[lista_id]),
+                            {'name': 'Robada', 'words': ['x']}).status_code, 404
+        )
+        self.assertEqual(
+            self._post_json(reverse('delete_expert_list', args=[lista_id]), {}).status_code, 404
+        )
+        self.assertTrue(ExpertWord.objects.filter(id=lista_id, name='Solo del ws1').exists())
+
+        # Vuelvo a ws1: sigue ahí y ahora sí se puede editar
+        self._seleccionar(self.ws1)
+        ok = self._post_json(reverse('update_expert_list', args=[lista_id]),
+                             {'name': 'Renombrada', 'words': ['y']})
+        self.assertEqual(ok.status_code, 200, ok.content)
+
+    def test_listado_solo_muestra_listas_del_espacio_activo(self):
+        self._seleccionar(self.ws1)
+        self._crear('FiltroWs1')
+        self._seleccionar(self.ws2)
+        self._crear('FiltroWs2')
+
+        self._seleccionar(self.ws1)
+        resp = self.client.get(reverse('expert_lists'))
+        self.assertEqual(resp.status_code, 200)
+        content = resp.content.decode('utf-8')
+        self.assertIn('FiltroWs1', content)
+        self.assertNotIn('FiltroWs2', content)
+
+
+class WorkspaceDeletionSafetyTests(TestCase):
+    """Nunca se debe poder borrar un espacio con contenido (reportes, empresas, PDFs)."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='seguridad_ws', password='password123', is_staff=True
+        )
+        self.client = Client()
+        self.client.login(username='seguridad_ws', password='password123')
+
+        self.ws_vacio = Workspace.objects.create(name='Espacio Vacío', created_by=self.user)
+        self.ws_lleno = Workspace.objects.create(name='Espacio Lleno', created_by=self.user)
+
+        self.company = Company.objects.create(
+            workspace=self.ws_lleno, name='PROTEGIDA S.A.', ruc='0999999999001'
+        )
+        self.report = Report.objects.create(
+            workspace=self.ws_lleno, company=self.company, name='2024', year=2024
+        )
+        TotalCount.objects.create(workspace=self.ws_lleno, word='ingresos', quantity=42)
+        TotalCountReport.objects.create(report=self.report, word='ingresos', quantity=42)
+
+    def _snapshot(self):
+        return (
+            Workspace.objects.count(), Company.objects.count(), Report.objects.count(),
+            TotalCount.objects.count(), TotalCountReport.objects.count(),
+        )
+
+    def test_no_se_puede_borrar_espacio_con_contenido(self):
+        antes = self._snapshot()
+        resp = self.client.post(reverse('workspace_delete', args=[self.ws_lleno.id]))
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn('reportes', resp.json()['error'])
+        self.assertEqual(self._snapshot(), antes)
+        self.assertTrue(Workspace.objects.filter(id=self.ws_lleno.id).exists())
+
+    def test_el_modelo_protege_el_borrado_a_nivel_base_de_datos(self):
+        antes = self._snapshot()
+        with self.assertRaises(ProtectedError):
+            self.ws_lleno.delete()
+        self.assertEqual(self._snapshot(), antes)
+
+    def test_se_puede_borrar_un_espacio_vacio(self):
+        resp = self.client.post(reverse('workspace_delete', args=[self.ws_vacio.id]))
+        self.assertEqual(resp.status_code, 200, resp.content)
+        self.assertFalse(Workspace.objects.filter(id=self.ws_vacio.id).exists())
+        self.assertTrue(Workspace.objects.filter(id=self.ws_lleno.id).exists())
+
+    def test_no_se_puede_borrar_el_unico_espacio_activo(self):
+        # Dejo solo el ws_lleno: vacío y único → rechazado por ser el único
+        self.ws_vacio.delete()
+        self.ws_lleno.reports.all().delete()
+        self.ws_lleno.companies.all().delete()
+
+        resp = self.client.post(reverse('workspace_delete', args=[self.ws_lleno.id]))
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn('único', resp.json()['error'])
+        self.assertTrue(Workspace.objects.filter(id=self.ws_lleno.id).exists())
+
+    def test_archivar_oculta_sin_borrar_y_es_reversible(self):
+        antes = self._snapshot()
+
+        resp = self.client.post(reverse('workspace_archive', args=[self.ws_lleno.id]))
+        self.assertEqual(resp.status_code, 200, resp.content)
+        self.assertTrue(resp.json()['is_archived'])
+
+        # Ningún dato se perdió
+        self.assertEqual(self._snapshot(), antes)
+
+        # No aparece en la lista de espacios seleccionables
+        from Counter.workspace_utils import get_user_workspaces
+        self.assertNotIn(self.ws_lleno, list(get_user_workspaces(self.user)))
+        # Pero sí en la pantalla de gestión (para poder restaurarlo)
+        self.assertIn(self.ws_lleno, list(get_user_workspaces(self.user, include_archived=True)))
+
+        # La tarjeta se muestra con el distintivo "Archivado"
+        resp_list = self.client.get(reverse('workspaces_list'))
+        self.assertEqual(resp_list.status_code, 200)
+        self.assertIn('Archivado', resp_list.content.decode('utf-8'))
+
+        # Y la sesión no puede seguir apuntando a un espacio archivado
+        self.assertNotEqual(
+            self.client.session.get('active_workspace_id'), self.ws_lleno.id
+        )
+
+        # Restaurar
+        resp_back = self.client.post(reverse('workspace_archive', args=[self.ws_lleno.id]))
+        self.assertEqual(resp_back.status_code, 200)
+        self.assertFalse(resp_back.json()['is_archived'])
+        self.assertEqual(self._snapshot(), antes)
+
+    def test_no_se_puede_archivar_el_unico_espacio_activo(self):
+        self.ws_lleno.is_archived = True
+        self.ws_lleno.save(update_fields=['is_archived'])
+
+        resp = self.client.post(reverse('workspace_archive', args=[self.ws_vacio.id]))
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn('único', resp.json()['error'])
+        self.assertFalse(Workspace.objects.get(id=self.ws_vacio.id).is_archived)

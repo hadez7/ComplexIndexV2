@@ -52,7 +52,8 @@ class Province(models.Model):
 
 
 class Company(models.Model):
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, null=True, blank=True, related_name="companies")
+    # PROTECT: nunca se puede borrar un espacio que tenga empresas (y por ende sus reportes y PDFs).
+    workspace = models.ForeignKey(Workspace, on_delete=models.PROTECT, related_name="companies")
     province = models.ForeignKey(Province, on_delete=models.CASCADE, null=True, blank=True)
     ruc = models.CharField(max_length=11)
     name = models.CharField(max_length=255)
@@ -70,7 +71,9 @@ class Company(models.Model):
 
 
 class Report(models.Model):
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, null=True, blank=True, related_name="reports")
+    # PROTECT: borrar el espacio no puede arrastrar los reportes ni sus PDFs en disco
+    # (la señal pre_delete de Report borra el archivo físico).
+    workspace = models.ForeignKey(Workspace, on_delete=models.PROTECT, related_name="reports")
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=255, null=True, blank=True)
     year = models.PositiveIntegerField(null=True, blank=True)
@@ -93,7 +96,7 @@ class Report(models.Model):
 
 
 class TotalCount(models.Model):
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, null=True, blank=True, related_name="total_counts")
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="total_counts")
     word = models.CharField(max_length=100)
     quantity = models.PositiveIntegerField()
 
@@ -117,10 +120,17 @@ class TotalCountReport(models.Model):
     
     
 class ExpertWord(models.Model):
-    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, null=True, blank=True, related_name="expert_words")
+    workspace = models.ForeignKey(Workspace, on_delete=models.CASCADE, related_name="expert_words")
     expert = models.ForeignKey(Expert, on_delete=models.CASCADE, related_name='word_lists')
     name = models.CharField(max_length=100, null=True, blank=True)
     words = JSONField(default=list, blank=True, null=True)
+
+    class Meta:
+        # Una misma lista (incluso con el mismo nombre) puede existir en cada espacio,
+        # pero nunca dos veces dentro del mismo espacio para el mismo experto.
+        unique_together = ('workspace', 'expert', 'name')
+        verbose_name = "Lista de palabras de experto"
+        verbose_name_plural = "Listas de palabras de expertos"
 
     def __str__(self):
         return f"{self.name} ({self.expert.user.username})"

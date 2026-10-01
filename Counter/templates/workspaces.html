@@ -68,7 +68,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {% for item in workspaces_data %}
         {% with ws=item.workspace %}
-        <div class="bg-white rounded-2xl border transition-all duration-200 flex flex-col justify-between p-6 hover:shadow-md {% if item.is_active %}border-blue-500 ring-2 ring-blue-100 shadow-sm{% else %}border-gray-200 hover:border-gray-300{% endif %}">
+        <div class="bg-white rounded-2xl border transition-all duration-200 flex flex-col justify-between p-6 hover:shadow-md {% if ws.is_archived %}border-gray-300 bg-gray-50 opacity-80{% elif item.is_active %}border-blue-500 ring-2 ring-blue-100 shadow-sm{% else %}border-gray-200 hover:border-gray-300{% endif %}">
             
             <!-- Cabecera de la tarjeta -->
             <div>
@@ -119,6 +119,12 @@
                             {% trans "Activo" %}
                         </span>
                         {% endif %}
+                        {% if ws.is_archived %}
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 border border-gray-300"
+                              title="{% trans 'Espacio archivado: sus datos están guardados pero no aparecen en el resto de la aplicación.' %}">
+                            {% trans "Archivado" %}
+                        </span>
+                        {% endif %}
                         
                         <!-- Botón opciones (Editar) -->
                         <button type="button" 
@@ -162,6 +168,16 @@
 
             <!-- Botones de Acción -->
             <div class="pt-2 border-t border-gray-100 flex items-center justify-between gap-2">
+                {% if ws.is_archived %}
+                <button type="button" onclick="toggleArchiveWorkspace('{{ ws.id }}', '{{ ws.name|escapejs }}', true)"
+                        class="flex-1 inline-flex items-center justify-center space-x-1.5 py-2 px-3 text-sm font-semibold rounded-xl transition
+                               bg-gray-100 hover:bg-green-600 hover:text-white text-gray-700">
+                    <span>{% trans "Restaurar Espacio" %}</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                </button>
+                {% else %}
                 <a href="{% url 'workspace_select' ws.id %}"
                    class="flex-1 inline-flex items-center justify-center space-x-1.5 py-2 px-3 text-sm font-semibold rounded-xl transition
                           {% if item.is_active %}
@@ -175,14 +191,25 @@
                     </svg>
                 </a>
 
-                {% if total_workspaces > 1 %}
+                <!-- Archivar: la alternativa segura a eliminar -->
+                <button type="button" onclick="toggleArchiveWorkspace('{{ ws.id }}', '{{ ws.name|escapejs }}', false)"
+                        class="p-2 text-gray-400 hover:text-amber-600 hover:bg-amber-50 rounded-xl transition"
+                        title="{% trans 'Archivar espacio (no borra ningún dato)' %}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                    </svg>
+                </button>
+
+                <!-- Eliminar: solo aparece si el espacio está vacío -->
+                {% if not item.reports_count and not item.companies_count %}
                 <button type="button" onclick="confirmDeleteWorkspace('{{ ws.id }}', '{{ ws.name|escapejs }}')"
                         class="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition"
-                        title="{% trans 'Eliminar espacio' %}">
+                        title="{% trans 'Eliminar espacio vacío' %}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                     </svg>
                 </button>
+                {% endif %}
                 {% endif %}
             </div>
 
@@ -394,6 +421,24 @@
 
 {% block scripts %}
 <script>
+// --- Cadenas traducibles (viven en el .html para que makemessages las detecte) ---
+{% trans "¿Eliminar el espacio de trabajo “{name}”?" as msg_delete %}
+{% trans "Solo se pueden eliminar espacios vacíos: este no tiene reportes ni empresas, así que no se perderá ningún archivo." as msg_delete_body %}
+{% trans "¿Archivar el espacio de trabajo “{name}”?" as msg_archive %}
+{% trans "Se ocultará de la aplicación, pero NO se borrará ningún dato. Podrás restaurarlo cuando quieras." as msg_archive_body %}
+{% trans "¿Restaurar el espacio de trabajo “{name}”?" as msg_unarchive %}
+{% trans "No se pudo eliminar el espacio." as err_delete %}
+{% trans "No se pudo actualizar el espacio." as err_archive %}
+{% trans "Error de conexión." as err_conn %}
+const MSG_DELETE = "{{ msg_delete|escapejs }}";
+const MSG_DELETE_BODY = "{{ msg_delete_body|escapejs }}";
+const MSG_ARCHIVE = "{{ msg_archive|escapejs }}";
+const MSG_ARCHIVE_BODY = "{{ msg_archive_body|escapejs }}";
+const MSG_UNARCHIVE = "{{ msg_unarchive|escapejs }}";
+const ERR_DELETE = "{{ err_delete|escapejs }}";
+const ERR_ARCHIVE = "{{ err_archive|escapejs }}";
+const ERR_CONN = "{{ err_conn|escapejs }}";
+
 function openCreateModal() {
     document.getElementById("createWorkspaceModal").classList.remove("hidden");
     document.getElementById("create_name").focus();
@@ -458,7 +503,7 @@ async function submitEditWorkspace(event) {
 }
 
 async function confirmDeleteWorkspace(id, name) {
-    if (!confirm(`¿Estás seguro de que deseas eliminar el espacio de trabajo "${name}"?\n\nEsta acción eliminará todos los reportes y conteos asociados a este espacio.`)) {
+    if (!confirm(MSG_DELETE.replace('{name}', name) + '\n\n' + MSG_DELETE_BODY.replace('{name}', name))) {
         return;
     }
 
@@ -474,10 +519,36 @@ async function confirmDeleteWorkspace(id, name) {
         if (response.ok && data.success) {
             window.location.reload();
         } else {
-            alert(data.error || 'No se pudo eliminar el espacio.');
+            alert(data.error || ERR_DELETE);
         }
     } catch (err) {
-        alert('Error de conexión al eliminar.');
+        alert(ERR_CONN);
+    }
+}
+
+async function toggleArchiveWorkspace(id, name, isArchived) {
+    const question = isArchived ? MSG_UNARCHIVE.replace('{name}', name)
+                                : (MSG_ARCHIVE.replace('{name}', name) + '\n\n' + MSG_ARCHIVE_BODY);
+    if (!confirm(question)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`/workspaces/${id}/archive/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken(),
+            }
+        });
+        const data = await response.json();
+        if (response.ok && data.success) {
+            window.location.reload();
+        } else {
+            alert(data.error || ERR_ARCHIVE);
+        }
+    } catch (err) {
+        alert(ERR_CONN);
     }
 }
 </script>

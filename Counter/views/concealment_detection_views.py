@@ -24,9 +24,9 @@ def concealment_detection_view(request):
     reports_qs = Report.objects.all()
     if current_ws:
         reports_qs = reports_qs.filter(workspace=current_ws)
-        expert_lists = ExpertWord.objects.filter(Q(workspace=current_ws) | Q(workspace__isnull=True))
+        expert_lists = ExpertWord.objects.filter(workspace=current_ws)
     else:
-        expert_lists = ExpertWord.objects.all()
+        expert_lists = ExpertWord.objects.none()
 
     reports = (
         reports_qs

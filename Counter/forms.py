@@ -216,7 +216,7 @@ class ComparativeAnalysisForm(forms.Form):
     report = ReportModelChoiceField(
         queryset=Report.objects.none(),
         label="Reporte",
-        empty_label="Seleccione un reporte",
+        empty_label=_("Seleccione un reporte"),
         widget=forms.Select(
             attrs={
                 "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition",
@@ -228,7 +228,7 @@ class ComparativeAnalysisForm(forms.Form):
     expert_list = forms.ModelChoiceField(
         queryset=ExpertWord.objects.all(),
         label="Lista de experto",
-        empty_label="Seleccione una lista",
+        empty_label=_("Seleccione una lista"),
         widget=forms.Select(
             attrs={
                 "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition",
@@ -245,9 +245,9 @@ class ComparativeAnalysisForm(forms.Form):
         reports_qs = Report.objects.all()
         if workspace:
             reports_qs = reports_qs.filter(workspace=workspace)
-            self.fields["expert_list"].queryset = ExpertWord.objects.filter(
-                Q(workspace=workspace) | Q(workspace__isnull=True)
-            )
+            self.fields["expert_list"].queryset = ExpertWord.objects.filter(workspace=workspace)
+        else:
+            self.fields["expert_list"].queryset = ExpertWord.objects.none()
 
         years = (
             reports_qs
@@ -257,7 +257,7 @@ class ComparativeAnalysisForm(forms.Form):
         )
 
         self.fields["year"].choices = [
-            ("", "Seleccione un año")
+            ("", _("Seleccione un año"))
         ] + [
             (year, year)
             for year in years

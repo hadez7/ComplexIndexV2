@@ -2,7 +2,7 @@ from django.db.models import Q
 from .models import Workspace, WorkspaceMembership
 
 
-def get_user_workspaces(user):
+def get_user_workspaces(user, include_archived=False):
     """
     Retorna los espacios de trabajo a los que el usuario tiene acceso.
     Los administradores/staff tienen acceso a todos los espacios activos.
@@ -10,12 +10,14 @@ def get_user_workspaces(user):
     if not user.is_authenticated:
         return Workspace.objects.none()
 
+    archived_filter = {} if include_archived else {"is_archived": False}
+
     if user.is_superuser or user.is_staff:
-        return Workspace.objects.filter(is_archived=False).order_by('-created_at')
+        return Workspace.objects.filter(**archived_filter).order_by('-created_at')
 
     return Workspace.objects.filter(
         Q(memberships__user=user) | Q(created_by=user),
-        is_archived=False
+        **archived_filter
     ).distinct().order_by('-created_at')
 
 

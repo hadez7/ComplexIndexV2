@@ -248,12 +248,12 @@ def contar_palabras_tecnicas(texto: str, year: int = None, workspace=None) -> in
     # Extraer palabras del texto
     palabras_texto = set(re.findall(r'\b[a-záéíóúñ]+(?:\'[a-záéíóúñ]+)?\b', texto.lower()))
     
-    # Obtener listas de palabras técnicas de expertos (específicas del workspace o globales)
+    # Listas de palabras técnicas: estrictamente las del espacio de trabajo indicado.
+    # Sin espacio activo no se usan listas de ningún otro espacio.
     if workspace:
-        from django.db.models import Q
-        listas_expertos = ExpertWord.objects.filter(Q(workspace=workspace) | Q(workspace__isnull=True))
+        listas_expertos = ExpertWord.objects.filter(workspace=workspace)
     else:
-        listas_expertos = ExpertWord.objects.all()
+        listas_expertos = ExpertWord.objects.none()
     
     palabras_tecnicas_encontradas = set()
     
@@ -299,7 +299,14 @@ def calcular_complejidad_general(diversidad_lexica: float, legibilidad: float, d
 
 
 #Cargar empresas desde un archivo Excel
-def insertar_empresas(archivo_excel):
+def insertar_empresas(archivo_excel, workspace):
+    """
+    Importa empresas desde un Excel hacia el espacio de trabajo indicado.
+    `workspace` es obligatorio: las empresas siempre pertenecen a un espacio.
+    """
+    if workspace is None:
+        raise ValueError("insertar_empresas requiere un workspace destino.")
+
     df = pd.read_excel(archivo_excel)
 
     for _, row in df.iterrows():
@@ -309,11 +316,13 @@ def insertar_empresas(archivo_excel):
 
         provincia, _ = Province.objects.get_or_create(name=nombre_provincia)
 
-        if (
-            not Company.objects.filter(name=nombre_empresa).exists()
-            and not Company.objects.filter(ruc=ruc_empresa).exists()
-        ):
+        if not Company.objects.filter(
+            workspace=workspace, name=nombre_empresa
+        ).exists() and not Company.objects.filter(
+            workspace=workspace, ruc=ruc_empresa
+        ).exists():
             Company.objects.create(
+                workspace=workspace,
                 name=nombre_empresa, ruc=ruc_empresa, province=provincia
             )
         else:

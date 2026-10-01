@@ -1,7 +1,7 @@
-from django.core.management.base import BaseCommand
+from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 import openpyxl
-from Counter.models import Company, Province
+from Counter.models import Company, Province, Workspace
 
 
 class Command(BaseCommand):
@@ -14,10 +14,25 @@ class Command(BaseCommand):
             default='Empresas.xlsx',
             help='Ruta del archivo xlsx a importar (default: Empresas.xlsx)'
         )
+        parser.add_argument(
+            '--workspace',
+            type=int,
+            required=True,
+            help='ID del espacio de trabajo donde se crearán las empresas (obligatorio)'
+        )
 
     @transaction.atomic
     def handle(self, *args, **options):
         file_path = options['file']
+
+        try:
+            workspace = Workspace.objects.get(pk=options['workspace'])
+        except Workspace.DoesNotExist:
+            raise CommandError(f"No existe el espacio de trabajo id={options['workspace']}")
+        if Workspace.objects.filter(is_archived=True, pk=workspace.pk).exists():
+            raise CommandError(f"El espacio '{workspace.name}' está archivado.")
+
+        self.stdout.write(f"Espacio de trabajo: {workspace.name} (id={workspace.pk})")
         self.stdout.write(f"Leyendo archivo: {file_path}")
         
         try:
@@ -36,8 +51,11 @@ class Command(BaseCommand):
                     # Obtener o crear la provincia
                     provincia, _ = Province.objects.get_or_create(name=provincia_name)
                     
-                    # Crear o actualizar la empresa
+                    # Crear o actualizar la empresa DENTRO del espacio indicado.
+                    # El RUC solo es único por espacio, así que hay que filtrar por workspace:
+                    # si no, se editarían empresas de otros espacios.
                     company, created_flag = Company.objects.get_or_create(
+                        workspace=workspace,
                         ruc=ruc,
                         defaults={'name': empresa_name, 'province': provincia}
                     )
