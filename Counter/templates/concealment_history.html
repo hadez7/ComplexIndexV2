@@ -239,6 +239,16 @@
 </div>
 
 <script>
+{% trans "Cargando párrafos..." as t_cargando %}
+{% trans 'Auditoría: "${data.word}" en ${data.company} (${data.year})' as t_titulo %}
+{% trans 'Realizada por ${data.user} el ${data.reviewed_at} | ${data.total_valid} válidas, ${data.total_discarded} descartadas' as t_subtitulo %}
+{% trans "No hay detalle de párrafos guardado para esta revisión." as t_sin_detalle %}
+{% trans "Error al cargar el detalle de la revisión." as t_error_detalle %}
+{% trans "Descartado" as t_descartado %}
+{% trans "Válido" as t_valido %}
+{% trans "Párrafo" as t_parrafo %}
+{% trans "ocurrencia" as t_ocurrencia %}
+{% trans "ocurrencias" as t_ocurrencias %}
 document.addEventListener("DOMContentLoaded", function() {
     const form = document.getElementById("filterForm");
     const yearSelect = document.getElementById("year");
@@ -277,7 +287,7 @@ function abrirModalDetalle(reviewId) {
     const contenido = document.getElementById("modalContenido");
 
     modal.classList.remove("hidden");
-    contenido.innerHTML = '<p class="text-gray-500 text-center py-4">Cargando párrafos...</p>';
+    contenido.innerHTML = '<p class="text-gray-500 text-center py-4">{{ t_cargando|escapejs }}</p>';
 
     fetch(`/concealment_detection/historial/${reviewId}/detalle/`)
         .then(response => {
@@ -285,11 +295,11 @@ function abrirModalDetalle(reviewId) {
             return response.json();
         })
         .then(data => {
-            titulo.textContent = `Auditoría: "${data.word}" en ${data.company} (${data.year})`;
-            subtitulo.textContent = `Realizada por ${data.user} el ${data.reviewed_at} | ${data.total_valid} válidas, ${data.total_discarded} descartadas`;
+            titulo.textContent = `{{ t_titulo|escapejs }}`;
+            subtitulo.textContent = `{{ t_subtitulo|escapejs }}`;
 
             if (!data.paragraphs || data.paragraphs.length === 0) {
-                contenido.innerHTML = '<p class="text-gray-500 text-center py-4">No hay detalle de párrafos guardado para esta revisión.</p>';
+                contenido.innerHTML = '<p class="text-gray-500 text-center py-4">{{ t_sin_detalle|escapejs }}</p>';
                 return;
             }
 
@@ -298,13 +308,13 @@ function abrirModalDetalle(reviewId) {
                 const esDescartado = p.discarded;
                 const borderClass = esDescartado ? "border-red-300 bg-red-50" : "border-green-300 bg-green-50";
                 const badge = esDescartado
-                    ? '<span class="text-xs font-semibold px-2 py-0.5 rounded bg-red-200 text-red-800">Descartado</span>'
-                    : '<span class="text-xs font-semibold px-2 py-0.5 rounded bg-green-200 text-green-800">Válido</span>';
+                    ? '<span class="text-xs font-semibold px-2 py-0.5 rounded bg-red-200 text-red-800">{{ t_descartado|escapejs }}</span>'
+                    : '<span class="text-xs font-semibold px-2 py-0.5 rounded bg-green-200 text-green-800">{{ t_valido|escapejs }}</span>';
 
                 html += `
                     <div class="border rounded-xl p-4 ${borderClass} transition">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-gray-600">Párrafo #${idx + 1} (${p.occurrences} ocurrencia${p.occurrences > 1 ? 's' : ''})</span>
+                            <span class="text-xs font-bold text-gray-600">{{ t_parrafo|escapejs }} #${idx + 1} (${p.occurrences} ${p.occurrences > 1 ? '{{ t_ocurrencias|escapejs }}' : '{{ t_ocurrencia|escapejs }}'})</span>
                             ${badge}
                         </div>
                         <p class="text-sm text-gray-800 leading-relaxed">${p.paragraph_text}</p>
@@ -315,7 +325,7 @@ function abrirModalDetalle(reviewId) {
             contenido.innerHTML = html;
         })
         .catch(err => {
-            contenido.innerHTML = '<p class="text-red-500 text-center py-4">Error al cargar el detalle de la revisión.</p>';
+            contenido.innerHTML = '<p class="text-red-500 text-center py-4">{{ t_error_detalle|escapejs }}</p>';
             console.error(err);
         });
 }

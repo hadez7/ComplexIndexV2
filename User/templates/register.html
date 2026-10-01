@@ -110,7 +110,7 @@
                     <!-- Fila 1: Nombre de usuario -->
                     <div>
                         <label for="{{ form.username.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
-                            Nombre de usuario <span class="text-red-500">*</span>
+                            {% trans "Nombre de usuario" %} <span class="text-red-500">*</span>
                         </label>
                         <div class="relative rounded-xl shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
@@ -165,7 +165,7 @@
                     <!-- Fila 3: Correo electrónico -->
                     <div>
                         <label for="{{ form.email.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
-                            Correo electrónico <span class="text-red-500">*</span>
+                            {% trans "Correo electrónico" %} <span class="text-red-500">*</span>
                         </label>
                         <div class="relative rounded-xl shadow-sm">
                             <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
@@ -184,7 +184,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="{{ form.password1.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
-                                Contraseña <span class="text-red-500">*</span>
+                                {% trans "Contraseña" %} <span class="text-red-500">*</span>
                             </label>
                             <div class="relative rounded-xl shadow-sm">
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
@@ -195,7 +195,7 @@
                                 {{ form.password1|add_class:"w-full pl-10 pr-10 py-2 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm" }}
                                 <button type="button" onclick="togglePasswordVisibility('{{ form.password1.id_for_label }}', this)" 
                                         class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
-                                        aria-label="Mostrar u ocultar contraseña">
+                                        aria-label="{% trans 'Mostrar u ocultar contraseña' %}">
                                     <svg class="w-4 h-4 eye-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -212,7 +212,7 @@
 
                         <div>
                             <label for="{{ form.password2.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">
-                                Confirmar contraseña <span class="text-red-500">*</span>
+                                {% trans "Confirmar contraseña" %} <span class="text-red-500">*</span>
                             </label>
                             <div class="relative rounded-xl shadow-sm">
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
@@ -223,7 +223,7 @@
                                 {{ form.password2|add_class:"w-full pl-10 pr-10 py-2 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm" }}
                                 <button type="button" onclick="togglePasswordVisibility('{{ form.password2.id_for_label }}', this)" 
                                         class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
-                                        aria-label="Mostrar u ocultar contraseña">
+                                        aria-label="{% trans 'Mostrar u ocultar contraseña' %}">
                                     <svg class="w-4 h-4 eye-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -260,9 +260,9 @@
                 <!-- Separador y Enlace a Login -->
                 <div class="mt-6 pt-5 border-t border-gray-100 text-center">
                     <p class="text-sm text-gray-600">
-                        ¿Ya tienes una cuenta registrada?
+                        {% trans "¿Ya tienes una cuenta registrada?" %}
                         <a href="{% url 'login' %}" class="font-bold text-blue-600 hover:text-blue-700 transition ml-1 hover:underline">
-                            Inicia sesión
+                            {% trans "Inicia sesión" %}
                         </a>
                     </p>
                 </div>

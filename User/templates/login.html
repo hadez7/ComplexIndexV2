@@ -157,8 +157,8 @@
                             <label for="{{ form.password.id_for_label }}" class="block text-sm font-semibold text-gray-700">
                                 {% trans "Contraseña" %}
                             </label>
-                            <span class="text-xs text-gray-400" title="Contacta al administrador del sistema si olvidaste tu clave">
-                                ¿Problemas de acceso?
+                            <span class="text-xs text-gray-400" title="{% trans 'Contacta al administrador del sistema si olvidaste tu clave' %}">
+                                {% trans "¿Problemas de acceso?" %}
                             </span>
                         </div>
                         <div class="relative rounded-xl shadow-sm">
@@ -170,7 +170,7 @@
                             {{ form.password|add_class:"w-full pl-11 pr-11 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm"|attr:"placeholder:••••••••" }}
                             <button type="button" onclick="togglePasswordVisibility('{{ form.password.id_for_label }}', this)" 
                                     class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none"
-                                    aria-label="Mostrar u ocultar contraseña">
+                                    aria-label="{% trans 'Mostrar u ocultar contraseña' %}">
                                 <svg class="w-5 h-5 eye-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -199,9 +199,9 @@
                 <!-- Separador y Enlace a Registro -->
                 <div class="mt-8 pt-6 border-t border-gray-100 text-center">
                     <p class="text-sm text-gray-600">
-                        ¿Aún no tienes una cuenta de auditor?
+                        {% trans "¿Aún no tienes una cuenta de auditor?" %}
                         <a href="{% url 'register' %}" class="font-bold text-blue-600 hover:text-blue-700 transition ml-1 hover:underline">
-                            Regístrate gratis
+                            {% trans "Regístrate gratis" %}
                         </a>
                     </p>
                 </div>
