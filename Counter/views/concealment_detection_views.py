@@ -21,12 +21,9 @@ from ..workspace_utils import get_active_workspace
 @login_required
 def concealment_detection_view(request):
     current_ws = get_active_workspace(request)
-    reports_qs = Report.objects.all()
-    if current_ws:
-        reports_qs = reports_qs.filter(workspace=current_ws)
-        expert_lists = ExpertWord.objects.filter(workspace=current_ws)
-    else:
-        expert_lists = ExpertWord.objects.none()
+    # Denegar por defecto: todo (reportes, años y listas) queda acotado al espacio activo.
+    reports_qs = Report.objects.filter(workspace=current_ws)
+    expert_lists = ExpertWord.objects.filter(workspace=current_ws)
 
     reports = (
         reports_qs
@@ -67,7 +64,8 @@ def concealment_detection_view(request):
 
         selected_report = get_object_or_404(
             Report.objects.select_related("company").annotate(clean_company=Trim("company__name")),
-            id=report_id
+            id=report_id,
+            workspace=current_ws,
         )
 
         paragraphs = find_paragraph(
@@ -151,7 +149,7 @@ def concealment_detection_view(request):
 
         selected_year = str(selected_report.year) if selected_report and selected_report.year else ""
         reports = (
-            Report.objects
+            reports_qs
             .filter(year=selected_report.year)
             .select_related("company")
             .annotate(clean_company=Trim("company__name"))
@@ -167,7 +165,8 @@ def concealment_detection_view(request):
         if report_id:
             selected_report = get_object_or_404(
                 Report.objects.select_related("company").annotate(clean_company=Trim("company__name")),
-                id=report_id
+                id=report_id,
+                workspace=current_ws,
             )
             if not selected_year and selected_report.year:
                 selected_year = str(selected_report.year)
@@ -184,7 +183,7 @@ def concealment_detection_view(request):
 
         if selected_year:
             reports = (
-                Report.objects
+                reports_qs
                 .filter(year=selected_year)
                 .select_related("company")
                 .annotate(clean_company=Trim("company__name"))
@@ -287,7 +286,7 @@ def get_report_words(request):
 
     palabras = list(
         TotalCountReport.objects
-        .filter(report_id=report_id)
+        .filter(report_id=report_id, report__workspace=get_active_workspace(request))
         .order_by("word")
         .values_list("word", flat=True)
     )
@@ -301,9 +300,7 @@ def get_reports_by_year(request):
         return JsonResponse([], safe=False)
 
     current_ws = get_active_workspace(request)
-    reports_qs = Report.objects.filter(year=year)
-    if current_ws:
-        reports_qs = reports_qs.filter(workspace=current_ws)
+    reports_qs = Report.objects.filter(year=year, workspace=current_ws)
 
     reports_qs = (
         reports_qs
@@ -337,12 +334,12 @@ def concealment_history_view(request):
     from django.contrib.auth.models import User
 
     current_ws = get_active_workspace(request)
+    # Denegar por defecto: sin espacio activo, historial vacío.
     reviews_qs = (
         ConcealmentReview.objects
         .select_related("report", "report__company", "user")
+        .filter(report__workspace=current_ws)
     )
-    if current_ws:
-        reviews_qs = reviews_qs.filter(report__workspace=current_ws)
 
     reviews_qs = (
         reviews_qs
@@ -367,9 +364,7 @@ def concealment_history_view(request):
     if user_filter:
         reviews_qs = reviews_qs.filter(user__username__icontains=user_filter)
 
-    reports_scope = Report.objects.all()
-    if current_ws:
-        reports_scope = reports_scope.filter(workspace=current_ws)
+    reports_scope = Report.objects.filter(workspace=current_ws)
 
     years = (
         reports_scope
@@ -379,9 +374,9 @@ def concealment_history_view(request):
     )
 
     # Empresas para el selector desplegable
-    companies_qs = Company.objects.filter(report__isnull=False)
-    if current_ws:
-        companies_qs = companies_qs.filter(workspace=current_ws)
+    companies_qs = Company.objects.filter(
+        report__isnull=False, workspace=current_ws
+    )
     if year_filter:
         companies_qs = companies_qs.filter(report__year=year_filter)
 
@@ -420,9 +415,11 @@ def concealment_history_view(request):
 
 @login_required
 def concealment_history_detail_ajax(request, review_id):
+    current_ws = get_active_workspace(request)
     review = get_object_or_404(
         ConcealmentReview.objects.select_related("report", "report__company", "user"),
-        id=review_id
+        id=review_id,
+        report__workspace=current_ws,
     )
 
     paragraphs = list(

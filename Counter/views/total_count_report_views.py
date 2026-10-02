@@ -1,13 +1,18 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404
 from ..models import TotalCountReport, Report
+from ..workspace_utils import get_active_workspace
+
 
 @login_required
 def total_count_report_view(request, report_id):
+    current_ws = get_active_workspace(request)
+    # Solo reportes del espacio activo: sin espacio activo no se ve nada.
+    report = get_object_or_404(Report, id=report_id, workspace=current_ws)
+
     results = list(
-        TotalCountReport.objects.filter(report__id=report_id).order_by("-quantity")
+        TotalCountReport.objects.filter(report__id=report.id).order_by("-quantity")
     )
-    report = Report.objects.get(id=report_id)
     conteos = TotalCountReport.objects.filter(report=report).order_by('-quantity')[:10]
 
     mid = len(results) // 2

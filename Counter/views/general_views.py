@@ -21,14 +21,10 @@ def index_view(request):
 @login_required
 def panel_view(request):
     current_ws = get_active_workspace(request)
-    if current_ws:
-        total_companies = Company.objects.filter(workspace=current_ws).count()
-        total_reports = Report.objects.filter(workspace=current_ws).count()
-        total_words_agg = Report.objects.filter(workspace=current_ws).aggregate(models.Sum('total_words'))['total_words__sum'] or 0
-    else:
-        total_companies = Company.objects.count()
-        total_reports = Report.objects.count()
-        total_words_agg = Report.objects.aggregate(models.Sum('total_words'))['total_words__sum'] or 0
+    # Denegar por defecto: sin espacio activo, el filtro devuelve 0 filas (nunca "todo").
+    total_companies = Company.objects.filter(workspace=current_ws).count()
+    total_reports = Report.objects.filter(workspace=current_ws).count()
+    total_words_agg = Report.objects.filter(workspace=current_ws).aggregate(models.Sum('total_words'))['total_words__sum'] or 0
 
     total_experts = Expert.objects.count()
 
@@ -47,7 +43,7 @@ def upload_view(request):
     current_ws = get_active_workspace(request)
     individual_form = IndividualReportUploadForm(workspace=current_ws)
     zip_form = ZipUploadForm(workspace=current_ws)
-    companies = Company.objects.filter(workspace=current_ws) if current_ws else Company.objects.all()
+    companies = Company.objects.filter(workspace=current_ws)
 
     if request.method == "POST":
         if "upload_individual" in request.POST:
@@ -61,9 +57,9 @@ def upload_view(request):
 
                 existing_report = None
                 if company and year:
-                    query = Report.objects.filter(company=company, year=year)
-                    if current_ws:
-                        query = query.filter(workspace=current_ws)
+                    query = Report.objects.filter(
+                        company=company, year=year, workspace=current_ws
+                    )
                     existing_report = query.first()
 
                 if existing_report and overwrite:
@@ -205,9 +201,7 @@ def reports_by_year(request):
         return JsonResponse([], safe=False)
 
     current_ws = get_active_workspace(request)
-    reports_qs = Report.objects.filter(year=year)
-    if current_ws:
-        reports_qs = reports_qs.filter(workspace=current_ws)
+    reports_qs = Report.objects.filter(year=year, workspace=current_ws)
 
     reports = (
         reports_qs

@@ -60,11 +60,18 @@ class AuthViewTests(TestCase):
             'password1': 'AuditorSecure2025!',
             'password2': 'AuditorSecure2025!',
         })
-        self.assertRedirects(response, reverse('index'))
+        self.assertRedirects(response, reverse('index'), fetch_redirect_response=False)
         created_user = User.objects.get(username='newauditor')
         self.assertEqual(created_user.first_name, 'Carlos')
         self.assertEqual(created_user.last_name, 'Mendoza')
         self.assertEqual(created_user.email, 'carlos.mendoza@example.com')
+
+        # Como la cuenta es nueva no tiene ningún espacio aprobado todavía:
+        # en vez de la portada aterriza en la pantalla de espacios, donde un
+        # administrador puede darle acceso.
+        home = self.client.get(reverse('index'))
+        self.assertEqual(home.status_code, 302)
+        self.assertIn(reverse('workspaces_list'), home['Location'])
 
     def test_duplicate_email_registration_fails(self):
         response = self.client.post(reverse('register'), {

@@ -1,7 +1,7 @@
 import json
 
 from django.db.models import ProtectedError
-from django.test import TestCase, Client
+from django.test import TestCase, Client, modify_settings
 from django.contrib.auth.models import User
 from django.urls import reverse
 from Counter.models import (
@@ -220,7 +220,7 @@ class ComparativeAnalysisTests(TestCase):
 
     def test_comparative_form_report_label_shows_company(self):
         from Counter.forms import ComparativeAnalysisForm
-        form = ComparativeAnalysisForm(data={'year': '2024'})
+        form = ComparativeAnalysisForm(data={'year': '2024'}, workspace=self.ws)
         choices = list(form.fields['report'].choices)
         # First choice is the empty label
         self.assertEqual(choices[0][0], '')
@@ -279,6 +279,8 @@ class PanelViewTests(TestCase):
         self.assertEqual(resp.status_code, 302)
 
     def test_panel_authenticated_renders(self):
+        # Necesita un espacio: sin él, el panel redirige a la pantalla de espacios.
+        Workspace.objects.create(name='Espacio Panel', created_by=self.user)
         self.client.login(username='paneluser', password='password123')
         resp = self.client.get(reverse('panel'))
         self.assertEqual(resp.status_code, 200)
@@ -314,7 +316,8 @@ class UploadModuleTests(TestCase):
         fake_txt = SimpleUploadedFile("documento.txt", b"Texto plano de prueba", content_type="text/plain")
         form = IndividualReportUploadForm(
             data={"company": self.company.id, "year": 2024},
-            files={"file": fake_txt}
+            files={"file": fake_txt},
+            workspace=self.ws
         )
         self.assertFalse(form.is_valid())
         self.assertIn("file", form.errors)
@@ -327,7 +330,8 @@ class UploadModuleTests(TestCase):
         fake_pdf = SimpleUploadedFile("falso.pdf", b"NO ES UN PDF REAL", content_type="application/pdf")
         form = IndividualReportUploadForm(
             data={"company": self.company.id, "year": 2024},
-            files={"file": fake_pdf}
+            files={"file": fake_pdf},
+            workspace=self.ws
         )
         self.assertFalse(form.is_valid())
         self.assertIn("file", form.errors)
@@ -344,7 +348,8 @@ class UploadModuleTests(TestCase):
 
         form = IndividualReportUploadForm(
             data={"company": self.company.id, "year": 2024, "overwrite": False},
-            files={"file": pdf_file}
+            files={"file": pdf_file},
+            workspace=self.ws
         )
         self.assertFalse(form.is_valid())
         self.assertIn("Ya existe un reporte registrado", str(form.errors))
@@ -360,7 +365,8 @@ class UploadModuleTests(TestCase):
 
         form = IndividualReportUploadForm(
             data={"company": self.company.id, "year": 2024, "overwrite": True},
-            files={"file": pdf_file}
+            files={"file": pdf_file},
+            workspace=self.ws
         )
         self.assertTrue(form.is_valid())
 
@@ -778,3 +784,253 @@ class WorkspaceDeletionSafetyTests(TestCase):
         self.assertEqual(resp.status_code, 400)
         self.assertIn('único', resp.json()['error'])
         self.assertFalse(Workspace.objects.get(id=self.ws_vacio.id).is_archived)
+
+
+class DenegarPorDefectoTests(TestCase):
+    """Un usuario sin espacio de trabajo aprobado no ve nada del trabajo hecho."""
+
+    PANTALLAS = [
+        'panel', 'companies', 'reports', 'totalcount', 'upload',
+        'concealment_detection', 'concealment_history', 'expert_lists',
+        'comparative_analysis',
+    ]
+
+    def setUp(self):
+        # Un espacio con datos que pertenece a otra persona (el "trabajo hecho").
+        self.admin = User.objects.create_superuser(
+            username='dueno_datos', password='password123'
+        )
+        self.ws = Workspace.objects.create(name='Espacio Ajeno', created_by=self.admin)
+        WorkspaceMembership.objects.create(workspace=self.ws, user=self.admin, role='admin')
+        self.company = Company.objects.create(
+            workspace=self.ws, name='CONFIDENCIAL S.A.', ruc='0998888889001'
+        )
+        self.report = Report.objects.create(
+            workspace=self.ws, company=self.company, name='2024', year=2024
+        )
+
+        # Usuario recién registrado: sin membresías.
+        self.nuevo = User.objects.create_user(username='nuevo', password='password123')
+        self.client = Client()
+        self.client.login(username='nuevo', password='password123')
+
+    def test_redirige_a_la_pantalla_de_espacios(self):
+        for name in self.PANTALLAS:
+            with self.subTest(vista=name):
+                resp = self.client.get(reverse(name))
+                self.assertEqual(resp.status_code, 302)
+                self.assertIn('/workspaces/', resp['Location'])
+
+    def test_no_aparece_ningun_dato_del_espacio_ajeno(self):
+        resp = self.client.get(reverse('workspaces_list'))
+        self.assertEqual(resp.status_code, 200)
+        content = resp.content.decode('utf-8')
+        self.assertNotIn('CONFIDENCIAL S.A.', content)
+        self.assertNotIn('Espacio Ajeno', content)
+        self.assertIn('Aún no tienes acceso a ningún espacio de trabajo', content)
+
+    @modify_settings(MIDDLEWARE={'remove': ['Counter.middleware.WorkspaceAccessGuardMiddleware']})
+    def test_las_vistas_filtran_incluso_sin_el_middleware(self):
+        # Segunda barrera: aunque una vista se saltara el guard, sin espacio
+        # activo debe devolver listas vacías y nunca el total global.
+        companies = self.client.get(reverse('companies'))
+        self.assertEqual(companies.status_code, 200)
+        self.assertNotIn('CONFIDENCIAL S.A.', companies.content.decode('utf-8'))
+
+        reports = self.client.get(reverse('reports'))
+        self.assertNotIn('CONFIDENCIAL S.A.', reports.content.decode('utf-8'))
+
+        panel = self.client.get(reverse('panel'))
+        self.assertEqual(panel.status_code, 200)
+        self.assertEqual(panel.context['total_companies'], 0)
+        self.assertEqual(panel.context['total_reports'], 0)
+
+        totalcount = self.client.get(reverse('totalcount'))
+        self.assertEqual(list(totalcount.context['total_counts']), [])
+        self.assertEqual(list(totalcount.context['companies']), [])
+
+    def test_las_peticiones_ajax_reciben_403(self):
+        resp = self.client.get(
+            reverse('reports_by_year') + '?year=2024',
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest',
+        )
+        self.assertEqual(resp.status_code, 403)
+        self.assertEqual(resp.json()['detail'], 'no_active_workspace')
+
+    def test_staff_ve_todo_sin_necesitar_aprobacion(self):
+        self.client.logout()
+        self.client.login(username='dueno_datos', password='password123')
+        # Staff sin ningún espacio propio: sigue viendo los suyos y el ajeno.
+        Workspace.objects.filter(created_by=self.admin).update(created_by=None)
+        self.admin.workspace_memberships.all().delete()
+        resp = self.client.get(reverse('panel'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertEqual(resp.context['total_reports'], 1)
+
+    def test_puede_acceder_a_la_pantalla_de_espacios_y_al_login(self):
+        self.assertEqual(self.client.get(reverse('workspaces_list')).status_code, 200)
+        self.client.logout()
+        self.assertEqual(self.client.get(reverse('login')).status_code, 200)
+        self.assertEqual(self.client.get(reverse('register')).status_code, 200)
+
+
+class WorkspaceMemberManagementTests(TestCase):
+    """La aprobación de acceso: el admin del espacio añade o quita usuarios."""
+
+    def setUp(self):
+        # Admin del espacio (staff): quien aprueba.
+        self.admin = User.objects.create_user(
+            username='admin_espacio', password='password123', is_staff=True
+        )
+        self.ws = Workspace.objects.create(name='Espacio Privado', created_by=self.admin)
+        WorkspaceMembership.objects.create(workspace=self.ws, user=self.admin, role='admin')
+
+        self.company = Company.objects.create(
+            workspace=self.ws, name='SECRETA S.A.', ruc='0997777777001'
+        )
+        Report.objects.create(workspace=self.ws, company=self.company, name='2024', year=2024)
+
+        self.solicitante = User.objects.create_user(
+            username='solicitante', password='password123'
+        )
+
+        self.admin_client = Client()
+        self.admin_client.login(username='admin_espacio', password='password123')
+        self.user_client = Client()
+        self.user_client.login(username='solicitante', password='password123')
+
+    def _add(self, client, role='viewer', user=None, ws=None):
+        return client.post(
+            reverse('workspace_members_add', args=[(ws or self.ws).id]),
+            json.dumps({'user_id': (user or self.solicitante).id, 'role': role}),
+            content_type='application/json',
+        )
+
+    def test_antes_de_aprobar_no_ve_los_datos(self):
+        resp = self.user_client.get(reverse('panel'))
+        self.assertEqual(resp.status_code, 302)
+        self.assertIn('/workspaces/', resp['Location'])
+
+    def test_add_da_acceso_y_remove_lo_quita(self):
+        resp = self._add(self.admin_client, role='viewer')
+        self.assertEqual(resp.status_code, 200, resp.content)
+        self.assertTrue(
+            WorkspaceMembership.objects.filter(
+                workspace=self.ws, user=self.solicitante, role='viewer'
+            ).exists()
+        )
+
+        # Con acceso: sí ve el panel y las empresas de ese espacio.
+        panel = self.user_client.get(reverse('panel'))
+        self.assertEqual(panel.status_code, 200)
+        self.assertEqual(panel.context['total_companies'], 1)
+        companies = self.user_client.get(reverse('companies'))
+        self.assertIn('SECRETA S.A.', companies.content.decode('utf-8'))
+
+        # Al quitarlo, vuelve a no ver nada.
+        resp = self.admin_client.post(
+            reverse('workspace_members_remove', args=[self.ws.id]),
+            json.dumps({'user_id': self.solicitante.id}),
+            content_type='application/json',
+        )
+        self.assertEqual(resp.status_code, 200, resp.content)
+        self.assertFalse(
+            WorkspaceMembership.objects.filter(
+                workspace=self.ws, user=self.solicitante
+            ).exists()
+        )
+        self.assertEqual(self.user_client.get(reverse('panel')).status_code, 302)
+
+    def test_alguien_sin_permiso_no_gestionar_miembros(self):
+        # 'solicitante' tiene acceso a OTRO espacio: pasa el guard pero no administra este.
+        otro_ws = Workspace.objects.create(name='Espacio Público', created_by=self.admin)
+        WorkspaceMembership.objects.create(
+            workspace=otro_ws, user=self.solicitante, role='admin'
+        )
+        self.assertEqual(self._add(self.user_client).status_code, 403)
+
+        # Un editor (rol medio) tampoco puede gestionar miembros.
+        otro = User.objects.create_user(username='editor_espacio', password='password123')
+        WorkspaceMembership.objects.create(
+            workspace=self.ws, user=otro, role='editor'
+        )
+        editor_client = Client()
+        editor_client.login(username='editor_espacio', password='password123')
+        self.assertEqual(self._add(editor_client, user=self.solicitante).status_code, 403)
+        self.assertEqual(
+            editor_client.get(
+                reverse('workspace_members', args=[self.ws.id])
+            ).status_code,
+            403,
+        )
+
+    def test_listado_de_miembros_y_disponibles(self):
+        resp = self.admin_client.get(reverse('workspace_members', args=[self.ws.id]))
+        self.assertEqual(resp.status_code, 200)
+        data = resp.json()
+        usernames = [m['username'] for m in data['members']]
+        self.assertIn('admin_espacio', usernames)
+        self.assertNotIn('solicitante', usernames)
+        self.assertIn('solicitante', [u['username'] for u in data['available_users']])
+        # El creador nunca se puede quitar a sí mismo.
+        creador = next(m for m in data['members'] if m['username'] == 'admin_espacio')
+        self.assertFalse(creador['puede_eliminar'])
+        self.assertFalse(creador['puede_cambiar_rol'])
+
+    def test_no_se_puede_anadir_dos_veces_ni_con_rol_invalido(self):
+        self.assertEqual(self._add(self.admin_client).status_code, 200)
+        self.assertEqual(self._add(self.admin_client).status_code, 400)
+        self.assertEqual(self._add(self.admin_client, role='superpoder').status_code, 400)
+
+    def test_no_se_puede_dejar_el_espacio_sin_administradores(self):
+        # admin_espacio es el creador: inamovible. Se añade otro admin y se quita.
+        segundo = User.objects.create_user(username='segundo_admin', password='password123')
+        WorkspaceMembership.objects.create(
+            workspace=self.ws, user=segundo, role='admin'
+        )
+        self.assertEqual(
+            self._add(self.admin_client, user=self.solicitante, role='admin').status_code, 200
+        )
+
+        # Quitar al segundo admin deja al creador como único admin: permitido.
+        resp = self.admin_client.post(
+            reverse('workspace_members_remove', args=[self.ws.id]),
+            json.dumps({'user_id': segundo.id}),
+            content_type='application/json',
+        )
+        self.assertEqual(resp.status_code, 200, resp.content)
+
+        # Cambiarle el rol al creador está vetado.
+        resp = self.admin_client.post(
+            reverse('workspace_members_role', args=[self.ws.id]),
+            json.dumps({'user_id': self.admin.id, 'role': 'viewer'}),
+            content_type='application/json',
+        )
+        self.assertEqual(resp.status_code, 400)
+        self.assertTrue(
+            WorkspaceMembership.objects.filter(
+                workspace=self.ws, user=self.admin, role='admin'
+            ).exists()
+        )
+
+    def test_no_puede_anadir_a_un_usuario_inactivo(self):
+        inactivo = User.objects.create_user(
+            username='baja', password='password123', is_active=False
+        )
+        resp = self._add(self.admin_client, user=inactivo)
+        self.assertEqual(resp.status_code, 404)
+        self.assertFalse(
+            WorkspaceMembership.objects.filter(workspace=self.ws, user=inactivo).exists()
+        )
+
+    def test_el_boton_de_miembros_solo_aparece_para_el_admin(self):
+        resp = self.admin_client.get(reverse('workspaces_list'))
+        content = resp.content.decode('utf-8')
+        self.assertIn('onclick="openMembersModal(', content)
+
+        WorkspaceMembership.objects.create(
+            workspace=self.ws, user=self.solicitante, role='viewer'
+        )
+        resp = self.user_client.get(reverse('workspaces_list'))
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotIn('onclick="openMembersModal(', resp.content.decode('utf-8'))

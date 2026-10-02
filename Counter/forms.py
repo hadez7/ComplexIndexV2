@@ -69,8 +69,10 @@ class IndividualReportUploadForm(forms.ModelForm):
         self.fields["year"].required = False
         self.fields["name"].required = False
         self.fields["file"].required = True
-        if workspace:
-            self.fields["company"].queryset = Company.objects.filter(workspace=workspace).order_by("name")
+        # Denegar por defecto: sin espacio no se ofrece ninguna empresa.
+        self.fields["company"].queryset = Company.objects.filter(
+            workspace=workspace
+        ).order_by("name")
 
     def clean_file(self):
         file = self.cleaned_data.get("file")
@@ -153,8 +155,10 @@ class ZipUploadForm(forms.Form):
     def __init__(self, *args, workspace=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.workspace = workspace
-        if workspace:
-            self.fields["company"].queryset = Company.objects.filter(workspace=workspace).order_by("name")
+        # Denegar por defecto: sin espacio no se ofrece ninguna empresa.
+        self.fields["company"].queryset = Company.objects.filter(
+            workspace=workspace
+        ).order_by("name")
 
     def clean_zip_file(self):
         zip_file = self.cleaned_data.get("zip_file")
@@ -242,12 +246,11 @@ class ComparativeAnalysisForm(forms.Form):
         self.workspace = workspace
         from django.db.models import Q
 
-        reports_qs = Report.objects.all()
-        if workspace:
-            reports_qs = reports_qs.filter(workspace=workspace)
-            self.fields["expert_list"].queryset = ExpertWord.objects.filter(workspace=workspace)
-        else:
-            self.fields["expert_list"].queryset = ExpertWord.objects.none()
+        # Denegar por defecto: sin espacio activo, año/lista/reportes vacíos.
+        reports_qs = Report.objects.filter(workspace=workspace)
+        self.fields["expert_list"].queryset = ExpertWord.objects.filter(
+            workspace=workspace
+        )
 
         years = (
             reports_qs

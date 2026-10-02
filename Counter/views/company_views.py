@@ -1,7 +1,7 @@
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.db.models.functions import Trim
@@ -20,9 +20,9 @@ def company_view(request):
     companies_qs = (
         Company.objects
         .select_related("province")
+        # Denegar por defecto: sin espacio activo la lista sale vacía, jamás global.
+        .filter(workspace=current_ws)
     )
-    if current_ws:
-        companies_qs = companies_qs.filter(workspace=current_ws)
 
     companies_qs = (
         companies_qs
@@ -61,15 +61,21 @@ def company_view(request):
 
 @login_required
 def see_company_json(request, company_id):
-    company = Company.objects.get(id=company_id)
+    current_ws = get_active_workspace(request)
+    company = get_object_or_404(Company, id=company_id, workspace=current_ws)
     data = {"ruc": company.ruc, "name": company.name, "province": company.province.name, "province_id": company.province_id}
     return JsonResponse(data)
 
 
+@login_required
 @csrf_exempt
 def create_company(request):
     if request.method == "POST":
         current_ws = get_active_workspace(request)
+        if current_ws is None:
+            return JsonResponse(
+                {"error": "No hay un espacio de trabajo activo."}, status=403
+            )
         ruc = request.POST.get("ruc")
         name = request.POST.get("name")
         province_id = request.POST.get("province")
@@ -106,13 +112,16 @@ def create_company(request):
 
 @login_required
 def delete_company(request, company_id):
-    Company.objects.filter(id=company_id).delete()
+    current_ws = get_active_workspace(request)
+    Company.objects.filter(id=company_id, workspace=current_ws).delete()
     return HttpResponse(status=204)
 
 
+@login_required
 @csrf_exempt
 def update_company(request, company_id):
-    company = Company.objects.get(id=company_id)
+    current_ws = get_active_workspace(request)
+    company = get_object_or_404(Company, id=company_id, workspace=current_ws)
     data = json.loads(request.body)
 
     ruc = data.get("ruc")

@@ -17,9 +17,8 @@ def get_filtered_total_counts(request):
     Aislado por el espacio de trabajo activo.
     """
     current_ws = get_active_workspace(request)
-    queryset = TotalCountReport.objects.all()
-    if current_ws:
-        queryset = queryset.filter(report__workspace=current_ws)
+    # Denegar por defecto: sin espacio activo no hay nada que contar.
+    queryset = TotalCountReport.objects.filter(report__workspace=current_ws)
 
     year = request.GET.get("selected_year")
     company_id = request.GET.get("company")
@@ -32,7 +31,11 @@ def get_filtered_total_counts(request):
 
     if selected_list_name:
         try:
-            expert_word_obj = ExpertWord.objects.filter(name=selected_list_name).first()
+            # La lista de palabras se busca además dentro del espacio activo:
+            # no se cuestionan vocabularios de otros espacios.
+            expert_word_obj = ExpertWord.objects.filter(
+                workspace=current_ws, name=selected_list_name
+            ).first()
             if expert_word_obj and expert_word_obj.words:
                 expert_words = list(expert_word_obj.words)
                 queryset = queryset.filter(word__in=expert_words)
@@ -67,9 +70,7 @@ def get_complexity_metrics(request):
     from ..utils import calcular_complejidad_general
     
     current_ws = get_active_workspace(request)
-    queryset = Report.objects.all()
-    if current_ws:
-        queryset = queryset.filter(workspace=current_ws)
+    queryset = Report.objects.filter(workspace=current_ws)
 
     year = request.GET.get("selected_year")
     company_id = request.GET.get("company")
@@ -129,14 +130,10 @@ def total_count_view(request):
     current_ws = get_active_workspace(request)
     total_counts = get_filtered_total_counts(request)
 
-    reports_qs = Report.objects.all()
-    companies_qs = Company.objects.all()
-    if current_ws:
-        reports_qs = reports_qs.filter(workspace=current_ws)
-        companies_qs = companies_qs.filter(workspace=current_ws)
-        expert_lists = ExpertWord.objects.filter(workspace=current_ws)
-    else:
-        expert_lists = ExpertWord.objects.none()
+    # Denegar por defecto: todo queda acotado al espacio activo (vacío si no hay).
+    reports_qs = Report.objects.filter(workspace=current_ws)
+    companies_qs = Company.objects.filter(workspace=current_ws)
+    expert_lists = ExpertWord.objects.filter(workspace=current_ws)
 
     years = reports_qs.values_list("year", flat=True).distinct().order_by("-year")
     companies = companies_qs.filter(report__isnull=False).distinct().annotate(clean_name=Trim("name")).order_by("clean_name")
@@ -156,7 +153,9 @@ def total_count_view(request):
     # Obtener información de empresa seleccionada (si aplica)
     selected_company = None
     if selected_company_id:
-        selected_company = Company.objects.filter(id=selected_company_id).first()
+        selected_company = Company.objects.filter(
+            id=selected_company_id, workspace=current_ws
+        ).first()
 
     return render(request, "totalcount.html", {
         "total_counts": total_counts,

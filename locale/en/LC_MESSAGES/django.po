@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ComplexIndexV2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-01 18:17+0000\n"
+"POT-Creation-Date: 2026-10-02 04:42+0000\n"
 "PO-Revision-Date: 2026-10-01 19:00+0000\n"
 "Last-Translator: ComplexIndexV2 team\n"
 "Language-Team: English\n"
@@ -16,26 +16,36 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: Counter/forms.py:8 Counter/forms.py:16 Counter/forms.py:137
+#: Counter/forms.py:8 Counter/forms.py:16 Counter/forms.py:139
 msgid "Detección automática desde el documento"
 msgstr "Automatic detection from document"
 
-#: Counter/forms.py:219
-#| msgid "Selecciona una empresa:"
+#: Counter/forms.py:223
 msgid "Seleccione un reporte"
 msgstr "Select a report"
 
-#: Counter/forms.py:231 Counter/templates/concealment_detection.html:140
+#: Counter/forms.py:235 Counter/templates/concealment_detection.html:140
 msgid "Seleccione una lista"
 msgstr "Select a list"
 
-#: Counter/forms.py:260 Counter/templates/concealment_detection.html:64
+#: Counter/forms.py:263 Counter/templates/concealment_detection.html:64
 msgid "Seleccione un año"
 msgstr "Select a year"
 
+#: Counter/middleware.py:70
+msgid "No tienes un espacio de trabajo activo."
+msgstr "You do not have an active workspace."
+
+#: Counter/middleware.py:79
+msgid ""
+"Aún no tienes acceso a ningún espacio de trabajo. Pídeselo a un "
+"administrador para que te añada a uno."
+msgstr "You don't have access to any workspace yet. Ask an administrator to add you"
+"to one."
+
 #: Counter/templates/companies.html:4 Counter/templates/companies.html:49
 #: Counter/templates/panel.html:48 Counter/templates/panel.html:87
-#: Counter/templates/workspaces.html:153
+#: Counter/templates/workspaces.html:164
 msgid "Empresas"
 msgstr "Companies"
 
@@ -56,7 +66,7 @@ msgid "Directorio de Empresas"
 msgstr "Company Directory"
 
 #: Counter/templates/companies.html:57
-#| msgid "Crear Empresa"
+#, python-format
 msgid "%(counter)s Empresa"
 msgid_plural "%(counter)s Empresas"
 msgstr[0] "%(counter)s Company"
@@ -112,7 +122,7 @@ msgstr "Province"
 #: Counter/templates/expert_lists.html:342 Counter/templates/reports.html:133
 #: Counter/templates/reports.html:151 Counter/templates/users.html:395
 #: Counter/templates/users.html:446 Counter/templates/users.html:484
-#: Counter/templates/workspaces.html:333 Counter/templates/workspaces.html:409
+#: Counter/templates/workspaces.html:361 Counter/templates/workspaces.html:437
 msgid "Cancelar"
 msgstr "Cancel"
 
@@ -125,7 +135,7 @@ msgid "Editar Empresa"
 msgstr "Edit Company"
 
 #: Counter/templates/companies.html:185 Counter/templates/reports.html:134
-#: Counter/templates/users.html:447 Counter/templates/workspaces.html:413
+#: Counter/templates/users.html:447 Counter/templates/workspaces.html:441
 #: User/templates/profile.html:187
 msgid "Guardar Cambios"
 msgstr "Save Changes"
@@ -135,13 +145,13 @@ msgid "Detalles de la Empresa"
 msgstr "Company Details"
 
 #: Counter/templates/companies.html:207
-#| msgid "Razón Social / Nombre"
 msgid "Razón Social"
 msgstr "Legal Name"
 
 #: Counter/templates/companies.html:211
 #: Counter/templates/concealment_history.html:235
 #: Counter/templates/reports.html:95 Counter/templates/users.html:338
+#: Counter/templates/workspaces.html:503
 msgid "Cerrar"
 msgstr "Close"
 
@@ -316,7 +326,7 @@ msgid "Palabra a auditar"
 msgstr "Word to audit"
 
 #: Counter/templates/concealment_detection.html:186
-#: Counter/templates/workspaces.html:53
+#: Counter/templates/workspaces.html:64
 msgid "Limpiar"
 msgstr "Clear"
 
@@ -486,7 +496,6 @@ msgid "Cargando detalle..."
 msgstr "Loading details..."
 
 #: Counter/templates/concealment_history.html:242
-#| msgid "Cargando detalle..."
 msgid "Cargando párrafos..."
 msgstr "Loading paragraphs..."
 
@@ -513,22 +522,18 @@ msgid "Error al cargar el detalle de la revisión."
 msgstr "Error loading the review details."
 
 #: Counter/templates/concealment_history.html:247
-#| msgid "Descartadas"
 msgid "Descartado"
 msgstr "Discarded"
 
 #: Counter/templates/concealment_history.html:248
-#| msgid "Válidas"
 msgid "Válido"
 msgstr "Valid"
 
 #: Counter/templates/concealment_history.html:249
-#| msgid "Ver párrafos"
 msgid "Párrafo"
 msgstr "Paragraph"
 
 #: Counter/templates/concealment_history.html:250
-#| msgid "ocurrencias"
 msgid "ocurrencia"
 msgstr "occurrence"
 
@@ -662,7 +667,7 @@ msgid "Guardar Lista"
 msgstr "Save List"
 
 #: Counter/templates/index.html:4 Counter/templates/panel.html:14
-#: Counter/templates/workspaces.html:14
+#: Counter/templates/workspaces.html:25
 msgid "Inicio"
 msgstr "Home"
 
@@ -760,7 +765,7 @@ msgstr ""
 msgid "Panel de Administración"
 msgstr "Admin Panel"
 
-#: Counter/templates/panel.html:16 Counter/templates/workspaces.html:16
+#: Counter/templates/panel.html:16 Counter/templates/workspaces.html:27
 #: WordCounter/templates/base.html:437
 msgid "Espacios de trabajo"
 msgstr "Workspaces"
@@ -783,11 +788,11 @@ msgstr ""
 #: Counter/templates/panel.html:58 Counter/templates/panel.html:106
 #: Counter/templates/reports.html:4 Counter/templates/reports.html:19
 #: Counter/templates/totalcountreport.html:21
-#: Counter/templates/workspaces.html:149
+#: Counter/templates/workspaces.html:160
 msgid "Reportes"
 msgstr "Reports"
 
-#: Counter/templates/panel.html:68 Counter/templates/workspaces.html:157
+#: Counter/templates/panel.html:68 Counter/templates/workspaces.html:168
 msgid "Palabras"
 msgstr "Words"
 
@@ -847,7 +852,7 @@ msgid "Lista de Reportes"
 msgstr "Report List"
 
 #: Counter/templates/reports.html:27
-#| msgid "Conteo por reporte"
+#, python-format
 msgid "%(counter)s Reporte"
 msgid_plural "%(counter)s Reportes"
 msgstr[0] "%(counter)s Report"
@@ -1182,7 +1187,6 @@ msgid "Formato permitido: solo .PDF (hasta 100 MB)"
 msgstr "Allowed format: only .PDF (up to 100 MB)"
 
 #: Counter/templates/upload.html:195 Counter/templates/upload.html:303
-#| msgid "Cambiar espacio"
 msgid "Cambiar archivo"
 msgstr "Change file"
 
@@ -1224,10 +1228,9 @@ msgid ""
 "Si el ZIP incluye documentos de varias empresas distintas, déjalo vacío para "
 "que el sistema las identifique automáticamente por el contenido del PDF."
 msgstr ""
-"If every PDF in the ZIP belongs to the same company, select it here. If "
-"the ZIP contains documents from several different companies, leave this "
-"empty so the system identifies them automatically from the content of "
-"each PDF."
+"If every PDF in the ZIP belongs to the same company, select it here. If the "
+"ZIP contains documents from several different companies, leave this empty so "
+"the system identifies them automatically from the content of each PDF."
 
 #: Counter/templates/upload.html:271
 msgid "Archivo ZIP comprimido"
@@ -1242,7 +1245,6 @@ msgid "Formato permitido: solo .ZIP (hasta 300 MB)"
 msgstr "Allowed format: .ZIP only (up to 300 MB)"
 
 #: Counter/templates/upload.html:322
-#| msgid "Sobrescribir si ya existe un reporte para la misma empresa y año"
 msgid "Sobrescribir reportes con el mismo nombre si ya existen"
 msgstr "Overwrite reports with the same name if they already exist"
 
@@ -1255,7 +1257,6 @@ msgstr ""
 "being duplicated."
 
 #: Counter/templates/upload.html:335
-#| msgid "Subir y Procesar PDF"
 msgid "Subir y Procesar Lote ZIP"
 msgstr "Upload & Process ZIP Batch"
 
@@ -1264,7 +1265,7 @@ msgid "Gestión de Usuarios"
 msgstr "User Management"
 
 #: Counter/templates/users.html:28
-#| msgid "Nuevo Usuario"
+#, python-format
 msgid "%(counter)s Usuario"
 msgid_plural "%(counter)s Usuarios"
 msgstr[0] "%(counter)s User"
@@ -1331,12 +1332,13 @@ msgid "tu cuenta"
 msgstr "your account"
 
 #: Counter/templates/users.html:152 Counter/templates/users.html:387
-#: Counter/templates/users.html:438 User/templates/profile.html:96
+#: Counter/templates/users.html:438 Counter/templates/workspaces.html:532
+#: User/templates/profile.html:96
 msgid "Administrador"
 msgstr "Administrator"
 
 #: Counter/templates/users.html:172
-#| msgid "Baja lógica (Soft Delete)"
+#, python-format
 msgid "Baja lógica aplicada el %(fecha)s"
 msgstr "Soft-deleted on %(fecha)s"
 
@@ -1345,7 +1347,7 @@ msgid "Baja lógica"
 msgstr "Soft deleted"
 
 #: Counter/templates/users.html:181 Counter/templates/users.html:391
-#: Counter/templates/users.html:442 Counter/templates/workspaces.html:119
+#: Counter/templates/users.html:442 Counter/templates/workspaces.html:130
 msgid "Activo"
 msgstr "Active"
 
@@ -1387,7 +1389,6 @@ msgid "Eliminar usuario (Baja lógica)"
 msgstr "Delete user (Soft delete)"
 
 #: Counter/templates/users.html:294
-#| msgid "No hay expertos registrados"
 msgid "No hay usuarios registrados en el sistema."
 msgstr "There are no registered users in the system."
 
@@ -1471,46 +1472,46 @@ msgstr "Remove expert role"
 msgid "Guardar"
 msgstr "Save"
 
-#: Counter/templates/workspaces.html:4 Counter/templates/workspaces.html:19
+#: Counter/templates/workspaces.html:4 Counter/templates/workspaces.html:30
 #: WordCounter/templates/base.html:187
 msgid "Espacios de Trabajo"
 msgstr "Workspaces"
 
-#: Counter/templates/workspaces.html:21
+#: Counter/templates/workspaces.html:32
 msgid "espacio"
 msgstr "workspace"
 
-#: Counter/templates/workspaces.html:21
+#: Counter/templates/workspaces.html:32
 msgid "espacios"
 msgstr "workspaces"
 
-#: Counter/templates/workspaces.html:25
+#: Counter/templates/workspaces.html:36
 msgid ""
 "Organiza y analiza documentos por proyectos temáticos aislados: contratos "
 "legales, documentos médicos, informes corporativos o de cualquier otra "
 "índole con métricas independientes."
 msgstr ""
 "Organize and analyze documents into isolated thematic projects: legal "
-"contracts, medical documents, corporate reports or any other kind, each "
-"with its own independent metrics."
+"contracts, medical documents, corporate reports or any other kind, each with "
+"its own independent metrics."
 
-#: Counter/templates/workspaces.html:36 Counter/templates/workspaces.html:250
+#: Counter/templates/workspaces.html:47 Counter/templates/workspaces.html:278
 msgid "Nuevo Espacio de Trabajo"
 msgstr "New Workspace"
 
-#: Counter/templates/workspaces.html:46
+#: Counter/templates/workspaces.html:57
 msgid "Buscar por nombre, temática o descripción..."
 msgstr "Search by name, theme or description..."
 
-#: Counter/templates/workspaces.html:61
+#: Counter/templates/workspaces.html:72
 msgid "Espacio actualmente activo en tu sesión:"
 msgstr "Workspace currently active in your session:"
 
-#: Counter/templates/workspaces.html:109
+#: Counter/templates/workspaces.html:120
 msgid "Sin categoría"
 msgstr "Uncategorized"
 
-#: Counter/templates/workspaces.html:124
+#: Counter/templates/workspaces.html:135
 msgid ""
 "Espacio archivado: sus datos están guardados pero no aparecen en el resto de "
 "la aplicación."
@@ -1518,276 +1519,366 @@ msgstr ""
 "Archived workspace: its data is kept, but it does not appear elsewhere in "
 "the application."
 
-#: Counter/templates/workspaces.html:125
+#: Counter/templates/workspaces.html:136
 msgid "Archivado"
 msgstr "Archived"
 
-#: Counter/templates/workspaces.html:133
+#: Counter/templates/workspaces.html:144
 msgid "Editar espacio"
 msgstr "Edit workspace"
 
-#: Counter/templates/workspaces.html:143
+#: Counter/templates/workspaces.html:154
 msgid "Sin descripción especificada."
 msgstr "No description provided."
 
-#: Counter/templates/workspaces.html:175
+#: Counter/templates/workspaces.html:186
 msgid "Restaurar Espacio"
 msgstr "Restore Workspace"
 
-#: Counter/templates/workspaces.html:188
+#: Counter/templates/workspaces.html:199
 msgid "Entrar al Panel"
 msgstr "Open Dashboard"
 
-#: Counter/templates/workspaces.html:188
+#: Counter/templates/workspaces.html:199
 msgid "Abrir Espacio"
 msgstr "Open Workspace"
 
-#: Counter/templates/workspaces.html:197
+#: Counter/templates/workspaces.html:208
 msgid "Archivar espacio (no borra ningún dato)"
 msgstr "Archive workspace (deletes no data)"
 
-#: Counter/templates/workspaces.html:207
+#: Counter/templates/workspaces.html:218
+msgid "Gestionar miembros: quién puede ver los datos de este espacio"
+msgstr "Manage members: who can see this workspace's data"
+
+#: Counter/templates/workspaces.html:229
 msgid "Eliminar espacio vacío"
 msgstr "Delete empty workspace"
 
-#: Counter/templates/workspaces.html:223
+#: Counter/templates/workspaces.html:246
 msgid "No se encontraron espacios de trabajo"
 msgstr "No workspaces found"
 
-#: Counter/templates/workspaces.html:226
+#: Counter/templates/workspaces.html:248
 msgid ""
 "No hay espacios que coincidan con tu búsqueda. Intenta con otros términos."
 msgstr "No workspaces match your search. Try different terms."
 
-#: Counter/templates/workspaces.html:228
-msgid ""
-"Comienza creando tu primer espacio de trabajo temático para organizar tus "
-"documentos."
-msgstr ""
-"Start by creating your first thematic workspace to organize your "
-"documents."
+#: Counter/templates/workspaces.html:251
+msgid "Aún no tienes acceso a ningún espacio de trabajo"
+msgstr "You don't have access to any workspace yet"
 
-#: Counter/templates/workspaces.html:233
+#: Counter/templates/workspaces.html:253
+msgid ""
+"Los reportes, empresas y listas de palabras solo se muestran a quienes "
+"tienen acceso. Un administrador debe añadirte a un espacio para que aparezca "
+"aquí."
+msgstr "Reports, companies and word lists are only shown to people with access. An"
+"administrator must add you to a workspace for it to appear here."
+
+#: Counter/templates/workspaces.html:256
+msgid "Si acabas de crear un espacio, vuelve a cargar esta página para verlo."
+msgstr "If you have just created a workspace, reload this page to see it."
+
+#: Counter/templates/workspaces.html:261
 msgid "Crear Primer Espacio"
 msgstr "Create First Workspace"
 
-#: Counter/templates/workspaces.html:251
+#: Counter/templates/workspaces.html:279
 msgid "Configura una temática independiente para tus documentos"
 msgstr "Set up an independent theme for your documents"
 
-#: Counter/templates/workspaces.html:263 Counter/templates/workspaces.html:357
+#: Counter/templates/workspaces.html:291 Counter/templates/workspaces.html:385
 msgid "Nombre del espacio"
 msgstr "Workspace name"
 
-#: Counter/templates/workspaces.html:266
+#: Counter/templates/workspaces.html:294
 msgid "Ej: Contratos Legales 2026, Auditoría Médica..."
 msgstr "e.g. Legal Contracts 2026, Medical Audit..."
 
-#: Counter/templates/workspaces.html:273 Counter/templates/workspaces.html:365
+#: Counter/templates/workspaces.html:301 Counter/templates/workspaces.html:393
 msgid "Tipo de temática"
 msgstr "Theme type"
 
-#: Counter/templates/workspaces.html:276
+#: Counter/templates/workspaces.html:304
 msgid "Ej: Legal, Médico, Financiero, Académico, Seguros..."
 msgstr "e.g. Legal, Medical, Financial, Academic, Insurance..."
 
-#: Counter/templates/workspaces.html:279
+#: Counter/templates/workspaces.html:307
 msgid "Sugerencias:"
 msgstr "Suggestions:"
 
-#: Counter/templates/workspaces.html:291
+#: Counter/templates/workspaces.html:319
 msgid "Descripción (opcional)"
 msgstr "Description (optional)"
 
-#: Counter/templates/workspaces.html:294
+#: Counter/templates/workspaces.html:322
 msgid "Breve propósito de este espacio de trabajo..."
 msgstr "Brief purpose of this workspace..."
 
-#: Counter/templates/workspaces.html:302 Counter/templates/workspaces.html:381
+#: Counter/templates/workspaces.html:330 Counter/templates/workspaces.html:409
 msgid "Icono"
 msgstr "Icon"
 
-#: Counter/templates/workspaces.html:305 Counter/templates/workspaces.html:383
+#: Counter/templates/workspaces.html:333 Counter/templates/workspaces.html:411
 msgid "Carpeta"
 msgstr "Folder"
 
-#: Counter/templates/workspaces.html:306 Counter/templates/workspaces.html:384
+#: Counter/templates/workspaces.html:334 Counter/templates/workspaces.html:412
 msgid "Empresa / Edificio"
 msgstr "Company / Building"
 
-#: Counter/templates/workspaces.html:307 Counter/templates/workspaces.html:385
+#: Counter/templates/workspaces.html:335 Counter/templates/workspaces.html:413
 msgid "Balanza / Legal"
 msgstr "Scales / Legal"
 
-#: Counter/templates/workspaces.html:308 Counter/templates/workspaces.html:386
+#: Counter/templates/workspaces.html:336 Counter/templates/workspaces.html:414
 msgid "Médico / Salud"
 msgstr "Medical / Health"
 
-#: Counter/templates/workspaces.html:309 Counter/templates/workspaces.html:387
+#: Counter/templates/workspaces.html:337 Counter/templates/workspaces.html:415
 msgid "Libro / Académico"
 msgstr "Book / Academic"
 
-#: Counter/templates/workspaces.html:310 Counter/templates/workspaces.html:388
+#: Counter/templates/workspaces.html:338 Counter/templates/workspaces.html:416
 msgid "Gráficos / Finanzas"
 msgstr "Charts / Finance"
 
-#: Counter/templates/workspaces.html:311 Counter/templates/workspaces.html:389
+#: Counter/templates/workspaces.html:339 Counter/templates/workspaces.html:417
 msgid "Documento"
 msgstr "Document"
 
-#: Counter/templates/workspaces.html:317 Counter/templates/workspaces.html:394
+#: Counter/templates/workspaces.html:345 Counter/templates/workspaces.html:422
 msgid "Color temático"
 msgstr "Theme color"
 
-#: Counter/templates/workspaces.html:320 Counter/templates/workspaces.html:396
+#: Counter/templates/workspaces.html:348 Counter/templates/workspaces.html:424
 msgid "Azul Corporativo"
 msgstr "Corporate Blue"
 
-#: Counter/templates/workspaces.html:321 Counter/templates/workspaces.html:397
+#: Counter/templates/workspaces.html:349 Counter/templates/workspaces.html:425
 msgid "Púrpura Legal"
 msgstr "Legal Purple"
 
-#: Counter/templates/workspaces.html:322 Counter/templates/workspaces.html:398
+#: Counter/templates/workspaces.html:350 Counter/templates/workspaces.html:426
 msgid "Verde Salud/Finanzas"
 msgstr "Health / Finance Green"
 
-#: Counter/templates/workspaces.html:323 Counter/templates/workspaces.html:399
+#: Counter/templates/workspaces.html:351 Counter/templates/workspaces.html:427
 msgid "Ámbar / Naranja"
 msgstr "Amber / Orange"
 
-#: Counter/templates/workspaces.html:324 Counter/templates/workspaces.html:400
+#: Counter/templates/workspaces.html:352 Counter/templates/workspaces.html:428
 msgid "Índigo Académico"
 msgstr "Academic Indigo"
 
-#: Counter/templates/workspaces.html:325 Counter/templates/workspaces.html:401
+#: Counter/templates/workspaces.html:353 Counter/templates/workspaces.html:429
 msgid "Rojo Regulatorio"
 msgstr "Regulatory Red"
 
-#: Counter/templates/workspaces.html:337
+#: Counter/templates/workspaces.html:365
 msgid "Crear Espacio"
 msgstr "Create Workspace"
 
-#: Counter/templates/workspaces.html:348
+#: Counter/templates/workspaces.html:376
 msgid "Editar Espacio de Trabajo"
 msgstr "Edit Workspace"
 
-#: Counter/templates/workspaces.html:373
+#: Counter/templates/workspaces.html:401
 msgid "Descripción"
 msgstr "Description"
 
-#: Counter/templates/workspaces.html:425
+#: Counter/templates/workspaces.html:457
+msgid "Miembros del espacio"
+msgstr "Workspace members"
+
+#: Counter/templates/workspaces.html:459
+msgid "Personas con acceso a los datos de"
+msgstr "People with access to the data in"
+
+#: Counter/templates/workspaces.html:468
+msgid ""
+"Solo las personas de esta lista pueden ver los reportes, empresas y listas "
+"de palabras del espacio. Añade a alguien para darle acceso y quítalo cuando "
+"ya no lo necesite."
+msgstr "Only the people on this list can see this workspace's reports, companies and"
+"word lists. Add someone to grant access and remove them when it is no longer"
+"needed."
+
+#: Counter/templates/workspaces.html:474
+msgid "Nadie más tiene acceso a este espacio todavía."
+msgstr "No one else has access to this workspace yet."
+
+#: Counter/templates/workspaces.html:480
+msgid "Dar acceso a un usuario"
+msgstr "Grant access to a user"
+
+#: Counter/templates/workspaces.html:491
+msgid "Añadir"
+msgstr "Add"
+
+#: Counter/templates/workspaces.html:495
+msgid "No hay usuarios disponibles: todo el mundo ya tiene acceso."
+msgstr "No users available: everyone already has access."
+
+#: Counter/templates/workspaces.html:514
 #, python-brace-format
 msgid "¿Eliminar el espacio de trabajo “{name}”?"
 msgstr "Delete the workspace “{name}”?"
 
-#: Counter/templates/workspaces.html:426
+#: Counter/templates/workspaces.html:515
 msgid ""
 "Solo se pueden eliminar espacios vacíos: este no tiene reportes ni empresas, "
 "así que no se perderá ningún archivo."
 msgstr ""
-"Only empty workspaces can be deleted: this one has no reports or "
-"companies, so no file will be lost."
+"Only empty workspaces can be deleted: this one has no reports or companies, "
+"so no file will be lost."
 
-#: Counter/templates/workspaces.html:427
+#: Counter/templates/workspaces.html:516
 #, python-brace-format
 msgid "¿Archivar el espacio de trabajo “{name}”?"
 msgstr "Archive the workspace “{name}”?"
 
-#: Counter/templates/workspaces.html:428
+#: Counter/templates/workspaces.html:517
 msgid ""
 "Se ocultará de la aplicación, pero NO se borrará ningún dato. Podrás "
 "restaurarlo cuando quieras."
 msgstr ""
-"It will be hidden from the application, but NO data will be deleted. You "
-"can restore it at any time."
+"It will be hidden from the application, but NO data will be deleted. You can "
+"restore it at any time."
 
-#: Counter/templates/workspaces.html:429
+#: Counter/templates/workspaces.html:518
 #, python-brace-format
 msgid "¿Restaurar el espacio de trabajo “{name}”?"
 msgstr "Restore the workspace “{name}”?"
 
-#: Counter/templates/workspaces.html:430
+#: Counter/templates/workspaces.html:519
 msgid "No se pudo eliminar el espacio."
 msgstr "The workspace could not be deleted."
 
-#: Counter/templates/workspaces.html:431
+#: Counter/templates/workspaces.html:520
 msgid "No se pudo actualizar el espacio."
 msgstr "The workspace could not be updated."
 
-#: Counter/templates/workspaces.html:432
+#: Counter/templates/workspaces.html:521
 msgid "Error de conexión."
 msgstr "Connection error."
 
-#: Counter/views/workspace_views.py:87
+#: Counter/templates/workspaces.html:533
+msgid "Editor / Auditor"
+msgstr "Editor / Auditor"
+
+#: Counter/templates/workspaces.html:534
+msgid "Lector"
+msgstr "Viewer"
+
+#: Counter/templates/workspaces.html:535
+msgid "Creador"
+msgstr "Creator"
+
+#: Counter/templates/workspaces.html:536
+msgid "Selecciona un usuario"
+msgstr "Select a user"
+
+#: Counter/templates/workspaces.html:537
+msgid "Sin correo"
+msgstr "No email"
+
+#: Counter/templates/workspaces.html:538
+msgid "Quitar del espacio"
+msgstr "Remove from workspace"
+
+#: Counter/templates/workspaces.html:539
+#, python-brace-format
+msgid "¿Quitar a {user} de este espacio? Dejará de ver todos sus datos."
+msgstr "Remove {user} from this workspace? They will no longer see any of its data."
+
+#: Counter/templates/workspaces.html:540
+msgid "No se pudo cargar la lista de miembros."
+msgstr "The member list could not be loaded."
+
+#: Counter/templates/workspaces.html:541
+msgid "No se pudo añadir al usuario."
+msgstr "The user could not be added."
+
+#: Counter/templates/workspaces.html:542
+msgid "No se pudo quitar al usuario."
+msgstr "The user could not be removed."
+
+#: Counter/templates/workspaces.html:543
+msgid "No se pudo cambiar el rol."
+msgstr "The role could not be changed."
+
+#: Counter/views/workspace_views.py:149
 msgid "Método no permitido"
 msgstr "Method not allowed"
 
-#: Counter/views/workspace_views.py:94
+#: Counter/views/workspace_views.py:156
 msgid "Cuerpo JSON inválido"
 msgstr "Invalid JSON body"
 
-#: Counter/views/workspace_views.py:106 Counter/views/workspace_views.py:107
+#: Counter/views/workspace_views.py:168 Counter/views/workspace_views.py:169
 msgid "El nombre del espacio es obligatorio."
 msgstr "The workspace name is required."
 
-#: Counter/views/workspace_views.py:136
+#: Counter/views/workspace_views.py:198
 msgid "Espacio de trabajo creado exitosamente."
 msgstr "Workspace created successfully."
 
-#: Counter/views/workspace_views.py:139
+#: Counter/views/workspace_views.py:201
 #, python-format
 msgid "Espacio de trabajo '%s' creado y seleccionado."
 msgstr "Workspace '%s' created and selected."
 
-#: Counter/views/workspace_views.py:150
+#: Counter/views/workspace_views.py:212
 msgid "No tienes acceso a este espacio de trabajo."
 msgstr "You do not have access to this workspace."
 
-#: Counter/views/workspace_views.py:158
+#: Counter/views/workspace_views.py:220
 #, python-format
 msgid "Cambiado al espacio: %s"
 msgstr "Switched to workspace: %s"
 
-#: Counter/views/workspace_views.py:171
+#: Counter/views/workspace_views.py:233
 msgid "No tienes permisos para editar este espacio."
 msgstr "You do not have permission to edit this workspace."
 
-#: Counter/views/workspace_views.py:181
+#: Counter/views/workspace_views.py:243
 msgid "El nombre no puede estar vacío."
 msgstr "The name cannot be empty."
 
-#: Counter/views/workspace_views.py:192
+#: Counter/views/workspace_views.py:254
 msgid "Espacio de trabajo actualizado con éxito."
 msgstr "Workspace updated successfully."
 
-#: Counter/views/workspace_views.py:208
+#: Counter/views/workspace_views.py:270
 msgid "No tienes permisos para modificar este espacio."
 msgstr "You do not have permission to modify this workspace."
 
-#: Counter/views/workspace_views.py:213
+#: Counter/views/workspace_views.py:275
 msgid "No puedes archivar el único espacio de trabajo activo."
 msgstr "You cannot archive the only active workspace."
 
-#: Counter/views/workspace_views.py:224
+#: Counter/views/workspace_views.py:286
 #, python-format
 msgid ""
 "El espacio de trabajo '%s' fue archivado. Puedes restaurarlo cuando quieras."
 msgstr "Workspace '%s' was archived. You can restore it whenever you like."
 
-#: Counter/views/workspace_views.py:226
+#: Counter/views/workspace_views.py:288
 #, python-format
 msgid "El espacio de trabajo '%s' fue restaurado."
 msgstr "Workspace '%s' was restored."
 
-#: Counter/views/workspace_views.py:243
+#: Counter/views/workspace_views.py:305
 msgid "No tienes permisos para eliminar este espacio."
 msgstr "You do not have permission to delete this workspace."
 
-#: Counter/views/workspace_views.py:247
+#: Counter/views/workspace_views.py:309
 msgid "No puedes eliminar el único espacio de trabajo disponible."
 msgstr "You cannot delete the only available workspace."
 
-#: Counter/views/workspace_views.py:252 Counter/views/workspace_views.py:267
+#: Counter/views/workspace_views.py:314 Counter/views/workspace_views.py:329
 msgid ""
 "Este espacio tiene reportes o empresas, por lo que no se puede eliminar. "
 "Archívalo para ocultarlo sin perder ningún dato."
@@ -1795,10 +1886,67 @@ msgstr ""
 "This workspace contains reports or companies, so it cannot be deleted. "
 "Archive it to hide it without losing any data."
 
-#: Counter/views/workspace_views.py:271
+#: Counter/views/workspace_views.py:333
 #, python-format
 msgid "El espacio de trabajo '%s' fue eliminado."
 msgstr "Workspace '%s' was deleted."
+
+#: Counter/views/workspace_views.py:342
+msgid "No tienes permisos para gestionar los miembros de este espacio."
+msgstr "You do not have permission to manage this workspace's members."
+
+#: Counter/views/workspace_views.py:359
+msgid "Cuerpo JSON inválido."
+msgstr "Invalid JSON body."
+
+#: Counter/views/workspace_views.py:420
+msgid "Usuario no indicado."
+msgstr "No user selected."
+
+#: Counter/views/workspace_views.py:422 Counter/views/workspace_views.py:493
+msgid "Rol no válido."
+msgstr "Invalid role."
+
+#: Counter/views/workspace_views.py:426
+msgid "Usuario no encontrado."
+msgstr "User not found."
+
+#: Counter/views/workspace_views.py:430
+msgid "Ese usuario ya es miembro de este espacio."
+msgstr "That user is already a member of this workspace."
+
+#: Counter/views/workspace_views.py:437
+#, python-format
+msgid "%s ahora tiene acceso a este espacio."
+msgstr "%s now has access to this workspace."
+
+#: Counter/views/workspace_views.py:459 Counter/views/workspace_views.py:498
+msgid "Ese usuario no es miembro de este espacio."
+msgstr "That user is not a member of this workspace."
+
+#: Counter/views/workspace_views.py:462
+msgid ""
+"No se puede quitar a este usuario: es el creador o el último administrador "
+"del espacio."
+msgstr "This user cannot be removed: they are the creator or the last administrator"
+"of the workspace."
+
+#: Counter/views/workspace_views.py:472
+#, python-format
+msgid "%s dejó de tener acceso a este espacio."
+msgstr "%s no longer has access to this workspace."
+
+#: Counter/views/workspace_views.py:501
+msgid ""
+"No se puede cambiar el rol de este usuario: es el creador o el último "
+"administrador del espacio."
+msgstr "This user's role cannot be changed: they are the creator or the last"
+"administrator of the workspace."
+
+#: Counter/views/workspace_views.py:511
+#, python-format
+msgid "Rol de %s actualizado."
+msgstr "%s's role updated."
 
 #: User/forms.py:11 User/forms.py:31 User/templates/profile.html:147
 #: User/templates/register.html:132
@@ -1828,7 +1976,6 @@ msgid "Nombre de usuario"
 msgstr "Username"
 
 #: User/forms.py:35 User/templates/register.html:215
-#| msgid "Contraseña"
 msgid "Confirmar contraseña"
 msgstr "Confirm password"
 
@@ -1837,7 +1984,6 @@ msgid "Este correo electrónico ya está registrado."
 msgstr "This email address is already registered."
 
 #: User/forms.py:50
-#| msgid "Ej. Carlos"
 msgid "Ej. auditor_carlos"
 msgstr "e.g. auditor_carlos"
 
@@ -1916,12 +2062,10 @@ msgid "Ingresar a la plataforma"
 msgstr "Enter the platform"
 
 #: User/templates/login.html:202
-#| msgid "Crear mi cuenta de auditor"
 msgid "¿Aún no tienes una cuenta de auditor?"
 msgstr "Don't have an auditor account yet?"
 
 #: User/templates/login.html:204
-#| msgid "Registrarse"
 msgid "Regístrate gratis"
 msgstr "Sign up for free"
 
@@ -2027,15 +2171,14 @@ msgid "¿Ya tienes una cuenta registrada?"
 msgstr "Already have an account?"
 
 #: User/templates/register.html:265
-#| msgid "Iniciar sesión"
 msgid "Inicia sesión"
 msgstr "Sign in"
 
-#: WordCounter/settings.py:120
+#: WordCounter/settings.py:135
 msgid "Español"
 msgstr "Spanish"
 
-#: WordCounter/settings.py:121
+#: WordCounter/settings.py:136
 msgid "English"
 msgstr "English"
 
@@ -2122,8 +2265,16 @@ msgid "Todos los derechos reservados."
 msgstr "All rights reserved."
 
 #~ msgid ""
+#~ "Comienza creando tu primer espacio de trabajo temático para organizar tus "
+#~ "documentos."
+#~ msgstr ""
+#~ "Start by creating your first thematic workspace to organize your "
+#~ "documents."
+
+#~ msgid ""
 #~ "Plataforma central para auditoría contractual, análisis de legibilidad y "
 #~ "gestión de documentos corporativos."
 #~ msgstr ""
 #~ "Central platform for contractual auditing, readability analysis, and "
 #~ "corporate document management."
+

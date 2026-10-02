@@ -1,6 +1,6 @@
 from django.db.models.functions import Trim
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import JsonResponse, HttpResponse
 import json
 from ..models import Report, Company, TotalCountReport
@@ -14,19 +14,19 @@ def report_view(request):
 
     current_ws = get_active_workspace(request)
     query = request.GET.get("q", "").strip()
-    reports = Report.objects.select_related("company")
-    if current_ws:
-        reports = reports.filter(workspace=current_ws)
+    # Denegar por defecto: sin espacio activo, listas vacías (nunca el total global).
+    reports = Report.objects.select_related("company").filter(workspace=current_ws)
 
     if query:
         reports = reports.filter(
             Q(name__icontains=query) | Q(company__name__icontains=query)
         )
 
-    companies_qs = Company.objects.all()
-    if current_ws:
-        companies_qs = companies_qs.filter(workspace=current_ws)
-    companies = companies_qs.annotate(clean_name=Trim("name")).order_by("clean_name")
+    companies = (
+        Company.objects.filter(workspace=current_ws)
+        .annotate(clean_name=Trim("name"))
+        .order_by("clean_name")
+    )
 
     return render(
         request,
@@ -40,9 +40,13 @@ def report_view(request):
     )
 
 
+@login_required
 def see_report_json(request, report_id):
+    current_ws = get_active_workspace(request)
     try:
-        report = Report.objects.select_related("company").get(id=report_id)
+        report = Report.objects.select_related("company").get(
+            id=report_id, workspace=current_ws
+        )
         data = {
             "id": report.id,
             "name": report.name or "",
@@ -58,9 +62,11 @@ def see_report_json(request, report_id):
         return JsonResponse({"error": "Reporte no encontrado"}, status=404)
 
 
+@login_required
 def delete_report(request, report_id):
+    current_ws = get_active_workspace(request)
     try:
-        report = Report.objects.get(id=report_id)
+        report = Report.objects.get(id=report_id, workspace=current_ws)
         ws = report.workspace
         # Obtener palabras para descontarlas de TotalCount
         palabras_afectadas = list(
@@ -74,10 +80,12 @@ def delete_report(request, report_id):
         return HttpResponse(status=404)
 
 
+@login_required
 def update_report(request, report_id):
+    current_ws = get_active_workspace(request)
     try:
         data = json.loads(request.body)
-        report = Report.objects.get(id=report_id)
+        report = Report.objects.get(id=report_id, workspace=current_ws)
         report.name = data.get("name", report.name)
         report.year = data.get("year", report.year)
         company_id = data.get("company")

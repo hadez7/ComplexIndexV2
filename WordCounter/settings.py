@@ -53,8 +53,23 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'Counter.middleware.WorkspaceAccessGuardMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Denegar por defecto: fuera de estas rutas, un usuario sin espacio de trabajo
+# activo es redirigido a /workspaces/ y no llega a ninguna vista con datos.
+# (Nunca incluir "/" aquí: sería prefijo de todas las rutas y desactivaría el guard.)
+WORKSPACE_PUBLIC_PATHS = (
+    '/workspaces/',
+    '/Auth/',
+    '/admin/',
+    '/i18n/',
+    '/jsi18n/',
+    '/static/',
+    '/media/',
+    '/favicon.ico',
+)
 
 ROOT_URLCONF = 'WordCounter.urls'
 
