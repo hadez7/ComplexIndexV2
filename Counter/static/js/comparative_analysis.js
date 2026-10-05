@@ -7,20 +7,20 @@ document.addEventListener("DOMContentLoaded", () => {
     yearSelect.addEventListener("change", function () {
         const year = this.value;
 
-        reportSelect.innerHTML = '<option value="">Cargando reportes...</option>';
+        reportSelect.innerHTML = '<option value="">Loading reports...</option>';
 
         if (!year) {
-            reportSelect.innerHTML = '<option value="">Seleccione un reporte</option>';
+            reportSelect.innerHTML = '<option value="">Select a report</option>';
             return;
         }
 
         fetch(`/reports-by-year/?year=${encodeURIComponent(year)}`)
             .then(response => response.json())
             .then(data => {
-                reportSelect.innerHTML = '<option value="">Seleccione un reporte</option>';
+                reportSelect.innerHTML = '<option value="">Select a report</option>';
 
                 if (data.length === 0) {
-                    reportSelect.innerHTML = '<option value="">No hay reportes para este año</option>';
+                    reportSelect.innerHTML = '<option value="">No reports for this year</option>';
                     return;
                 }
 
@@ -32,8 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
             })
             .catch(error => {
-                console.error("Error al cargar reportes:", error);
-                reportSelect.innerHTML = '<option value="">Error al cargar</option>';
+                console.error("Error loading reports:", error);
+                reportSelect.innerHTML = '<option value="">Error loading</option>';
             });
     });
 });

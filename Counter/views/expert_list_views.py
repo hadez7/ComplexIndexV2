@@ -25,7 +25,7 @@ def create_list(request):
         if existing:
             return JsonResponse({
                 "success": False,
-                "error": "Ya existe una lista con ese nombre para este experto."
+                "error": "A list with that name already exists for this expert."
             }, status=400)
 
         new_list = ExpertWord.objects.create(
@@ -76,7 +76,7 @@ def update_list(request, list_id):
         if existe:
             return JsonResponse({
                 "success": False,
-                "error": "Ya existe una lista con ese nombre para este experto."
+                "error": "A list with that name already exists for this expert."
             }, status=400)
         lista.name = data["name"]
 

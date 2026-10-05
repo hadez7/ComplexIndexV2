@@ -27,7 +27,7 @@ class AuthViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'login.html')
         content = response.content.decode('utf-8')
-        self.assertIn('Iniciar sesión', content)
+        self.assertIn('Sign In', content)
         self.assertIn('Enterprise Lex Index', content)
         self.assertIn(reverse('register'), content)
 
@@ -39,16 +39,16 @@ class AuthViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'login.html')
         content = response.content.decode('utf-8')
-        self.assertIn('No pudimos iniciar tu sesión', content)
+        self.assertIn("We couldn't sign you in", content)
 
     def test_register_page_renders_properly(self):
         response = self.client.get(reverse('register'))
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'register.html')
         content = response.content.decode('utf-8')
-        self.assertIn('Crear cuenta', content)
-        self.assertIn('Nombre(s)', content)
-        self.assertIn('Apellidos', content)
+        self.assertIn('Create Account', content)
+        self.assertIn('First Name', content)
+        self.assertIn('Last Name', content)
         self.assertIn(reverse('login'), content)
 
     def test_successful_registration_with_names(self):
@@ -75,4 +75,4 @@ class AuthViewTests(TestCase):
         })
         self.assertEqual(response.status_code, 200)
         content = response.content.decode('utf-8')
-        self.assertIn('Este correo electrónico ya está registrado', content)
+        self.assertIn('already exists', content)

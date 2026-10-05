@@ -55,14 +55,14 @@ class ReportModelChoiceField(forms.ModelChoiceField):
             if obj.name and obj.name != str(obj.year) and obj.name.lower() != "reporte":
                 return f"{company_name} - {obj.name}"
             return company_name
-        return obj.name or f"Reporte {obj.id}"
+        return obj.name or f"Report {obj.id}"
 
 
 class ComparativeAnalysisForm(forms.Form):
     SELECT_CLASSES = "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition"
 
     year = forms.ChoiceField(
-        label="Año",
+        label="Year",
         required=False,
         choices=[],
         widget=forms.Select(
@@ -74,8 +74,8 @@ class ComparativeAnalysisForm(forms.Form):
 
     report = ReportModelChoiceField(
         queryset=Report.objects.none(),
-        label="Reporte",
-        empty_label="Seleccione un reporte",
+        label="Report",
+        empty_label="Select a report",
         widget=forms.Select(
             attrs={
                 "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition"
@@ -85,8 +85,8 @@ class ComparativeAnalysisForm(forms.Form):
 
     expert_list = forms.ModelChoiceField(
         queryset=ExpertWord.objects.all(),
-        label="Lista de experto",
-        empty_label="Seleccione una lista",
+        label="Expert List",
+        empty_label="Select a list",
         widget=forms.Select(
             attrs={
                 "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition"
@@ -105,14 +105,13 @@ class ComparativeAnalysisForm(forms.Form):
         )
 
         self.fields["year"].choices = [
-            ("", "Seleccione un año")
+            ("", "Select a year")
         ] + [
             (year, year)
             for year in years
             if year
         ]
 
-        # IMPORTANTE
         if self.data.get("year"):
             self.fields["report"].queryset = Report.objects.filter(
                 year=self.data.get("year")

@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
-{% block title %}Empresas | ELI{% endblock %}
+{% block title %}Companies | ELI{% endblock %}
 
 {% block custom_css %}
 <style>
 body {
     font-family: 'Poppins', sans-serif;
 }
-/* Colores de las iniciales en función de la primera letra */
+/* Initial colors based on the first letter */
 .avatar-A, .avatar-B { background-color: #818cf8; color: #fff; }
 .avatar-C, .avatar-D { background-color: #34d399; color: #fff; }
 .avatar-E, .avatar-F { background-color: #f87171; color: #fff; }
@@ -34,30 +34,30 @@ body {
 
 {% block content %}
 <div class="container mx-auto px-4">
-    <!-- Cabecera de Página / Breadcrumb y Acciones -->
+    <!-- Page Header / Breadcrumb and Actions -->
     <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200">
         <div>
             <div class="flex items-center space-x-2 text-xs text-gray-500 mb-2">
                 <a href="{% url 'panel' %}" class="hover:text-blue-600 transition flex items-center space-x-1 font-medium">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                    <span>Panel de administración</span>
+                    <span>Admin Panel</span>
                 </a>
                 <span>/</span>
-                <span class="text-gray-700 font-semibold">Empresas</span>
+                <span class="text-gray-700 font-semibold">Companies</span>
             </div>
 
             <div class="flex items-center space-x-3">
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-                    Directorio de Empresas
+                    Company Directory
                 </h1>
                 <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2.5 py-0.5 rounded-full border border-blue-200">
-                    {{ companies|length }} Empresa{{ companies|length|pluralize }}
+                    {{ companies|length }} Compan{{ companies|length|pluralize:"y,ies" }}
                 </span>
             </div>
             <p class="text-sm text-gray-500 mt-1">
-                Administra las razones sociales, RUC y provincias de las entidades registradas para auditoría.
+                Manage corporate names, RUC, and provinces of registered entities for auditing.
             </p>
         </div>
 
@@ -67,29 +67,29 @@ body {
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
                 </svg>
-                <span>Crear Empresa</span>
+                <span>Create Company</span>
             </button>
         </div>
     </div>
 
-    <!-- !Filtros de búsqueda: Barra de texto + Dropdown de provincia -->
+    <!-- Search Filters: Text bar + Province dropdown -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6">
         <form method="get" action="{% url 'companies' %}" id="filterForm" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4">
-            <!-- Buscador de texto -->
+            <!-- Text search -->
             <div class="flex-1 relative">
                 <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 pointer-events-none">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
                 </span>
-                <input type="text" name="q" value="{{ search }}" placeholder="Buscar por RUC, razón social o provincia..."
+                <input type="text" name="q" value="{{ search }}" placeholder="Search by RUC, corporate name, or province..."
                        class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition">
             </div>
-            <!-- Filtro de provincia -->
+            <!-- Province filter -->
             <div class="sm:w-56">
                 <select name="province" id="provinceFilter"
                         class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white transition">
-                    <option value="">Todas las provincias</option>
+                    <option value="">All provinces</option>
                     {% for province in provinces %}
                     <option value="{{ province.id }}" {% if province_filter == province.id|stringformat:"s" %}selected{% endif %}>
                         {{ province.name }}
@@ -97,12 +97,11 @@ body {
                     {% endfor %}
                 </select>
             </div>
-            <!-- Botón filtrar (oculto: el select auto-envía) -->
-            <button type="submit" class="hidden">Filtrar</button>
+            <button type="submit" class="hidden">Filter</button>
         </form>
     </div>
 
-    <!-- !Modal Crear empresa -->
+    <!-- Create Company Modal -->
     <div id="createModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white p-6 sm:p-7 rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 relative">
             <div class="flex items-center justify-between mb-4">
@@ -112,7 +111,7 @@ body {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                         </svg>
                     </div>
-                    <h2 class="text-lg font-bold text-gray-900">Nueva Empresa</h2>
+                    <h2 class="text-lg font-bold text-gray-900">New Company</h2>
                 </div>
                 <button type="button" onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
             </div>
@@ -120,16 +119,16 @@ body {
                 {% csrf_token %}
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">RUC</label>
-                    <input type="text" name="ruc" placeholder="Ej. 1790012345001" class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                    <input type="text" name="ruc" placeholder="e.g. 1790012345001" class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                     <p class="text-red-500 text-xs mt-1 font-medium" id="error-ruc"></p>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Razón Social / Nombre</label>
-                    <input type="text" name="name" placeholder="Ej. CORPORACIÓN ANDINA S.A." class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Corporate Name / Name</label>
+                    <input type="text" name="name" placeholder="e.g. CORPORACIÓN ANDINA S.A." class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
                     <p class="text-red-500 text-xs mt-1 font-medium" id="error-name"></p>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Provincia</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Province</label>
                     <select name="province" class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition">
                         {% for province in provinces %}
                         <option value="{{ province.id }}">{{ province.name }}</option>
@@ -139,15 +138,15 @@ body {
                 </div>
                 <div class="flex justify-end pt-3 border-t border-gray-100 gap-2">
                     <button type="button" onclick="closeCreateModal()"
-                        class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">Cancelar</button>
+                        class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">Cancel</button>
                     <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl font-semibold shadow-md transition text-sm">Guardar Empresa</button>
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl font-semibold shadow-md transition text-sm">Save Company</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- !Modal Editar empresa -->
+    <!-- Edit Company Modal -->
     <div id="editModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white p-6 sm:p-7 rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 relative">
             <div class="flex items-center justify-between mb-4">
@@ -157,7 +156,7 @@ body {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z" />
                         </svg>
                     </div>
-                    <h2 class="text-lg font-bold text-gray-900">Editar Empresa</h2>
+                    <h2 class="text-lg font-bold text-gray-900">Edit Company</h2>
                 </div>
                 <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
             </div>
@@ -168,11 +167,11 @@ body {
                     <input type="text" id="edit-ruc" class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Razón Social / Nombre:</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Corporate Name / Name:</label>
                     <input type="text" id="edit-name" class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
                 </div>
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">Provincia:</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Province:</label>
                     <select id="edit-province" class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition" required>
                         {% for province in provinces %}
                         <option value="{{ province.id }}">{{ province.name }}</option>
@@ -180,14 +179,14 @@ body {
                     </select>
                 </div>
                 <div class="flex justify-end pt-3 border-t border-gray-100 gap-2">
-                    <button type="button" onclick="closeEditModal()" class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">Cancelar</button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-xl text-sm shadow-md transition">Guardar Cambios</button>
+                    <button type="button" onclick="closeEditModal()" class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">Cancel</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-xl text-sm shadow-md transition">Save Changes</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- !Modal Detalles empresa -->
+    <!-- Company Details Modal -->
     <div id="detailsModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white p-6 sm:p-7 rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 relative">
             <div class="flex items-center justify-between mb-4">
@@ -197,22 +196,22 @@ body {
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                     </div>
-                    <h2 class="text-lg font-bold text-gray-900">Detalles de la Empresa</h2>
+                    <h2 class="text-lg font-bold text-gray-900">Company Details</h2>
                 </div>
                 <button type="button" onclick="closeDetailsModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
             </div>
             <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-100 text-sm mb-4">
                 <p class="flex justify-between"><span class="text-gray-500 font-medium">RUC:</span> <span id="detail-ruc" class="font-mono font-bold text-gray-800"></span></p>
-                <p class="flex justify-between"><span class="text-gray-500 font-medium">Razón Social:</span> <span id="detail-name" class="font-semibold text-gray-800 text-right"></span></p>
-                <p class="flex justify-between"><span class="text-gray-500 font-medium">Provincia:</span> <span id="detail-province" class="text-gray-700 font-medium"></span></p>
+                <p class="flex justify-between"><span class="text-gray-500 font-medium">Corporate Name:</span> <span id="detail-name" class="font-semibold text-gray-800 text-right"></span></p>
+                <p class="flex justify-between"><span class="text-gray-500 font-medium">Province:</span> <span id="detail-province" class="text-gray-700 font-medium"></span></p>
             </div>
             <div class="flex justify-end pt-2">
-                <button onclick="closeDetailsModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-xl text-sm transition">Cerrar</button>
+                <button onclick="closeDetailsModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-xl text-sm transition">Close</button>
             </div>
         </div>
     </div>
 
-    <!-- !Modal Borrar empresa -->
+    <!-- Delete Company Modal -->
     <div id="deleteModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
         <div class="bg-white p-6 sm:p-7 rounded-2xl w-full max-w-sm shadow-2xl border border-gray-100 relative">
             <div class="w-12 h-12 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-3">
@@ -220,26 +219,26 @@ body {
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                 </svg>
             </div>
-            <h2 class="text-lg font-bold text-gray-900 text-center mb-1">¿Eliminar Empresa?</h2>
-            <p class="text-sm text-gray-500 text-center mb-6 leading-relaxed">Esta acción eliminará la empresa y sus registros asociados de forma permanente.</p>
+            <h2 class="text-lg font-bold text-gray-900 text-center mb-1">Delete Company?</h2>
+            <p class="text-sm text-gray-500 text-center mb-6 leading-relaxed">This action will permanently delete the company and its associated records.</p>
             <div class="flex justify-center gap-3">
-                <button onclick="closeDeleteModal()" class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">Cancelar</button>
-                <button onclick="deleteCompany()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-xl text-sm shadow-md transition">Eliminar</button>
+                <button onclick="closeDeleteModal()" class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">Cancel</button>
+                <button onclick="deleteCompany()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-xl text-sm shadow-md transition">Delete</button>
             </div>
         </div>
     </div>
 
-    <!-- !Lista de empresas estilo tarjeta -->
+    <!-- Company Card List -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        <!-- Encabezado de columnas -->
+        <!-- Column headers -->
         <div class="hidden sm:grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
             <div class="col-span-3">RUC</div>
-            <div class="col-span-5">Empresa</div>
-            <div class="col-span-2 text-right">Provincia</div>
-            <div class="col-span-2 text-right">Acciones</div>
+            <div class="col-span-5">Company</div>
+            <div class="col-span-2 text-right">Province</div>
+            <div class="col-span-2 text-right">Actions</div>
         </div>
 
-        <!-- Filas de empresas -->
+        <!-- Company rows -->
         <div id="companyListBody">
             {% if companies %}
                 {% for company in companies %}
@@ -250,7 +249,7 @@ body {
                         <span class="text-sm text-gray-600 font-mono">{{ company.ruc }}</span>
                     </div>
 
-                    <!-- Empresa: Iniciales + Nombre -->
+                    <!-- Company: Initials + Name -->
                     <div class="sm:col-span-5 flex items-center gap-3">
                         {% with company.name|make_list as letters %}
                         <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 avatar-{{ letters.0|default:'?' }}">
@@ -262,28 +261,28 @@ body {
                         </div>
                     </div>
 
-                    <!-- Provincia -->
+                    <!-- Province -->
                     <div class="sm:col-span-2 sm:text-right">
-                        <span class="text-xs text-gray-500 sm:hidden font-medium">Provincia: </span>
+                        <span class="text-xs text-gray-500 sm:hidden font-medium">Province: </span>
                         <span class="text-sm text-gray-600">{{ company.province.name }}</span>
                     </div>
 
-                    <!-- Acciones -->
+                    <!-- Actions -->
                     <div class="sm:col-span-2 flex items-center justify-end gap-1.5">
-                        <button onclick="showDetails({{ company.id }})" title="Ver detalles"
+                        <button onclick="showDetails({{ company.id }})" title="View details"
                                 class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                             </svg>
                         </button>
-                        <button onclick="openEditModal({{ company.id }})" title="Editar"
+                        <button onclick="openEditModal({{ company.id }})" title="Edit"
                                 class="p-2 rounded-lg bg-yellow-50 text-yellow-600 hover:bg-yellow-100 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z"></path>
                             </svg>
                         </button>
-                        <button onclick="openDeleteModal({{ company.id }})" title="Eliminar"
+                        <button onclick="openDeleteModal({{ company.id }})" title="Delete"
                                 class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -297,18 +296,18 @@ body {
                     <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path>
                     </svg>
-                    <p class="text-sm">No se encontraron empresas que coincidan con los filtros.</p>
+                    <p class="text-sm">No companies found matching the filters.</p>
                 </div>
             {% endif %}
         </div>
 
-        <!-- Paginación -->
+        <!-- Pagination -->
         {% if page_obj.paginator.num_pages > 1 %}
         <div class="flex flex-col sm:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t border-gray-200 gap-3">
             <p class="text-sm text-gray-500">
-                Mostrando {{ page_obj.start_index }} a {{ page_obj.end_index }} de {{ page_obj.paginator.count }} empresas
+                Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} of {{ page_obj.paginator.count }} companies
             </p>
-            <nav class="flex items-center gap-1" aria-label="Paginación">
+            <nav class="flex items-center gap-1" aria-label="Pagination">
                 {% if page_obj.has_previous %}
                 <a href="?page={{ page_obj.previous_page_number }}{% if search %}&q={{ search }}{% endif %}{% if province_filter %}&province={{ province_filter }}{% endif %}"
                    class="px-3 py-1.5 text-sm rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition">&lsaquo;</a>
@@ -333,7 +332,7 @@ body {
         </div>
         {% elif page_obj.paginator.count > 0 %}
         <div class="px-6 py-3 bg-gray-50 border-t border-gray-200">
-            <p class="text-sm text-gray-500">Mostrando {{ page_obj.paginator.count }} empresa{{ page_obj.paginator.count|pluralize:"s" }}</p>
+            <p class="text-sm text-gray-500">Showing {{ page_obj.paginator.count }} compan{{ page_obj.paginator.count|pluralize:"y,ies" }}</p>
         </div>
         {% endif %}
     </div>
@@ -346,7 +345,7 @@ body {
 <script>
     const createCompanyUrl = "{% url 'create_company' %}";
 
-    // Auto-submit cuando se cambia la provincia
+    // Auto-submit when province changes
     document.addEventListener("DOMContentLoaded", function() {
         const provinceSelect = document.getElementById("provinceFilter");
         if (provinceSelect) {

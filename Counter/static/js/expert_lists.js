@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
     listIdInput.value   = '';
     listNameInp.value   = '';
     listWordsInp.value  = '';
-    modalTitle.textContent = 'Nueva Lista de Expertos';
+    modalTitle.textContent = 'New Expert List';
     openModal();
   };
 
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
           if (r.ok && data.success) {
               location.reload();
           } else {
-              alert(data.error || 'Error al guardar');
+              alert(data.error || 'Error saving');
           }
       });
   });
@@ -77,7 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.delete-list-btn').forEach(btn => {
     
     btn.addEventListener('click', () => {
-      if (!confirm('¿Eliminar esta lista?')) return;
+      if (!confirm('Delete this list?')) return;
 
       fetch(routes.del(btn.dataset.id), {
         method : 'POST',
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
     listIdInput.value  = btn.dataset.id;          // ← ID para diferenciar create/update
     listNameInp.value  = btn.dataset.name;
     listWordsInp.value = btn.dataset.words || '';  // ← Carga palabras existentes
-    modalTitle.textContent = 'Editar lista';
+    modalTitle.textContent = 'Edit List';
 
     openModal();
   };
@@ -139,12 +139,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (r.ok && data.success) {
         location.reload();
       } else {
-        alert(data.error || 'Error al guardar la lista');
+        alert(data.error || 'Error saving the list');
       }
     })
     .catch(err => {
       console.error(err);
-      alert('Error de conexión');
+      alert('Connection error');
     });
   });
 

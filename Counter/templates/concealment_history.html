@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Historial de Auditoría | ELI{% endblock %}
+{% block title %}Audit History | ELI{% endblock %}
 
 {% block content %}
 <div class="container mx-auto px-4 py-6">
-    <!-- Cabecera de Página / Breadcrumb y Acciones -->
+    <!-- Page Header / Breadcrumb and Actions -->
     <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200">
         <div>
             <div class="flex items-center space-x-2 text-xs text-gray-500 mb-2">
@@ -12,19 +12,19 @@
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
-                    <span>Panel de administración</span>
+                    <span>Admin Panel</span>
                 </a>
                 <span>/</span>
-                <a href="{% url 'concealment_detection' %}" class="hover:text-blue-600 transition">Detección de ocultamiento</a>
+                <a href="{% url 'concealment_detection' %}" class="hover:text-blue-600 transition">Concealment Detection</a>
                 <span>/</span>
-                <span class="text-gray-700 font-semibold">Historial</span>
+                <span class="text-gray-700 font-semibold">History</span>
             </div>
 
             <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-                Historial de Auditoría de Ocultamiento
+                Concealment Audit History
             </h1>
             <p class="text-sm text-gray-500 mt-1">
-                Trazabilidad de revisiones efectuadas, auditores responsables y párrafos analizados.
+                Traceability of performed reviews, responsible auditors, and analyzed paragraphs.
             </p>
         </div>
 
@@ -34,50 +34,50 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                <span>Volver a Detección</span>
+                <span>Back to Detection</span>
             </a>
         </div>
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
         <div class="bg-white rounded-xl p-5 shadow border-l-4 border-blue-500">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Revisiones encontradas</p>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Reviews found</p>
             <p class="text-2xl font-bold text-gray-800 mt-1">{{ total_reviews_count }}</p>
         </div>
         <div class="bg-white rounded-xl p-5 shadow border-l-4 border-green-500">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Ocurrencias validadas</p>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Validated occurrences</p>
             <p class="text-2xl font-bold text-green-600 mt-1">{{ total_words_validated }}</p>
         </div>
         <div class="bg-white rounded-xl p-5 shadow border-l-4 border-red-500">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Ocurrencias descartadas</p>
+            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Discarded occurrences</p>
             <p class="text-2xl font-bold text-red-600 mt-1">{{ total_words_discarded }}</p>
         </div>
     </div>
 
-    <!-- Filtros de búsqueda desplegables e interactivos -->
+    <!-- Search Filters -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
         <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
-            Filtros de búsqueda
+            Search Filters
         </h2>
         <form id="filterForm" method="get" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
             <div>
-                <label for="year" class="block text-sm font-medium text-gray-700 mb-1.5">Año del reporte</label>
+                <label for="year" class="block text-sm font-medium text-gray-700 mb-1.5">Report Year</label>
                 <select name="year" id="year"
                         class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
-                    <option value="">Todos los años</option>
+                    <option value="">All years</option>
                     {% for y in years %}
                     <option value="{{ y }}" {% if year_filter == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
                     {% endfor %}
                 </select>
             </div>
             <div>
-                <label for="company" class="block text-sm font-medium text-gray-700 mb-1.5">Empresa</label>
+                <label for="company" class="block text-sm font-medium text-gray-700 mb-1.5">Company</label>
                 <select name="company" id="company"
                         class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
-                    <option value="">Todas las empresas</option>
+                    <option value="">All companies</option>
                     {% for c in companies %}
                     <option value="{{ c.id }}" {% if company_filter == c.id|stringformat:"s" or company_filter == c.name or company_filter == c.clean_name %}selected{% endif %}>
                         {{ c.clean_name|default:c.name }}
@@ -89,7 +89,7 @@
                 <label for="user" class="block text-sm font-medium text-gray-700 mb-1.5">Auditor</label>
                 <select name="user" id="user"
                         class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
-                    <option value="">Todos los auditores</option>
+                    <option value="">All auditors</option>
                     {% for a in auditors %}
                     <option value="{{ a.username }}" {% if user_filter == a.username %}selected{% endif %}>
                         {{ a.username }}
@@ -98,14 +98,14 @@
                 </select>
             </div>
             <div>
-                <label for="word" class="block text-sm font-medium text-gray-700 mb-1.5">Palabra auditada</label>
+                <label for="word" class="block text-sm font-medium text-gray-700 mb-1.5">Audited word</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </div>
-                    <input type="text" name="word" id="word" value="{{ word_filter }}" placeholder="Buscar palabra..."
+                    <input type="text" name="word" id="word" value="{{ word_filter }}" placeholder="Search word..."
                            class="w-full pl-10 pr-3.5 py-2.5 border border-gray-300 rounded-lg shadow-sm text-sm text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition">
                 </div>
             </div>
@@ -116,7 +116,7 @@
                     <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
-                    <span>Limpiar filtros</span>
+                    <span>Clear filters</span>
                 </a>
                 {% endif %}
                 <button type="submit"
@@ -124,26 +124,26 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                     </svg>
-                    <span>Filtrar</span>
+                    <span>Filter</span>
                 </button>
             </div>
         </form>
     </div>
 
-    <!-- Tabla de historial -->
+    <!-- History Table -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-left text-sm">
                 <thead class="bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
                     <tr>
-                        <th class="py-3.5 px-4 font-semibold">Fecha y Hora</th>
+                        <th class="py-3.5 px-4 font-semibold">Date & Time</th>
                         <th class="py-3.5 px-4 font-semibold">Auditor</th>
-                        <th class="py-3.5 px-4 font-semibold">Empresa / Año</th>
-                        <th class="py-3.5 px-4 font-semibold">Palabra</th>
-                        <th class="py-3.5 px-4 font-semibold text-center">Detectadas</th>
-                        <th class="py-3.5 px-4 font-semibold text-center">Válidas</th>
-                        <th class="py-3.5 px-4 font-semibold text-center">Descartadas</th>
-                        <th class="py-3.5 px-4 font-semibold text-right">Detalle</th>
+                        <th class="py-3.5 px-4 font-semibold">Company / Year</th>
+                        <th class="py-3.5 px-4 font-semibold">Word</th>
+                        <th class="py-3.5 px-4 font-semibold text-center">Detected</th>
+                        <th class="py-3.5 px-4 font-semibold text-center">Valid</th>
+                        <th class="py-3.5 px-4 font-semibold text-center">Discarded</th>
+                        <th class="py-3.5 px-4 font-semibold text-right">Detail</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 text-gray-700">
@@ -161,7 +161,7 @@
                                 {{ r.user.username }}
                             </span>
                             {% else %}
-                            <span class="text-xs text-gray-400 italic">Sin registrar</span>
+                            <span class="text-xs text-gray-400 italic">Unregistered</span>
                             {% endif %}
                         </td>
                         <td class="py-3 px-4 font-medium text-gray-900">
@@ -171,7 +171,7 @@
                                 <span class="text-xs text-gray-500">({{ r.report.year }})</span>
                                 {% endif %}
                             {% else %}
-                                {{ r.report.name|default:"Reporte" }}
+                                {{ r.report.name|default:"Report" }}
                             {% endif %}
                         </td>
                         <td class="py-3 px-4 font-semibold text-blue-600">
@@ -194,14 +194,14 @@
                             <button type="button"
                                     onclick="abrirModalDetalle({{ r.id }})"
                                     class="text-blue-600 hover:text-blue-800 font-medium text-xs bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition">
-                                Ver párrafos
+                                View paragraphs
                             </button>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
                         <td colspan="8" class="py-8 text-center text-gray-500">
-                            No se encontraron registros de auditoría que coincidan con los filtros seleccionados.
+                            No audit records found matching the selected filters.
                         </td>
                     </tr>
                     {% endfor %}
@@ -211,12 +211,12 @@
     </div>
 </div>
 
-<!-- Modal para ver detalle de párrafos auditados -->
+<!-- Modal for viewing audited paragraph details -->
 <div id="modalDetalle" class="fixed inset-0 z-50 hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden">
         <div class="p-5 border-b flex items-center justify-between bg-gray-50">
             <div>
-                <h3 class="text-lg font-bold text-gray-800" id="modalTitulo">Detalle de la auditoría</h3>
+                <h3 class="text-lg font-bold text-gray-800" id="modalTitulo">Audit Detail</h3>
                 <p class="text-xs text-gray-500" id="modalSubtitulo"></p>
             </div>
             <button type="button" onclick="cerrarModalDetalle()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg">
@@ -226,11 +226,11 @@
             </button>
         </div>
         <div class="p-6 overflow-y-auto space-y-4 flex-1" id="modalContenido">
-            <p class="text-gray-500 text-center py-4">Cargando detalle...</p>
+            <p class="text-gray-500 text-center py-4">Loading detail...</p>
         </div>
         <div class="p-4 border-t bg-gray-50 flex justify-end">
             <button type="button" onclick="cerrarModalDetalle()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-xl text-sm transition">
-                Cerrar
+                Close
             </button>
         </div>
     </div>
@@ -243,7 +243,6 @@ document.addEventListener("DOMContentLoaded", function() {
     const companySelect = document.getElementById("company");
     const userSelect = document.getElementById("user");
 
-    // Al cambiar el año: limpia la empresa previa para listar las empresas del nuevo año y filtra de inmediato
     if (yearSelect && form) {
         yearSelect.addEventListener("change", function() {
             if (companySelect) {
@@ -253,14 +252,12 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    // Al seleccionar una empresa: filtra inmediatamente por ese año y empresa
     if (companySelect && form) {
         companySelect.addEventListener("change", function() {
             form.submit();
         });
     }
 
-    // Al seleccionar un auditor: filtra inmediatamente
     if (userSelect && form) {
         userSelect.addEventListener("change", function() {
             form.submit();
@@ -275,7 +272,7 @@ function abrirModalDetalle(reviewId) {
     const contenido = document.getElementById("modalContenido");
 
     modal.classList.remove("hidden");
-    contenido.innerHTML = '<p class="text-gray-500 text-center py-4">Cargando párrafos...</p>';
+    contenido.innerHTML = '<p class="text-gray-500 text-center py-4">Loading paragraphs...</p>';
 
     fetch(`/concealment_detection/historial/${reviewId}/detalle/`)
         .then(response => {
@@ -283,11 +280,11 @@ function abrirModalDetalle(reviewId) {
             return response.json();
         })
         .then(data => {
-            titulo.textContent = `Auditoría: "${data.word}" en ${data.company} (${data.year})`;
-            subtitulo.textContent = `Realizada por ${data.user} el ${data.reviewed_at} | ${data.total_valid} válidas, ${data.total_discarded} descartadas`;
+            titulo.textContent = `Audit: "${data.word}" in ${data.company} (${data.year})`;
+            subtitulo.textContent = `Performed by ${data.user} on ${data.reviewed_at} | ${data.total_valid} valid, ${data.total_discarded} discarded`;
 
             if (!data.paragraphs || data.paragraphs.length === 0) {
-                contenido.innerHTML = '<p class="text-gray-500 text-center py-4">No hay detalle de párrafos guardado para esta revisión.</p>';
+                contenido.innerHTML = '<p class="text-gray-500 text-center py-4">No paragraph detail saved for this review.</p>';
                 return;
             }
 
@@ -296,13 +293,13 @@ function abrirModalDetalle(reviewId) {
                 const esDescartado = p.discarded;
                 const borderClass = esDescartado ? "border-red-300 bg-red-50" : "border-green-300 bg-green-50";
                 const badge = esDescartado
-                    ? '<span class="text-xs font-semibold px-2 py-0.5 rounded bg-red-200 text-red-800">Descartado</span>'
-                    : '<span class="text-xs font-semibold px-2 py-0.5 rounded bg-green-200 text-green-800">Válido</span>';
+                    ? '<span class="text-xs font-semibold px-2 py-0.5 rounded bg-red-200 text-red-800">Discarded</span>'
+                    : '<span class="text-xs font-semibold px-2 py-0.5 rounded bg-green-200 text-green-800">Valid</span>';
 
                 html += `
                     <div class="border rounded-xl p-4 ${borderClass} transition">
                         <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-gray-600">Párrafo #${idx + 1} (${p.occurrences} ocurrencia${p.occurrences > 1 ? 's' : ''})</span>
+                            <span class="text-xs font-bold text-gray-600">Paragraph #${idx + 1} (${p.occurrences} occurrence${p.occurrences > 1 ? 's' : ''})</span>
                             ${badge}
                         </div>
                         <p class="text-sm text-gray-800 leading-relaxed">${p.paragraph_text}</p>
@@ -313,7 +310,7 @@ function abrirModalDetalle(reviewId) {
             contenido.innerHTML = html;
         })
         .catch(err => {
-            contenido.innerHTML = '<p class="text-red-500 text-center py-4">Error al cargar el detalle de la revisión.</p>';
+            contenido.innerHTML = '<p class="text-red-500 text-center py-4">Error loading review detail.</p>';
             console.error(err);
         });
 }

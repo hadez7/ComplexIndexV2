@@ -31,8 +31,8 @@ class ConcealmentDetectionFilterTests(TestCase):
         response = self.client.get(reverse('concealment_detection'))
         self.assertEqual(response.status_code, 200)
         content = response.content.decode('utf-8')
-        self.assertIn('Año del reporte', content)
-        self.assertIn('Selecciona una empresa:', content)
+        self.assertIn('Report Year', content)
+        self.assertIn('Select a company:', content)
 
     def test_filter_persistence_on_search(self):
         url = f"{reverse('concealment_detection')}?year=2024&report_id={self.report2.id}&origen_palabras=reporte&palabra=gastos"
@@ -131,7 +131,7 @@ class ConcealmentDetectionFilterTests(TestCase):
         history_url = reverse('concealment_history')
         resp = self.client.get(history_url)
         self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, 'Historial de Auditoría')
+        self.assertContains(resp, 'Audit History')
         self.assertContains(resp, 'gastos')
         self.assertContains(resp, self.user.username)
 
@@ -217,8 +217,8 @@ class ComparativeAnalysisTests(TestCase):
         url = reverse('comparative_analysis')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Análisis comparativo')
-        self.assertContains(response, 'Comparar reporte con lista de experto')
+        self.assertContains(response, 'Comparative Analysis')
+        self.assertContains(response, 'Compare report with expert list')
 
 
 class ReportSearchTests(TestCase):
