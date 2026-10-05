@@ -1,7 +1,7 @@
 == COMO INICIAR EL PROYECTO (Linux / Fedora) ==
 
 1. Ir a la carpeta del proyecto
-   cd ~/Proyectos/ComplexIndexV2
+   cd ~/Documentos/Proyectos/ComplexIndexV2
 
 2. Activar el entorno virtual
    source venv/bin/activate
