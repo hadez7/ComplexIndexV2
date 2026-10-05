@@ -248,7 +248,7 @@ class ReportSearchTests(TestCase):
         url = reverse('reports') + '?q=Inexistente'
         resp = self.client.get(url)
         self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, 'No se encontraron reportes que coincidan con')
+        self.assertContains(resp, 'No reports found matching')
         self.assertNotContains(resp, f'id="reporte-{self.rep1.id}"')
         self.assertNotContains(resp, f'id="reporte-{self.rep2.id}"')
 
@@ -266,6 +266,6 @@ class PanelViewTests(TestCase):
         self.client.login(username='paneluser', password='password123')
         resp = self.client.get(reverse('panel'))
         self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, 'Panel de Administración')
-        self.assertContains(resp, 'Empresas')
-        self.assertContains(resp, 'Reportes')
+        self.assertContains(resp, 'Admin Panel')
+        self.assertContains(resp, 'Companies')
+        self.assertContains(resp, 'Reports')

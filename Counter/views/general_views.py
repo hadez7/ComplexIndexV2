@@ -12,7 +12,7 @@ from ..forms import IndividualReportUploadForm, ZipUploadForm, ComparativeAnalys
 from ..main import process_report, process_zip
 from ..models import TotalCountReport
 from ..models import Report
-from User.models import Expert
+from User.models import Expert, UserProfile
 
 # * ---------------------------------------- VISTAS GENERALES ----------------------------------------
 def index_view(request):
@@ -187,12 +187,12 @@ def reports_by_year(request):
 def user_view(request):
     users_qs = (
         User.objects.all()
-        .select_related("profile")
         .order_by("username")
     )
 
     users = []
     for u in users_qs:
+        profile, _ = UserProfile.objects.get_or_create(user=u)
         expertise = getattr(u, "expert_profile", None)
         users.append({
             "id": u.id,
@@ -200,7 +200,7 @@ def user_view(request):
             "email": u.email,
             "is_staff": u.is_staff,
             "is_active": u.is_active,
-            "creation_date": u.profile.creation_date,
+            "creation_date": profile.creation_date,
             "profession": expertise.profession if expertise else "",
         })
 
