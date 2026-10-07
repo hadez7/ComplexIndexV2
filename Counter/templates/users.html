@@ -311,7 +311,9 @@
           <p class="text-xs text-gray-500">{% trans "Historial de accesos, creación, ediciones y bajas lógicas en el sistema." %}</p>
         </div>
       </div>
-      <button type="button" onclick="closeAuditModal()" class="text-gray-400 hover:text-gray-600 text-2xl font-bold">×</button>
+      <button type="button" onclick="closeAuditModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition focus:outline-none" aria-label="{% trans 'Cerrar' %}">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
     </div>
 
     <!-- Filtro rápido por tipo de acción -->
@@ -353,7 +355,9 @@
         </div>
         <h3 class="text-lg font-bold text-gray-900">{% trans "Nuevo Usuario" %}</h3>
       </div>
-      <button type="button" onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+      <button type="button" onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition focus:outline-none" aria-label="{% trans 'Cerrar' %}">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
     </div>
     <form id="create-user-form" class="space-y-4">
       {% csrf_token %}
@@ -412,7 +416,9 @@
         </div>
         <h3 class="text-lg font-bold text-gray-900">{% trans "Editar Usuario" %}</h3>
       </div>
-      <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+      <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition focus:outline-none" aria-label="{% trans 'Cerrar' %}">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
     </div>
     <form id="edit-user-form" class="space-y-4">
       {% csrf_token %}
@@ -444,7 +450,7 @@
       </div>
       <div class="flex justify-end pt-3 border-t border-gray-100 gap-2">
         <button type="button" onclick="closeEditModal()" class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">{% trans "Cancelar" %}</button>
-        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-xl text-sm shadow-md transition">{% trans "Guardar Cambios" %}</button>
+        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-xl text-sm shadow-md transition btn-interactive">{% trans "Guardar Cambios" %}</button>
       </div>
     </form>
     <p id="edit-error" class="hidden text-xs text-red-600 mt-2 font-medium"></p>
@@ -463,7 +469,9 @@
         </div>
         <h3 class="text-lg font-bold text-gray-900">{% trans "Asignar Rol de Experto" %}</h3>
       </div>
-      <button type="button" onclick="closeExpertUserModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+      <button type="button" onclick="closeExpertUserModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition focus:outline-none" aria-label="{% trans 'Cerrar' %}">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
     </div>
     <form id="expert-user-form" class="space-y-4">
       {% csrf_token %}

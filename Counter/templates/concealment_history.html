@@ -42,17 +42,17 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white rounded-xl p-5 shadow border-l-4 border-blue-500">
+        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 border-l-4 border-l-blue-500">
             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{% trans "Revisiones encontradas" %}</p>
-            <p class="text-2xl font-bold text-gray-800 mt-1">{{ total_reviews_count }}</p>
+            <p class="text-2xl font-bold text-gray-800 mt-1 font-mono tabular-nums">{{ total_reviews_count }}</p>
         </div>
-        <div class="bg-white rounded-xl p-5 shadow border-l-4 border-green-500">
+        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 border-l-4 border-l-green-500">
             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{% trans "Ocurrencias validadas" %}</p>
-            <p class="text-2xl font-bold text-green-600 mt-1">{{ total_words_validated }}</p>
+            <p class="text-2xl font-bold text-green-600 mt-1 font-mono tabular-nums">{{ total_words_validated }}</p>
         </div>
-        <div class="bg-white rounded-xl p-5 shadow border-l-4 border-red-500">
+        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 border-l-4 border-l-red-500">
             <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{% trans "Ocurrencias descartadas" %}</p>
-            <p class="text-2xl font-bold text-red-600 mt-1">{{ total_words_discarded }}</p>
+            <p class="text-2xl font-bold text-red-600 mt-1 font-mono tabular-nums">{{ total_words_discarded }}</p>
         </div>
     </div>
 
@@ -136,7 +136,7 @@
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-left text-sm">
-                <thead class="bg-gray-50 text-gray-600 uppercase text-xs tracking-wider">
+                <thead class="bg-gray-50/75 border-b border-gray-200 text-gray-500 uppercase text-xs tracking-wider">
                     <tr>
                         <th class="py-3.5 px-4 font-semibold">{% trans "Fecha y Hora" %}</th>
                         <th class="py-3.5 px-4 font-semibold">{% trans "Auditor" %}</th>
@@ -150,8 +150,8 @@
                 </thead>
                 <tbody class="divide-y divide-gray-200 text-gray-700">
                     {% for r in reviews %}
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="py-3 px-4 whitespace-nowrap text-gray-500">
+                    <tr class="hover:bg-blue-50/40 transition-colors">
+                        <td class="py-3 px-4 whitespace-nowrap text-gray-500 font-mono text-xs tabular-nums">
                             {{ r.reviewed_at|date:"d/m/Y H:i" }}
                         </td>
                         <td class="py-3 px-4 whitespace-nowrap">
@@ -170,7 +170,7 @@
                             {% if r.report and r.report.company %}
                                 {{ r.clean_company|default:r.report.company.name }}
                                 {% if r.report.year %}
-                                <span class="text-xs text-gray-500">({{ r.report.year }})</span>
+                                <span class="text-xs text-gray-500 font-mono tabular-nums">({{ r.report.year }})</span>
                                 {% endif %}
                             {% else %}
                                 {{ r.report.name|default:"Reporte" }}
@@ -179,23 +179,23 @@
                         <td class="py-3 px-4 font-semibold text-blue-600">
                             "{{ r.word }}"
                         </td>
-                        <td class="py-3 px-4 text-center font-medium text-gray-700">
+                        <td class="py-3 px-4 text-center font-mono tabular-nums font-semibold text-gray-700">
                             {{ r.total_found }}
                         </td>
                         <td class="py-3 px-4 text-center">
-                            <span class="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                            <span class="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono tabular-nums">
                                 {{ r.total_valid }}
                             </span>
                         </td>
                         <td class="py-3 px-4 text-center">
-                            <span class="inline-block bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded-full">
+                            <span class="inline-block bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono tabular-nums">
                                 {{ r.total_discarded }}
                             </span>
                         </td>
                         <td class="py-3 px-4 text-right">
                             <button type="button"
                                     onclick="abrirModalDetalle({{ r.id }})"
-                                    class="text-blue-600 hover:text-blue-800 font-medium text-xs bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition">
+                                    class="text-blue-600 hover:text-blue-800 font-medium text-xs bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition btn-interactive">
                                 {% trans "Ver párrafos" %}
                             </button>
                         </td>

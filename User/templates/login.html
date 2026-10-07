@@ -145,8 +145,11 @@
                             {{ form.username|add_class:"w-full pl-11 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-xl text-gray-900 placeholder-gray-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition text-sm"|attr:"placeholder:Ingresa tu usuario"|attr:"autofocus:autofocus" }}
                         </div>
                         {% if form.username.errors %}
-                        <p class="text-red-600 text-xs mt-1.5 font-medium flex items-center">
-                            <span class="mr-1">⚠</span> {{ form.username.errors|striptags }}
+                        <p class="text-red-600 text-xs mt-1.5 font-medium flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-red-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <span>{{ form.username.errors|striptags }}</span>
                         </p>
                         {% endif %}
                     </div>
@@ -181,14 +184,17 @@
                             </button>
                         </div>
                         {% if form.password.errors %}
-                        <p class="text-red-600 text-xs mt-1.5 font-medium flex items-center">
-                            <span class="mr-1">⚠</span> {{ form.password.errors|striptags }}
+                        <p class="text-red-600 text-xs mt-1.5 font-medium flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5 text-red-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <span>{{ form.password.errors|striptags }}</span>
                         </p>
                         {% endif %}
                     </div>
 
                     <!-- Botón de Envío -->
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition duration-200 flex items-center justify-center space-x-2 text-sm">
+                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-xl shadow-md hover:shadow-lg transition duration-200 flex items-center justify-center space-x-2 text-sm btn-interactive">
                         <span>{% trans "Ingresar a la plataforma" %}</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>

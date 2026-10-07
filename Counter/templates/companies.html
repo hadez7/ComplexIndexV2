@@ -5,9 +5,6 @@
 
 {% block custom_css %}
 <style>
-body {
-    font-family: 'Poppins', sans-serif;
-}
 /* Colores de las iniciales en función de la primera letra */
 .avatar-A, .avatar-B { background-color: #818cf8; color: #fff; }
 .avatar-C, .avatar-D { background-color: #34d399; color: #fff; }
@@ -29,6 +26,9 @@ body {
 }
 .company-row:hover {
     background-color: #f8fafc;
+}
+.dark .company-row:hover {
+    background-color: #162032 !important;
 }
 </style>
 {% endblock %}
@@ -115,7 +115,9 @@ body {
                     </div>
                     <h2 class="text-lg font-bold text-gray-900">{% trans "Nueva Empresa" %}</h2>
                 </div>
-                <button type="button" onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+                <button type="button" onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition focus:outline-none" aria-label="{% trans 'Cerrar' %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
             <form id="createForm" class="space-y-4">
                 {% csrf_token %}
@@ -160,7 +162,9 @@ body {
                     </div>
                     <h2 class="text-lg font-bold text-gray-900">{% trans "Editar Empresa" %}</h2>
                 </div>
-                <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+                <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition focus:outline-none" aria-label="{% trans 'Cerrar' %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
             <form id="editCompanyForm" onsubmit="submitEditForm(event)" class="space-y-4">
                 <input type="hidden" id="edit-id">
@@ -200,7 +204,9 @@ body {
                     </div>
                     <h2 class="text-lg font-bold text-gray-900">{% trans "Detalles de la Empresa" %}</h2>
                 </div>
-                <button type="button" onclick="closeDetailsModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+                <button type="button" onclick="closeDetailsModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition focus:outline-none" aria-label="{% trans 'Cerrar' %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
             <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-100 text-sm mb-4">
                 <p class="flex justify-between"><span class="text-gray-500 font-medium">RUC:</span> <span id="detail-ruc" class="font-mono font-bold text-gray-800"></span></p>

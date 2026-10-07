@@ -45,57 +45,60 @@
     <!-- !Modal gráfico -->
     <div id="chartModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl shadow-xl p-6 w-full max-w-xl relative">
-            <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl">&times;</button>
-            <h2 class="text-xl font-semibold text-center mb-4 text-gray-800">{% trans "Top 10 palabras más frecuentes" %}</h2>
+            <button onclick="closeModal()" class="absolute top-3 right-3 text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition focus:outline-none" aria-label="{% trans 'Cerrar' %}">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            <h2 class="text-xl font-bold text-center mb-4 text-gray-800">{% trans "Top 10 palabras más frecuentes" %}</h2>
             <canvas id="wordPieChart"></canvas>
         </div>
     </div>
 
     <!-- !Título del reporte -->
-    <h1 class="text-3xl font-bold mb-2 text-gray-800 text-center">{% trans "Resultado del Conteo" %}</h1>
+    <h1 class="text-3xl font-extrabold mb-2 text-gray-900 text-center tracking-tight">{% trans "Resultado del Conteo" %}</h1>
     {% if report %}
-        <p class="text-lg text-gray-600 mb-6 text-center">
-            {% trans "Nombre del reporte" %}: <strong>{{ report.name }}</strong> | {% trans "Año" %}: <strong>{{ report.year }}</strong>
+        <p class="text-sm text-gray-500 mb-6 text-center">
+            {% trans "Nombre del reporte" %}: <strong class="text-gray-800">{{ report.name }}</strong> | {% trans "Año" %}: <strong class="font-mono tabular-nums text-gray-800">{{ report.year }}</strong>
         </p>
     {% endif %}
 
     <!-- !Botón generar gráfico -->
     <div class="text-center my-6">
-        <button onclick="openModal()" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-sm text-white font-semibold py-2.5 px-6 rounded-xl shadow-md transition duration-200">
-            {% trans "Generar Gráfico de pastel" %}
+        <button onclick="openModal()" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-sm text-white font-semibold py-2.5 px-6 rounded-xl shadow-md transition duration-200 btn-interactive">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+            <span>{% trans "Generar Gráfico de pastel" %}</span>
         </button>
     </div>
 
     <!-- !Tabla -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden max-w-5xl mx-auto">
-        <table class="w-full table-auto text-sm text-gray-900">
+        <table class="min-w-full divide-y divide-gray-200 text-sm">
             <thead class="bg-gray-50 border-b border-gray-200 uppercase text-xs font-semibold text-gray-500 tracking-wider">
                 <tr>
-                    <th class="px-6 py-3 text-left rounded-tl-xl">{% trans "Palabra" %}</th>
-                    <th class="px-6 py-3 text-left">{% trans "Cantidad" %}</th>
-                    <th class="px-6 py-3 text-left">{% trans "Palabra" %}</th>
-                    <th class="px-6 py-3 text-left rounded-tr-xl">{% trans "Cantidad" %}</th>
+                    <th class="px-6 py-3.5 text-left">{% trans "Palabra" %}</th>
+                    <th class="px-6 py-3.5 text-left">{% trans "Cantidad" %}</th>
+                    <th class="px-6 py-3.5 text-left">{% trans "Palabra" %}</th>
+                    <th class="px-6 py-3.5 text-left">{% trans "Cantidad" %}</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-gray-100 bg-white">
                 {% for left, right in paired_results %}
-                <tr class="border-b border-gray-100 hover:bg-gray-50/80 transition-colors">
-                    <td class="px-6 py-3 font-semibold">
+                <tr class="hover:bg-blue-50/40 transition-colors">
+                    <td class="px-6 py-3 font-semibold text-gray-900">
                         {% if left %}
                             {{ left.word }}
                         {% endif %}
                     </td>
-                    <td class="px-6 py-3">
+                    <td class="px-6 py-3 font-mono tabular-nums text-gray-700">
                         {% if left %}
                             {{ left.quantity }}
                         {% endif %}
                     </td>
-                    <td class="px-6 py-3 font-semibold">
+                    <td class="px-6 py-3 font-semibold text-gray-900">
                         {% if right %}
                             {{ right.word }}
                         {% endif %}
                     </td>
-                    <td class="px-6 py-3">
+                    <td class="px-6 py-3 font-mono tabular-nums text-gray-700">
                         {% if right %}
                             {{ right.quantity }}
                         {% endif %}
@@ -148,6 +151,7 @@
                 }]
             };
 
+            const isDarkMode = document.documentElement.classList.contains('dark');
             const config = {
                 type: 'pie',
                 data: data,
@@ -157,7 +161,7 @@
                         legend: {
                             position: 'bottom',
                             labels: {
-                                color: '#1f2937',
+                                color: isDarkMode ? '#F8FAFC' : '#1f2937',
                                 font: {
                                     size: 14
                                 }
@@ -168,6 +172,13 @@
             };
 
             chartInstance = new Chart(ctx, config);
+        } else {
+            // Si ya existe, sincronizar color de leyenda con el modo actual
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            if (chartInstance.options.plugins && chartInstance.options.plugins.legend) {
+                chartInstance.options.plugins.legend.labels.color = isDarkMode ? '#F8FAFC' : '#1f2937';
+                chartInstance.update();
+            }
         }
     }
 

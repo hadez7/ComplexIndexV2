@@ -106,41 +106,43 @@
     <!-- !Pestañas para Conteo Total e Índice de Complejidad -->
     <div class="mt-10">
         <!-- Botones de pestañas -->
-        <div class="flex gap-4 border-b-2 border-gray-300 mb-6">
+        <div class="flex gap-4 border-b-2 border-gray-200 mb-6">
             <button id="tab-conteo" onclick="showTab('conteo')" 
-                    class="px-6 py-3 font-semibold text-lg border-b-4 border-blue-600 text-blue-600 transition-all">
-                📊 {% trans "Conteo Total" %}
+                    class="px-5 py-3 font-bold text-sm border-b-2 border-blue-600 text-blue-600 transition-all inline-flex items-center gap-2 btn-interactive">
+                <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                <span>{% trans "Conteo Total" %}</span>
             </button>
             <button id="tab-complejidad" onclick="showTab('complejidad')" 
-                    class="px-6 py-3 font-semibold text-lg border-b-4 border-transparent text-gray-600 hover:text-gray-800 transition-all">
-                📈 {% trans "Índice de Complejidad" %}
+                    class="px-5 py-3 font-bold text-sm border-b-2 border-transparent text-gray-600 hover:text-gray-800 transition-all inline-flex items-center gap-2 btn-interactive">
+                <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                <span>{% trans "Índice de Complejidad" %}</span>
             </button>
         </div>
 
         <!-- Pestaña 1: Conteo Total -->
         <div id="contenido-conteo" class="tab-content">
-            <div class="mt-6 bg-blue-50 text-blue-800 rounded-xl p-4 text-center font-semibold text-lg shadow-inner">
-                {% trans "Promedio total" %}: {{ average }}
+            <div class="mt-6 mb-4 bg-blue-50 text-blue-800 rounded-xl p-4 text-center font-semibold text-sm border border-blue-200">
+                {% trans "Promedio total" %}: <span class="font-mono tabular-nums font-bold">{{ average }}</span>
             </div>
             <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-x-auto overflow-y-auto" style="height: 500px;">
-                <table class="min-w-full table-auto text-sm text-gray-700">
-                    <thead class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider sticky top-0 z-10">
+                <table class="min-w-full divide-y divide-gray-200 text-sm">
+                    <thead class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider sticky top-0 z-10 backdrop-blur-xs">
                         <tr>
-                            <th class="px-4 py-2 text-left">{% trans "Palabra" %}</th>
-                            <th class="px-4 py-2 text-left">{% trans "Cantidad" %}</th>
-                            <th class="px-4 py-2 text-left">{% trans "Peso" %}</th>
+                            <th class="px-6 py-3.5 text-left">{% trans "Palabra" %}</th>
+                            <th class="px-6 py-3.5 text-left">{% trans "Cantidad" %}</th>
+                            <th class="px-6 py-3.5 text-left">{% trans "Peso" %}</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="divide-y divide-gray-100 bg-white">
                         {% for total in total_counts %}
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="px-4 py-2">{{ total.word }}</td>
-                            <td class="px-4 py-2">{{ total.quantity }}</td>
-                            <td class="px-4 py-2">{{ word_average|get_item:total.word }}</td>
+                        <tr class="hover:bg-blue-50/40 transition-colors">
+                            <td class="px-6 py-3 font-medium text-gray-900">{{ total.word }}</td>
+                            <td class="px-6 py-3 font-mono tabular-nums text-gray-700">{{ total.quantity }}</td>
+                            <td class="px-6 py-3 font-mono tabular-nums text-blue-600 font-semibold">{{ word_average|get_item:total.word }}</td>
                         </tr>
                         {% empty %}
                         <tr>
-                            <td colspan="3" class="px-4 py-4 text-center text-gray-500 italic">
+                            <td colspan="3" class="px-6 py-6 text-center text-gray-500 italic">
                                 {% trans "No se ha procesado ningún informe con estos filtros." %}
                             </td>
                         </tr>
@@ -154,54 +156,54 @@
         <div id="contenido-complejidad" class="tab-content hidden">
             {% if complexity_metrics %}
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-x-auto" style="max-height: 700px; overflow-y: auto;">
-                    <table class="min-w-full table-auto text-sm text-gray-700">
-                        <thead class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider sticky top-0 z-10">
+                    <table class="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider sticky top-0 z-10 backdrop-blur-xs">
                             <tr>
-                                <th class="px-4 py-3 text-left font-semibold">{% trans "RUC" %}</th>
-                                <th class="px-4 py-3 text-left font-semibold">{% trans "Nombre de Empresa" %}</th>
-                                <th class="px-4 py-3 text-center font-semibold">{% trans "Año" %}</th>
-                                <th class="px-4 py-3 text-center font-semibold">{% trans "Complejidad General (0-1)" %}</th>
-                                <th class="px-4 py-3 text-center font-semibold">{% trans "Diversidad Léxica (0-1)" %}</th>
-                                <th class="px-4 py-3 text-center font-semibold">{% trans "Legibilidad (0-1)" %}</th>
-                                <th class="px-4 py-3 text-center font-semibold">{% trans "Densidad Técnica (0-1)" %}</th>
+                                <th class="px-6 py-3.5 text-left font-semibold">{% trans "RUC" %}</th>
+                                <th class="px-6 py-3.5 text-left font-semibold">{% trans "Nombre de Empresa" %}</th>
+                                <th class="px-6 py-3.5 text-center font-semibold">{% trans "Año" %}</th>
+                                <th class="px-6 py-3.5 text-center font-semibold">{% trans "Complejidad General (0-1)" %}</th>
+                                <th class="px-6 py-3.5 text-center font-semibold">{% trans "Diversidad Léxica (0-1)" %}</th>
+                                <th class="px-6 py-3.5 text-center font-semibold">{% trans "Legibilidad (0-1)" %}</th>
+                                <th class="px-6 py-3.5 text-center font-semibold">{% trans "Densidad Técnica (0-1)" %}</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody class="divide-y divide-gray-100 bg-white">
                             {% for report in complexity_metrics %}
-                            <tr class="hover:bg-gray-50 transition border-b border-gray-200">
-                                <td class="px-4 py-3 font-mono text-blue-600">{{ report.ruc }}</td>
-                                <td class="px-4 py-3">
-                                    <span class="font-semibold">{{ report.company_name }}</span>
+                            <tr class="hover:bg-blue-50/40 transition-colors">
+                                <td class="px-6 py-3.5 font-mono tabular-nums text-blue-600 font-semibold">{{ report.ruc }}</td>
+                                <td class="px-6 py-3.5">
+                                    <span class="font-bold text-gray-900">{{ report.company_name }}</span>
                                     <br>
                                     <span class="text-xs text-gray-500">{{ report.report_name }}</span>
                                 </td>
-                                <td class="px-4 py-3 text-center">
-                                    <span class="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                <td class="px-6 py-3.5 text-center">
+                                    <span class="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded-full text-xs font-mono tabular-nums font-semibold">
                                         {{ report.year }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-center">
+                                <td class="px-6 py-3.5 text-center font-mono tabular-nums">
                                     {% if report.complexity_general >= 0.66 %}
-                                        <span class="bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-semibold">{{ report.complexity_general }} ({% trans "Alta" %})</span>
+                                        <span class="bg-red-50 text-red-700 border border-red-200 px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ report.complexity_general }} ({% trans "Alta" %})</span>
                                     {% elif report.complexity_general >= 0.33 %}
-                                        <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">{{ report.complexity_general }} ({% trans "Media" %})</span>
+                                        <span class="bg-yellow-50 text-yellow-800 border border-yellow-200 px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ report.complexity_general }} ({% trans "Media" %})</span>
                                     {% else %}
-                                        <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">{{ report.complexity_general }} ({% trans "Baja" %})</span>
+                                        <span class="bg-green-50 text-green-700 border border-green-200 px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ report.complexity_general }} ({% trans "Baja" %})</span>
                                     {% endif %}
                                 </td>
-                                <td class="px-4 py-3 text-center">
-                                    <span class="font-semibold text-pink-600">{{ report.diversity_index }}</span>
+                                <td class="px-6 py-3.5 text-center font-mono tabular-nums font-semibold text-pink-600">
+                                    {{ report.diversity_index }}
                                 </td>
-                                <td class="px-4 py-3 text-center">
-                                    <span class="font-semibold text-teal-600">{{ report.readability_index }}</span>
+                                <td class="px-6 py-3.5 text-center font-mono tabular-nums font-semibold text-teal-600">
+                                    {{ report.readability_index }}
                                 </td>
-                                <td class="px-4 py-3 text-center">
-                                    <span class="font-semibold text-indigo-600">{{ report.technical_density }}</span>
+                                <td class="px-6 py-3.5 text-center font-mono tabular-nums font-semibold text-indigo-600">
+                                    {{ report.technical_density }}
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="7" class="px-4 py-8 text-center text-gray-500 italic">
+                                <td colspan="7" class="px-6 py-8 text-center text-gray-500 italic">
                                     {% trans "No se ha procesado ningún informe con estos filtros." %}
                                 </td>
                             </tr>
@@ -212,18 +214,24 @@
 
                 <!-- Leyenda de Interpretación -->
                 <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-blue-50 border-l-4 border-blue-500 rounded-lg p-6">
-                        <h3 class="font-semibold text-blue-900 mb-3">📊 {% trans "Complejidad General (Fórmula Compuesta)" %}</h3>
+                    <div class="bg-blue-50 border-l-4 border-blue-500 rounded-xl p-6">
+                        <h3 class="font-bold text-blue-900 mb-3 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            <span>{% trans "Complejidad General (Fórmula Compuesta)" %}</span>
+                        </h3>
                         <ul class="text-sm text-blue-800 space-y-2">
                             <li><strong>{% trans "Fórmula" %}:</strong> {% trans "(Diversidad + (1-Legibilidad) + Densidad Técnica) / 3" %}</li>
-                            <li><strong>0.00 - 0.33:</strong> <span class="bg-green-100 px-2 py-1 rounded">{% trans "Baja complejidad" %}</span></li>
-                            <li><strong>0.33 - 0.66:</strong> <span class="bg-yellow-100 px-2 py-1 rounded">{% trans "Complejidad media" %}</span></li>
-                            <li><strong>0.66 - 1.00:</strong> <span class="bg-red-100 px-2 py-1 rounded">{% trans "Alta complejidad" %}</span></li>
+                            <li><strong>0.00 - 0.33:</strong> <span class="bg-green-100 px-2 py-0.5 rounded text-xs font-semibold">{% trans "Baja complejidad" %}</span></li>
+                            <li><strong>0.33 - 0.66:</strong> <span class="bg-yellow-100 px-2 py-0.5 rounded text-xs font-semibold">{% trans "Complejidad media" %}</span></li>
+                            <li><strong>0.66 - 1.00:</strong> <span class="bg-red-100 px-2 py-0.5 rounded text-xs font-semibold">{% trans "Alta complejidad" %}</span></li>
                         </ul>
                     </div>
 
-                    <div class="bg-green-50 border-l-4 border-green-500 rounded-lg p-6">
-                        <h3 class="font-semibold text-green-900 mb-3">📈 {% trans "Escala de Métricas (0-1)" %}</h3>
+                    <div class="bg-green-50 border-l-4 border-green-500 rounded-xl p-6">
+                        <h3 class="font-bold text-green-900 mb-3 flex items-center gap-2">
+                            <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                            <span>{% trans "Escala de Métricas (0-1)" %}</span>
+                        </h3>
                         <ul class="text-sm text-green-800 space-y-2">
                             <li><strong>{% trans "Diversidad Léxica (0-1)" %}:</strong> {% trans "Cercano a 1 = vocabulario muy variado" %}</li>
                             <li><strong>{% trans "Legibilidad (0-1)" %}:</strong> {% trans "Cercano a 1 = texto muy fácil de leer" %}</li>

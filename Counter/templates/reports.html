@@ -54,15 +54,15 @@
                 </button>
                 {% if query %}
                 <a href="{% url 'reports' %}"
-                   class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-3 py-2 rounded-xl text-sm transition"
-                   title="Limpiar búsqueda">
-                    ✕
+                   class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-3 py-2 rounded-xl text-sm transition inline-flex items-center justify-center"
+                   title="{% trans 'Limpiar búsqueda' %}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                 </a>
                 {% endif %}
             </form>
 
             <a href="{% url 'upload' %}"
-               class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl shadow-sm hover:shadow transition-all text-sm flex-shrink-0">
+               class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl shadow-sm hover:shadow transition-all text-sm flex-shrink-0 btn-interactive">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
                 </svg>
@@ -83,12 +83,14 @@
                     </div>
                     <h2 class="text-lg font-bold text-gray-900">{% trans "Detalles del Reporte" %}</h2>
                 </div>
-                <button type="button" onclick="closeDetailsModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+                <button type="button" onclick="closeDetailsModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition focus:outline-none" aria-label="{% trans 'Cerrar' %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
             <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-100 text-sm mb-4">
-                <p class="flex justify-between"><span class="text-gray-500 font-medium">ID:</span> <span id="detail-id" class="font-mono font-bold text-gray-800"></span></p>
+                <p class="flex justify-between"><span class="text-gray-500 font-medium">ID:</span> <span id="detail-id" class="font-mono tabular-nums font-bold text-gray-800"></span></p>
                 <p class="flex justify-between"><span class="text-gray-500 font-medium">{% trans "Nombre" %}:</span> <span id="detail-name" class="font-semibold text-gray-800 text-right"></span></p>
-                <p class="flex justify-between"><span class="text-gray-500 font-medium">{% trans "Año" %}:</span> <span id="detail-year" class="text-gray-700 font-medium"></span></p>
+                <p class="flex justify-between"><span class="text-gray-500 font-medium">{% trans "Año" %}:</span> <span id="detail-year" class="text-gray-700 font-mono tabular-nums font-medium"></span></p>
                 <p class="flex justify-between"><span class="text-gray-500 font-medium">{% trans "Empresa" %}:</span> <span id="detail-company" class="text-gray-700 font-medium text-right"></span></p>
             </div>
             <div class="flex justify-end pt-2">
@@ -109,7 +111,9 @@
                     </div>
                     <h2 class="text-lg font-bold text-gray-900">{% trans "Editar Reporte" %}</h2>
                 </div>
-                <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 text-xl font-bold">×</button>
+                <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition focus:outline-none" aria-label="{% trans 'Cerrar' %}">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
             </div>
             <form id="editReportForm" onsubmit="submitEditForm(event)" class="space-y-4">
                 <input type="hidden" id="edit-id">
@@ -169,8 +173,8 @@
                 </thead>
                 <tbody class="divide-y divide-gray-100 bg-white">
                     {% for report in reports %}
-                    <tr id="reporte-{{ report.id }}" class="hover:bg-gray-50/80 transition-colors">
-                        <td class="px-6 py-4 text-xs font-mono text-gray-500 font-semibold">#{{ report.id }}</td>
+                    <tr id="reporte-{{ report.id }}" class="hover:bg-blue-50/40 transition-colors">
+                        <td class="px-6 py-4 text-xs font-mono tabular-nums text-gray-500 font-semibold">#{{ report.id }}</td>
                         <td class="px-6 py-4">
                             <div class="flex items-center space-x-3">
                                 <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
@@ -183,7 +187,7 @@
                         </td>
                         <td class="px-6 py-4">
                             {% if report.year %}
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-50 text-blue-700 border border-blue-100">
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono tabular-nums font-semibold bg-blue-50 text-blue-700 border border-blue-100">
                                     {{ report.year }}
                                 </span>
                             {% else %}

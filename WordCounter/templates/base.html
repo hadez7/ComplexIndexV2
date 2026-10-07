@@ -1,30 +1,117 @@
 {% load static i18n %}
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE|default:'es' }}">
+<html lang="{{ LANGUAGE_CODE|default:'es' }}" class="h-full">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Enterprise Lex Index{% endblock %}</title>
 
+    <!-- Pre-render síncrono para eliminar parpadeo FOUC (Tema Oscuro y Barra Colapsada) -->
+    <script>
+        (function () {
+            const savedTheme = localStorage.getItem('eli_theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+
+            if (localStorage.getItem('eli_sidebar_collapsed') === 'true' || window.location.search.includes('test_collapsed=1')) {
+                document.documentElement.classList.add('sidebar-collapsed');
+            }
+        })();
+    </script>
+
     <!-- Favicon & Touch Icons -->
-    <link rel=icon type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+    <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
     <link rel="alternate icon" type="image/x-icon" href="{% static 'images/favicon.ico' %}">
     <link rel="apple-touch-icon" href="{% static 'images/favicon-apple.png' %}">
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts: Inter (Tipografía Institucional de Alta Precisión) & JetBrains Mono (Métricas Tabulares) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS (Play CDN con Fallback Local + Modo Oscuro 'class' oficial) -->
+    <script src="{% static 'js/tailwindcss.min.js' %}"></script>
+    <script>
+        if (!window.tailwind) {
+            document.write('<script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"><\/script>');
+        }
+    </script>
+    <script>
+        (function() {
+            function configureTailwind() {
+                if (window.tailwind && typeof window.tailwind === 'object') {
+                    window.tailwind.config = {
+                        darkMode: 'class',
+                        theme: {
+                            extend: {
+                                colors: {
+                                    slate: {
+                                        850: '#151F32',
+                                        950: '#070A10'
+                                    }
+                                }
+                            }
+                        }
+                    };
+                } else {
+                    setTimeout(configureTailwind, 20);
+                }
+            }
+            configureTailwind();
+        })();
+    </script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    {% block custom_css %} 
+
     <style>
     body {
-        font-family: 'Poppins', sans-serif;
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        font-feature-settings: 'cv02' 1, 'cv03' 1, 'cv04' 1, 'cv11' 1;
+        letter-spacing: -0.011em;
+        background-color: #F8FAFC;
+        color: #0F172A;
+        transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    .font-mono {
+        font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        font-feature-settings: 'zero' 1;
+    }
+
+    .tabular-nums {
+        font-variant-numeric: tabular-nums;
+    }
+
+    /* Animaciones y micro-interacciones sutiles */
+    .btn-interactive {
+        transition: all 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-interactive:active {
+        transform: scale(0.98);
+    }
+
+    .font-editorial {
+        font-family: 'Newsreader', Georgia, serif;
+    }
+
+    /* Enfoque accesible estandarizado (Web Interface Guidelines) */
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+        outline: 2px solid #2563EB !important;
+        outline-offset: 2px !important;
     }
 
     /* Estilos estéticos unificados para placeholders de inputs */
     ::placeholder,
     input::placeholder,
     textarea::placeholder {
-        color: #9ca3af !important;
+        color: #94A3B8 !important;
         font-weight: 400 !important;
         opacity: 1;
     }
@@ -32,18 +119,17 @@
     /* Estética placeholder para selectores en opción vacía */
     select:has(option[value=""]:checked),
     select.placeholder-active {
-        color: #9ca3af !important;
+        color: #94A3B8 !important;
         font-weight: 400 !important;
     }
 
-    /* Opciones dentro del menú desplegable */
     select option {
-        color: #1f2937 !important;
+        color: #1E293B !important;
         font-weight: 400;
     }
 
     select option[value=""] {
-        color: #9ca3af !important;
+        color: #94A3B8 !important;
     }
 
     /* Custom Select SaaS Component */
@@ -54,11 +140,11 @@
         background: transparent;
     }
     .custom-select-options::-webkit-scrollbar-thumb {
-        background-color: #e5e7eb;
+        background-color: #E2E8F0;
         border-radius: 9999px;
     }
     .custom-select-options::-webkit-scrollbar-thumb:hover {
-        background-color: #cbd5e1;
+        background-color: #CBD5E1;
     }
 
     @keyframes dropdownSlideFade {
@@ -74,577 +160,1633 @@
     .animate-dropdown {
         animation: dropdownSlideFade 0.15s cubic-bezier(0.16, 1, 0.3, 1);
     }
+
+    /* Transición de barra lateral activa */
+    .sidebar-nav-item.active {
+        background-color: #EFF6FF !important;
+        color: #1D4ED8 !important;
+        font-weight: 700 !important;
+        border-right: 3px solid #2563EB !important;
+    }
+    .sidebar-nav-item.active svg {
+        color: #2563EB !important;
+    }
+
+    /* ========================================================================= */
+    /* MECÁNICA DEL COMMAND RAIL CONTRAÍBLE (Ultra-Smooth Animation)             */
+    /* ========================================================================= */
+    #desktopSidebar {
+        transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: width;
+    }
+    .main-canvas-area {
+        transition: padding-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: padding-left;
+    }
+
+    /* Transición suave de textos y títulos sin saltos bruscos ni text-wrapping */
+    .sidebar-text {
+        display: inline-block;
+        max-width: 14rem;
+        opacity: 1;
+        transform: translateX(0);
+        transition: max-width 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+                    opacity 0.2s cubic-bezier(0.4, 0, 0.2, 1),
+                    transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        white-space: nowrap;
+        overflow: hidden;
+        vertical-align: middle;
+    }
+    div.sidebar-text {
+        display: block;
+    }
+
+    .sidebar-nav-item,
+    .sidebar-footer-btn {
+        transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, padding 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+    }
+
+    /* Estado Contraído */
+    html.sidebar-collapsed #desktopSidebar {
+        width: 4.75rem !important; /* 76px */
+    }
+    html.sidebar-collapsed .main-canvas-area {
+        padding-left: 4.75rem !important;
+    }
+    html.sidebar-collapsed .sidebar-text {
+        max-width: 0 !important;
+        opacity: 0 !important;
+        transform: translateX(-8px) !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        pointer-events: none !important;
+    }
+    html.sidebar-collapsed .sidebar-nav-item {
+        justify-content: center !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    html.sidebar-collapsed .sidebar-footer-btn {
+        justify-content: center !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    html.sidebar-collapsed .sidebar-header-box {
+        justify-content: center !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    html.sidebar-collapsed .sidebar-header-box a {
+        justify-content: center !important;
+    }
+    html.sidebar-collapsed .sidebar-workspace-box {
+        padding: 0.5rem !important;
+    }
+    html.sidebar-collapsed #sidebarWorkspaceBtn {
+        justify-content: center !important;
+        padding: 0.5rem !important;
+    }
+    html.sidebar-collapsed #sidebarWorkspaceDropdown {
+        left: 100% !important;
+        top: 0 !important;
+        margin-left: 0.75rem !important;
+        min-width: 220px !important;
+    }
+    html.sidebar-collapsed #sidebarLanguageDropdown {
+        left: 100% !important;
+        bottom: 0 !important;
+        margin-left: 0.75rem !important;
+        margin-bottom: 0 !important;
+        width: 13rem !important;
+    }
+    html.sidebar-collapsed #sidebarUserDropdown {
+        left: 100% !important;
+        bottom: 0 !important;
+        margin-left: 0.75rem !important;
+        margin-bottom: 0 !important;
+        width: 15rem !important;
+    }
+    html.sidebar-collapsed .sidebar-user-card {
+        justify-content: center !important;
+        padding: 0.375rem !important;
+    }
+    html.sidebar-collapsed .sidebar-user-link {
+        justify-content: center !important;
+    }
+    html.sidebar-collapsed .html-collapsed-show {
+        display: block !important;
+    }
+
+    /* Tooltip óptico flotante al pasar el cursor en modo contraído */
+    html.sidebar-collapsed [data-tooltip]:not([aria-expanded="true"]):hover::after {
+        content: attr(data-tooltip);
+        position: absolute;
+        left: 100%;
+        margin-left: 14px;
+        padding: 6px 12px;
+        background-color: #0F172A;
+        color: #FFFFFF;
+        font-size: 11px;
+        font-weight: 600;
+        border-radius: 8px;
+        white-space: nowrap;
+        z-index: 60;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+        pointer-events: none;
+        animation: dropdownSlideFade 0.12s ease-out;
+    }
+    .dark html.sidebar-collapsed [data-tooltip]:not([aria-expanded="true"]):hover::after {
+        background-color: #1E293B;
+        color: #F8FAFC;
+        border: 1px solid #334155;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    }
+
+    /* ========================================================================= */
+    /* MODO OSCURO INSTITUCIONAL (Abyssal Navy & Blue Precision)                 */
+    /* ========================================================================= */
+    .dark body {
+        background-color: #0B0F19 !important;
+        color: #F8FAFC !important;
+    }
+
+    .dark #desktopSidebar,
+    .dark #mobileDrawerPanel {
+        background-color: #0E1424 !important;
+        border-color: #1E293B !important;
+        color: #F8FAFC !important;
+    }
+
+    .dark #desktopSidebar .border-slate-100,
+    .dark #desktopSidebar .border-slate-200,
+    .dark #desktopSidebar .border-t,
+    .dark #desktopSidebar .border-b,
+    .dark #desktopSidebar .border-r {
+        border-color: #1E293B !important;
+    }
+
+    .dark .sidebar-header-box {
+        border-color: #1E293B !important;
+        background-color: transparent !important;
+    }
+
+    .dark .sidebar-workspace-box,
+    .dark .bg-slate-50\/60,
+    .dark .bg-slate-50\/70,
+    .dark .bg-slate-50\/80 {
+        background-color: #0E1424 !important;
+        border-color: #1E293B !important;
+    }
+
+    .dark #desktopSidebar > div:last-child {
+        background-color: #0B0F19 !important;
+        border-color: #1E293B !important;
+    }
+
+    .dark #sidebarWorkspaceBtn {
+        background-color: #111827 !important;
+        border-color: #1E293B !important;
+        color: #F8FAFC !important;
+    }
+
+    .dark #sidebarWorkspaceBtn:hover {
+        border-color: #3B82F6 !important;
+        background-color: #162032 !important;
+    }
+
+    .dark .sidebar-user-card {
+        background-color: #111827 !important;
+        border-color: #1E293B !important;
+    }
+
+    .dark .sidebar-user-card .bg-blue-100 {
+        background-color: rgba(30, 58, 138, 0.4) !important;
+        color: #93C5FD !important;
+        border-color: rgba(59, 130, 246, 0.35) !important;
+    }
+
+    .dark .sidebar-user-card button:hover {
+        background-color: rgba(239, 68, 68, 0.15) !important;
+        color: #F87171 !important;
+    }
+
+    .dark .sidebar-footer-btn {
+        background-color: #111827 !important;
+        border-color: #1E293B !important;
+        color: #CBD5E1 !important;
+    }
+
+    .dark .sidebar-footer-btn:hover {
+        border-color: #3B82F6 !important;
+        color: #60A5FA !important;
+        background-color: #162032 !important;
+    }
+
+    .dark .sidebar-footer-btn span {
+        color: #CBD5E1 !important;
+    }
+
+    .dark .sidebar-footer-btn:hover span {
+        color: #60A5FA !important;
+    }
+
+    .dark .sidebar-footer-btn svg {
+        color: #94A3B8 !important;
+    }
+
+    .dark .sidebar-footer-btn:hover svg {
+        color: #60A5FA !important;
+    }
+
+    .dark #desktopSidebar a.bg-white,
+    .dark #desktopSidebar .sidebar-text a.bg-white {
+        background-color: #111827 !important;
+        border-color: #1E293B !important;
+        color: #CBD5E1 !important;
+    }
+
+    .dark #desktopSidebar a.bg-white:hover,
+    .dark #desktopSidebar .sidebar-text a.bg-white:hover {
+        background-color: #162032 !important;
+        border-color: #3B82F6 !important;
+        color: #F8FAFC !important;
+    }
+
+    .dark header {
+        background-color: rgba(14, 20, 36, 0.95) !important;
+        border-color: #1E293B !important;
+        color: #F8FAFC !important;
+        backdrop-filter: blur(12px) !important;
+    }
+
+    .dark .main-canvas-area {
+        background-color: #0B0F19 !important;
+    }
+
+    /* Superficies de tarjetas, modales y paneles */
+    .dark .bg-white {
+        background-color: #111827 !important;
+        border-color: #1E293B !important;
+        color: #F8FAFC !important;
+    }
+
+    .dark .bg-gray-50,
+    .dark .bg-slate-50,
+    .dark .bg-gray-100 {
+        background-color: #0E1424 !important;
+        border-color: #1E293B !important;
+        color: #E2E8F0 !important;
+    }
+
+    .dark .bg-gray-200 {
+        background-color: #1E293B !important;
+        border-color: #27354E !important;
+    }
+
+    /* Badges y contenedores pastel translúcidos de alto contraste */
+    .dark .bg-blue-50,
+    .dark .bg-blue-100 {
+        background-color: rgba(30, 58, 138, 0.3) !important;
+        border-color: rgba(59, 130, 246, 0.35) !important;
+        color: #93C5FD !important;
+    }
+    .dark .bg-indigo-50,
+    .dark .bg-indigo-100 {
+        background-color: rgba(67, 56, 202, 0.3) !important;
+        border-color: rgba(99, 102, 241, 0.35) !important;
+        color: #C7D2FE !important;
+    }
+    .dark .bg-green-50,
+    .dark .bg-green-100,
+    .dark .bg-emerald-50,
+    .dark .bg-emerald-100 {
+        background-color: rgba(22, 101, 52, 0.3) !important;
+        border-color: rgba(34, 197, 94, 0.35) !important;
+        color: #86EFAC !important;
+    }
+    .dark .bg-red-50,
+    .dark .bg-red-100 {
+        background-color: rgba(153, 27, 27, 0.3) !important;
+        border-color: rgba(239, 68, 68, 0.35) !important;
+        color: #FCA5A5 !important;
+    }
+    .dark .bg-yellow-50,
+    .dark .bg-yellow-100,
+    .dark .bg-amber-50,
+    .dark .bg-amber-100 {
+        background-color: rgba(180, 83, 9, 0.3) !important;
+        border-color: rgba(245, 158, 11, 0.35) !important;
+        color: #FDE047 !important;
+    }
+    .dark .bg-purple-50,
+    .dark .bg-purple-100 {
+        background-color: rgba(107, 33, 168, 0.3) !important;
+        border-color: rgba(168, 85, 247, 0.35) !important;
+        color: #D8B4FE !important;
+    }
+    .dark .bg-cyan-50,
+    .dark .bg-cyan-100,
+    .dark .bg-sky-50,
+    .dark .bg-sky-100 {
+        background-color: rgba(14, 116, 144, 0.3) !important;
+        border-color: rgba(14, 165, 233, 0.35) !important;
+        color: #7DD3FC !important;
+    }
+
+    /* Bordes acento direccionales (preserva franjas coloreadas de tarjetas) */
+    .dark .border-l-blue-500,
+    .dark .border-l-blue-600 {
+        border-left-color: #3B82F6 !important;
+    }
+    .dark .border-l-green-500,
+    .dark .border-l-green-600,
+    .dark .border-l-emerald-500 {
+        border-left-color: #22C55E !important;
+    }
+    .dark .border-l-red-500,
+    .dark .border-l-red-600 {
+        border-left-color: #EF4444 !important;
+    }
+    .dark .border-l-yellow-500,
+    .dark .border-l-amber-500 {
+        border-left-color: #F59E0B !important;
+    }
+    .dark .border-l-indigo-500,
+    .dark .border-l-indigo-600 {
+        border-left-color: #6366F1 !important;
+    }
+
+    /* Anillos de foco y selección */
+    .dark .ring-blue-100 {
+        --tw-ring-color: rgba(59, 130, 246, 0.3) !important;
+    }
+
+    /* Hero Principal en Dark Mode */
+    .dark #MainHero {
+        background: linear-gradient(180deg, #0E1424 0%, #0B0F19 100%) !important;
+        border-color: #1E293B !important;
+    }
+    .dark #MainHero h1 {
+        color: #F8FAFC !important;
+    }
+    .dark #MainHero p {
+        color: #94A3B8 !important;
+    }
+
+    /* Navegación activa y elementos del menú */
+    .dark .sidebar-nav-item {
+        color: #94A3B8 !important;
+    }
+    .dark .sidebar-nav-item:hover {
+        background-color: #162032 !important;
+        color: #F8FAFC !important;
+    }
+    .dark .sidebar-nav-item.active {
+        background-color: rgba(30, 58, 138, 0.35) !important;
+        color: #60A5FA !important;
+        border-right: 3px solid #3B82F6 !important;
+    }
+    .dark .sidebar-nav-item.active svg {
+        color: #60A5FA !important;
+    }
+
+    /* Tipografía y textos de alta jerarquía */
+    .dark .text-gray-900,
+    .dark .text-gray-800,
+    .dark .text-slate-900,
+    .dark .text-slate-800 {
+        color: #F8FAFC !important;
+    }
+    .dark .text-gray-700,
+    .dark .text-gray-600,
+    .dark .text-slate-700,
+    .dark .text-slate-600 {
+        color: #CBD5E1 !important;
+    }
+    .dark .text-gray-500,
+    .dark .text-slate-500 {
+        color: #94A3B8 !important;
+    }
+    .dark .text-gray-400,
+    .dark .text-slate-400 {
+        color: #64748B !important;
+    }
+
+    /* Textos con color semántico adaptados para fondo oscuro (Legibilidad WCAG AAA) */
+    .dark .text-blue-600,
+    .dark .text-blue-700,
+    .dark .text-blue-800,
+    .dark .text-blue-900 {
+        color: #93C5FD !important;
+    }
+    .dark .text-indigo-600,
+    .dark .text-indigo-700,
+    .dark .text-indigo-800 {
+        color: #A5B4FC !important;
+    }
+    .dark .text-green-600,
+    .dark .text-green-700,
+    .dark .text-green-800,
+    .dark .text-green-900 {
+        color: #86EFAC !important;
+    }
+    .dark .text-red-600,
+    .dark .text-red-700,
+    .dark .text-red-800 {
+        color: #FCA5A5 !important;
+    }
+    .dark .text-yellow-700,
+    .dark .text-yellow-800,
+    .dark .text-amber-600,
+    .dark .text-amber-700,
+    .dark .text-amber-800 {
+        color: #FDE047 !important;
+    }
+    .dark .text-purple-600,
+    .dark .text-purple-700,
+    .dark .text-purple-800 {
+        color: #D8B4FE !important;
+    }
+    .dark .text-pink-600 {
+        color: #F472B6 !important;
+    }
+    .dark .text-teal-600 {
+        color: #2DD4BF !important;
+    }
+
+    /* ========================================================================= */
+    /* SOBREESCRITURAS DE HOVER INTERACTIVO (Garantiza reactividad fluida)      */
+    /* ========================================================================= */
+    .dark .hover\:bg-blue-600:hover,
+    .dark .group:hover .group-hover\:bg-blue-600 {
+        background-color: #2563EB !important;
+        border-color: #2563EB !important;
+        color: #FFFFFF !important;
+    }
+    .dark .hover\:bg-blue-700:hover {
+        background-color: #1D4ED8 !important;
+        border-color: #1D4ED8 !important;
+        color: #FFFFFF !important;
+    }
+    .dark .hover\:bg-gray-50:hover,
+    .dark .hover\:bg-gray-100:hover,
+    .dark .hover\:bg-gray-200:hover,
+    .dark .hover\:bg-slate-100:hover,
+    .dark .hover\:bg-slate-200:hover {
+        background-color: #1E293B !important;
+        color: #F8FAFC !important;
+    }
+    .dark .hover\:bg-white:hover {
+        background-color: #162032 !important;
+    }
+    .dark .hover\:bg-blue-50\/40:hover,
+    .dark .hover\:bg-blue-50:hover {
+        background-color: rgba(30, 58, 138, 0.25) !important;
+    }
+    .dark .hover\:bg-blue-100:hover {
+        background-color: rgba(30, 58, 138, 0.45) !important;
+        color: #93C5FD !important;
+    }
+    .dark .hover\:bg-purple-100:hover {
+        background-color: rgba(107, 33, 168, 0.45) !important;
+        color: #E9D5FF !important;
+    }
+    .dark .hover\:bg-yellow-100:hover {
+        background-color: rgba(180, 83, 9, 0.45) !important;
+        color: #FEF08A !important;
+    }
+    .dark .hover\:bg-red-100:hover {
+        background-color: rgba(153, 27, 27, 0.45) !important;
+        color: #FECACA !important;
+    }
+    .dark .hover\:bg-green-100:hover {
+        background-color: rgba(22, 101, 52, 0.45) !important;
+        color: #BBF7D0 !important;
+    }
+    .dark .hover\:text-blue-600:hover,
+    .dark .hover\:text-blue-700:hover,
+    .dark .hover\:text-blue-800:hover,
+    .dark .group:hover .group-hover\:text-blue-600 {
+        color: #60A5FA !important;
+    }
+    .dark .hover\:text-white:hover,
+    .dark .group:hover .group-hover\:text-white {
+        color: #FFFFFF !important;
+    }
+    .dark .hover\:text-gray-600:hover,
+    .dark .hover\:text-gray-700:hover,
+    .dark .hover\:text-gray-800:hover,
+    .dark .hover\:text-gray-900:hover,
+    .dark .hover\:text-slate-800:hover,
+    .dark .hover\:text-slate-900:hover {
+        color: #F8FAFC !important;
+    }
+    .dark .hover\:text-red-500:hover,
+    .dark .hover\:text-red-600:hover,
+    .dark .hover\:text-red-700:hover {
+        color: #F87171 !important;
+    }
+    .dark .hover\:border-blue-200:hover,
+    .dark .hover\:border-blue-300:hover,
+    .dark .hover\:border-blue-500:hover,
+    .dark .group:hover .group-hover\:border-blue-300 {
+        border-color: #3B82F6 !important;
+    }
+    .dark .hover\:border-gray-300:hover,
+    .dark .hover\:border-gray-400:hover {
+        border-color: #475569 !important;
+    }
+
+    /* Bordes y divisores */
+    .dark .border-gray-100,
+    .dark .border-gray-200,
+    .dark .border-slate-100,
+    .dark .border-slate-200 {
+        border-color: #1E293B !important;
+    }
+    .dark .border-gray-300,
+    .dark .border-gray-400,
+    .dark .border-slate-300 {
+        border-color: #27354E !important;
+    }
+    .dark .divide-gray-50 > :not([hidden]) ~ :not([hidden]),
+    .dark .divide-gray-100 > :not([hidden]) ~ :not([hidden]),
+    .dark .divide-gray-200 > :not([hidden]) ~ :not([hidden]),
+    .dark .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+    .dark .divide-slate-200 > :not([hidden]) ~ :not([hidden]) {
+        border-color: #1E293B !important;
+    }
+
+    /* Tablas en modo oscuro */
+    .dark thead.bg-gray-50,
+    .dark thead {
+        background-color: #0E1424 !important;
+        color: #94A3B8 !important;
+        border-color: #1E293B !important;
+    }
+    .dark tbody tr {
+        background-color: #111827 !important;
+    }
+    .dark tbody tr:hover,
+    .dark .company-row:hover {
+        background-color: #162032 !important;
+    }
+
+    /* Formularios, Inputs, Selectores y Checkboxes */
+    .dark input,
+    .dark select,
+    .dark textarea {
+        background-color: #0E1424 !important;
+        border-color: #27354E !important;
+        color: #F8FAFC !important;
+    }
+    .dark input:focus,
+    .dark select:focus,
+    .dark textarea:focus {
+        background-color: #0E1424 !important;
+        border-color: #3B82F6 !important;
+        color: #F8FAFC !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25) !important;
+    }
+    .dark input::placeholder,
+    .dark textarea::placeholder {
+        color: #64748B !important;
+    }
+    .dark select option {
+        background-color: #0E1424 !important;
+        color: #F8FAFC !important;
+    }
+    .dark select option[value=""] {
+        color: #64748B !important;
+    }
+    .dark input[type="checkbox"],
+    .dark input[type="radio"] {
+        background-color: #0E1424 !important;
+        border-color: #334155 !important;
+        color: #3B82F6 !important;
+    }
+    .dark input[type="checkbox"]:checked,
+    .dark input[type="radio"]:checked {
+        background-color: #2563EB !important;
+        border-color: #2563EB !important;
+    }
+    .dark input:-webkit-autofill,
+    .dark input:-webkit-autofill:hover,
+    .dark input:-webkit-autofill:focus,
+    .dark textarea:-webkit-autofill,
+    .dark textarea:-webkit-autofill:hover,
+    .dark textarea:-webkit-autofill:focus,
+    .dark select:-webkit-autofill,
+    .dark select:-webkit-autofill:hover,
+    .dark select:-webkit-autofill:focus {
+        -webkit-box-shadow: 0 0 0 1000px #0E1424 inset !important;
+        -webkit-text-fill-color: #F8FAFC !important;
+        transition: background-color 5000s ease-in-out 0s;
+    }
+
+    /* Custom Select Component en Modo Oscuro */
+    .dark .custom-select-trigger {
+        background-color: #0E1424 !important;
+        border-color: #27354E !important;
+        color: #F8FAFC !important;
+    }
+    .dark .custom-select-trigger:hover {
+        border-color: #3B82F6 !important;
+    }
+    .dark .custom-select-dropdown {
+        background-color: #0E1424 !important;
+        border-color: #1E293B !important;
+        color: #F8FAFC !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6) !important;
+    }
+    .dark .custom-select-dropdown .border-b,
+    .dark .custom-select-dropdown > div:first-child {
+        background-color: #0B0F19 !important;
+        border-color: #1E293B !important;
+    }
+    .dark .custom-select-search {
+        background-color: #0E1424 !important;
+        border-color: #27354E !important;
+        color: #F8FAFC !important;
+    }
+    .dark .custom-select-search:focus {
+        border-color: #3B82F6 !important;
+    }
+    .dark .custom-select-item {
+        color: #E2E8F0 !important;
+    }
+    .dark .custom-select-item:hover {
+        background-color: rgba(30, 58, 138, 0.3) !important;
+        color: #93C5FD !important;
+    }
+    .dark .custom-select-item.bg-blue-50\/70 {
+        background-color: rgba(30, 58, 138, 0.45) !important;
+        color: #93C5FD !important;
+        font-weight: 600 !important;
+    }
+    .dark .custom-select-options .divide-y > :not([hidden]) ~ :not([hidden]) {
+        border-color: #1E293B !important;
+    }
+    .dark .custom-select-empty {
+        color: #64748B !important;
+    }
+
+    /* Pestañas y estados de navegación interna */
+    .dark [id^="tab-"]:not(.border-blue-600) {
+        color: #94A3B8 !important;
+    }
+    .dark [id^="tab-"]:not(.border-blue-600):hover {
+        color: #F8FAFC !important;
+    }
+    .dark [id^="tab-"].border-blue-600 {
+        color: #60A5FA !important;
+        border-color: #3B82F6 !important;
+    }
+
+    /* Dropzones de subida y estados vacíos */
+    .dark #pdfDropzone,
+    .dark #zipDropzone {
+        background-color: #0E1424 !important;
+        border-color: #27354E !important;
+    }
+    .dark #pdfDropzone:hover,
+    .dark #zipDropzone:hover {
+        background-color: rgba(30, 58, 138, 0.15) !important;
+        border-color: #3B82F6 !important;
+    }
+    .dark .border-dashed {
+        border-color: #27354E !important;
+    }
+
+    /* Footer y Scrollbars */
+    .dark footer {
+        background-color: #0E1424 !important;
+        border-color: #1E293B !important;
+        color: #64748B !important;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+        background-color: #1E293B;
+    }
+    .dark ::-webkit-scrollbar-thumb:hover {
+        background-color: #2A3B54;
+    }
+
+    /* Menús flotantes (Espacio, Idioma & Usuario) */
+    .dark #sidebarLanguageDropdown,
+    .dark #sidebarWorkspaceDropdown,
+    .dark #sidebarUserDropdown {
+        background-color: #0E1424 !important;
+        border-color: #1E293B !important;
+        color: #F8FAFC !important;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6) !important;
+    }
+    .dark #sidebarLanguageDropdown > div:first-child,
+    .dark #sidebarLanguageDropdown .border-b,
+    .dark #sidebarWorkspaceDropdown > div:first-child,
+    .dark #sidebarWorkspaceDropdown .border-b,
+    .dark #sidebarWorkspaceDropdown .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+    .dark #sidebarUserDropdown > div:first-child,
+    .dark #sidebarUserDropdown .border-b,
+    .dark #sidebarUserDropdown .border-t {
+        background-color: #0B0F19 !important;
+        border-color: #1E293B !important;
+    }
+    .dark #sidebarWorkspaceDropdown a,
+    .dark #sidebarUserDropdown a {
+        color: #CBD5E1 !important;
+    }
+    .dark #sidebarWorkspaceDropdown a:hover,
+    .dark #sidebarUserDropdown a:hover {
+        background-color: rgba(30, 58, 138, 0.25) !important;
+        color: #93C5FD !important;
+    }
+    .dark #sidebarUserDropdown a:hover svg {
+        color: #60A5FA !important;
+    }
+    .dark #sidebarUserDropdown button:hover {
+        background-color: rgba(239, 68, 68, 0.15) !important;
+        color: #F87171 !important;
+    }
+    .dark .bg-blue-50\/80,
+    .dark #sidebarWorkspaceDropdown a.bg-blue-50\/80 {
+        background-color: rgba(30, 58, 138, 0.35) !important;
+        color: #93C5FD !important;
+    }
+    .dark #sidebarLanguageDropdown button {
+        color: #CBD5E1 !important;
+    }
+    .dark #sidebarLanguageDropdown button:hover {
+        background-color: #162032 !important;
+        color: #F8FAFC !important;
+    }
+    .dark #mobileDrawerPanel nav a {
+        color: #CBD5E1 !important;
+    }
+    .dark #mobileDrawerPanel nav a:hover {
+        background-color: #162032 !important;
+        color: #F8FAFC !important;
+    }
+    .dark #mobileDrawerPanel > div:last-child {
+        background-color: #0B0F19 !important;
+        border-color: #1E293B !important;
+    }
     </style>
-    {% endblock %}
+    {% block custom_css %}{% endblock %}
     <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
 </head>
 
-<body class="bg-gray-100 text-gray-900 flex flex-col min-h-screen">
+<body class="h-full bg-slate-50 text-slate-900 flex flex-col antialiased">
 
-    <!-- !Navegación Responsiva (Opción 3 Híbrida) -->
-    <nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-40">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex items-center justify-between h-16">
+    <!-- ========================================================================= -->
+    <!-- 1. BARRA LATERAL CONTRAÍBLE DE COMANDO (Command Rail Sidebar - Desktop)   -->
+    <!-- ========================================================================= -->
+    <aside id="desktopSidebar" class="hidden lg:flex lg:flex-col lg:w-64 xl:w-72 fixed inset-y-0 left-0 z-30 bg-white border-r border-slate-200 select-none shadow-xs">
         
-          <!-- Izquierda: Logo + Bienvenida (Escritorio) -->
-          <div class="flex items-center space-x-3">
-            <a href="{% url 'index' %}" class="flex items-center space-x-2 text-2xl font-black text-blue-600 hover:text-blue-700 tracking-tight transition">
-              <span>ELI</span>
+        <!-- Header del Logo ELI -->
+        <div class="sidebar-header-box h-16 flex items-center px-4 border-b border-slate-200 justify-between shrink-0">
+            <a href="{% url 'index' %}" class="flex items-center space-x-3 group truncate" title="Enterprise Lex Index">
+                <div class="w-9 h-9 rounded-xl bg-blue-600 text-white font-black text-sm flex items-center justify-center shadow-xs group-hover:bg-blue-700 transition shrink-0">
+                    ELI
+                </div>
+                <div class="sidebar-text leading-tight truncate">
+                    <span class="text-sm font-black text-slate-900 tracking-tight block">Enterprise Lex</span>
+                    <span class="text-[10px] text-slate-500 font-mono tracking-wider uppercase block">Auditoría Contractual</span>
+                </div>
             </a>
-            <span class="hidden sm:inline-block text-xs text-gray-400 font-medium pl-2 border-l border-gray-200">
-              Enterprise Lex Index
-            </span>
-            {% if user.is_authenticated %}
-            <div class="hidden md:flex items-center pl-3 border-l border-gray-200 text-sm text-gray-600">
-              <span>{% blocktrans with username=user.username %}¡Bienvenido, <strong class="text-blue-600 font-semibold">{{ username }}</strong>!{% endblocktrans %}</span>
-            </div>
-            {% endif %}
-          </div>
-        
-          <!-- Derecha en ESCRITORIO (>= md) -->
-          <div class="hidden md:flex items-center space-x-3">
-            <!-- Selector de Idioma con Botón Mundo (Desktop) -->
-            <div class="relative">
-              <button type="button" id="langMenuBtnDesktop" aria-haspopup="true" aria-expanded="false"
-                      class="flex items-center space-x-1.5 py-2 px-2.5 rounded-xl text-gray-700 hover:text-blue-600 hover:bg-gray-100 border border-gray-200 transition focus:outline-none"
-                      title="{% trans 'Cambiar idioma' %}">
-                <!-- Icono Mundo -->
-                <svg class="w-4 h-4 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
-                </svg>
-                <span class="text-xs font-bold uppercase tracking-wider">
-                  {{ LANGUAGE_CODE|default:'es' }}
-                </span>
-                <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </button>
-
-              <!-- Menú flotante desplegable de idioma Desktop -->
-              <div id="langMenuDesktop" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 z-50 py-1 divide-y divide-gray-100">
-                <div class="px-3.5 py-2 bg-gray-50 rounded-t-xl">
-                  <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{% trans "Idioma" %}</p>
-                </div>
-                <form action="{% url 'set_language' %}" method="post" class="py-1">
-                  {% csrf_token %}
-                  <input name="next" type="hidden" value="{{ request.get_full_path }}">
-                  
-                  <button type="submit" name="language" value="es"
-                          class="w-full flex items-center justify-between px-3.5 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-blue-50/70 font-bold text-blue-700{% endif %}">
-                    <span class="flex items-center space-x-2">
-                      <span class="text-base leading-none">🇪🇸</span>
-                      <span>Español</span>
-                    </span>
-                    {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}
-                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    {% endif %}
-                  </button>
-
-                  <button type="submit" name="language" value="en"
-                          class="w-full flex items-center justify-between px-3.5 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition {% if LANGUAGE_CODE == 'en' %}bg-blue-50/70 font-bold text-blue-700{% endif %}">
-                    <span class="flex items-center space-x-2">
-                      <span class="text-base leading-none">🇺🇸</span>
-                      <span>English</span>
-                    </span>
-                    {% if LANGUAGE_CODE == 'en' %}
-                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    {% endif %}
-                  </button>
-                </form>
-              </div>
-            </div>
-
-            {% if user.is_authenticated %}
-            <!-- Selector de Espacio de Trabajo Activo (Dropdown) -->
-            <div class="relative">
-              <button type="button" id="workspaceMenuBtnDesktop" aria-haspopup="true" aria-expanded="false"
-                      class="flex items-center space-x-2 py-1.5 px-3 rounded-xl bg-gray-50 hover:bg-blue-50 text-gray-800 hover:text-blue-700 border border-gray-200 hover:border-blue-300 transition text-sm font-semibold focus:outline-none"
-                      title="{% trans 'Espacio de trabajo activo' %}">
-                <span class="text-base leading-none">
-                  {% if current_workspace.icon == 'building' %}🏢
-                  {% elif current_workspace.icon == 'scale' %}⚖️
-                  {% elif current_workspace.icon == 'medical' %}🏥
-                  {% elif current_workspace.icon == 'book' %}📚
-                  {% elif current_workspace.icon == 'chart' %}📊
-                  {% elif current_workspace.icon == 'document' %}📄
-                  {% else %}📁{% endif %}
-                </span>
-                <span class="max-w-[140px] truncate text-xs sm:text-sm font-bold">
-                  {{ current_workspace.name|default:_("Seleccionar Espacio") }}
-                </span>
-                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
-                </svg>
-              </button>
-
-              <!-- Dropdown de Espacios -->
-              <div id="workspaceMenuDesktop" class="hidden absolute right-0 mt-2 w-72 bg-white rounded-2xl shadow-xl border border-gray-200 z-50 py-1 divide-y divide-gray-100">
-                <div class="px-4 py-2.5 bg-gray-50 rounded-t-2xl flex items-center justify-between">
-                  <p class="text-xs font-bold text-gray-500 uppercase tracking-wider">{% trans "Espacios de Trabajo" %}</p>
-                  <a href="{% url 'workspaces_list' %}" class="text-xs text-blue-600 hover:text-blue-800 font-semibold">{% trans "Ver todos" %}</a>
-                </div>
-                <div class="max-h-60 overflow-y-auto py-1">
-                  {% for ws in user_workspaces %}
-                  <a href="{% url 'workspace_select' ws.id %}?next={{ request.path }}"
-                     class="flex items-center justify-between px-3.5 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition {% if current_workspace and ws.id == current_workspace.id %}bg-blue-50 font-bold text-blue-700{% endif %}">
-                    <div class="flex items-center space-x-2.5 truncate">
-                      <span class="text-base flex-shrink-0">
-                        {% if ws.icon == 'building' %}🏢{% elif ws.icon == 'scale' %}⚖️{% elif ws.icon == 'medical' %}🏥{% elif ws.icon == 'book' %}📚{% elif ws.icon == 'chart' %}📊{% elif ws.icon == 'document' %}📄{% else %}📁{% endif %}
-                      </span>
-                      <div class="truncate">
-                        <p class="truncate text-xs font-semibold">{{ ws.name }}</p>
-                        {% if ws.project_type %}
-                        <p class="text-[10px] text-gray-400 font-normal leading-tight">{{ ws.project_type }}</p>
-                        {% endif %}
-                      </div>
-                    </div>
-                    {% if current_workspace and ws.id == current_workspace.id %}
-                    <span class="w-2 h-2 rounded-full bg-blue-600 flex-shrink-0"></span>
-                    {% endif %}
-                  </a>
-                  {% empty %}
-                  <div class="px-4 py-3 text-xs text-gray-500 text-center">{% trans "No hay espacios disponibles" %}</div>
-                  {% endfor %}
-                </div>
-                <div class="p-2 bg-gray-50 rounded-b-2xl">
-                  <a href="{% url 'workspaces_list' %}" class="w-full inline-flex items-center justify-center space-x-1.5 py-1.5 px-3 bg-white hover:bg-blue-600 text-gray-700 hover:text-white border border-gray-200 rounded-xl text-xs font-semibold shadow-2xs transition">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    <span>{% trans "Gestionar Espacios" %}</span>
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <!-- Enlace Espacios de Trabajo -->
-            <a href="{% url 'workspaces_list' %}" class="text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-2.5 py-2 rounded-lg font-medium text-sm transition flex items-center space-x-1.5" title="{% trans 'Ver todos los espacios' %}">
-              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-              </svg>
-              <span class="hidden lg:inline">{% trans "Espacios" %}</span>
-            </a>
-
-            <a href="{% url 'panel' %}" class="text-gray-700 hover:text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg font-medium text-sm transition flex items-center space-x-1.5">
-              <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-              </svg>
-              <span>{% trans "Panel" %}</span>
-            </a>
-
-            <!-- Avatar con Menú Desplegable (Escritorio) -->
-            <div class="relative">
-              <button type="button" id="userMenuBtnDesktop" aria-haspopup="true" aria-expanded="false"
-                      class="flex items-center p-1 rounded-full hover:ring-2 hover:ring-blue-400 focus:outline-none transition">
-                {% if user.profile.picture.name != 'profile_pics/default.jpg' %}
-                <img src="{{ user.profile.picture.url }}" alt="{% trans "Foto de perfil" %}" class="w-9 h-9 rounded-full object-cover border-2 border-blue-500 shadow-sm">
-                {% else %}
-                <div class="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-blue-500 shadow-sm text-sm">
-                  {{ user.username|slice:":1"|upper }}
-                </div>
-                {% endif %}
-              </button>
-
-              <!-- Menú flotante desplegable Escritorio -->
-              <div id="userMenuDesktop" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-200 z-50 py-1 divide-y divide-gray-100">
-                <div class="px-4 py-3 bg-gray-50 rounded-t-xl">
-                  <p class="text-xs text-gray-500 font-medium">{% trans "Sesión iniciada como" %}</p>
-                  <p class="text-sm font-bold text-gray-800 truncate">{{ user.username }}</p>
-                </div>
-                <div class="py-1">
-                  <a href="{% url 'profile' %}" class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition">
-                    <svg class="w-4 h-4 mr-2.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                    {% trans "Editar usuario" %}
-                  </a>
-                </div>
-                <div class="py-1">
-                  <form action="{% url 'logout' %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="w-full flex items-center text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition">
-                      <svg class="w-4 h-4 mr-2.5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                      </svg>
-                      {% trans "Cerrar sesión" %}
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-            {% else %}
-            <a href="{% url 'login' %}" class="text-gray-700 hover:text-blue-600 font-medium text-sm px-3 py-2 transition">
-              {% trans "Iniciar sesión" %}
-            </a>
-            <a href="{% url 'register' %}" class="bg-blue-600 hover:bg-blue-700 text-white font-medium text-sm px-4 py-2 rounded-lg shadow-sm transition">
-              {% trans "Registrarse" %}
-            </a>
-            {% endif %}
-          </div>
-
-          <!-- Derecha en MÓVIL (< md) - Híbrido: Botón Mundo + Avatar Rápido + Botón Hamburguesa -->
-          <div class="flex md:hidden items-center space-x-2">
-            <!-- Botón Mundo Móvil Rápido -->
-            <div class="relative">
-              <button type="button" id="langMenuBtnMobile" aria-haspopup="true" aria-expanded="false"
-                      class="flex items-center space-x-1 py-1.5 px-2 rounded-lg text-gray-700 hover:text-blue-600 hover:bg-gray-100 border border-gray-200 transition focus:outline-none"
-                      title="{% trans 'Cambiar idioma' %}">
-                <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"></path>
-                </svg>
-                <span class="text-xs font-bold uppercase tracking-wider">
-                  {{ LANGUAGE_CODE|default:'es' }}
-                </span>
-              </button>
-
-              <!-- Menú flotante de idioma en Móvil -->
-              <div id="langMenuMobile" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 py-1 divide-y divide-gray-100">
-                <div class="px-3.5 py-2 bg-gray-50 rounded-t-xl">
-                  <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{% trans "Idioma" %}</p>
-                </div>
-                <form action="{% url 'set_language' %}" method="post" class="py-1">
-                  {% csrf_token %}
-                  <input name="next" type="hidden" value="{{ request.get_full_path }}">
-                  
-                  <button type="submit" name="language" value="es"
-                          class="w-full flex items-center justify-between px-3.5 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-blue-50/70 font-bold text-blue-700{% endif %}">
-                    <span class="flex items-center space-x-2">
-                      <span class="text-base leading-none">🇪🇸</span>
-                      <span>Español</span>
-                    </span>
-                    {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}
-                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    {% endif %}
-                  </button>
-
-                  <button type="submit" name="language" value="en"
-                          class="w-full flex items-center justify-between px-3.5 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition {% if LANGUAGE_CODE == 'en' %}bg-blue-50/70 font-bold text-blue-700{% endif %}">
-                    <span class="flex items-center space-x-2">
-                      <span class="text-base leading-none">🇺🇸</span>
-                      <span>English</span>
-                    </span>
-                    {% if LANGUAGE_CODE == 'en' %}
-                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    {% endif %}
-                  </button>
-                </form>
-              </div>
-            </div>
-
-            {% if user.is_authenticated %}
-            <!-- Acceso directo al Avatar en Móvil -->
-            <div class="relative">
-              <button type="button" id="userMenuBtnMobile" aria-haspopup="true" aria-expanded="false"
-                      class="flex items-center p-1 rounded-full hover:ring-2 hover:ring-blue-400 focus:outline-none transition">
-                {% if user.profile.picture.name != 'profile_pics/default.jpg' %}
-                <img src="{{ user.profile.picture.url }}" alt="{% trans "Foto de perfil" %}" class="w-8 h-8 rounded-full object-cover border-2 border-blue-500 shadow-sm">
-                {% else %}
-                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold border-2 border-blue-500 shadow-sm text-xs">
-                  {{ user.username|slice:":1"|upper }}
-                </div>
-                {% endif %}
-              </button>
-
-              <!-- Menú flotante de cuenta en Móvil -->
-              <div id="userMenuMobile" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-2xl border border-gray-200 z-50 py-1 divide-y divide-gray-100">
-                <div class="px-4 py-3 bg-gray-50 rounded-t-xl">
-                  <p class="text-xs text-gray-500 font-medium">{% trans "Sesión activa" %}</p>
-                  <p class="text-sm font-bold text-gray-800 truncate">{{ user.username }}</p>
-                </div>
-                <div class="py-1">
-                  <a href="{% url 'profile' %}" class="flex items-center px-4 py-2.5 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700 transition">
-                    <svg class="w-4 h-4 mr-2.5 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                    </svg>
-                    {% trans "Editar usuario" %}
-                  </a>
-                </div>
-                <div class="py-1">
-                  <form action="{% url 'logout' %}" method="post">
-                    {% csrf_token %}
-                    <button type="submit" class="w-full flex items-center text-left px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition">
-                      <svg class="w-4 h-4 mr-2.5 text-red-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                      </svg>
-                      {% trans "Cerrar sesión" %}
-                    </button>
-                  </form>
-                </div>
-              </div>
-            </div>
-            {% endif %}
-
-            <!-- Botón Hamburguesa Móvil -->
-            <button type="button" id="mobileNavBtn" aria-expanded="false" aria-controls="mobileNavPanel"
-                    class="p-2 rounded-lg text-gray-600 hover:text-blue-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500 transition">
-              <span class="sr-only">{% trans "Abrir menú de navegación" %}</span>
-              <!-- Icono Hamburguesa (3 barras) -->
-              <svg id="hamburgerIcon" class="w-6 h-6 block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
-              </svg>
-              <!-- Icono Cerrar (X) -->
-              <svg id="closeIcon" class="w-6 h-6 hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
-              </svg>
-            </button>
-          </div>
-        
         </div>
-      </div>
-
-      <!-- Panel Desplegable de Navegación Móvil -->
-      <div id="mobileNavPanel" class="hidden md:hidden border-t border-gray-200 bg-white px-4 pt-3 pb-5 space-y-3 shadow-lg">
-        <!-- Selector de Idioma (Móvil) -->
-        <form action="{% url 'set_language' %}" method="post" class="flex items-center justify-between py-2 border-b border-gray-100">
-          {% csrf_token %}
-          <input name="next" type="hidden" value="{{ request.get_full_path }}">
-          <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{% trans "Idioma" %}:</span>
-          <div class="inline-flex rounded-xl bg-gray-100 p-0.5 border border-gray-200 text-xs font-semibold">
-            <button type="submit" name="language" value="es"
-                    class="px-3 py-1 rounded-lg transition-all {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-white text-blue-600 shadow-xs font-bold{% else %}text-gray-500 hover:text-gray-900{% endif %}">
-              Español
-            </button>
-            <button type="submit" name="language" value="en"
-                    class="px-3 py-1 rounded-lg transition-all {% if LANGUAGE_CODE == 'en' %}bg-white text-blue-600 shadow-xs font-bold{% else %}text-gray-500 hover:text-gray-900{% endif %}">
-              English
-            </button>
-          </div>
-        </form>
 
         {% if user.is_authenticated %}
-        <div class="px-3 py-2 bg-blue-50 rounded-lg text-xs text-blue-800 font-medium flex items-center justify-between">
-          <span>{% blocktrans with username=user.username %}Conectado como <strong class="font-bold">{{ username }}</strong>{% endblocktrans %}</span>
-        </div>
-        {% if current_workspace %}
-        <div class="px-3 py-2 bg-indigo-50 border border-indigo-100 rounded-lg text-xs text-indigo-900 font-medium flex items-center justify-between">
-          <span>{% trans "Espacio activo:" %} <strong class="font-bold">{{ current_workspace.name }}</strong></span>
-          <a href="{% url 'workspaces_list' %}" class="text-indigo-600 font-bold hover:underline">{% trans "Cambiar" %}</a>
+        <!-- Selector de Espacio Activo en la Barra Lateral -->
+        <div class="sidebar-workspace-box p-3 border-b border-slate-100 bg-slate-50/60 shrink-0">
+            <div class="sidebar-text flex items-center justify-between mb-1.5 px-1">
+                <span class="text-[10px] font-mono font-bold uppercase text-slate-500 tracking-wider">
+                    {% trans "Espacio Activo" %}
+                </span>
+                <a href="{% url 'workspaces_list' %}" class="text-[11px] font-semibold text-blue-600 hover:text-blue-800 transition">
+                    {% trans "Gestionar" %}
+                </a>
+            </div>
+
+            <!-- Botón Gatillo del Selector de Espacio -->
+            <div class="relative">
+                <button type="button" id="sidebarWorkspaceBtn" aria-haspopup="true" aria-expanded="false"
+                        class="w-full flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 hover:border-blue-300 hover:shadow-xs transition text-left group"
+                        data-tooltip="{{ current_workspace.name|default:_('Espacio Activo') }}"
+                        title="{{ current_workspace.name|default:_('Espacio Activo') }}">
+                    <div class="flex items-center space-x-2.5 truncate">
+                        <span class="w-5 h-5 flex items-center justify-center shrink-0">
+                            {% if current_workspace.icon == 'building' %}
+                            <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                            {% elif current_workspace.icon == 'scale' %}
+                            <svg class="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+                            {% elif current_workspace.icon == 'medical' %}
+                            <svg class="w-4 h-4 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            {% elif current_workspace.icon == 'book' %}
+                            <svg class="w-4 h-4 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                            {% elif current_workspace.icon == 'chart' %}
+                            <svg class="w-4 h-4 text-cyan-600 dark:text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                            {% elif current_workspace.icon == 'document' %}
+                            <svg class="w-4 h-4 text-sky-600 dark:text-sky-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                            {% else %}
+                            <svg class="w-4 h-4 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                            {% endif %}
+                        </span>
+                        <div class="sidebar-text truncate">
+                            <span class="text-xs font-bold text-slate-800 block truncate group-hover:text-blue-600 transition">
+                                {{ current_workspace.name|default:_("Seleccionar Espacio") }}
+                            </span>
+                            {% if current_workspace.project_type %}
+                            <span class="text-[10px] text-slate-500 font-normal block truncate">
+                                {{ current_workspace.project_type }}
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <svg class="sidebar-text w-4 h-4 text-slate-400 group-hover:text-slate-600 shrink-0 ml-1 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"></path>
+                    </svg>
+                </button>
+
+                <!-- Menú Desplegable Flotante de Espacios -->
+                <div id="sidebarWorkspaceDropdown" class="hidden absolute left-0 right-0 mt-1.5 bg-white rounded-xl shadow-xl border border-slate-200 z-50 py-1 divide-y divide-slate-100 animate-dropdown min-w-[200px]">
+                    <div class="px-3 py-2 bg-slate-50/80 rounded-t-xl flex items-center justify-between">
+                        <span class="text-[11px] font-bold text-slate-500 uppercase tracking-wider">{% trans "Cambiar Espacio" %}</span>
+                        <a href="{% url 'workspaces_list' %}" class="text-[11px] text-blue-600 font-bold hover:underline">{% trans "Ver Todos" %}</a>
+                    </div>
+                    <div class="max-h-56 overflow-y-auto py-1">
+                        {% for ws in user_workspaces %}
+                        <a href="{% url 'workspace_select' ws.id %}?next={{ request.path }}"
+                           class="flex items-center justify-between px-3 py-2 text-xs text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition {% if current_workspace and ws.id == current_workspace.id %}bg-blue-50/80 font-bold text-blue-700{% endif %}">
+                            <div class="flex items-center space-x-2 truncate">
+                                <span class="w-4 h-4 flex items-center justify-center shrink-0">
+                                    {% if ws.icon == 'building' %}
+                                    <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                                    {% elif ws.icon == 'scale' %}
+                                    <svg class="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/></svg>
+                                    {% elif ws.icon == 'medical' %}
+                                    <svg class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    {% elif ws.icon == 'book' %}
+                                    <svg class="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                                    {% elif ws.icon == 'chart' %}
+                                    <svg class="w-3.5 h-3.5 text-cyan-600 dark:text-cyan-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                    {% elif ws.icon == 'document' %}
+                                    <svg class="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    {% else %}
+                                    <svg class="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                                    {% endif %}
+                                </span>
+                                <span class="truncate">{{ ws.name }}</span>
+                            </div>
+                            {% if current_workspace and ws.id == current_workspace.id %}
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-600 shrink-0"></span>
+                            {% endif %}
+                        </a>
+                        {% empty %}
+                        <div class="px-3 py-2 text-xs text-slate-500 italic text-center">{% trans "Sin espacios registrados" %}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
         </div>
         {% endif %}
-        <div class="space-y-1">
-          <a href="{% url 'workspaces_list' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 transition">
-            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-            </svg>
-            <span>{% trans "Espacios de trabajo" %}</span>
-          </a>
-          <a href="{% url 'panel' %}" class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 transition">
-            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-            </svg>
-            <span>{% trans "Panel de administración" %}</span>
-          </a>
+
+        <!-- Menú de Navegación de la Barra Lateral -->
+        <nav class="flex-1 px-3 py-3 space-y-4 overflow-y-auto">
+            
+            <!-- Grupo: Plataforma Central -->
+            <div>
+                <span class="sidebar-text px-3 text-[10px] font-mono font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
+                    {% trans "Plataforma" %}
+                </span>
+                <div class="space-y-0.5">
+                    <a href="{% url 'index' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'index' %}" data-tooltip="{% trans 'Inicio' %}">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        <span class="sidebar-text truncate">{% trans "Inicio" %}</span>
+                    </a>
+
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'panel' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'panel' %}" data-tooltip="{% trans 'Panel de Control' %}">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                        </svg>
+                        <span class="sidebar-text truncate">{% trans "Panel de Administración" %}</span>
+                    </a>
+
+                    <a href="{% url 'workspaces_list' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'workspaces_list' %}" data-tooltip="{% trans 'Espacios de Trabajo' %}">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                        </svg>
+                        <span class="sidebar-text truncate">{% trans "Espacios de Trabajo" %}</span>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+            <!-- Grupo: Peritaje & Auditoría Ingesta -->
+            <div>
+                <span class="sidebar-text px-3 text-[10px] font-mono font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
+                    {% trans "Auditoría & Expedientes" %}
+                </span>
+                <div class="space-y-0.5">
+                    <a href="{% url 'upload' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'upload' %}" data-tooltip="{% trans 'Subir / Ingesta OCR' %}">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                        </svg>
+                        <span class="sidebar-text truncate">{% trans "Subir / Ingesta OCR" %}</span>
+                    </a>
+
+                    <a href="{% url 'reports' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'reports' %}" data-tooltip="{% trans 'Catálogo de Reportes' %}">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span class="sidebar-text truncate">{% trans "Catálogo de Reportes" %}</span>
+                    </a>
+
+                    <a href="{% url 'companies' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'companies' %}" data-tooltip="{% trans 'Empresas Auditadas' %}">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        <span class="sidebar-text truncate">{% trans "Empresas Auditadas" %}</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Grupo: Análisis Léxico & Métricas Forenses -->
+            <div>
+                <span class="sidebar-text px-3 text-[10px] font-mono font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
+                    {% trans "Métricas & Léxico" %}
+                </span>
+                <div class="space-y-0.5">
+                    <a href="{% url 'totalcount' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'totalcount' %}" data-tooltip="{% trans 'Conteo Consolidado' %}">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <span class="sidebar-text truncate">{% trans "Conteo Consolidado" %}</span>
+                    </a>
+
+                    <a href="{% url 'concealment_detection' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'concealment_detection' %}" data-tooltip="{% trans 'Detección de Opacidad' %}">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path>
+                        </svg>
+                        <span class="sidebar-text truncate">{% trans "Detección de Opacidad" %}</span>
+                    </a>
+
+                    <a href="{% url 'comparative_analysis' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'comparative_analysis' %}" data-tooltip="{% trans 'Análisis Comparativo' %}">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 18h12l3-18H3zm3 3h12"></path>
+                        </svg>
+                        <span class="sidebar-text truncate">{% trans "Análisis Comparativo" %}</span>
+                    </a>
+
+                    <a href="{% url 'expert_lists' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'expert_lists' %}" data-tooltip="{% trans 'Listas de Expertos' %}">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        <span class="sidebar-text truncate">{% trans "Listas de Expertos" %}</span>
+                    </a>
+                </div>
+            </div>
+
+            {% if user.is_staff %}
+            <!-- Grupo: Administración y Usuarios -->
+            <div>
+                <span class="sidebar-text px-3 text-[10px] font-mono font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
+                    {% trans "Administración" %}
+                </span>
+                <div class="space-y-0.5">
+                    <a href="{% url 'users' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'users' %}" data-tooltip="{% trans 'Gestión de Usuarios' %}">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <span class="sidebar-text truncate">{% trans "Gestión de Usuarios" %}</span>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+            {% endif %}
+
+        </nav>
+
+        <!-- Footer de la Barra Lateral: Idioma, Tema, Colapso y Cuenta -->
+        <div class="p-3 border-t border-slate-200 bg-slate-50/70 shrink-0 space-y-2">
+            
+            <!-- Selector de Idioma con Icono de Mundo y Menú Desplegable -->
+            <div class="relative" id="sidebarLanguageWrapper">
+                <button type="button" id="sidebarLanguageBtn" aria-haspopup="true" aria-expanded="false"
+                        class="sidebar-footer-btn w-full flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-600 transition text-xs font-semibold focus:outline-none btn-interactive group"
+                        data-tooltip="{% trans 'Idioma' %}: {% if LANGUAGE_CODE == 'en' %}EN{% else %}ES{% endif %}"
+                        title="{% trans 'Seleccionar idioma' %}">
+                    <div class="flex items-center space-x-2 truncate">
+                        <span class="w-4 h-4 flex items-center justify-center shrink-0 text-slate-500 group-hover:text-blue-600 transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                            </svg>
+                        </span>
+                        <span class="sidebar-text font-medium text-slate-700 group-hover:text-blue-600 truncate">
+                            {% if LANGUAGE_CODE == 'en' %}English{% else %}Español{% endif %}
+                        </span>
+                    </div>
+                    <div class="sidebar-text flex items-center space-x-1 shrink-0 ml-auto pl-1">
+                        <span class="text-[10px] font-mono font-bold uppercase text-slate-400 group-hover:text-blue-600">
+                            {% if LANGUAGE_CODE == 'en' %}EN{% else %}ES{% endif %}
+                        </span>
+                        <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </div>
+                </button>
+
+                <!-- Menú Desplegable Flotante de Selección de Idioma -->
+                <div id="sidebarLanguageDropdown" class="hidden absolute bottom-full mb-2 left-0 w-full bg-white rounded-xl shadow-xl border border-slate-200 z-50 py-1.5 animate-dropdown">
+                    <div class="px-3 py-1.5 border-b border-slate-100 flex items-center justify-between">
+                        <span class="text-[10px] font-mono font-bold uppercase text-slate-400 tracking-wider">
+                            {% trans "Idioma" %}
+                        </span>
+                        <span class="text-[10px] text-slate-400 font-mono">Language</span>
+                    </div>
+                    <form action="{% url 'set_language' %}" method="post" id="sidebarLangForm" class="p-1 space-y-0.5">
+                        {% csrf_token %}
+                        <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                        <button type="submit" name="language" value="es"
+                                class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition text-left {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-blue-50 text-blue-700 font-bold dark:bg-blue-900/30 dark:text-blue-300{% else %}text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800{% endif %}">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-blue-600 text-white{% else %}bg-slate-100 dark:bg-slate-800 text-slate-500{% endif %}">ES</span>
+                                <span>Español</span>
+                            </div>
+                            {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}
+                            <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            {% endif %}
+                        </button>
+                        <button type="submit" name="language" value="en"
+                                class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition text-left {% if LANGUAGE_CODE == 'en' %}bg-blue-50 text-blue-700 font-bold dark:bg-blue-900/30 dark:text-blue-300{% else %}text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800{% endif %}">
+                            <div class="flex items-center space-x-2">
+                                <span class="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded {% if LANGUAGE_CODE == 'en' %}bg-blue-600 text-white{% else %}bg-slate-100 dark:bg-slate-800 text-slate-500{% endif %}">EN</span>
+                                <span>English</span>
+                            </div>
+                            {% if LANGUAGE_CODE == 'en' %}
+                            <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            {% endif %}
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Toggle de Modo Oscuro -->
+            <button type="button" onclick="toggleTheme()" class="sidebar-footer-btn w-full flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-600 transition text-xs font-semibold focus:outline-none btn-interactive group"
+                    data-tooltip="{% trans 'Modo Oscuro' %}"
+                    title="{% trans 'Alternar tema claro / oscuro' %}">
+                <div class="flex items-center space-x-2 truncate">
+                    <span id="themeSidebarIcon" class="w-4 h-4 flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4 text-slate-500 group-hover:text-blue-600 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    </span>
+                    <span class="sidebar-text font-medium text-slate-700 group-hover:text-blue-600 truncate">{% trans "Modo Oscuro" %}</span>
+                </div>
+                <span class="sidebar-text text-[10px] font-mono font-bold text-slate-400 group-hover:text-blue-600 ml-auto" id="themeStatusLabel">OFF</span>
+            </button>
+
+            <!-- Botón Colapsar / Expandir Barra Lateral -->
+            <button type="button" id="sidebarCollapseBtn" onclick="toggleSidebarCollapse()" class="sidebar-footer-btn w-full flex items-center justify-center p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-blue-600 hover:border-blue-300 transition text-xs font-semibold focus:outline-none btn-interactive"
+                    data-tooltip="{% trans 'Colapsar Barra' %}"
+                    title="{% trans 'Colapsar / Expandir barra lateral' %}">
+                <svg id="collapseChevronIcon" class="w-4 h-4 transition-transform duration-300 ease-in-out shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+                </svg>
+                <span class="sidebar-text font-medium ml-2">{% trans "Colapsar Barra" %}</span>
+            </button>
+
+            {% if user.is_authenticated %}
+            <!-- Selector / Menú de Usuario y Cierre de Sesión -->
+            <div class="relative" id="sidebarUserWrapper">
+                <button type="button" id="sidebarUserBtn" aria-haspopup="true" aria-expanded="false"
+                        class="sidebar-user-card w-full p-2 rounded-xl bg-white border border-slate-200 flex items-center justify-between hover:border-blue-300 hover:shadow-xs transition text-left group focus:outline-none btn-interactive"
+                        data-tooltip="{{ user.username }}"
+                        title="{% trans 'Opciones de usuario' %}">
+                    <div class="flex items-center space-x-2.5 truncate">
+                        {% if user.profile.picture and user.profile.picture.name != 'profile_pics/default.jpg' %}
+                        <img src="{{ user.profile.picture.url }}" alt="{{ user.username }}" class="w-8 h-8 rounded-full object-cover border border-blue-500 shrink-0">
+                        {% else %}
+                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs shrink-0 border border-blue-300">
+                            {{ user.username|slice:":1"|upper }}
+                        </div>
+                        {% endif %}
+                        <div class="sidebar-text truncate">
+                            <span class="text-xs font-bold text-slate-800 block truncate group-hover:text-blue-600 transition">{{ user.username }}</span>
+                            <span class="text-[10px] text-slate-400 font-mono block truncate">
+                                {% if user.is_staff %}{% trans "Administrador" %}{% else %}{% trans "Auditor" %}{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="sidebar-text flex items-center shrink-0 ml-auto pl-1 text-slate-400 group-hover:text-slate-600 transition">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
+                        </svg>
+                    </div>
+                </button>
+
+                <!-- Menú Desplegable Flotante de Usuario (Cerrar Sesión / Perfil) -->
+                <div id="sidebarUserDropdown" class="hidden absolute bottom-full mb-2 left-0 w-full bg-white rounded-xl shadow-xl border border-slate-200 z-50 py-1.5 animate-dropdown">
+                    <!-- Cabecera de Usuario -->
+                    <div class="px-3 py-2 border-b border-slate-100 flex items-center space-x-2.5">
+                        {% if user.profile.picture and user.profile.picture.name != 'profile_pics/default.jpg' %}
+                        <img src="{{ user.profile.picture.url }}" alt="{{ user.username }}" class="w-7 h-7 rounded-full object-cover border border-blue-500 shrink-0">
+                        {% else %}
+                        <div class="w-7 h-7 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-[11px] shrink-0 border border-blue-300">
+                            {{ user.username|slice:":1"|upper }}
+                        </div>
+                        {% endif %}
+                        <div class="min-w-0 truncate">
+                            <span class="text-xs font-bold text-slate-800 block truncate">{{ user.username }}</span>
+                            {% if user.email %}
+                            <span class="text-[10px] text-slate-400 font-mono block truncate">{{ user.email }}</span>
+                            {% else %}
+                            <span class="text-[10px] text-slate-400 font-mono block truncate">{% trans "Sesión activa" %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="p-1 space-y-0.5">
+                        <!-- Enlace a Mi Perfil -->
+                        <a href="{% url 'profile' %}"
+                           class="w-full flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition">
+                            <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            <span>{% trans "Mi Perfil" %}</span>
+                        </a>
+
+                        <!-- Enlace a Espacios de Trabajo -->
+                        <a href="{% url 'workspaces_list' %}"
+                           class="w-full flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-medium text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition">
+                            <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/>
+                            </svg>
+                            <span>{% trans "Espacios de Trabajo" %}</span>
+                        </a>
+
+                        <div class="my-1 border-t border-slate-100"></div>
+
+                        <!-- Opción de Cerrar Sesión -->
+                        <form action="{% url 'logout' %}" method="post" class="m-0 p-0">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="w-full flex items-center space-x-2.5 px-3 py-2 rounded-lg text-xs font-semibold text-red-600 hover:bg-red-50 transition text-left">
+                                <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                </svg>
+                                <span>{% trans "Cerrar Sesión" %}</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="sidebar-text w-full">
+                <div class="grid grid-cols-2 gap-2">
+                    <a href="{% url 'login' %}" class="py-1.5 text-center text-xs font-bold text-slate-700 bg-white hover:bg-slate-100 border border-slate-200 rounded-xl transition btn-interactive">
+                        {% trans "Acceder" %}
+                    </a>
+                    <a href="{% url 'register' %}" class="py-1.5 text-center text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition shadow-2xs btn-interactive">
+                        {% trans "Registro" %}
+                    </a>
+                </div>
+            </div>
+            <div class="hidden html-collapsed-show">
+                <a href="{% url 'login' %}" class="sidebar-footer-btn w-full flex items-center justify-center p-2 rounded-xl bg-blue-600 text-white hover:bg-blue-700 transition text-xs font-bold btn-interactive"
+                   data-tooltip="{% trans 'Iniciar Sesión' %}"
+                   title="{% trans 'Iniciar Sesión' %}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                    </svg>
+                </a>
+            </div>
+            {% endif %}
+
         </div>
-        {% else %}
-        <div class="space-y-2 pt-2">
-          <a href="{% url 'login' %}" class="block text-center w-full px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition">
-            {% trans "Iniciar sesión" %}
-          </a>
-          <a href="{% url 'register' %}" class="block text-center w-full px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition">
-            {% trans "Registrarse" %}
-          </a>
+
+    </aside>
+
+    <!-- ========================================================================= -->
+    <!-- 2. BARRA SUPERIOR MÓVIL (< lg) + DRAWER OFF-CANVAS                        -->
+    <!-- ========================================================================= -->
+    <header class="lg:hidden h-14 bg-white border-b border-slate-200 px-4 flex items-center justify-between sticky top-0 z-40 shrink-0 shadow-2xs">
+        <a href="{% url 'index' %}" class="flex items-center space-x-2">
+            <div class="w-7 h-7 rounded-lg bg-blue-600 text-white font-black text-xs flex items-center justify-center">
+                ELI
+            </div>
+            <span class="text-xs font-extrabold text-slate-900 tracking-tight">Enterprise Lex</span>
+        </a>
+
+        <div class="flex items-center space-x-2">
+            <button type="button" onclick="toggleTheme()" class="p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition focus:outline-none" title="{% trans 'Tema' %}">
+                <span id="themeMobileIcon" class="w-4 h-4 flex items-center justify-center shrink-0">
+                    <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                </span>
+            </button>
+
+            {% if user.is_authenticated and current_workspace %}
+            <span class="text-[11px] font-bold text-slate-600 bg-slate-100 px-2 py-1 rounded-lg truncate max-w-[110px]">
+                {{ current_workspace.name }}
+            </span>
+            {% endif %}
+
+            <button type="button" id="mobileDrawerOpenBtn" aria-label="{% trans 'Abrir navegación' %}"
+                    class="p-2 rounded-xl text-slate-600 hover:text-blue-600 hover:bg-slate-100 transition focus:outline-none">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
         </div>
-        {% endif %}
-      </div>
-    </nav>
+    </header>
 
-    <!-- !Contenido principal -->
-    <main class="container mx-auto py-8 flex-grow">
-        {% block content %}{% endblock %}
-    </main>
+    <!-- Drawer Móvil (Off-Canvas Overlay) -->
+    <div id="mobileDrawerOverlay" class="hidden fixed inset-0 z-50 bg-slate-900/50 backdrop-blur-xs transition-opacity lg:hidden" aria-hidden="true">
+        <div id="mobileDrawerPanel" class="fixed inset-y-0 left-0 w-72 bg-white h-full flex flex-col justify-between shadow-2xl transform -translate-x-full transition-transform duration-200 ease-in-out">
+            
+            <div class="h-14 flex items-center justify-between px-4 border-b border-slate-200">
+                <span class="text-xs font-black uppercase text-slate-800">{% trans "Menú de Navegación" %}</span>
+                <button type="button" id="mobileDrawerCloseBtn" class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
 
-    <!-- !Footer -->
-    <footer class="bg-gray-200 text-center py-4">
-        © 2025 Enterprise Lex Index. {% trans "Todos los derechos reservados." %}
-    </footer>
+            <div class="flex-1 overflow-y-auto p-4 space-y-4">
+                {% if user.is_authenticated and current_workspace %}
+                <div class="p-3 bg-blue-50/80 rounded-xl border border-blue-100">
+                    <span class="text-[10px] font-mono text-blue-600 uppercase font-bold block">{% trans "Espacio Activo" %}</span>
+                    <span class="text-xs font-bold text-blue-900 block truncate">{{ current_workspace.name }}</span>
+                </div>
+                {% endif %}
 
-    <!-- Control de menús y navegación responsiva -->
+                <nav class="space-y-1 text-sm font-semibold text-slate-700">
+                    <a href="{% url 'index' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
+                        <span>{% trans "Inicio" %}</span>
+                    </a>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'panel' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
+                        <span>{% trans "Panel de Control" %}</span>
+                    </a>
+                    <a href="{% url 'workspaces_list' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
+                        <span>{% trans "Espacios de Trabajo" %}</span>
+                    </a>
+                    <a href="{% url 'upload' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
+                        <span>{% trans "Subir / Ingesta" %}</span>
+                    </a>
+                    <a href="{% url 'reports' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
+                        <span>{% trans "Catálogo de Reportes" %}</span>
+                    </a>
+                    <a href="{% url 'companies' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
+                        <span>{% trans "Empresas" %}</span>
+                    </a>
+                    <a href="{% url 'totalcount' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
+                        <span>{% trans "Conteo Consolidado" %}</span>
+                    </a>
+                    <a href="{% url 'concealment_detection' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
+                        <span>{% trans "Detección de Opacidad" %}</span>
+                    </a>
+                    <a href="{% url 'comparative_analysis' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
+                        <span>{% trans "Análisis Comparativo" %}</span>
+                    </a>
+                    <a href="{% url 'expert_lists' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
+                        <span>{% trans "Listas de Expertos" %}</span>
+                    </a>
+                    {% if user.is_staff %}
+                    <a href="{% url 'users' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
+                        <span>{% trans "Usuarios" %}</span>
+                    </a>
+                    {% endif %}
+                    {% else %}
+                    <a href="{% url 'login' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
+                        <span>{% trans "Iniciar Sesión" %}</span>
+                    </a>
+                    <a href="{% url 'register' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
+                        <span>{% trans "Registrarse" %}</span>
+                    </a>
+                    {% endif %}
+                </nav>
+            </div>
+
+            <!-- Footer Móvil -->
+            <div class="p-4 border-t border-slate-200 bg-slate-50">
+                <form action="{% url 'set_language' %}" method="post" class="flex items-center justify-between text-xs mb-3 p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
+                    {% csrf_token %}
+                    <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                    <div class="flex items-center space-x-2 text-slate-600 dark:text-slate-300">
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                        </svg>
+                        <span class="font-semibold text-xs">{% trans "Idioma" %}</span>
+                    </div>
+                    <div class="flex items-center space-x-1">
+                        <button type="submit" name="language" value="es" class="px-2.5 py-1 rounded-lg text-xs font-bold transition {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-blue-600 text-white shadow-xs{% else %}text-slate-600 hover:text-slate-900 dark:text-slate-400{% endif %}">ES</button>
+                        <button type="submit" name="language" value="en" class="px-2.5 py-1 rounded-lg text-xs font-bold transition {% if LANGUAGE_CODE == 'en' %}bg-blue-600 text-white shadow-xs{% else %}text-slate-600 hover:text-slate-900 dark:text-slate-400{% endif %}">EN</button>
+                    </div>
+                </form>
+
+                {% if user.is_authenticated %}
+                <form action="{% url 'logout' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="w-full py-2 bg-red-50 text-red-600 hover:bg-red-100 font-bold text-xs rounded-xl transition">
+                        {% trans "Cerrar Sesión" %} ({{ user.username }})
+                    </button>
+                </form>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 3. CANVAS PRINCIPAL DE TRABAJO (Main Workspace Canvas)                    -->
+    <!-- ========================================================================= -->
+    <div id="mainCanvasArea" class="main-canvas-area lg:pl-64 xl:pl-72 flex-1 flex flex-col min-w-0 min-h-screen bg-slate-50">
+        
+        <!-- Top App Bar en Escritorio (Breadcrumbs & Acciones Rápidas) -->
+        <header class="hidden lg:flex h-14 bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 sm:px-8 items-center justify-between sticky top-0 z-20 shrink-0">
+            <div class="flex items-center space-x-2 text-xs font-medium text-slate-500 truncate">
+                <!-- Botón rápido para contraer barra lateral desde el header -->
+                <button type="button" onclick="toggleSidebarCollapse()" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 transition mr-1" title="{% trans 'Colapsar / Expandir barra lateral' %}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h16"></path>
+                    </svg>
+                </button>
+                <span class="text-blue-600 font-black tracking-tight">ELI</span>
+                <span>/</span>
+                {% if current_workspace %}
+                <span class="font-bold text-slate-800 truncate">{{ current_workspace.name }}</span>
+                {% else %}
+                <span class="font-bold text-slate-800">{% trans "Auditoría Contractual" %}</span>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <!-- Toggle Rápido de Modo Oscuro -->
+                <button type="button" onclick="toggleTheme()" class="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-slate-100 transition focus:outline-none btn-interactive" title="{% trans 'Alternar tema claro / oscuro' %}">
+                    <span id="themeTopIcon" class="w-4 h-4 flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    </span>
+                </button>
+
+                {% if user.is_authenticated %}
+                <a href="{% url 'upload' %}" class="inline-flex items-center space-x-1.5 py-1.5 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs rounded-xl border border-blue-200 transition btn-interactive">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    <span>{% trans "Nuevo Informe" %}</span>
+                </a>
+                {% endif %}
+            </div>
+        </header>
+
+        <!-- Contenedor Principal -->
+        <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- Footer Unificado -->
+        <footer class="py-4 px-6 border-t border-slate-200 text-center text-xs text-slate-400 bg-white shrink-0">
+            &copy; 2026 Enterprise Lex Index. {% trans "Todos los derechos reservados." %}
+        </footer>
+
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- 4. SCRIPTS DE CONTROL & HIGHLIGHTING ACTIVO                                -->
+    <!-- ========================================================================= -->
     <script>
-      document.addEventListener('DOMContentLoaded', function () {
-        // Workspace menu Desktop
-        const workspaceBtnDesktop = document.getElementById('workspaceMenuBtnDesktop');
-        const workspaceMenuDesktop = document.getElementById('workspaceMenuDesktop');
+    // Alternar Modo Oscuro (Persistente en localStorage)
+    function toggleTheme() {
+        const isDark = document.documentElement.classList.toggle('dark');
+        localStorage.setItem('eli_theme', isDark ? 'dark' : 'light');
+        updateThemeUI(isDark);
+    }
 
-        // Desktop user menu
-        const desktopBtn = document.getElementById('userMenuBtnDesktop');
-        const desktopMenu = document.getElementById('userMenuDesktop');
+    function updateThemeUI(isDark) {
+        const sIcon = document.getElementById('themeSidebarIcon');
+        const tIcon = document.getElementById('themeTopIcon');
+        const mIcon = document.getElementById('themeMobileIcon');
+        const sLabel = document.getElementById('themeStatusLabel');
+        const sunSvg = '<svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>';
+        const moonSvg = '<svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>';
+        const iconHtml = isDark ? sunSvg : moonSvg;
+        if (sIcon) sIcon.innerHTML = iconHtml;
+        if (tIcon) tIcon.innerHTML = iconHtml;
+        if (mIcon) mIcon.innerHTML = iconHtml;
+        if (sLabel) sLabel.textContent = isDark ? 'ON' : 'OFF';
+    }
 
-        // Language menu Desktop
-        const langBtnDesktop = document.getElementById('langMenuBtnDesktop');
-        const langMenuDesktop = document.getElementById('langMenuDesktop');
+    // Alternar Contracción de Barra Lateral (Persistente en localStorage)
+    function toggleSidebarCollapse() {
+        const isCollapsed = document.documentElement.classList.toggle('sidebar-collapsed');
+        localStorage.setItem('eli_sidebar_collapsed', isCollapsed ? 'true' : 'false');
+        updateCollapseUI(isCollapsed);
+    }
 
-        // Language menu Mobile
-        const langBtnMobile = document.getElementById('langMenuBtnMobile');
-        const langMenuMobile = document.getElementById('langMenuMobile');
+    function updateCollapseUI(isCollapsed) {
+        const chevron = document.getElementById('collapseChevronIcon');
+        const collapseBtn = document.getElementById('sidebarCollapseBtn');
+        if (chevron) {
+            chevron.style.transform = isCollapsed ? 'rotate(180deg)' : '';
+        }
+        if (collapseBtn) {
+            collapseBtn.setAttribute('data-tooltip', isCollapsed ? "{% trans 'Expandir Barra' %}" : "{% trans 'Colapsar Barra' %}");
+        }
+    }
 
-        // Mobile quick user menu
-        const mobileUserBtn = document.getElementById('userMenuBtnMobile');
-        const mobileUserMenu = document.getElementById('userMenuMobile');
+    document.addEventListener('DOMContentLoaded', function () {
+        // Inicializar iconos de tema
+        const isDark = document.documentElement.classList.contains('dark');
+        updateThemeUI(isDark);
 
-        // Mobile hamburger nav panel
-        const mobileNavBtn = document.getElementById('mobileNavBtn');
-        const mobileNavPanel = document.getElementById('mobileNavPanel');
-        const hamburgerIcon = document.getElementById('hamburgerIcon');
-        const closeIcon = document.getElementById('closeIcon');
+        // Inicializar estado de icono colapso
+        const isCollapsed = document.documentElement.classList.contains('sidebar-collapsed');
+        updateCollapseUI(isCollapsed);
 
-        function closeAllMenus() {
-          if (workspaceMenuDesktop) workspaceMenuDesktop.classList.add('hidden');
-          if (workspaceBtnDesktop) workspaceBtnDesktop.setAttribute('aria-expanded', 'false');
+        // Dropdown del Workspace en la barra lateral
+        const wsBtn = document.getElementById('sidebarWorkspaceBtn');
+        const wsDropdown = document.getElementById('sidebarWorkspaceDropdown');
 
-          if (desktopMenu) desktopMenu.classList.add('hidden');
-          if (desktopBtn) desktopBtn.setAttribute('aria-expanded', 'false');
+        // Dropdown del Selector de Idioma (Icono de Mundo)
+        const langBtn = document.getElementById('sidebarLanguageBtn');
+        const langDropdown = document.getElementById('sidebarLanguageDropdown');
 
-          if (langMenuDesktop) langMenuDesktop.classList.add('hidden');
-          if (langBtnDesktop) langBtnDesktop.setAttribute('aria-expanded', 'false');
+        // Dropdown del Usuario en la barra lateral
+        const userBtn = document.getElementById('sidebarUserBtn');
+        const userDropdown = document.getElementById('sidebarUserDropdown');
 
-          if (langMenuMobile) langMenuMobile.classList.add('hidden');
-          if (langBtnMobile) langBtnMobile.setAttribute('aria-expanded', 'false');
+        if (wsBtn && wsDropdown) {
+            wsBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const isOpen = !wsDropdown.classList.contains('hidden');
+                wsDropdown.classList.toggle('hidden', isOpen);
+                wsBtn.setAttribute('aria-expanded', !isOpen);
+                // Si el selector de idioma o usuario está abierto, cerrarlos
+                if (langDropdown && !langDropdown.classList.contains('hidden')) {
+                    langDropdown.classList.add('hidden');
+                    if (langBtn) langBtn.setAttribute('aria-expanded', 'false');
+                }
+                if (userDropdown && !userDropdown.classList.contains('hidden')) {
+                    userDropdown.classList.add('hidden');
+                    if (userBtn) userBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
 
-          if (mobileUserMenu) mobileUserMenu.classList.add('hidden');
-          if (mobileUserBtn) mobileUserBtn.setAttribute('aria-expanded', 'false');
-
-          if (mobileNavPanel) mobileNavPanel.classList.add('hidden');
-          if (mobileNavBtn) mobileNavBtn.setAttribute('aria-expanded', 'false');
-          if (hamburgerIcon) hamburgerIcon.classList.remove('hidden');
-          if (closeIcon) closeIcon.classList.add('hidden');
+            document.addEventListener('click', function (e) {
+                if (!wsDropdown.contains(e.target) && !wsBtn.contains(e.target)) {
+                    wsDropdown.classList.add('hidden');
+                    wsBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
         }
 
-        // Toggle Desktop Workspace Menu
-        if (workspaceBtnDesktop && workspaceMenuDesktop) {
-          workspaceBtnDesktop.addEventListener('click', function (e) {
-            e.stopPropagation();
-            const isOpen = !workspaceMenuDesktop.classList.contains('hidden');
-            closeAllMenus();
-            if (!isOpen) {
-              workspaceMenuDesktop.classList.remove('hidden');
-              workspaceBtnDesktop.setAttribute('aria-expanded', 'true');
-            }
-          });
+        if (langBtn && langDropdown) {
+            langBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const isOpen = !langDropdown.classList.contains('hidden');
+                langDropdown.classList.toggle('hidden', isOpen);
+                langBtn.setAttribute('aria-expanded', !isOpen);
+                // Si el selector de workspace o usuario está abierto, cerrarlos
+                if (wsDropdown && !wsDropdown.classList.contains('hidden')) {
+                    wsDropdown.classList.add('hidden');
+                    if (wsBtn) wsBtn.setAttribute('aria-expanded', 'false');
+                }
+                if (userDropdown && !userDropdown.classList.contains('hidden')) {
+                    userDropdown.classList.add('hidden');
+                    if (userBtn) userBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!langDropdown.contains(e.target) && !langBtn.contains(e.target)) {
+                    langDropdown.classList.add('hidden');
+                    langBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
         }
 
-        // Toggle Desktop Language Menu
-        if (langBtnDesktop && langMenuDesktop) {
-          langBtnDesktop.addEventListener('click', function (e) {
-            e.stopPropagation();
-            const isOpen = !langMenuDesktop.classList.contains('hidden');
-            closeAllMenus();
-            if (!isOpen) {
-              langMenuDesktop.classList.remove('hidden');
-              langBtnDesktop.setAttribute('aria-expanded', 'true');
-            }
-          });
+        if (userBtn && userDropdown) {
+            userBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                const isOpen = !userDropdown.classList.contains('hidden');
+                userDropdown.classList.toggle('hidden', isOpen);
+                userBtn.setAttribute('aria-expanded', !isOpen);
+                // Si el selector de workspace o idioma está abierto, cerrarlos
+                if (wsDropdown && !wsDropdown.classList.contains('hidden')) {
+                    wsDropdown.classList.add('hidden');
+                    if (wsBtn) wsBtn.setAttribute('aria-expanded', 'false');
+                }
+                if (langDropdown && !langDropdown.classList.contains('hidden')) {
+                    langDropdown.classList.add('hidden');
+                    if (langBtn) langBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+
+            document.addEventListener('click', function (e) {
+                if (!userDropdown.contains(e.target) && !userBtn.contains(e.target)) {
+                    userDropdown.classList.add('hidden');
+                    userBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
         }
 
-        // Toggle Mobile Language Menu
-        if (langBtnMobile && langMenuMobile) {
-          langBtnMobile.addEventListener('click', function (e) {
-            e.stopPropagation();
-            const isOpen = !langMenuMobile.classList.contains('hidden');
-            closeAllMenus();
-            if (!isOpen) {
-              langMenuMobile.classList.remove('hidden');
-              langBtnMobile.setAttribute('aria-expanded', 'true');
-            }
-          });
+        // Control del Drawer Móvil
+        const drawerOpenBtn = document.getElementById('mobileDrawerOpenBtn');
+        const drawerCloseBtn = document.getElementById('mobileDrawerCloseBtn');
+        const drawerOverlay = document.getElementById('mobileDrawerOverlay');
+        const drawerPanel = document.getElementById('mobileDrawerPanel');
+
+        function openDrawer() {
+            if (!drawerOverlay || !drawerPanel) return;
+            drawerOverlay.classList.remove('hidden');
+            setTimeout(() => {
+                drawerPanel.classList.remove('-translate-x-full');
+            }, 10);
+            document.body.style.overflow = 'hidden';
         }
 
-        // Toggle Desktop User Menu
-        if (desktopBtn && desktopMenu) {
-          desktopBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            const isOpen = !desktopMenu.classList.contains('hidden');
-            closeAllMenus();
-            if (!isOpen) {
-              desktopMenu.classList.remove('hidden');
-              desktopBtn.setAttribute('aria-expanded', 'true');
-            }
-          });
+        function closeDrawer() {
+            if (!drawerOverlay || !drawerPanel) return;
+            drawerPanel.classList.add('-translate-x-full');
+            setTimeout(() => {
+                drawerOverlay.classList.add('hidden');
+            }, 200);
+            document.body.style.overflow = '';
         }
 
-        // Toggle Mobile Quick User Menu
-        if (mobileUserBtn && mobileUserMenu) {
-          mobileUserBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            const isOpen = !mobileUserMenu.classList.contains('hidden');
-            closeAllMenus();
-            if (!isOpen) {
-              mobileUserMenu.classList.remove('hidden');
-              mobileUserBtn.setAttribute('aria-expanded', 'true');
-            }
-          });
+        if (drawerOpenBtn) drawerOpenBtn.addEventListener('click', openDrawer);
+        if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeDrawer);
+        if (drawerOverlay) {
+            drawerOverlay.addEventListener('click', function (e) {
+                if (e.target === drawerOverlay) closeDrawer();
+            });
         }
 
-        // Toggle Mobile Hamburger Nav Panel
-        if (mobileNavBtn && mobileNavPanel) {
-          mobileNavBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            const isOpen = !mobileNavPanel.classList.contains('hidden');
-            closeAllMenus();
-            if (!isOpen) {
-              mobileNavPanel.classList.remove('hidden');
-              mobileNavBtn.setAttribute('aria-expanded', 'true');
-              if (hamburgerIcon) hamburgerIcon.classList.add('hidden');
-              if (closeIcon) closeIcon.classList.remove('hidden');
-            }
-          });
-        }
-
-        // Close on click outside
-        document.addEventListener('click', function (e) {
-          const inDesktop = desktopMenu && desktopMenu.contains(e.target);
-          const inDesktopBtn = desktopBtn && desktopBtn.contains(e.target);
-          const inLangDesktop = langMenuDesktop && langMenuDesktop.contains(e.target);
-          const inLangBtnDesktop = langBtnDesktop && langBtnDesktop.contains(e.target);
-          const inLangMobile = langMenuMobile && langMenuMobile.contains(e.target);
-          const inLangBtnMobile = langBtnMobile && langBtnMobile.contains(e.target);
-          const inMobileUser = mobileUserMenu && mobileUserMenu.contains(e.target);
-          const inMobileUserBtn = mobileUserBtn && mobileUserBtn.contains(e.target);
-          const inMobileNav = mobileNavPanel && mobileNavPanel.contains(e.target);
-          const inMobileNavBtn = mobileNavBtn && mobileNavBtn.contains(e.target);
-
-          if (!inDesktop && !inDesktopBtn && !inLangDesktop && !inLangBtnDesktop && !inLangMobile && !inLangBtnMobile && !inMobileUser && !inMobileUserBtn && !inMobileNav && !inMobileNavBtn) {
-            closeAllMenus();
-          }
-        });
-
-        // Close on Escape key
         document.addEventListener('keydown', function (e) {
-          if (e.key === 'Escape') {
-            closeAllMenus();
-          }
+            if (e.key === 'Escape') {
+                closeDrawer();
+                if (wsDropdown && !wsDropdown.classList.contains('hidden')) {
+                    wsDropdown.classList.add('hidden');
+                    if (wsBtn) wsBtn.setAttribute('aria-expanded', 'false');
+                }
+                if (langDropdown && !langDropdown.classList.contains('hidden')) {
+                    langDropdown.classList.add('hidden');
+                    if (langBtn) langBtn.setAttribute('aria-expanded', 'false');
+                }
+                if (userDropdown && !userDropdown.classList.contains('hidden')) {
+                    userDropdown.classList.add('hidden');
+                    if (userBtn) userBtn.setAttribute('aria-expanded', 'false');
+                }
+            }
         });
 
-        // Control visual estético de placeholders en selectores
-        function syncSelectPlaceholders() {
-          document.querySelectorAll('select').forEach(function (sel) {
-            function updateState() {
-              if (!sel.value || sel.value === '') {
-                sel.classList.add('placeholder-active', 'text-gray-400');
-                sel.classList.remove('text-gray-800', 'text-gray-900', 'text-gray-700');
-              } else {
-                sel.classList.remove('placeholder-active', 'text-gray-400');
-                sel.classList.add('text-gray-800');
-              }
+        // Highlighting Activo Inteligente de Rutas en la Barra Lateral
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.sidebar-nav-item').forEach(function (link) {
+            const linkPath = link.getAttribute('data-path');
+            if (linkPath) {
+                if (linkPath === '/' && currentPath === '/') {
+                    link.classList.add('active');
+                } else if (linkPath !== '/' && currentPath.startsWith(linkPath)) {
+                    link.classList.add('active');
+                }
             }
-            updateState();
-            sel.addEventListener('change', updateState);
-          });
+        });
+
+        // Sincronizador de placeholders en selectores nativos
+        function syncSelectPlaceholders() {
+            document.querySelectorAll('select').forEach(function (sel) {
+                function updateState() {
+                    if (!sel.value || sel.value === '') {
+                        sel.classList.add('placeholder-active', 'text-gray-400');
+                        sel.classList.remove('text-gray-800', 'text-gray-900', 'text-gray-700');
+                    } else {
+                        sel.classList.remove('placeholder-active', 'text-gray-400');
+                        sel.classList.add('text-gray-800');
+                    }
+                }
+                updateState();
+                sel.addEventListener('change', updateState);
+            });
         }
         window.syncSelectPlaceholders = syncSelectPlaceholders;
         syncSelectPlaceholders();
-      });
+    });
     </script>
 
     <script src="{% static 'js/custom_select.js' %}"></script>
     {% block scripts %}
     {% endblock %}
-  </body>
+</body>
+
 </html>
