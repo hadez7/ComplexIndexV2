@@ -208,10 +208,14 @@
 
     /* Estado Contraído */
     html.sidebar-collapsed #desktopSidebar {
-        width: 4.75rem !important; /* 76px */
+        width: 4rem !important; /* 64px - Command Rail Compacto */
     }
     html.sidebar-collapsed .main-canvas-area {
-        padding-left: 4.75rem !important;
+        padding-left: 4rem !important;
+    }
+    html.sidebar-collapsed nav {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
     }
     html.sidebar-collapsed .sidebar-text {
         max-width: 0 !important;
@@ -242,6 +246,9 @@
         justify-content: center !important;
     }
     html.sidebar-collapsed .sidebar-workspace-box {
+        padding: 0.5rem !important;
+    }
+    html.sidebar-collapsed .sidebar-footer-box {
         padding: 0.5rem !important;
     }
     html.sidebar-collapsed #sidebarWorkspaceBtn {
@@ -1172,7 +1179,7 @@
         </nav>
 
         <!-- Footer de la Barra Lateral: Idioma, Tema, Colapso y Cuenta -->
-        <div class="p-3 border-t border-slate-200 bg-slate-50/70 shrink-0 space-y-2">
+        <div class="sidebar-footer-box p-3 border-t border-slate-200 bg-slate-50/70 shrink-0 space-y-2">
             
             <!-- Selector de Idioma con Icono de Mundo y Menú Desplegable -->
             <div class="relative" id="sidebarLanguageWrapper">
