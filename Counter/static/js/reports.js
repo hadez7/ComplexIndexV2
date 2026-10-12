@@ -25,7 +25,7 @@ function clearErrors() {
 }
 
 // ---------------------------------------- DETALLES ----------------------------------------
-// Muestra el modal de detalles de una empresa
+// Muestra el modal de detalles de un reporte
 function showDetails(id) {
     fetch(`/reports/${id}/json/`)
     .then(response => response.json())
@@ -33,7 +33,7 @@ function showDetails(id) {
         document.getElementById('detail-id').innerText = id;
         document.getElementById('detail-name').innerText = data.name;
         document.getElementById('detail-year').innerText = data.year;
-        document.getElementById('detail-company').innerText = data.company.name;
+        document.getElementById('detail-company').innerText = data.company ? data.company.name : 'Sin empresa asignada';
         document.getElementById('detailsModal').classList.remove('hidden');
     });
 }
@@ -68,7 +68,6 @@ function deleteReport() {
     })
     .then(response => {
         if (response.ok) {
-            document.getElementById(`reporte-${reportToDelete}`).remove();
             closeDeleteModal();
             location.reload();
         }
@@ -84,7 +83,9 @@ function openEditModal(id) {
         document.getElementById('edit-id').value = id;
         document.getElementById('edit-name').value = data.name;
         document.getElementById('edit-year').value = data.year;
-        document.getElementById('edit-company').value = data.company.id;
+        if (data.company && data.company.id) {
+            document.getElementById('edit-company').value = data.company.id;
+        }
         document.getElementById('editModal').classList.remove('hidden');
     });
 }

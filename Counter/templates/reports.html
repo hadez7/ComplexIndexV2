@@ -23,8 +23,8 @@
                 <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
                     {% trans "Lista de Reportes" %}
                 </h1>
-                <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2.5 py-0.5 rounded-full border border-blue-200">
-                    {% blocktrans count counter=reportes|length %}{{ counter }} Reporte{% plural %}{{ counter }} Reportes{% endblocktrans %}
+                <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2.5 py-0.5 rounded-full border border-blue-200 font-mono tabular-nums">
+                    {% blocktrans count counter=total_reports_count %}{{ counter }} Reporte{% plural %}{{ counter }} Reportes{% endblocktrans %}
                 </span>
             </div>
             <p class="text-sm text-gray-500 mt-1">
@@ -36,6 +36,9 @@
         <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
             <!-- Barra de búsqueda -->
             <form method="GET" class="flex items-center gap-2">
+                <input type="hidden" name="order_by" value="{{ order_by }}">
+                <input type="hidden" name="dir" value="{{ order_dir }}">
+                <input type="hidden" name="page_size" value="{{ page_size }}">
                 <div class="relative w-full sm:w-64 md:w-72">
                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,7 +48,7 @@
                     <input type="text"
                            name="q"
                            value="{{ query }}"
-                           placeholder="{% trans "Buscar por reporte o empresa..." %}"
+                           placeholder="{% trans "Buscar por empresa o año..." %}"
                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-xl text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white shadow-xs transition placeholder-gray-400 font-normal">
                 </div>
                 <button type="submit"
@@ -53,7 +56,7 @@
                     {% trans "Buscar" %}
                 </button>
                 {% if query %}
-                <a href="{% url 'reports' %}"
+                <a href="{% url 'reports' %}?order_by={{ order_by }}&dir={{ order_dir }}&page_size={{ page_size }}"
                    class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium px-3 py-2 rounded-xl text-sm transition inline-flex items-center justify-center"
                    title="{% trans 'Limpiar búsqueda' %}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -158,49 +161,109 @@
         </div>
     </div>
 
-    <!-- !Tabla de Reportes con Estilo Unificado -->
+    <!-- !Tabla de Reportes con Estilo Unificado y Paginación Servidor -->
     <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        
+        <!-- Toolbar de la Tabla: Selector de Filas y Contador -->
+        <div class="p-4 bg-gray-50/80 border-b border-gray-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-sm">
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1.5 text-xs font-mono font-semibold px-3 py-1.5 rounded-xl bg-blue-50 border border-blue-200 text-blue-700 tabular-nums shadow-2xs">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-600"></span>
+                    <span>{{ total_reports_count }} {% trans "reportes en total" %}</span>
+                </span>
+                {% if query %}
+                <span class="text-xs text-gray-500">
+                    {% blocktrans %}Filtrado por: "<strong class="text-gray-800">{{ query }}</strong>"{% endblocktrans %}
+                </span>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center gap-2 justify-end text-xs">
+                <span class="text-gray-500 font-medium whitespace-nowrap">{% trans "Mostrar por página" %}:</span>
+                <select onchange="window.location.href='?page=1&page_size=' + this.value + '&order_by={{ order_by }}&dir={{ order_dir }}{% if query %}&q={{ query|urlencode }}{% endif %}'"
+                        class="bg-white border border-gray-300 rounded-lg px-2.5 py-1 text-gray-700 font-mono text-xs focus:ring-2 focus:ring-blue-500 focus:outline-none cursor-pointer shadow-2xs">
+                    <option value="10" {% if page_size == 10 %}selected{% endif %}>10</option>
+                    <option value="25" {% if page_size == 25 %}selected{% endif %}>25</option>
+                    <option value="50" {% if page_size == 50 %}selected{% endif %}>50</option>
+                    <option value="100" {% if page_size == 100 %}selected{% endif %}>100</option>
+                </select>
+            </div>
+        </div>
+
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 text-sm">
-                <thead class="bg-gray-50">
-                    <tr class="text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                        <th class="px-6 py-3.5">ID</th>
-                        <th class="px-6 py-3.5">{% trans "Reporte" %}</th>
-                        <th class="px-6 py-3.5">{% trans "Año" %}</th>
-                        <th class="px-6 py-3.5">{% trans "Empresa" %}</th>
-                        <th class="px-6 py-3.5 text-right">{% trans "Acciones" %}</th>
+                <thead class="bg-gray-50 border-b border-gray-200 text-xs font-mono font-bold text-gray-500 uppercase tracking-wider select-none">
+                    <tr class="text-left">
+                        <!-- Año -->
+                        <th class="px-6 py-3.5 w-36">
+                            <a href="?page=1&page_size={{ page_size }}&order_by=year&dir={% if order_by == 'year' and order_dir == 'desc' %}asc{% else %}desc{% endif %}{% if query %}&q={{ query|urlencode }}{% endif %}"
+                               class="inline-flex items-center gap-1.5 hover:text-blue-600 transition group"
+                               title="{% trans 'Ordenar por Año' %}">
+                                <span>{% trans "Año" %}</span>
+                                {% if order_by == 'year' %}
+                                    <svg class="w-3.5 h-3.5 text-blue-600 transition-transform {% if order_dir == 'desc' %}rotate-180{% endif %}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+                                {% else %}
+                                    <svg class="w-3.5 h-3.5 text-gray-400 group-hover:text-blue-600 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+                                {% endif %}
+                            </a>
+                        </th>
+
+                        <!-- Empresa -->
+                        <th class="px-6 py-3.5">
+                            <a href="?page=1&page_size={{ page_size }}&order_by=company&dir={% if order_by == 'company' and order_dir == 'asc' %}desc{% else %}asc{% endif %}{% if query %}&q={{ query|urlencode }}{% endif %}"
+                               class="inline-flex items-center gap-1.5 hover:text-blue-600 transition group"
+                               title="{% trans 'Ordenar por Empresa' %}">
+                                <span>{% trans "Empresa" %}</span>
+                                {% if order_by == 'company' %}
+                                    <svg class="w-3.5 h-3.5 text-blue-600 transition-transform {% if order_dir == 'desc' %}rotate-180{% endif %}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+                                {% else %}
+                                    <svg class="w-3.5 h-3.5 text-gray-400 group-hover:text-blue-600 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+                                {% endif %}
+                            </a>
+                        </th>
+
+                        <!-- Acciones -->
+                        <th class="px-6 py-3.5 text-right font-medium w-48">{% trans "Acciones" %}</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100 bg-white">
                     {% for report in reports %}
                     <tr id="reporte-{{ report.id }}" class="hover:bg-blue-50/40 transition-colors">
-                        <td class="px-6 py-4 text-xs font-mono tabular-nums text-gray-500 font-semibold">#{{ report.id }}</td>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                    </svg>
-                                </div>
-                                <span class="font-bold text-gray-900 text-sm">{{ report.name }}</span>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
+                        <!-- Año -->
+                        <td class="px-6 py-4 whitespace-nowrap">
                             {% if report.year %}
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-mono tabular-nums font-semibold bg-blue-50 text-blue-700 border border-blue-100">
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-mono tabular-nums font-bold bg-blue-50 text-blue-700 border border-blue-200 shadow-2xs">
                                     {{ report.year }}
                                 </span>
                             {% else %}
                                 <span class="text-xs text-gray-400 italic">{% trans "No asignado" %}</span>
                             {% endif %}
                         </td>
-                        <td class="px-6 py-4 text-sm text-gray-600 font-medium">
-                            {% if report.company.name %}{{ report.company.name }}{% else %}{% trans "Empresa no asignada" %}{% endif %}
+
+                        <!-- Empresa -->
+                        <td class="px-6 py-4">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center shrink-0">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                    </svg>
+                                </div>
+                                <div class="min-w-0">
+                                    <span class="font-bold text-gray-900 text-sm block truncate">
+                                        {% if report.company.name %}{{ report.company.name }}{% else %}{% trans "Empresa no asignada" %}{% endif %}
+                                    </span>
+                                    {% if report.company.ruc %}
+                                    <span class="text-[11px] font-mono text-gray-400">RUC: {{ report.company.ruc }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
                         </td>
+
+                        <!-- Acciones -->
                         <td class="px-6 py-4 text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-1.5">
                                 <button onclick="showDetails({{ report.id }})"
-                                        title="{% trans 'Ver detalles' %}"
+                                        title="{% trans 'Ver detalles del reporte' %}"
                                         class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition inline-flex items-center">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
@@ -233,7 +296,7 @@
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="px-6 py-12 text-center text-gray-500">
+                        <td colspan="3" class="px-6 py-12 text-center text-gray-500">
                             <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
@@ -247,6 +310,68 @@
                     {% endfor %}
                 </tbody>
             </table>
+        </div>
+
+        <!-- Paginación de Reportes del Servidor -->
+        <div class="p-4 bg-gray-50/70 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+            <div class="text-gray-500 font-mono text-xs">
+                {% if reports.paginator.count > 0 %}
+                    Mostrando <strong class="font-bold text-gray-800 tabular-nums">{{ reports.start_index }} - {{ reports.end_index }}</strong> de <strong class="font-bold text-gray-800 tabular-nums">{{ reports.paginator.count }}</strong> reportes
+                {% else %}
+                    {% trans "0 reportes" %}
+                {% endif %}
+            </div>
+
+            {% if reports.has_other_pages %}
+            <div class="flex items-center gap-1">
+                <!-- Anterior -->
+                {% if reports.has_previous %}
+                <a href="?page={{ reports.previous_page_number }}&page_size={{ page_size }}&order_by={{ order_by }}&dir={{ order_dir }}{% if query %}&q={{ query|urlencode }}{% endif %}"
+                   class="px-2.5 py-1 rounded-lg border text-xs font-semibold bg-white text-gray-700 border-gray-300 hover:bg-gray-100 transition"
+                   title="{% trans 'Página anterior' %}">
+                    ←
+                </a>
+                {% else %}
+                <span class="px-2.5 py-1 rounded-lg border text-xs font-semibold bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed opacity-50">
+                    ←
+                </span>
+                {% endif %}
+
+                <!-- Páginas con ventana inteligente -->
+                {% for p in reports.paginator.page_range %}
+                    {% if p == reports.number %}
+                        <span class="px-2.5 py-1 rounded-lg border text-xs font-mono font-bold bg-blue-600 text-white border-blue-600 shadow-2xs">
+                            {{ p }}
+                        </span>
+                    {% elif p >= reports.number|add:"-2" and p <= reports.number|add:"2" %}
+                        <a href="?page={{ p }}&page_size={{ page_size }}&order_by={{ order_by }}&dir={{ order_dir }}{% if query %}&q={{ query|urlencode }}{% endif %}"
+                           class="px-2.5 py-1 rounded-lg border text-xs font-mono font-semibold bg-white text-gray-700 border-gray-300 hover:bg-gray-100 transition">
+                            {{ p }}
+                        </a>
+                    {% elif p == 1 or p == reports.paginator.num_pages %}
+                        <a href="?page={{ p }}&page_size={{ page_size }}&order_by={{ order_by }}&dir={{ order_dir }}{% if query %}&q={{ query|urlencode }}{% endif %}"
+                           class="px-2.5 py-1 rounded-lg border text-xs font-mono font-semibold bg-white text-gray-700 border-gray-300 hover:bg-gray-100 transition">
+                            {{ p }}
+                        </a>
+                    {% elif p == reports.number|add:"-3" or p == reports.number|add:"3" %}
+                        <span class="px-1.5 py-1 text-xs text-gray-400 font-mono">...</span>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Siguiente -->
+                {% if reports.has_next %}
+                <a href="?page={{ reports.next_page_number }}&page_size={{ page_size }}&order_by={{ order_by }}&dir={{ order_dir }}{% if query %}&q={{ query|urlencode }}{% endif %}"
+                   class="px-2.5 py-1 rounded-lg border text-xs font-semibold bg-white text-gray-700 border-gray-300 hover:bg-gray-100 transition"
+                   title="{% trans 'Página siguiente' %}">
+                    →
+                </a>
+                {% else %}
+                <span class="px-2.5 py-1 rounded-lg border text-xs font-semibold bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed opacity-50">
+                    →
+                </span>
+                {% endif %}
+            </div>
+            {% endif %}
         </div>
     </div>
 </div>

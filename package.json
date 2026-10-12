@@ -1,0 +1,14 @@
+{
+  "name": "complex-index-v2",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Enterprise Lex Index (ELI) - Compilación de estilos estáticos Tailwind CSS",
+  "scripts": {
+    "build:css": "tailwindcss -i Counter/static/css/input.css -o Counter/static/css/tailwind.min.css --minify",
+    "watch:css": "tailwindcss -i Counter/static/css/input.css -o Counter/static/css/tailwind.min.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.17"
+  }
+}
+

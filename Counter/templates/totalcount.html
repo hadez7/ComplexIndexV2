@@ -6,42 +6,42 @@
 
 <div class="container mx-auto px-4">
     <!-- Cabecera de Página / Breadcrumb y Acciones -->
-    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200">
+    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200 dark:border-slate-800">
         <div>
-            <div class="flex items-center space-x-2 text-xs text-gray-500 mb-2">
-                <a href="{% url 'panel' %}" class="hover:text-blue-600 transition flex items-center space-x-1 font-medium">
+            <div class="flex items-center space-x-2 text-xs text-gray-500 dark:text-slate-400 mb-2">
+                <a href="{% url 'panel' %}" class="hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center space-x-1 font-medium">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>
                     <span>{% trans "Panel de administración" %}</span>
                 </a>
                 <span>/</span>
-                <span class="text-gray-700 font-semibold">{% trans "Total de palabras" %}</span>
+                <span class="text-gray-700 dark:text-slate-200 font-semibold">{% trans "Total de palabras" %}</span>
             </div>
 
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
                 {% trans "Frecuencia y Distribución Léxica Consolidada" %}
             </h1>
-            <p class="text-sm text-gray-500 mt-1">
+            <p class="text-sm text-gray-500 dark:text-slate-400 mt-1">
                 {% trans "Consulta el acumulado general de frecuencias de palabras a través de los años y empresas auditadas." %}
             </p>
         </div>
     </div>
     
-    <!-- !Filtros de búsqueda -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
-        <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <!-- Filtros de búsqueda del Servidor -->
+    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-gray-200/80 dark:border-slate-800 p-6 mb-8 transition-colors">
+        <h2 class="text-lg font-bold text-gray-800 dark:text-slate-100 mb-4 flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
             {% trans "Filtros de búsqueda" %}
         </h2>
         <form method="get" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
-            <!-- !Año -->
+            <!-- Año -->
             <div>
-                <label for="years" class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Año" %}:</label>
+                <label for="years" class="block text-xs font-mono font-bold uppercase tracking-wider text-gray-700 dark:text-slate-300 mb-1.5">{% trans "Año" %}:</label>
                 <select name="selected_year" id="years" data-custom-select="true"
-                        class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
+                        class="w-full border border-gray-300 dark:border-slate-700 rounded-xl shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 dark:text-white bg-white dark:bg-slate-950 transition">
                     <option value="">{% trans "Todos los años" %}</option>
                     {% for year in years %}
                         <option value="{{ year }}" {% if year|stringformat:"s" == selected_year %}selected{% endif %}>
@@ -51,11 +51,11 @@
                 </select>
             </div>
 
-            <!-- !Empresa -->
+            <!-- Empresa -->
             <div>
-                <label for="company" class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Empresa" %}:</label>
+                <label for="company" class="block text-xs font-mono font-bold uppercase tracking-wider text-gray-700 dark:text-slate-300 mb-1.5">{% trans "Empresa" %}:</label>
                 <select name="company" id="company" data-custom-select="true"
-                        class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
+                        class="w-full border border-gray-300 dark:border-slate-700 rounded-xl shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 dark:text-white bg-white dark:bg-slate-950 transition">
                     <option value="">{% trans "Todas las empresas" %}</option>
                     {% for company in companies %}
                         <option value="{{ company.id }}" {% if request.GET.company == company.id|stringformat:"s" %}selected{% endif %}>
@@ -65,11 +65,11 @@
                 </select>
             </div>
 
-            <!-- !Listas de experto -->
+            <!-- Listas de experto -->
             <div>
-                <label for="expert_lists" class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Lista de experto" %}:</label>
+                <label for="expert_lists" class="block text-xs font-mono font-bold uppercase tracking-wider text-gray-700 dark:text-slate-300 mb-1.5">{% trans "Lista de experto" %}:</label>
                 <select name="selected_list" id="expert_lists" data-custom-select="true"
-                        class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
+                        class="w-full border border-gray-300 dark:border-slate-700 rounded-xl shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 dark:text-white bg-white dark:bg-slate-950 transition">
                     <option value="">{% trans "Todas las listas" %}</option>
                     {% for expert_list in expert_lists %}
                         <option value="{{ expert_list.name }}" {% if expert_list.name == selected_list_name %}selected{% endif %}> 
@@ -79,10 +79,10 @@
                 </select>
             </div>
 
-            <!-- !Botones -->
+            <!-- Botones -->
             <div class="flex items-center gap-2">
                 <button type="submit"
-                        class="flex-1 inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 px-4 rounded-xl shadow transition duration-200">
+                        class="flex-1 inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-2.5 px-4 rounded-xl shadow-xs transition duration-150 btn-interactive text-sm">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                               d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2H3V4zm0 4h18v2H3V8zm0 4h18v2H3v-2zm0 4h18v2H3v-2z"/>
@@ -92,7 +92,7 @@
 
                 <a href="{% url 'export_excel' %}?selected_year={{ request.GET.selected_year }}&company={{ request.GET.company }}&selected_list={{ request.GET.selected_list }}"
                    title="{% trans 'Exportar a Excel' %}"
-                   class="inline-flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-xl shadow transition duration-200">
+                   class="inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-2.5 px-4 rounded-xl shadow-xs transition duration-150 btn-interactive text-sm">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M12 4v16m8-8H4"/>
@@ -103,172 +103,770 @@
         </form>
     </div>
 
-    <!-- !Pestañas para Conteo Total e Índice de Complejidad -->
-    <div class="mt-10">
+    <!-- Pestañas para Conteo Total e Índice de Complejidad -->
+    <div class="mt-8">
         <!-- Botones de pestañas -->
-        <div class="flex gap-4 border-b-2 border-gray-200 mb-6">
+        <div class="flex gap-4 border-b border-gray-200 dark:border-slate-800 mb-6">
             <button id="tab-conteo" onclick="showTab('conteo')" 
-                    class="px-5 py-3 font-bold text-sm border-b-2 border-blue-600 text-blue-600 transition-all inline-flex items-center gap-2 btn-interactive">
-                <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    class="px-5 py-3 font-bold text-sm border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 transition-all inline-flex items-center gap-2 btn-interactive">
+                <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                 <span>{% trans "Conteo Total" %}</span>
+                <span id="tabConteoBadge" class="ml-1 px-2 py-0.5 text-xs font-mono rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">
+                    {{ total_counts|length }}
+                </span>
             </button>
             <button id="tab-complejidad" onclick="showTab('complejidad')" 
-                    class="px-5 py-3 font-bold text-sm border-b-2 border-transparent text-gray-600 hover:text-gray-800 transition-all inline-flex items-center gap-2 btn-interactive">
+                    class="px-5 py-3 font-bold text-sm border-b-2 border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200 transition-all inline-flex items-center gap-2 btn-interactive">
                 <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
                 <span>{% trans "Índice de Complejidad" %}</span>
+                {% if complexity_metrics %}
+                <span class="ml-1 px-2 py-0.5 text-xs font-mono rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                    {{ complexity_metrics|length }}
+                </span>
+                {% endif %}
             </button>
         </div>
 
-        <!-- Pestaña 1: Conteo Total -->
-        <div id="contenido-conteo" class="tab-content">
-            <div class="mt-6 mb-4 bg-blue-50 text-blue-800 rounded-xl p-4 text-center font-semibold text-sm border border-blue-200">
-                {% trans "Promedio total" %}: <span class="font-mono tabular-nums font-bold">{{ average }}</span>
-            </div>
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-x-auto overflow-y-auto" style="height: 500px;">
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider sticky top-0 z-10 backdrop-blur-xs">
-                        <tr>
-                            <th class="px-6 py-3.5 text-left">{% trans "Palabra" %}</th>
-                            <th class="px-6 py-3.5 text-left">{% trans "Cantidad" %}</th>
-                            <th class="px-6 py-3.5 text-left">{% trans "Peso" %}</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100 bg-white">
-                        {% for total in total_counts %}
-                        <tr class="hover:bg-blue-50/40 transition-colors">
-                            <td class="px-6 py-3 font-medium text-gray-900">{{ total.word }}</td>
-                            <td class="px-6 py-3 font-mono tabular-nums text-gray-700">{{ total.quantity }}</td>
-                            <td class="px-6 py-3 font-mono tabular-nums text-blue-600 font-semibold">{{ word_average|get_item:total.word }}</td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="3" class="px-6 py-6 text-center text-gray-500 italic">
-                                {% trans "No se ha procesado ningún informe con estos filtros." %}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <!-- ================================================================= -->
+        <!-- PESTAÑA 1: CONTEO TOTAL DE PALABRAS                               -->
+        <!-- ================================================================= -->
+        <div id="contenido-conteo" class="tab-content space-y-4">
+            
+            <!-- Barra Superior Informativa y de Control Rápido -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+                <div class="bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/60 rounded-2xl p-4 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-mono font-bold text-blue-700 dark:text-blue-300 uppercase block tracking-wider">
+                            {% trans "Promedio de Frecuencia" %}
+                        </span>
+                        <span class="text-2xl font-black font-mono tabular-nums text-blue-900 dark:text-blue-100">{{ average }}</span>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/60 flex items-center justify-center text-blue-600 dark:text-blue-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    </div>
+                </div>
 
-        <!-- Pestaña 2: Índice de Complejidad -->
-        <div id="contenido-complejidad" class="tab-content hidden">
-            {% if complexity_metrics %}
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-x-auto" style="max-height: 700px; overflow-y: auto;">
-                    <table class="min-w-full divide-y divide-gray-200 text-sm">
-                        <thead class="bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider sticky top-0 z-10 backdrop-blur-xs">
+                <div class="bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-mono font-bold text-slate-600 dark:text-slate-400 uppercase block tracking-wider">
+                            {% trans "Términos Únicos" %}
+                        </span>
+                        <span class="text-2xl font-black font-mono tabular-nums text-slate-900 dark:text-white" id="totalWordsStat">{{ total_counts|length }}</span>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-slate-200/70 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
+                    </div>
+                </div>
+
+                <div class="bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-900/60 rounded-2xl p-4 flex items-center justify-between">
+                    <div>
+                        <span class="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-300 uppercase block tracking-wider">
+                            {% trans "Filtro Activo" %}
+                        </span>
+                        <span class="text-sm font-bold text-emerald-900 dark:text-emerald-200 truncate block max-w-[180px]">
+                            {% if selected_company %}{{ selected_company.name }}{% elif selected_year %}{{ selected_year }}{% else %}{% trans "Consolidado Global" %}{% endif %}
+                        </span>
+                    </div>
+                    <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-900/60 flex items-center justify-center text-emerald-600 dark:text-emerald-300">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Toolbar de Búsqueda en Vivo, Filtros de Rango y Paginador -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/90 dark:border-slate-800 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 shadow-xs">
+                
+                <!-- Buscador de Palabras en Vivo -->
+                <div class="relative flex-1 max-w-md">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                    <input type="text" id="wordSearchInput" placeholder="{% trans 'Filtrar término en vivo...' %}"
+                           class="w-full pl-10 pr-8 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition">
+                    <button type="button" id="clearWordSearchBtn" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <!-- Chips de Rango Rápido -->
+                <div class="flex flex-wrap items-center gap-1.5 text-xs">
+                    <span class="text-slate-400 font-mono text-[11px] mr-1">{% trans "Rango" %}:</span>
+                    <button type="button" onclick="setWordRankFilter('all')" class="word-rank-btn px-2.5 py-1 rounded-lg border font-semibold transition bg-blue-600 text-white border-blue-600" data-filter="all">{% trans "Todas" %}</button>
+                    <button type="button" onclick="setWordRankFilter('top50')" class="word-rank-btn px-2.5 py-1 rounded-lg border font-semibold transition bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200" data-filter="top50">Top 50</button>
+                    <button type="button" onclick="setWordRankFilter('top100')" class="word-rank-btn px-2.5 py-1 rounded-lg border font-semibold transition bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200" data-filter="top100">Top 100</button>
+                    <button type="button" onclick="setWordRankFilter('min5')" class="word-rank-btn px-2.5 py-1 rounded-lg border font-semibold transition bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200" data-filter="min5">≥ 5 rep</button>
+                </div>
+
+                <!-- Selector de Filas por Página -->
+                <div class="flex items-center gap-2 text-xs ml-auto">
+                    <span class="text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">{% trans "Mostrar" %}:</span>
+                    <select id="wordsPageSizeSelect" class="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1 text-slate-800 dark:text-slate-200 font-mono text-xs focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                        <option value="25" selected>25</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="all">{% trans "Todas" %}</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Tabla de Conteo Total con Ordenamiento Interactivo -->
+            <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-gray-200/90 dark:border-slate-800 overflow-hidden transition-colors">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-800 text-sm" id="wordsTable">
+                        <thead class="bg-gray-50 dark:bg-slate-950/80 border-b border-gray-200 dark:border-slate-800 text-xs font-mono font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider select-none">
                             <tr>
-                                <th class="px-6 py-3.5 text-left font-semibold">{% trans "RUC" %}</th>
-                                <th class="px-6 py-3.5 text-left font-semibold">{% trans "Nombre de Empresa" %}</th>
-                                <th class="px-6 py-3.5 text-center font-semibold">{% trans "Año" %}</th>
-                                <th class="px-6 py-3.5 text-center font-semibold">{% trans "Complejidad General (0-1)" %}</th>
-                                <th class="px-6 py-3.5 text-center font-semibold">{% trans "Diversidad Léxica (0-1)" %}</th>
-                                <th class="px-6 py-3.5 text-center font-semibold">{% trans "Legibilidad (0-1)" %}</th>
-                                <th class="px-6 py-3.5 text-center font-semibold">{% trans "Densidad Técnica (0-1)" %}</th>
+                                <th class="px-6 py-3.5 text-left cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition" onclick="sortWordsTable('word')">
+                                    <div class="inline-flex items-center gap-1.5">
+                                        <span>{% trans "Palabra" %}</span>
+                                        <svg class="w-3.5 h-3.5 sort-icon sort-word text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+                                    </div>
+                                </th>
+                                <th class="px-6 py-3.5 text-right cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition" onclick="sortWordsTable('quantity')">
+                                    <div class="inline-flex items-center justify-end gap-1.5 w-full">
+                                        <span>{% trans "Frecuencia (Cantidad)" %}</span>
+                                        <svg class="w-3.5 h-3.5 sort-icon sort-quantity text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+                                    </div>
+                                </th>
+                                <th class="px-6 py-3.5 text-right cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition" onclick="sortWordsTable('weight')">
+                                    <div class="inline-flex items-center justify-end gap-1.5 w-full">
+                                        <span>{% trans "Peso Relativo (Vs Promedio)" %}</span>
+                                        <svg class="w-3.5 h-3.5 sort-icon sort-weight text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/></svg>
+                                    </div>
+                                </th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100 bg-white">
-                            {% for report in complexity_metrics %}
-                            <tr class="hover:bg-blue-50/40 transition-colors">
-                                <td class="px-6 py-3.5 font-mono tabular-nums text-blue-600 font-semibold">{{ report.ruc }}</td>
-                                <td class="px-6 py-3.5">
-                                    <span class="font-bold text-gray-900">{{ report.company_name }}</span>
-                                    <br>
-                                    <span class="text-xs text-gray-500">{{ report.report_name }}</span>
-                                </td>
-                                <td class="px-6 py-3.5 text-center">
-                                    <span class="bg-blue-50 text-blue-700 border border-blue-200 px-2.5 py-0.5 rounded-full text-xs font-mono tabular-nums font-semibold">
-                                        {{ report.year }}
+                        <tbody id="wordsTableBody" class="divide-y divide-gray-100 dark:divide-slate-800/80 bg-white dark:bg-slate-900">
+                            {% for total in total_counts %}
+                            <tr class="hover:bg-blue-50/50 dark:hover:bg-slate-800/50 transition-colors word-data-row"
+                                data-word="{{ total.word|lower }}"
+                                data-quantity="{{ total.quantity }}"
+                                data-weight="{{ word_average|get_item:total.word|default:0 }}">
+                                <td class="px-6 py-3 font-semibold text-gray-900 dark:text-white">
+                                    <span class="inline-flex items-center gap-2">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500/70"></span>
+                                        {{ total.word }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-3.5 text-center font-mono tabular-nums">
-                                    {% if report.complexity_general >= 0.66 %}
-                                        <span class="bg-red-50 text-red-700 border border-red-200 px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ report.complexity_general }} ({% trans "Alta" %})</span>
-                                    {% elif report.complexity_general >= 0.33 %}
-                                        <span class="bg-yellow-50 text-yellow-800 border border-yellow-200 px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ report.complexity_general }} ({% trans "Media" %})</span>
-                                    {% else %}
-                                        <span class="bg-green-50 text-green-700 border border-green-200 px-2.5 py-0.5 rounded-full text-xs font-semibold">{{ report.complexity_general }} ({% trans "Baja" %})</span>
-                                    {% endif %}
+                                <td class="px-6 py-3 text-right font-mono tabular-nums text-gray-700 dark:text-slate-300 font-medium">
+                                    {{ total.quantity }}
                                 </td>
-                                <td class="px-6 py-3.5 text-center font-mono tabular-nums font-semibold text-pink-600">
-                                    {{ report.diversity_index }}
-                                </td>
-                                <td class="px-6 py-3.5 text-center font-mono tabular-nums font-semibold text-teal-600">
-                                    {{ report.readability_index }}
-                                </td>
-                                <td class="px-6 py-3.5 text-center font-mono tabular-nums font-semibold text-indigo-600">
-                                    {{ report.technical_density }}
+                                <td class="px-6 py-3 text-right font-mono tabular-nums text-blue-600 dark:text-blue-400 font-bold">
+                                    {{ word_average|get_item:total.word }}
                                 </td>
                             </tr>
                             {% empty %}
-                            <tr>
-                                <td colspan="7" class="px-6 py-8 text-center text-gray-500 italic">
+                            <tr id="serverEmptyRow">
+                                <td colspan="3" class="px-6 py-12 text-center text-gray-500 dark:text-slate-400 italic">
                                     {% trans "No se ha procesado ningún informe con estos filtros." %}
                                 </td>
                             </tr>
                             {% endfor %}
+                            <tr id="noWordsMatchRow" class="hidden">
+                                <td colspan="3" class="px-6 py-10 text-center text-gray-500 dark:text-slate-400 italic">
+                                    {% trans "No se encontraron términos que coincidan con la búsqueda." %}
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Leyenda de Interpretación -->
-                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="bg-blue-50 border-l-4 border-blue-500 rounded-xl p-6">
-                        <h3 class="font-bold text-blue-900 mb-3 flex items-center gap-2">
+                <!-- Barra Inferior de Paginación -->
+                <div class="px-6 py-3.5 bg-gray-50 dark:bg-slate-950/80 border-t border-gray-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                    <div class="text-slate-500 dark:text-slate-400 font-mono" id="wordsPaginationInfo">
+                        {% trans "Cargando paginación..." %}
+                    </div>
+                    <div class="inline-flex items-center gap-1.5" id="wordsPaginationControls">
+                        <!-- Botones de paginación generados dinámicamente -->
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+        <!-- ================================================================= -->
+        <!-- PESTAÑA 2: ÍNDICE DE COMPLEJIDAD LÉXICA & ASIMETRÍA               -->
+        <!-- ================================================================= -->
+        <div id="contenido-complejidad" class="tab-content hidden space-y-4">
+            {% if complexity_metrics %}
+                
+                <!-- Toolbar de Búsqueda y Paginación para Métricas de Complejidad -->
+                <div class="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/90 dark:border-slate-800 p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3 shadow-xs">
+                    <div class="flex flex-col sm:flex-row sm:items-center gap-3 flex-1">
+                        <!-- Buscador -->
+                        <div class="relative flex-1 max-w-md">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            </div>
+                            <input type="text" id="complexitySearchInput" placeholder="{% trans 'Filtrar por empresa, RUC o año...' %}"
+                                   class="w-full pl-10 pr-10 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition">
+                            <button type="button" id="clearComplexitySearchBtn" class="hidden absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+
+                        <!-- Selector de tamaño de página -->
+                        <div class="flex items-center gap-2">
+                            <label for="complexityPageSizeSelect" class="text-xs text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider whitespace-nowrap">
+                                {% trans "Mostrar:" %}
+                            </label>
+                            <select id="complexityPageSizeSelect" class="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl px-2.5 py-1 text-xs text-slate-800 dark:text-slate-100 font-bold focus:outline-none focus:ring-2 focus:ring-blue-600">
+                                <option value="25" selected>25</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                                <option value="all">{% trans "Todas" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <button type="button" onclick="toggleFormulaLegend()" class="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        <span id="legendToggleText">{% trans "Ver Guía de Fórmulas y Escalas" %}</span>
+                    </button>
+                </div>
+
+                <!-- Leyenda de Interpretación Colapsable -->
+                <div id="formulaLegendBox" class="hidden grid grid-cols-1 md:grid-cols-2 gap-4 transition-all">
+                    <div class="bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900/60 rounded-2xl p-5">
+                        <h3 class="font-bold text-blue-900 dark:text-blue-200 mb-2 flex items-center gap-2 text-sm">
                             <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
                             <span>{% trans "Complejidad General (Fórmula Compuesta)" %}</span>
                         </h3>
-                        <ul class="text-sm text-blue-800 space-y-2">
-                            <li><strong>{% trans "Fórmula" %}:</strong> {% trans "(Diversidad + (1-Legibilidad) + Densidad Técnica) / 3" %}</li>
-                            <li><strong>0.00 - 0.33:</strong> <span class="bg-green-100 px-2 py-0.5 rounded text-xs font-semibold">{% trans "Baja complejidad" %}</span></li>
-                            <li><strong>0.33 - 0.66:</strong> <span class="bg-yellow-100 px-2 py-0.5 rounded text-xs font-semibold">{% trans "Complejidad media" %}</span></li>
-                            <li><strong>0.66 - 1.00:</strong> <span class="bg-red-100 px-2 py-0.5 rounded text-xs font-semibold">{% trans "Alta complejidad" %}</span></li>
-                        </ul>
+                        <p class="text-xs text-blue-800 dark:text-blue-300 mb-2.5 font-mono">
+                            ({% trans "Diversidad + (1 - Legibilidad) + Densidad Técnica" %}) / 3
+                        </p>
+                        <div class="flex flex-wrap gap-2 text-xs">
+                            <span class="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded-md font-semibold">0.00 - 0.33: {% trans "Baja" %}</span>
+                            <span class="bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-300 px-2 py-0.5 rounded-md font-semibold">0.33 - 0.66: {% trans "Media" %}</span>
+                            <span class="bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300 px-2 py-0.5 rounded-md font-semibold">0.66 - 1.00: {% trans "Alta" %}</span>
+                        </div>
                     </div>
 
-                    <div class="bg-green-50 border-l-4 border-green-500 rounded-xl p-6">
-                        <h3 class="font-bold text-green-900 mb-3 flex items-center gap-2">
-                            <svg class="w-4 h-4 text-green-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-                            <span>{% trans "Escala de Métricas (0-1)" %}</span>
+                    <div class="bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/60 rounded-2xl p-5">
+                        <h3 class="font-bold text-emerald-900 dark:text-emerald-200 mb-2 flex items-center gap-2 text-sm">
+                            <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                            <span>{% trans "Interpretación de Ejes Léxicos (0 a 1)" %}</span>
                         </h3>
-                        <ul class="text-sm text-green-800 space-y-2">
-                            <li><strong>{% trans "Diversidad Léxica (0-1)" %}:</strong> {% trans "Cercano a 1 = vocabulario muy variado" %}</li>
-                            <li><strong>{% trans "Legibilidad (0-1)" %}:</strong> {% trans "Cercano a 1 = texto muy fácil de leer" %}</li>
-                            <li><strong>{% trans "Densidad Técnica (0-1)" %}:</strong> {% trans "Cercano a 1 = muchos términos especializados" %}</li>
+                        <ul class="text-xs text-emerald-800 dark:text-emerald-300 space-y-1">
+                            <li><strong>{% trans "Diversidad" %}:</strong> {% trans "Mayor a 0.7 indica vocabulario muy amplio y especializado." %}</li>
+                            <li><strong>{% trans "Legibilidad" %}:</strong> {% trans "Mayor a 0.7 indica texto fluido y claro; menor a 0.3 indica alta opacidad." %}</li>
+                            <li><strong>{% trans "Densidad Técnica" %}:</strong> {% trans "Frecuencia de términos jurídicos o corporativos." %}</li>
                         </ul>
                     </div>
                 </div>
 
+                <!-- Tabla de Complejidad -->
+                <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-gray-200/90 dark:border-slate-800 overflow-hidden transition-colors">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-800 text-sm" id="complexityTable">
+                            <thead class="bg-gray-50 dark:bg-slate-950/80 border-b border-gray-200 dark:border-slate-800 text-xs font-mono font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+                                <tr>
+                                    <th class="px-5 py-3.5 text-left cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 select-none" onclick="sortComplexityTable('ruc')">
+                                        <div class="flex items-center gap-1">
+                                            <span>{% trans "RUC" %}</span>
+                                            <span class="text-gray-400 font-normal">↕</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-5 py-3.5 text-left cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 select-none" onclick="sortComplexityTable('company')">
+                                        <div class="flex items-center gap-1">
+                                            <span>{% trans "Empresa & Reporte" %}</span>
+                                            <span class="text-gray-400 font-normal">↕</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3.5 text-center cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 select-none" onclick="sortComplexityTable('year')">
+                                        <div class="inline-flex items-center gap-1">
+                                            <span>{% trans "Año" %}</span>
+                                            <span class="text-gray-400 font-normal">↕</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-5 py-3.5 text-center cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 select-none" onclick="sortComplexityTable('complexity')">
+                                        <div class="inline-flex items-center gap-1">
+                                            <span>{% trans "Complejidad General" %}</span>
+                                            <span class="text-gray-400 font-normal">↕</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3.5 text-center cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 select-none" onclick="sortComplexityTable('diversity')">
+                                        <div class="inline-flex items-center gap-1">
+                                            <span>{% trans "Diversidad" %}</span>
+                                            <span class="text-gray-400 font-normal">↕</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3.5 text-center cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 select-none" onclick="sortComplexityTable('readability')">
+                                        <div class="inline-flex items-center gap-1">
+                                            <span>{% trans "Legibilidad" %}</span>
+                                            <span class="text-gray-400 font-normal">↕</span>
+                                        </div>
+                                    </th>
+                                    <th class="px-4 py-3.5 text-center cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 select-none" onclick="sortComplexityTable('density')">
+                                        <div class="inline-flex items-center gap-1">
+                                            <span>{% trans "Densidad Técnica" %}</span>
+                                            <span class="text-gray-400 font-normal">↕</span>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="complexityTableBody" class="divide-y divide-gray-100 dark:divide-slate-800/80 bg-white dark:bg-slate-900">
+                                {% for report in complexity_metrics %}
+                                <tr class="hover:bg-blue-50/50 dark:hover:bg-slate-800/50 transition-colors complexity-row"
+                                    data-search="{{ report.ruc }} {{ report.company_name|lower }} {{ report.report_name|lower }} {{ report.year }}"
+                                    data-ruc="{{ report.ruc }}"
+                                    data-company="{{ report.company_name|lower }}"
+                                    data-year="{{ report.year }}"
+                                    data-complexity="{{ report.complexity_general }}"
+                                    data-diversity="{{ report.diversity_index }}"
+                                    data-readability="{{ report.readability_index }}"
+                                    data-density="{{ report.technical_density }}">
+                                    <td class="px-5 py-3.5 font-mono tabular-nums text-blue-600 dark:text-blue-400 font-bold whitespace-nowrap">
+                                        {{ report.ruc }}
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <span class="font-bold text-gray-900 dark:text-white block">{{ report.company_name }}</span>
+                                        <span class="text-xs text-gray-500 dark:text-slate-400 block truncate max-w-xs">{{ report.report_name }}</span>
+                                    </td>
+                                    <td class="px-4 py-3.5 text-center whitespace-nowrap">
+                                        <span class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-2.5 py-0.5 rounded-full text-xs font-mono tabular-nums font-semibold">
+                                            {{ report.year }}
+                                        </span>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-center whitespace-nowrap">
+                                        <div class="inline-flex flex-col items-center">
+                                            {% if report.complexity_general >= 0.66 %}
+                                                <span class="bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/60 px-2.5 py-0.5 rounded-full text-xs font-bold font-mono tabular-nums mb-1">
+                                                    {{ report.complexity_general }} ({% trans "Alta" %})
+                                                </span>
+                                            {% elif report.complexity_general >= 0.33 %}
+                                                <span class="bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-900/60 px-2.5 py-0.5 rounded-full text-xs font-bold font-mono tabular-nums mb-1">
+                                                    {{ report.complexity_general }} ({% trans "Media" %})
+                                                </span>
+                                            {% else %}
+                                                <span class="bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 px-2.5 py-0.5 rounded-full text-xs font-bold font-mono tabular-nums mb-1">
+                                                    {{ report.complexity_general }} ({% trans "Baja" %})
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td class="px-4 py-3.5 text-center font-mono tabular-nums font-bold text-pink-600 dark:text-pink-400 whitespace-nowrap">
+                                        {{ report.diversity_index }}
+                                    </td>
+                                    <td class="px-4 py-3.5 text-center font-mono tabular-nums font-bold text-teal-600 dark:text-teal-400 whitespace-nowrap">
+                                        {{ report.readability_index }}
+                                    </td>
+                                    <td class="px-4 py-3.5 text-center font-mono tabular-nums font-bold text-indigo-600 dark:text-indigo-400 whitespace-nowrap">
+                                        {{ report.technical_density }}
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="px-6 py-12 text-center text-gray-500 dark:text-slate-400 italic">
+                                        {% trans "No se ha procesado ningún informe con estos filtros." %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                <tr id="noComplexityMatchRow" class="hidden">
+                                    <td colspan="7" class="px-6 py-10 text-center text-gray-500 dark:text-slate-400 italic">
+                                        {% trans "No hay registros de complejidad que coincidan con la búsqueda." %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación de Complejidad -->
+                    <div class="p-4 bg-slate-50 dark:bg-slate-950/80 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                        <div class="text-slate-500 dark:text-slate-400 font-medium" id="complexityPaginationInfo">
+                            <!-- Información de paginación generada dinámicamente -->
+                        </div>
+                        <div class="inline-flex items-center gap-1.5" id="complexityPaginationControls">
+                            <!-- Botones de paginación generados dinámicamente -->
+                        </div>
+                    </div>
+                </div>
+
             {% else %}
-                <div class="text-center py-16 bg-gray-50 rounded-xl border-2 border-dashed border-gray-300">
+                <div class="text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800">
                     <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                     </svg>
-                    <p class="text-gray-600 text-lg font-semibold">{% trans "No hay datos de complejidad" %}</p>
-                    <p class="text-gray-500 text-sm mt-2">{% trans "No se ha procesado ningún informe con los filtros seleccionados." %}</p>
+                    <p class="text-gray-700 dark:text-slate-200 text-lg font-bold">{% trans "No hay datos de complejidad" %}</p>
+                    <p class="text-gray-500 dark:text-slate-400 text-sm mt-1">{% trans "No se ha procesado ningún informe con los filtros seleccionados." %}</p>
                 </div>
             {% endif %}
         </div>
     </div>
 
-    <script>
-        function showTab(tabName) {
-            // Ocultar todos los contenidos
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            
-            // Mostrar el contenido seleccionado
-            document.getElementById('contenido-' + tabName).classList.remove('hidden');
-            
-            // Actualizar estilos de botones
-            document.querySelectorAll('[id^="tab-"]').forEach(btn => {
-                btn.classList.remove('border-blue-600', 'text-blue-600');
-                btn.classList.add('border-transparent', 'text-gray-600');
-            });
-            
-            document.getElementById('tab-' + tabName).classList.remove('border-transparent', 'text-gray-600');
-            document.getElementById('tab-' + tabName).classList.add('border-blue-600', 'text-blue-600');
-        }
-    </script>
 </div>
+
+<!-- Scripts de Interactividad, Paginación y Filtrado Rápido -->
+<script>
+// Manejo de pestañas
+function showTab(tabName) {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+    document.getElementById('contenido-' + tabName).classList.remove('hidden');
+    
+    document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+        btn.classList.remove('border-blue-600', 'text-blue-600', 'dark:text-blue-400');
+        btn.classList.add('border-transparent', 'text-gray-500', 'dark:text-slate-400');
+    });
+    
+    const activeBtn = document.getElementById('tab-' + tabName);
+    activeBtn.classList.remove('border-transparent', 'text-gray-500', 'dark:text-slate-400');
+    activeBtn.classList.add('border-blue-600', 'text-blue-600', 'dark:text-blue-400');
+}
+
+function toggleFormulaLegend() {
+    const box = document.getElementById('formulaLegendBox');
+    const text = document.getElementById('legendToggleText');
+    if (!box) return;
+    const isHidden = box.classList.contains('hidden');
+    box.classList.toggle('hidden', !isHidden);
+    if (text) {
+        text.textContent = isHidden ? "{% trans 'Ocultar Guía de Fórmulas' %}" : "{% trans 'Ver Guía de Fórmulas y Escalas' %}";
+    }
+}
+
+// =========================================================================
+// MOTOR DE PAGINACIÓN, BÚSQUEDA Y ORDENAMIENTO DE PALABRAS
+// =========================================================================
+(function initWordsTableManager() {
+    const tableBody = document.getElementById('wordsTableBody');
+    if (!tableBody) return;
+
+    let allRows = Array.from(tableBody.querySelectorAll('tr.word-data-row'));
+    let filteredRows = [...allRows];
+    
+    let currentPage = 1;
+    let pageSize = 25;
+    let currentSortColumn = 'quantity';
+    let currentSortAsc = false;
+    let currentRankFilter = 'all';
+    let currentSearchTerm = '';
+
+    const searchInput = document.getElementById('wordSearchInput');
+    const clearSearchBtn = document.getElementById('clearWordSearchBtn');
+    const pageSizeSelect = document.getElementById('wordsPageSizeSelect');
+    const paginationInfo = document.getElementById('wordsPaginationInfo');
+    const paginationControls = document.getElementById('wordsPaginationControls');
+    const noMatchRow = document.getElementById('noWordsMatchRow');
+
+    function applyFilters() {
+        const query = currentSearchTerm.trim().toLowerCase();
+        
+        filteredRows = allRows.filter((row, index) => {
+            const word = row.dataset.word || '';
+            const qty = parseFloat(row.dataset.quantity || 0);
+
+            // Filtro por término
+            if (query && !word.includes(query)) return false;
+
+            // Filtros de Rango Rápido
+            if (currentRankFilter === 'top50' && index >= 50) return false;
+            if (currentRankFilter === 'top100' && index >= 100) return false;
+            if (currentRankFilter === 'min5' && qty < 5) return false;
+
+            return true;
+        });
+
+        // Ordenamiento
+        sortRows(filteredRows);
+
+        currentPage = 1;
+        renderPage();
+    }
+
+    function sortRows(rowsList) {
+        rowsList.sort((a, b) => {
+            let valA, valB;
+            if (currentSortColumn === 'word') {
+                valA = a.dataset.word;
+                valB = b.dataset.word;
+                return currentSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+            } else if (currentSortColumn === 'quantity') {
+                valA = parseFloat(a.dataset.quantity) || 0;
+                valB = parseFloat(b.dataset.quantity) || 0;
+            } else if (currentSortColumn === 'weight') {
+                valA = parseFloat(a.dataset.weight) || 0;
+                valB = parseFloat(b.dataset.weight) || 0;
+            }
+            return currentSortAsc ? (valA - valB) : (valB - valA);
+        });
+    }
+
+    function renderPage() {
+        // Ocultar todas
+        allRows.forEach(row => row.classList.add('hidden'));
+
+        if (filteredRows.length === 0) {
+            if (noMatchRow) noMatchRow.classList.remove('hidden');
+            if (paginationInfo) paginationInfo.textContent = "{% trans 'Sin resultados' %}";
+            if (paginationControls) paginationControls.innerHTML = '';
+            return;
+        }
+
+        if (noMatchRow) noMatchRow.classList.add('hidden');
+
+        const totalItems = filteredRows.length;
+        const totalPages = pageSize === 'all' ? 1 : Math.ceil(totalItems / pageSize);
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const startIdx = pageSize === 'all' ? 0 : (currentPage - 1) * pageSize;
+        const endIdx = pageSize === 'all' ? totalItems : Math.min(startIdx + pageSize, totalItems);
+
+        for (let i = startIdx; i < endIdx; i++) {
+            filteredRows[i].classList.remove('hidden');
+        }
+
+        // Actualizar Info
+        if (paginationInfo) {
+            paginationInfo.innerHTML = `Mostrando <strong class="font-bold text-slate-800 dark:text-slate-100 tabular-nums">${startIdx + 1} - ${endIdx}</strong> de <strong class="font-bold text-slate-800 dark:text-slate-100 tabular-nums">${totalItems}</strong> palabras`;
+        }
+
+        // Renderizar Controles de Paginación
+        renderPaginationButtons(totalPages);
+    }
+
+    function renderPaginationButtons(totalPages) {
+        if (!paginationControls) return;
+        paginationControls.innerHTML = '';
+
+        if (totalPages <= 1) return;
+
+        // Botón Anterior
+        const prevBtn = document.createElement('button');
+        prevBtn.type = 'button';
+        prevBtn.className = `px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${currentPage === 1 ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-slate-700' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`;
+        prevBtn.textContent = '←';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; renderPage(); } };
+        paginationControls.appendChild(prevBtn);
+
+        // Números de páginas con elipsis
+        const maxButtons = 5;
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+        if (endPage - startPage < maxButtons - 1) {
+            startPage = Math.max(1, endPage - maxButtons + 1);
+        }
+
+        for (let p = startPage; p <= endPage; p++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.type = 'button';
+            pageBtn.className = `px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition ${p === currentPage ? 'bg-blue-600 text-white shadow-2xs' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'}`;
+            pageBtn.textContent = p;
+            pageBtn.onclick = () => { currentPage = p; renderPage(); };
+            paginationControls.appendChild(pageBtn);
+        }
+
+        // Botón Siguiente
+        const nextBtn = document.createElement('button');
+        nextBtn.type = 'button';
+        nextBtn.className = `px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-slate-700' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`;
+        nextBtn.textContent = '→';
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; renderPage(); } };
+        paginationControls.appendChild(nextBtn);
+    }
+
+    // Eventos
+    searchInput?.addEventListener('input', (e) => {
+        currentSearchTerm = e.target.value;
+        if (clearSearchBtn) clearSearchBtn.classList.toggle('hidden', !currentSearchTerm);
+        applyFilters();
+    });
+
+    clearSearchBtn?.addEventListener('click', () => {
+        if (searchInput) searchInput.value = '';
+        currentSearchTerm = '';
+        clearSearchBtn.classList.add('hidden');
+        applyFilters();
+    });
+
+    pageSizeSelect?.addEventListener('change', (e) => {
+        pageSize = e.target.value === 'all' ? 'all' : parseInt(e.target.value, 10);
+        currentPage = 1;
+        renderPage();
+    });
+
+    window.sortWordsTable = function(columnName) {
+        if (currentSortColumn === columnName) {
+            currentSortAsc = !currentSortAsc;
+        } else {
+            currentSortColumn = columnName;
+            currentSortAsc = (columnName === 'word'); // Palabras por defecto A-Z, cantidades mayor-menor
+        }
+        applyFilters();
+    };
+
+    window.setWordRankFilter = function(filterName) {
+        currentRankFilter = filterName;
+        document.querySelectorAll('.word-rank-btn').forEach(btn => {
+            const isMatch = btn.dataset.filter === filterName;
+            btn.className = `word-rank-btn px-2.5 py-1 rounded-lg border font-semibold transition ${isMatch ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200'}`;
+        });
+        applyFilters();
+    };
+
+    // Inicializar
+    applyFilters();
+})();
+
+// =========================================================================
+// MOTOR DE PAGINACIÓN, BÚSQUEDA Y ORDENAMIENTO DE COMPLEJIDAD
+// =========================================================================
+(function initComplexityTableManager() {
+    const tableBody = document.getElementById('complexityTableBody');
+    if (!tableBody) return;
+
+    let allRows = Array.from(tableBody.querySelectorAll('tr.complexity-row'));
+    let filteredRows = [...allRows];
+
+    let currentPage = 1;
+    let pageSize = 25;
+    let currentSortColumn = 'complexity';
+    let currentSortAsc = false;
+    let currentSearchTerm = '';
+
+    const searchInput = document.getElementById('complexitySearchInput');
+    const clearSearchBtn = document.getElementById('clearComplexitySearchBtn');
+    const pageSizeSelect = document.getElementById('complexityPageSizeSelect');
+    const paginationInfo = document.getElementById('complexityPaginationInfo');
+    const paginationControls = document.getElementById('complexityPaginationControls');
+    const noMatchRow = document.getElementById('noComplexityMatchRow');
+
+    function applyFilters() {
+        const query = currentSearchTerm.trim().toLowerCase();
+
+        filteredRows = allRows.filter((row) => {
+            const searchData = (row.dataset.search || '').toLowerCase();
+            if (query && !searchData.includes(query)) return false;
+            return true;
+        });
+
+        sortRows(filteredRows);
+        currentPage = 1;
+        renderPage();
+    }
+
+    function sortRows(rowsList) {
+        rowsList.sort((a, b) => {
+            let valA, valB;
+            if (currentSortColumn === 'ruc' || currentSortColumn === 'company') {
+                valA = a.dataset[currentSortColumn] || '';
+                valB = b.dataset[currentSortColumn] || '';
+                return currentSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+            } else {
+                valA = parseFloat(a.dataset[currentSortColumn]) || 0;
+                valB = parseFloat(b.dataset[currentSortColumn]) || 0;
+                return currentSortAsc ? (valA - valB) : (valB - valA);
+            }
+        });
+    }
+
+    function renderPage() {
+        allRows.forEach(row => row.classList.add('hidden'));
+
+        if (filteredRows.length === 0) {
+            if (noMatchRow) noMatchRow.classList.remove('hidden');
+            if (paginationInfo) paginationInfo.textContent = "{% trans 'Sin resultados' %}";
+            if (paginationControls) paginationControls.innerHTML = '';
+            return;
+        }
+
+        if (noMatchRow) noMatchRow.classList.add('hidden');
+
+        const totalItems = filteredRows.length;
+        const totalPages = pageSize === 'all' ? 1 : Math.ceil(totalItems / pageSize);
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        const startIdx = pageSize === 'all' ? 0 : (currentPage - 1) * pageSize;
+        const endIdx = pageSize === 'all' ? totalItems : Math.min(startIdx + pageSize, totalItems);
+
+        for (let i = startIdx; i < endIdx; i++) {
+            filteredRows[i].classList.remove('hidden');
+        }
+
+        if (paginationInfo) {
+            paginationInfo.innerHTML = `Mostrando <strong class="font-bold text-slate-800 dark:text-slate-100 tabular-nums">${startIdx + 1} - ${endIdx}</strong> de <strong class="font-bold text-slate-800 dark:text-slate-100 tabular-nums">${totalItems}</strong> registros de complejidad`;
+        }
+
+        renderPaginationButtons(totalPages);
+    }
+
+    function renderPaginationButtons(totalPages) {
+        if (!paginationControls) return;
+        paginationControls.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        // Botón Anterior
+        const prevBtn = document.createElement('button');
+        prevBtn.type = 'button';
+        prevBtn.className = `px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${currentPage === 1 ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-slate-700' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`;
+        prevBtn.textContent = '←';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; renderPage(); } };
+        paginationControls.appendChild(prevBtn);
+
+        // Números de páginas con elipsis
+        const maxButtons = 5;
+        let startPage = Math.max(1, currentPage - 2);
+        let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+        if (endPage - startPage < maxButtons - 1) {
+            startPage = Math.max(1, endPage - maxButtons + 1);
+        }
+
+        for (let p = startPage; p <= endPage; p++) {
+            const pageBtn = document.createElement('button');
+            pageBtn.type = 'button';
+            pageBtn.className = `px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition ${p === currentPage ? 'bg-blue-600 text-white shadow-2xs' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'}`;
+            pageBtn.textContent = p;
+            pageBtn.onclick = () => { currentPage = p; renderPage(); };
+            paginationControls.appendChild(pageBtn);
+        }
+
+        // Botón Siguiente
+        const nextBtn = document.createElement('button');
+        nextBtn.type = 'button';
+        nextBtn.className = `px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-slate-700' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`;
+        nextBtn.textContent = '→';
+        nextBtn.disabled = currentPage === totalPages;
+        nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; renderPage(); } };
+        paginationControls.appendChild(nextBtn);
+    }
+
+    // Eventos
+    searchInput?.addEventListener('input', (e) => {
+        currentSearchTerm = e.target.value;
+        if (clearSearchBtn) clearSearchBtn.classList.toggle('hidden', !currentSearchTerm);
+        applyFilters();
+    });
+
+    clearSearchBtn?.addEventListener('click', () => {
+        if (searchInput) searchInput.value = '';
+        currentSearchTerm = '';
+        clearSearchBtn.classList.add('hidden');
+        applyFilters();
+    });
+
+    pageSizeSelect?.addEventListener('change', (e) => {
+        pageSize = e.target.value === 'all' ? 'all' : parseInt(e.target.value, 10);
+        currentPage = 1;
+        renderPage();
+    });
+
+    window.sortComplexityTable = function(columnName) {
+        if (currentSortColumn === columnName) {
+            currentSortAsc = !currentSortAsc;
+        } else {
+            currentSortColumn = columnName;
+            currentSortAsc = (columnName === 'company' || columnName === 'ruc');
+        }
+        applyFilters();
+    };
+
+    // Inicializar
+    applyFilters();
+})();
+</script>
 {% endblock %}

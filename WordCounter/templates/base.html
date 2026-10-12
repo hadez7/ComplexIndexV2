@@ -36,28 +36,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Configuración sincrónica previa de Tailwind Play CDN (debe existir antes de ejecutar el script) -->
-    <script>
-        window.tailwind = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        slate: {
-                            850: '#151F32',
-                            950: '#070A10'
-                        }
-                    }
-                }
-            }
-        };
-    </script>
-    <script src="{% static 'js/tailwindcss.min.js' %}"></script>
-    <script>
-        if (!window.tailwind) {
-            document.write('<script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"><\/script>');
-        }
-    </script>
+    <!-- Tailwind CSS 3 (Estilos Estáticos Precompilados AOT - Cero FOUC, Renderizado Instantáneo 0ms) -->
+    <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}">
 
     <style>
     /* Desactivar transiciones durante la carga de página (elimina el deslizamiento y parpadeo FOUC) */
@@ -250,6 +230,18 @@
         justify-content: center !important;
         padding-left: 0.5rem !important;
         padding-right: 0.5rem !important;
+    }
+    html.sidebar-collapsed .sidebar-utility-row {
+        flex-direction: column !important;
+        gap: 0.375rem !important;
+    }
+    html.sidebar-collapsed .sidebar-util-btn {
+        width: 2.25rem !important;
+        height: 2.25rem !important;
+        padding: 0 !important;
+        justify-content: center !important;
+        margin: 0 auto !important;
+        flex: none !important;
     }
     html.sidebar-collapsed .sidebar-header-box {
         justify-content: center !important;
@@ -1081,7 +1073,7 @@
                     {% trans "Plataforma" %}
                 </span>
                 <div class="space-y-0.5">
-                    <a href="{% url 'index' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'index' %}" data-tooltip="{% trans 'Inicio' %}">
+                    <a href="{% url 'index' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'index' %}" data-tooltip="{% trans 'Inicio' %}" title="{% trans 'Inicio / Visión General' %}">
                         <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                         </svg>
@@ -1089,14 +1081,14 @@
                     </a>
 
                     {% if user.is_authenticated %}
-                    <a href="{% url 'panel' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'panel' %}" data-tooltip="{% trans 'Panel de Control' %}">
+                    <a href="{% url 'panel' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'panel' %}" data-tooltip="{% trans 'Panel de Control' %}" title="{% trans 'Panel de Control y Métricas Globales' %}">
                         <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
                         </svg>
                         <span class="sidebar-text truncate">{% trans "Panel de Administración" %}</span>
                     </a>
 
-                    <a href="{% url 'workspaces_list' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'workspaces_list' %}" data-tooltip="{% trans 'Espacios de Trabajo' %}">
+                    <a href="{% url 'workspaces_list' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'workspaces_list' %}" data-tooltip="{% trans 'Espacios de Trabajo' %}" title="{% trans 'Espacios de Trabajo y Proyectos' %}">
                         <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
                         </svg>
@@ -1113,21 +1105,21 @@
                     {% trans "Auditoría & Expedientes" %}
                 </span>
                 <div class="space-y-0.5">
-                    <a href="{% url 'upload' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'upload' %}" data-tooltip="{% trans 'Subir / Ingesta OCR' %}">
+                    <a href="{% url 'upload' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'upload' %}" data-tooltip="{% trans 'Subir / Ingesta OCR' %}" title="{% trans 'Subir Reportes e Ingesta OCR' %}">
                         <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
                         </svg>
                         <span class="sidebar-text truncate">{% trans "Subir / Ingesta OCR" %}</span>
                     </a>
 
-                    <a href="{% url 'reports' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'reports' %}" data-tooltip="{% trans 'Catálogo de Reportes' %}">
+                    <a href="{% url 'reports' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'reports' %}" data-tooltip="{% trans 'Catálogo de Reportes' %}" title="{% trans 'Catálogo de Reportes Contractuales' %}">
                         <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
                         <span class="sidebar-text truncate">{% trans "Catálogo de Reportes" %}</span>
                     </a>
 
-                    <a href="{% url 'companies' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'companies' %}" data-tooltip="{% trans 'Empresas Auditadas' %}">
+                    <a href="{% url 'companies' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'companies' %}" data-tooltip="{% trans 'Empresas Auditadas' %}" title="{% trans 'Directorio de Empresas Auditadas' %}">
                         <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                         </svg>
@@ -1142,28 +1134,28 @@
                     {% trans "Métricas & Léxico" %}
                 </span>
                 <div class="space-y-0.5">
-                    <a href="{% url 'totalcount' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'totalcount' %}" data-tooltip="{% trans 'Conteo Consolidado' %}">
+                    <a href="{% url 'totalcount' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'totalcount' %}" data-tooltip="{% trans 'Conteo Consolidado' %}" title="{% trans 'Conteo Consolidado de Palabras e Índices' %}">
                         <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
                         <span class="sidebar-text truncate">{% trans "Conteo Consolidado" %}</span>
                     </a>
 
-                    <a href="{% url 'concealment_detection' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'concealment_detection' %}" data-tooltip="{% trans 'Detección de Opacidad' %}">
+                    <a href="{% url 'concealment_detection' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'concealment_detection' %}" data-tooltip="{% trans 'Detección de Opacidad' %}" title="{% trans 'Detección Forense de Opacidad Contractual' %}">
                         <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path>
                         </svg>
                         <span class="sidebar-text truncate">{% trans "Detección de Opacidad" %}</span>
                     </a>
 
-                    <a href="{% url 'comparative_analysis' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'comparative_analysis' %}" data-tooltip="{% trans 'Análisis Comparativo' %}">
+                    <a href="{% url 'comparative_analysis' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'comparative_analysis' %}" data-tooltip="{% trans 'Análisis Comparativo' %}" title="{% trans 'Análisis Comparativo entre Entidades' %}">
                         <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 18h12l3-18H3zm3 3h12"></path>
                         </svg>
                         <span class="sidebar-text truncate">{% trans "Análisis Comparativo" %}</span>
                     </a>
 
-                    <a href="{% url 'expert_lists' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'expert_lists' %}" data-tooltip="{% trans 'Listas de Expertos' %}">
+                    <a href="{% url 'expert_lists' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'expert_lists' %}" data-tooltip="{% trans 'Listas de Expertos' %}" title="{% trans 'Vocabularios y Listas de Control' %}">
                         <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                         </svg>
@@ -1179,7 +1171,7 @@
                     {% trans "Administración" %}
                 </span>
                 <div class="space-y-0.5">
-                    <a href="{% url 'users' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'users' %}" data-tooltip="{% trans 'Gestión de Usuarios' %}">
+                    <a href="{% url 'users' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'users' %}" data-tooltip="{% trans 'Gestión de Usuarios' %}" title="{% trans 'Gestión de Usuarios y Roles' %}">
                         <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                         </svg>
@@ -1193,95 +1185,86 @@
         </nav>
 
         <!-- Footer de la Barra Lateral: Idioma, Tema, Colapso y Cuenta -->
-        <div class="sidebar-footer-box p-3 border-t border-slate-200 bg-slate-50/70 shrink-0 space-y-2">
+        <div class="sidebar-footer-box p-3 border-t border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-900/60 shrink-0 space-y-2">
             
-            <!-- Selector de Idioma con Icono de Mundo y Menú Desplegable -->
-            <div class="relative" id="sidebarLanguageWrapper">
-                <button type="button" id="sidebarLanguageBtn" aria-haspopup="true" aria-expanded="false"
-                        class="sidebar-footer-btn w-full flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-600 transition text-xs font-semibold focus:outline-none btn-interactive group"
-                        data-tooltip="{% trans 'Idioma' %}: {% if LANGUAGE_CODE == 'en' %}EN{% else %}ES{% endif %}"
-                        title="{% trans 'Seleccionar idioma' %}">
-                    <div class="flex items-center space-x-2 truncate">
-                        <span class="w-4 h-4 flex items-center justify-center shrink-0 text-slate-500 group-hover:text-blue-600 transition">
+            <!-- Fila de Utilidades: Idioma, Tema, Colapso -->
+            <div class="sidebar-utility-row flex items-center gap-1.5">
+                
+                <!-- 1. Selector de Idioma -->
+                <div class="relative flex-1" id="sidebarLanguageWrapper">
+                    <button type="button" id="sidebarLanguageBtn" aria-haspopup="true" aria-expanded="false"
+                            class="sidebar-util-btn w-full flex items-center justify-center gap-1.5 p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition text-xs font-semibold focus:outline-none btn-interactive group"
+                            data-tooltip="{% trans 'Idioma' %}: {% if LANGUAGE_CODE == 'en' %}EN{% else %}ES{% endif %}"
+                            title="{% trans 'Seleccionar idioma (ES / EN)' %}">
+                        <span class="w-4 h-4 flex items-center justify-center shrink-0 text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
                             </svg>
                         </span>
-                        <span class="sidebar-text font-medium text-slate-700 group-hover:text-blue-600 truncate">
-                            {% if LANGUAGE_CODE == 'en' %}English{% else %}Español{% endif %}
-                        </span>
-                    </div>
-                    <div class="sidebar-text flex items-center space-x-1 shrink-0 ml-auto pl-1">
-                        <span class="text-[10px] font-mono font-bold uppercase text-slate-400 group-hover:text-blue-600">
+                        <span class="sidebar-text font-mono text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400">
                             {% if LANGUAGE_CODE == 'en' %}EN{% else %}ES{% endif %}
                         </span>
-                        <svg class="w-3.5 h-3.5 text-slate-400 group-hover:text-slate-600 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-                        </svg>
+                    </button>
+
+                    <!-- Menú Desplegable Flotante de Selección de Idioma -->
+                    <div id="sidebarLanguageDropdown" class="hidden absolute bottom-full mb-2 left-0 w-44 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 z-50 py-1.5 animate-dropdown">
+                        <div class="px-3 py-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                            <span class="text-[10px] font-mono font-bold uppercase text-slate-400 tracking-wider">
+                                {% trans "Idioma" %}
+                            </span>
+                            <span class="text-[10px] text-slate-400 font-mono">Language</span>
+                        </div>
+                        <form action="{% url 'set_language' %}" method="post" id="sidebarLangForm" class="p-1 space-y-0.5">
+                            {% csrf_token %}
+                            <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                            <button type="submit" name="language" value="es"
+                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition text-left {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-blue-50 text-blue-700 font-bold dark:bg-blue-900/40 dark:text-blue-300{% else %}text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800{% endif %}">
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-blue-600 text-white{% else %}bg-slate-100 dark:bg-slate-800 text-slate-500{% endif %}">ES</span>
+                                    <span>Español</span>
+                                </div>
+                                {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}
+                                <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                {% endif %}
+                            </button>
+                            <button type="submit" name="language" value="en"
+                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition text-left {% if LANGUAGE_CODE == 'en' %}bg-blue-50 text-blue-700 font-bold dark:bg-blue-900/40 dark:text-blue-300{% else %}text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800{% endif %}">
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded {% if LANGUAGE_CODE == 'en' %}bg-blue-600 text-white{% else %}bg-slate-100 dark:bg-slate-800 text-slate-500{% endif %}">EN</span>
+                                    <span>English</span>
+                                </div>
+                                {% if LANGUAGE_CODE == 'en' %}
+                                <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                {% endif %}
+                            </button>
+                        </form>
                     </div>
+                </div>
+
+                <!-- 2. Toggle de Modo Oscuro -->
+                <button type="button" onclick="toggleTheme()" class="sidebar-util-btn flex-1 flex items-center justify-center gap-1.5 p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:border-blue-300 dark:hover:border-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition text-xs font-semibold focus:outline-none btn-interactive group"
+                        data-tooltip="{% trans 'Modo Oscuro' %}"
+                        title="{% trans 'Alternar tema claro / oscuro' %}">
+                    <span id="themeSidebarIcon" class="w-4 h-4 flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4 text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    </span>
+                    <span class="sidebar-text text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400" id="themeStatusLabel">OFF</span>
                 </button>
 
-                <!-- Menú Desplegable Flotante de Selección de Idioma -->
-                <div id="sidebarLanguageDropdown" class="hidden absolute bottom-full mb-2 left-0 w-full bg-white rounded-xl shadow-xl border border-slate-200 z-50 py-1.5 animate-dropdown">
-                    <div class="px-3 py-1.5 border-b border-slate-100 flex items-center justify-between">
-                        <span class="text-[10px] font-mono font-bold uppercase text-slate-400 tracking-wider">
-                            {% trans "Idioma" %}
-                        </span>
-                        <span class="text-[10px] text-slate-400 font-mono">Language</span>
-                    </div>
-                    <form action="{% url 'set_language' %}" method="post" id="sidebarLangForm" class="p-1 space-y-0.5">
-                        {% csrf_token %}
-                        <input name="next" type="hidden" value="{{ request.get_full_path }}">
-                        <button type="submit" name="language" value="es"
-                                class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition text-left {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-blue-50 text-blue-700 font-bold dark:bg-blue-900/30 dark:text-blue-300{% else %}text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800{% endif %}">
-                            <div class="flex items-center space-x-2">
-                                <span class="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-blue-600 text-white{% else %}bg-slate-100 dark:bg-slate-800 text-slate-500{% endif %}">ES</span>
-                                <span>Español</span>
-                            </div>
-                            {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}
-                            <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            {% endif %}
-                        </button>
-                        <button type="submit" name="language" value="en"
-                                class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition text-left {% if LANGUAGE_CODE == 'en' %}bg-blue-50 text-blue-700 font-bold dark:bg-blue-900/30 dark:text-blue-300{% else %}text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800{% endif %}">
-                            <div class="flex items-center space-x-2">
-                                <span class="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded {% if LANGUAGE_CODE == 'en' %}bg-blue-600 text-white{% else %}bg-slate-100 dark:bg-slate-800 text-slate-500{% endif %}">EN</span>
-                                <span>English</span>
-                            </div>
-                            {% if LANGUAGE_CODE == 'en' %}
-                            <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                            </svg>
-                            {% endif %}
-                        </button>
-                    </form>
-                </div>
+                <!-- 3. Botón Colapsar / Expandir Barra Lateral -->
+                <button type="button" id="sidebarCollapseBtn" onclick="toggleSidebarCollapse()" class="sidebar-util-btn flex-1 flex items-center justify-center p-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 hover:border-blue-300 dark:hover:border-blue-500 transition text-xs font-semibold focus:outline-none btn-interactive"
+                        data-tooltip="{% trans 'Colapsar Barra' %}"
+                        title="{% trans 'Colapsar / Expandir barra lateral' %}">
+                    <svg id="collapseChevronIcon" class="w-4 h-4 transition-transform duration-300 ease-in-out shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
+                    </svg>
+                </button>
+
             </div>
-
-            <!-- Toggle de Modo Oscuro -->
-            <button type="button" onclick="toggleTheme()" class="sidebar-footer-btn w-full flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:border-blue-300 hover:text-blue-600 transition text-xs font-semibold focus:outline-none btn-interactive group"
-                    data-tooltip="{% trans 'Modo Oscuro' %}"
-                    title="{% trans 'Alternar tema claro / oscuro' %}">
-                <div class="flex items-center space-x-2 truncate">
-                    <span id="themeSidebarIcon" class="w-4 h-4 flex items-center justify-center shrink-0">
-                        <svg class="w-4 h-4 text-slate-500 group-hover:text-blue-600 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-                    </span>
-                    <span class="sidebar-text font-medium text-slate-700 group-hover:text-blue-600 truncate">{% trans "Modo Oscuro" %}</span>
-                </div>
-                <span class="sidebar-text text-[10px] font-mono font-bold text-slate-400 group-hover:text-blue-600 ml-auto" id="themeStatusLabel">OFF</span>
-            </button>
-
-            <!-- Botón Colapsar / Expandir Barra Lateral -->
-            <button type="button" id="sidebarCollapseBtn" onclick="toggleSidebarCollapse()" class="sidebar-footer-btn w-full flex items-center justify-center p-2 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-blue-600 hover:border-blue-300 transition text-xs font-semibold focus:outline-none btn-interactive"
-                    data-tooltip="{% trans 'Colapsar Barra' %}"
-                    title="{% trans 'Colapsar / Expandir barra lateral' %}">
-                <svg id="collapseChevronIcon" class="w-4 h-4 transition-transform duration-300 ease-in-out shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7m8 14l-7-7 7-7"></path>
-                </svg>
-                <span class="sidebar-text font-medium ml-2">{% trans "Colapsar Barra" %}</span>
-            </button>
 
             {% if user.is_authenticated %}
             <!-- Selector / Menú de Usuario y Cierre de Sesión -->

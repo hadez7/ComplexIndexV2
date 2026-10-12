@@ -11,16 +11,47 @@ from ..workspace_utils import get_active_workspace
 @login_required
 def report_view(request):
     from django.db.models import Q
+    from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
     current_ws = get_active_workspace(request)
     query = request.GET.get("q", "").strip()
-    # Denegar por defecto: sin espacio activo, listas vacías (nunca el total global).
-    reports = Report.objects.select_related("company").filter(workspace=current_ws)
+    order_by = request.GET.get("order_by", "year").strip()
+    order_dir = request.GET.get("dir", "desc").strip()
+    page_size_param = request.GET.get("page_size", "25").strip()
+
+    # Queryset optimizado con select_related
+    reports_qs = Report.objects.select_related("company").filter(workspace=current_ws)
 
     if query:
-        reports = reports.filter(
-            Q(name__icontains=query) | Q(company__name__icontains=query)
+        reports_qs = reports_qs.filter(
+            Q(company__name__icontains=query) | Q(year__icontains=query) | Q(name__icontains=query)
         )
+
+    # Ordenamiento por columna solicitada
+    if order_by == "company":
+        sort_field = "-company__name" if order_dir == "desc" else "company__name"
+    elif order_by == "year":
+        sort_field = "-year" if order_dir == "desc" else "year"
+    else:
+        sort_field = "-year" if order_dir == "desc" else "year"
+
+    reports_qs = reports_qs.order_by(sort_field, "-id")
+    total_count = reports_qs.count()
+
+    # Tamaño de página (10, 25, 50, 100)
+    try:
+        page_size = int(page_size_param)
+        if page_size not in [10, 25, 50, 100]:
+            page_size = 25
+    except ValueError:
+        page_size = 25
+
+    paginator = Paginator(reports_qs, page_size)
+    page_number = request.GET.get("page", 1)
+    try:
+        page_reports = paginator.get_page(page_number)
+    except (EmptyPage, PageNotAnInteger):
+        page_reports = paginator.get_page(1)
 
     companies = (
         Company.objects.filter(workspace=current_ws)
@@ -32,10 +63,14 @@ def report_view(request):
         request,
         "reports.html",
         {
-            "reports": reports,
+            "reports": page_reports,
+            "total_reports_count": total_count,
             "companies": companies,
             "query": query,
             "current_workspace": current_ws,
+            "order_by": order_by,
+            "order_dir": order_dir,
+            "page_size": page_size,
         },
     )
 
