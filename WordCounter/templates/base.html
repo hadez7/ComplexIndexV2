@@ -10,6 +10,9 @@
     <!-- Pre-render síncrono para eliminar parpadeo FOUC (Tema Oscuro y Barra Colapsada) -->
     <script>
         (function () {
+            // Bloquear transiciones CSS durante la carga inicial para evitar deslizamiento y parpadeo
+            document.documentElement.classList.add('preload-transitions');
+
             const savedTheme = localStorage.getItem('eli_theme');
             if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
@@ -33,47 +36,58 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-    <!-- Tailwind CSS (Play CDN con Fallback Local + Modo Oscuro 'class' oficial) -->
+    <!-- Configuración sincrónica previa de Tailwind Play CDN (debe existir antes de ejecutar el script) -->
+    <script>
+        window.tailwind = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#151F32',
+                            950: '#070A10'
+                        }
+                    }
+                }
+            }
+        };
+    </script>
     <script src="{% static 'js/tailwindcss.min.js' %}"></script>
     <script>
         if (!window.tailwind) {
             document.write('<script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"><\/script>');
         }
     </script>
-    <script>
-        (function() {
-            function configureTailwind() {
-                if (window.tailwind && typeof window.tailwind === 'object') {
-                    window.tailwind.config = {
-                        darkMode: 'class',
-                        theme: {
-                            extend: {
-                                colors: {
-                                    slate: {
-                                        850: '#151F32',
-                                        950: '#070A10'
-                                    }
-                                }
-                            }
-                        }
-                    };
-                } else {
-                    setTimeout(configureTailwind, 20);
-                }
-            }
-            configureTailwind();
-        })();
-    </script>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
     <style>
+    /* Desactivar transiciones durante la carga de página (elimina el deslizamiento y parpadeo FOUC) */
+    html.preload-transitions,
+    html.preload-transitions *,
+    html.preload-transitions *:before,
+    html.preload-transitions *:after {
+        -webkit-transition: none !important;
+        -moz-transition: none !important;
+        -ms-transition: none !important;
+        -o-transition: none !important;
+        transition: none !important;
+    }
+
+    /* Fondos críticos inmediatos para eliminar destellos antes del primer pintado */
+    html {
+        background-color: #F8FAFC;
+        color: #0F172A;
+    }
+    html.dark {
+        background-color: #0B0F19 !important;
+        color: #F8FAFC !important;
+    }
+
     body {
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         font-feature-settings: 'cv02' 1, 'cv03' 1, 'cv04' 1, 'cv11' 1;
         letter-spacing: -0.011em;
         background-color: #F8FAFC;
         color: #0F172A;
-        transition: background-color 0.2s ease, color 0.2s ease;
     }
 
     .font-mono {
@@ -940,7 +954,7 @@
     }
     </style>
     {% block custom_css %}{% endblock %}
-    <script type="text/javascript" src="{% url 'javascript-catalog' %}"></script>
+    <script type="text/javascript" src="{% url 'javascript-catalog' %}" defer></script>
 </head>
 
 <body class="h-full bg-slate-50 text-slate-900 flex flex-col antialiased">
@@ -1645,6 +1659,13 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+        // Reactivar transiciones suaves para interacciones del usuario una vez que el DOM está pintado
+        requestAnimationFrame(function () {
+            requestAnimationFrame(function () {
+                document.documentElement.classList.remove('preload-transitions');
+            });
+        });
+
         // Inicializar iconos de tema
         const isDark = document.documentElement.classList.contains('dark');
         updateThemeUI(isDark);
