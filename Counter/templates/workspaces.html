@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n dict_filters %}
 
 {% block title %}{% trans "Espacios de Trabajo" %} | ELI{% endblock %}
 
@@ -75,9 +75,9 @@
             <!-- Cabecera de la tarjeta -->
             <div>
                 <div class="flex items-start justify-between gap-3 mb-4">
-                    <div class="flex items-center space-x-3">
+                    <div class="flex items-center space-x-3 min-w-0 flex-1">
                         <!-- Icono con color -->
-                        <div class="w-12 h-12 rounded-xl flex items-center justify-center font-bold
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center font-bold shrink-0
                             {% if ws.color == 'purple' %}bg-purple-100 text-purple-600
                             {% elif ws.color == 'green' %}bg-green-100 text-green-600
                             {% elif ws.color == 'amber' %}bg-yellow-100 text-yellow-700
@@ -101,8 +101,8 @@
                             {% endif %}
                         </div>
 
-                        <div>
-                            <h2 class="text-base font-bold text-gray-900 leading-snug hover:text-blue-600 transition">
+                        <div class="min-w-0 flex-1">
+                            <h2 class="text-base font-bold text-gray-900 leading-snug hover:text-blue-600 transition truncate" title="{{ ws.name }}">
                                 {{ ws.name }}
                             </h2>
                             {% if ws.project_type %}
@@ -121,25 +121,25 @@
                         </div>
                     </div>
 
-                    <!-- Indicador activo o menú -->
-                    <div class="flex items-center space-x-1">
+                    <!-- Indicador activo y menú de edición -->
+                    <div class="flex items-center gap-1 shrink-0">
                         {% if item.is_active %}
-                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-200">
-                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5"></span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-800 border border-green-200 shrink-0">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-500 mr-1.5 shrink-0"></span>
                             {% trans "Activo" %}
                         </span>
                         {% endif %}
                         {% if ws.is_archived %}
-                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-bold bg-gray-100 text-gray-600 border border-gray-300"
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-gray-100 text-gray-600 border border-gray-300 shrink-0"
                               title="{% trans 'Espacio archivado: sus datos están guardados pero no aparecen en el resto de la aplicación.' %}">
                             {% trans "Archivado" %}
                         </span>
                         {% endif %}
-                        
+
                         <!-- Botón opciones (Editar) -->
                         <button type="button" 
                                 onclick="openEditModal('{{ ws.id }}', '{{ ws.name|escapejs }}', '{{ ws.description|default:''|escapejs }}', '{{ ws.project_type|default:''|escapejs }}', '{{ ws.color|default:'blue'|escapejs }}', '{{ ws.icon|default:'folder'|escapejs }}')"
-                                class="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition"
+                                class="p-1 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition shrink-0"
                                 title="{% trans 'Editar espacio' %}">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
@@ -157,17 +157,19 @@
                 <div class="grid grid-cols-3 gap-1.5 sm:gap-2 py-3 px-2.5 sm:px-3 bg-gray-50 rounded-xl mb-4 border border-gray-100 text-center">
                     <div>
                         <p class="text-xs text-gray-500 font-medium">{% trans "Reportes" %}</p>
-                        <p class="text-sm font-bold text-gray-900 mt-0.5">{{ item.reports_count }}</p>
+                        <p class="text-sm font-bold text-gray-900 mt-0.5 font-mono tabular-nums">{{ item.reports_count|intcomma }}</p>
                     </div>
                     <div>
                         <p class="text-xs text-gray-500 font-medium">{% trans "Empresas" %}</p>
-                        <p class="text-sm font-bold text-gray-900 mt-0.5">{{ item.companies_count }}</p>
+                        <p class="text-sm font-bold text-gray-900 mt-0.5 font-mono tabular-nums">{{ item.companies_count|intcomma }}</p>
                     </div>
                     <div>
                         <p class="text-xs text-gray-500 font-medium">{% trans "Palabras" %}</p>
-                        <p class="text-sm font-bold text-gray-900 mt-0.5">
-                            {% if item.total_words > 999999 %}
-                                {{ item.total_words|stringformat:".1e" }}
+                        <p class="text-sm font-bold text-gray-900 mt-0.5 font-mono tabular-nums" title="{{ item.total_words|intcomma }} {% trans 'palabras' %}">
+                            {% if item.total_words >= 1000000 %}
+                                {{ item.total_words|compact_number }}
+                            {% elif item.total_words >= 1000 %}
+                                {{ item.total_words|intcomma }}
                             {% else %}
                                 {{ item.total_words }}
                             {% endif %}

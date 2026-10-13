@@ -52,10 +52,17 @@
         transition: none !important;
     }
 
+    /* Lienzo global celeste: baja la carga de blanco puro y mejora la separación
+       de las tarjetas (superficies #FFFFFF) sin sacrificar contraste del texto. */
+    :root {
+        --eli-canvas: #ECF4FD;
+        --eli-canvas-ink: #0F172A;
+    }
+
     /* Fondos críticos inmediatos para eliminar destellos antes del primer pintado */
     html {
-        background-color: #F8FAFC;
-        color: #0F172A;
+        background-color: var(--eli-canvas);
+        color: var(--eli-canvas-ink);
     }
     html.dark {
         background-color: #0B0F19 !important;
@@ -66,8 +73,8 @@
         font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         font-feature-settings: 'cv02' 1, 'cv03' 1, 'cv04' 1, 'cv11' 1;
         letter-spacing: -0.011em;
-        background-color: #F8FAFC;
-        color: #0F172A;
+        background-color: var(--eli-canvas);
+        color: var(--eli-canvas-ink);
     }
 
     .font-mono {
@@ -85,10 +92,6 @@
     }
     .btn-interactive:active {
         transform: scale(0.98);
-    }
-
-    .font-editorial {
-        font-family: 'Newsreader', Georgia, serif;
     }
 
     /* Enfoque accesible estandarizado (Web Interface Guidelines) */
@@ -173,6 +176,7 @@
         will-change: width;
     }
     .main-canvas-area {
+        background-color: var(--eli-canvas);
         transition: padding-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
         will-change: padding-left;
     }
@@ -200,72 +204,140 @@
         position: relative;
     }
 
-    /* Estado Contraído */
+    /* ========================================================================= */
+    /* ESTADO CONTRAÍDO (Command Rail Compacto - 64px / 4rem)                    */
+    /* ========================================================================= */
     html.sidebar-collapsed #desktopSidebar {
-        width: 4rem !important; /* 64px - Command Rail Compacto */
+        width: 4rem !important; /* 64px */
     }
     html.sidebar-collapsed .main-canvas-area {
         padding-left: 4rem !important;
     }
-    html.sidebar-collapsed nav {
-        padding-left: 0.5rem !important;
-        padding-right: 0.5rem !important;
-    }
+
+    /* Ocultar completamente textos y etiquetas para evitar desplazamientos parásitos */
     html.sidebar-collapsed .sidebar-text {
+        display: none !important;
         max-width: 0 !important;
+        width: 0 !important;
+        min-width: 0 !important;
         opacity: 0 !important;
-        transform: translateX(-8px) !important;
-        margin-left: 0 !important;
-        margin-right: 0 !important;
-        padding-left: 0 !important;
-        padding-right: 0 !important;
-        pointer-events: none !important;
-    }
-    html.sidebar-collapsed .sidebar-nav-item {
-        justify-content: center !important;
-        padding-left: 0.5rem !important;
-        padding-right: 0.5rem !important;
-    }
-    html.sidebar-collapsed .sidebar-footer-btn {
-        justify-content: center !important;
-        padding-left: 0.5rem !important;
-        padding-right: 0.5rem !important;
-    }
-    html.sidebar-collapsed .sidebar-utility-row {
-        flex-direction: column !important;
-        gap: 0.375rem !important;
-    }
-    html.sidebar-collapsed .sidebar-util-btn {
-        width: 2.25rem !important;
-        height: 2.25rem !important;
+        margin: 0 !important;
         padding: 0 !important;
-        justify-content: center !important;
-        margin: 0 auto !important;
-        flex: none !important;
+        border: none !important;
+        pointer-events: none !important;
+        overflow: hidden !important;
     }
+
+    /* 1. Cabecera (Logo ELI centrado geométricamente) */
     html.sidebar-collapsed .sidebar-header-box {
         justify-content: center !important;
-        padding-left: 0.5rem !important;
-        padding-right: 0.5rem !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
     }
     html.sidebar-collapsed .sidebar-header-box a {
         justify-content: center !important;
+        margin: 0 auto !important;
     }
+    html.sidebar-collapsed .sidebar-header-box .sidebar-text {
+        display: none !important;
+    }
+
+    /* 2. Selector de Espacio de Trabajo (Botón y Dropdown Flotante) */
     html.sidebar-collapsed .sidebar-workspace-box {
-        padding: 0.5rem !important;
+        padding: 0.5rem 0 !important;
     }
-    html.sidebar-collapsed .sidebar-footer-box {
-        padding: 0.5rem !important;
+    html.sidebar-collapsed .sidebar-workspace-box .sidebar-text {
+        display: none !important;
     }
     html.sidebar-collapsed #sidebarWorkspaceBtn {
+        width: 2.5rem !important; /* 40px */
+        height: 2.5rem !important; /* 40px */
+        padding: 0 !important;
+        margin: 0 auto !important;
         justify-content: center !important;
-        padding: 0.5rem !important;
+        align-items: center !important;
+    }
+    html.sidebar-collapsed #sidebarWorkspaceBtn > div {
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        margin: 0 !important;
+        gap: 0 !important;
+    }
+    html.sidebar-collapsed #sidebarWorkspaceBtn > div > span {
+        margin: 0 auto !important;
+    }
+    html.sidebar-collapsed #sidebarWorkspaceBtn > svg {
+        display: none !important;
     }
     html.sidebar-collapsed #sidebarWorkspaceDropdown {
         left: 100% !important;
         top: 0 !important;
         margin-left: 0.75rem !important;
         min-width: 220px !important;
+    }
+
+    /* 3. Navegación Principal (Píldoras cuadradas de 40px perfectamente centradas) */
+    html.sidebar-collapsed nav {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+    html.sidebar-collapsed nav > div > span.sidebar-text {
+        display: none !important;
+    }
+    html.sidebar-collapsed nav > div {
+        margin-bottom: 0.5rem !important;
+    }
+    html.sidebar-collapsed .sidebar-nav-item {
+        width: 2.5rem !important; /* 40px */
+        height: 2.5rem !important; /* 40px */
+        padding: 0 !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
+        margin-bottom: 0.25rem !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 0 !important;
+    }
+    html.sidebar-collapsed .sidebar-nav-item svg {
+        margin: 0 auto !important;
+        flex-shrink: 0 !important;
+    }
+    html.sidebar-collapsed .sidebar-nav-item .sidebar-text {
+        display: none !important;
+    }
+
+    /* 4. Footer: Fila de Utilidades (Idioma, Tema, Colapso) */
+    html.sidebar-collapsed .sidebar-footer-box {
+        padding: 0.5rem 0 !important;
+    }
+    html.sidebar-collapsed .sidebar-utility-row {
+        flex-direction: column !important;
+        gap: 0.375rem !important;
+        align-items: center !important;
+    }
+    html.sidebar-collapsed #sidebarLanguageWrapper {
+        width: 2.25rem !important;
+        height: 2.25rem !important;
+        margin: 0 auto !important;
+        flex: none !important;
+    }
+    html.sidebar-collapsed .sidebar-util-btn {
+        width: 2.25rem !important; /* 36px */
+        height: 2.25rem !important; /* 36px */
+        padding: 0 !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin: 0 auto !important;
+        flex: none !important;
+        gap: 0 !important;
+    }
+    html.sidebar-collapsed .sidebar-util-btn span,
+    html.sidebar-collapsed .sidebar-util-btn svg {
+        margin: 0 auto !important;
+    }
+    html.sidebar-collapsed .sidebar-util-btn .sidebar-text {
+        display: none !important;
     }
     html.sidebar-collapsed #sidebarLanguageDropdown {
         left: 100% !important;
@@ -274,6 +346,34 @@
         margin-bottom: 0 !important;
         width: 13rem !important;
     }
+
+    /* 5. Footer: Tarjeta de Usuario / Sesión */
+    html.sidebar-collapsed #sidebarUserWrapper {
+        margin-top: 0.5rem !important;
+    }
+    html.sidebar-collapsed .sidebar-user-card {
+        width: 2.5rem !important; /* 40px */
+        height: 2.5rem !important; /* 40px */
+        padding: 0 !important;
+        justify-content: center !important;
+        align-items: center !important;
+        margin: 0 auto !important;
+    }
+    html.sidebar-collapsed .sidebar-user-card > div.truncate {
+        justify-content: center !important;
+        align-items: center !important;
+        width: 100% !important;
+        margin: 0 !important;
+        gap: 0 !important;
+    }
+    html.sidebar-collapsed .sidebar-user-card img,
+    html.sidebar-collapsed .sidebar-user-card .rounded-full {
+        margin: 0 auto !important;
+        flex-shrink: 0 !important;
+    }
+    html.sidebar-collapsed .sidebar-user-card > div:last-child {
+        display: none !important;
+    }
     html.sidebar-collapsed #sidebarUserDropdown {
         left: 100% !important;
         bottom: 0 !important;
@@ -281,18 +381,25 @@
         margin-bottom: 0 !important;
         width: 15rem !important;
     }
-    html.sidebar-collapsed .sidebar-user-card {
+
+    /* 6. Botón de Login (Estado No Autenticado) */
+    html.sidebar-collapsed .sidebar-footer-btn {
+        width: 2.5rem !important; /* 40px */
+        height: 2.5rem !important; /* 40px */
+        padding: 0 !important;
+        margin: 0 auto !important;
         justify-content: center !important;
-        padding: 0.375rem !important;
+        align-items: center !important;
     }
-    html.sidebar-collapsed .sidebar-user-link {
-        justify-content: center !important;
+    html.sidebar-collapsed .sidebar-footer-btn svg {
+        margin: 0 auto !important;
     }
     html.sidebar-collapsed .html-collapsed-show {
-        display: block !important;
+        display: flex !important;
+        justify-content: center !important;
     }
 
-    /* Tooltip óptico flotante al pasar el cursor en modo contraído */
+    /* 7. Tooltips Ópticos Flotantes en Modo Contraído */
     html.sidebar-collapsed [data-tooltip]:not([aria-expanded="true"]):hover::after {
         content: attr(data-tooltip);
         position: absolute;
@@ -310,7 +417,7 @@
         pointer-events: none;
         animation: dropdownSlideFade 0.12s ease-out;
     }
-    .dark html.sidebar-collapsed [data-tooltip]:not([aria-expanded="true"]):hover::after {
+    html.dark.sidebar-collapsed [data-tooltip]:not([aria-expanded="true"]):hover::after {
         background-color: #1E293B;
         color: #F8FAFC;
         border: 1px solid #334155;
@@ -949,7 +1056,7 @@
     <script type="text/javascript" src="{% url 'javascript-catalog' %}" defer></script>
 </head>
 
-<body class="h-full bg-slate-50 text-slate-900 flex flex-col antialiased">
+<body class="h-full text-slate-900 flex flex-col antialiased">
 
     <!-- ========================================================================= -->
     <!-- 1. BARRA LATERAL CONTRAÍBLE DE COMANDO (Command Rail Sidebar - Desktop)   -->
@@ -964,7 +1071,7 @@
                 </div>
                 <div class="sidebar-text leading-tight truncate">
                     <span class="text-sm font-black text-slate-900 tracking-tight block">Enterprise Lex</span>
-                    <span class="text-[10px] text-slate-500 font-mono tracking-wider uppercase block">Auditoría Contractual</span>
+                    <span class="text-[10px] text-slate-500 font-semibold tracking-wider uppercase block">Auditoría Contractual</span>
                 </div>
             </a>
         </div>
@@ -973,7 +1080,7 @@
         <!-- Selector de Espacio Activo en la Barra Lateral -->
         <div class="sidebar-workspace-box p-3 border-b border-slate-100 bg-slate-50/60 shrink-0">
             <div class="sidebar-text flex items-center justify-between mb-1.5 px-1">
-                <span class="text-[10px] font-mono font-bold uppercase text-slate-500 tracking-wider">
+                <span class="text-[10px] font-bold uppercase text-slate-500 tracking-wider">
                     {% trans "Espacio Activo" %}
                 </span>
                 <a href="{% url 'workspaces_list' %}" class="text-[11px] font-semibold text-blue-600 hover:text-blue-800 transition">
@@ -1069,7 +1176,7 @@
             
             <!-- Grupo: Plataforma Central -->
             <div>
-                <span class="sidebar-text px-3 text-[10px] font-mono font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
+                <span class="sidebar-text px-3 text-[10px] font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
                     {% trans "Plataforma" %}
                 </span>
                 <div class="space-y-0.5">
@@ -1101,7 +1208,7 @@
             {% if user.is_authenticated %}
             <!-- Grupo: Peritaje & Auditoría Ingesta -->
             <div>
-                <span class="sidebar-text px-3 text-[10px] font-mono font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
+                <span class="sidebar-text px-3 text-[10px] font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
                     {% trans "Auditoría & Expedientes" %}
                 </span>
                 <div class="space-y-0.5">
@@ -1130,7 +1237,7 @@
 
             <!-- Grupo: Análisis Léxico & Métricas Forenses -->
             <div>
-                <span class="sidebar-text px-3 text-[10px] font-mono font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
+                <span class="sidebar-text px-3 text-[10px] font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
                     {% trans "Métricas & Léxico" %}
                 </span>
                 <div class="space-y-0.5">
@@ -1167,7 +1274,7 @@
             {% if user.is_staff %}
             <!-- Grupo: Administración y Usuarios -->
             <div>
-                <span class="sidebar-text px-3 text-[10px] font-mono font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
+                <span class="sidebar-text px-3 text-[10px] font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
                     {% trans "Administración" %}
                 </span>
                 <div class="space-y-0.5">
@@ -1201,7 +1308,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
                             </svg>
                         </span>
-                        <span class="sidebar-text font-mono text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                        <span class="sidebar-text text-[11px] font-bold uppercase text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400">
                             {% if LANGUAGE_CODE == 'en' %}EN{% else %}ES{% endif %}
                         </span>
                     </button>
@@ -1209,10 +1316,10 @@
                     <!-- Menú Desplegable Flotante de Selección de Idioma -->
                     <div id="sidebarLanguageDropdown" class="hidden absolute bottom-full mb-2 left-0 w-44 bg-white dark:bg-slate-900 rounded-xl shadow-xl border border-slate-200 dark:border-slate-800 z-50 py-1.5 animate-dropdown">
                         <div class="px-3 py-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-                            <span class="text-[10px] font-mono font-bold uppercase text-slate-400 tracking-wider">
+                            <span class="text-[10px] font-bold uppercase text-slate-400 tracking-wider">
                                 {% trans "Idioma" %}
                             </span>
-                            <span class="text-[10px] text-slate-400 font-mono">Language</span>
+                            <span class="text-[10px] text-slate-400 font-medium">Language</span>
                         </div>
                         <form action="{% url 'set_language' %}" method="post" id="sidebarLangForm" class="p-1 space-y-0.5">
                             {% csrf_token %}
@@ -1252,7 +1359,7 @@
                     <span id="themeSidebarIcon" class="w-4 h-4 flex items-center justify-center shrink-0">
                         <svg class="w-4 h-4 text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                     </span>
-                    <span class="sidebar-text text-[11px] font-mono font-bold text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400" id="themeStatusLabel">OFF</span>
+                    <span class="sidebar-text text-[11px] font-bold text-slate-500 dark:text-slate-400 group-hover:text-blue-600 dark:group-hover:text-blue-400" id="themeStatusLabel">OFF</span>
                 </button>
 
                 <!-- 3. Botón Colapsar / Expandir Barra Lateral -->
@@ -1283,7 +1390,7 @@
                         {% endif %}
                         <div class="sidebar-text truncate">
                             <span class="text-xs font-bold text-slate-800 block truncate group-hover:text-blue-600 transition">{{ user.username }}</span>
-                            <span class="text-[10px] text-slate-400 font-mono block truncate">
+                            <span class="text-[10px] text-slate-400 font-medium block truncate">
                                 {% if user.is_staff %}{% trans "Administrador" %}{% else %}{% trans "Auditor" %}{% endif %}
                             </span>
                         </div>
@@ -1309,9 +1416,9 @@
                         <div class="min-w-0 truncate">
                             <span class="text-xs font-bold text-slate-800 block truncate">{{ user.username }}</span>
                             {% if user.email %}
-                            <span class="text-[10px] text-slate-400 font-mono block truncate">{{ user.email }}</span>
+                            <span class="text-[10px] text-slate-400 block truncate">{{ user.email }}</span>
                             {% else %}
-                            <span class="text-[10px] text-slate-400 font-mono block truncate">{% trans "Sesión activa" %}</span>
+                            <span class="text-[10px] text-slate-400 font-medium block truncate">{% trans "Sesión activa" %}</span>
                             {% endif %}
                         </div>
                     </div>
@@ -1426,7 +1533,7 @@
             <div class="flex-1 overflow-y-auto p-4 space-y-4">
                 {% if user.is_authenticated and current_workspace %}
                 <div class="p-3 bg-blue-50/80 rounded-xl border border-blue-100">
-                    <span class="text-[10px] font-mono text-blue-600 uppercase font-bold block">{% trans "Espacio Activo" %}</span>
+                    <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">{% trans "Espacio Activo" %}</span>
                     <span class="text-xs font-bold text-blue-900 block truncate">{{ current_workspace.name }}</span>
                 </div>
                 {% endif %}
@@ -1512,7 +1619,7 @@
     <!-- ========================================================================= -->
     <!-- 3. CANVAS PRINCIPAL DE TRABAJO (Main Workspace Canvas)                    -->
     <!-- ========================================================================= -->
-    <div id="mainCanvasArea" class="main-canvas-area lg:pl-64 xl:pl-72 flex-1 flex flex-col min-w-0 min-h-screen bg-slate-50">
+    <div id="mainCanvasArea" class="main-canvas-area lg:pl-64 xl:pl-72 flex-1 flex flex-col min-w-0 min-h-screen">
         
         <!-- Top App Bar en Escritorio (Breadcrumbs & Acciones Rápidas) -->
         <header class="hidden lg:flex h-14 bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 sm:px-8 items-center justify-between sticky top-0 z-20 shrink-0">

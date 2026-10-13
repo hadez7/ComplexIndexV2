@@ -1,5 +1,10 @@
 import os
 import json
+import uuid
+import shutil
+import zipfile
+import re
+from django.core.files import File
 from django.http import JsonResponse, HttpResponseNotAllowed
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -122,6 +127,213 @@ def upload_view(request):
             "companies": companies,
         },
     )
+
+
+@login_required
+def prepare_zip_batch_view(request):
+    """
+    Recibe el archivo ZIP, lo descomprime en un directorio temporal de lote
+    y retorna la lista de PDFs detectados para procesarlos uno a uno desde la interfaz.
+    """
+    if request.method != "POST":
+        return JsonResponse({"success": False, "error": "Método no permitido"}, status=405)
+
+    current_ws = get_active_workspace(request)
+    form = ZipUploadForm(request.POST, request.FILES, workspace=current_ws)
+    if not form.is_valid():
+        error_msg = form.errors.as_text()
+        return JsonResponse({"success": False, "error": error_msg}, status=400)
+
+    zip_file = form.cleaned_data["zip_file"]
+    company = form.cleaned_data.get("company")
+    overwrite = form.cleaned_data.get("overwrite", False)
+
+    batch_id = str(uuid.uuid4())
+    base_batches_dir = os.path.join(settings.MEDIA_ROOT, "zip_batches")
+    batch_dir = os.path.join(base_batches_dir, batch_id)
+    os.makedirs(batch_dir, exist_ok=True)
+
+    try:
+        temp_zip_path = os.path.join(batch_dir, "archive.zip")
+        with open(temp_zip_path, "wb") as f:
+            for chunk in zip_file.chunks():
+                f.write(chunk)
+
+        with zipfile.ZipFile(temp_zip_path, "r") as z:
+            z.extractall(batch_dir)
+
+        if os.path.exists(temp_zip_path):
+            os.remove(temp_zip_path)
+
+        pdf_files = []
+        for root, _, files in os.walk(batch_dir):
+            if "__MACOSX" in root:
+                continue
+            for fname in sorted(files):
+                if fname.startswith(".") or fname.startswith("._") or not fname.lower().endswith(".pdf"):
+                    continue
+                full_p = os.path.join(root, fname)
+                rel_p = os.path.relpath(full_p, batch_dir)
+                pdf_files.append(rel_p)
+
+        if not pdf_files:
+            shutil.rmtree(batch_dir, ignore_errors=True)
+            return JsonResponse({
+                "success": False,
+                "error": "El archivo ZIP no contiene documentos en formato PDF (.pdf) válidos."
+            }, status=400)
+
+        manifest = {
+            "batch_id": batch_id,
+            "workspace_id": current_ws.id if current_ws else None,
+            "company_id": company.id if company else None,
+            "overwrite": overwrite,
+            "total_files": len(pdf_files),
+            "files": pdf_files
+        }
+        with open(os.path.join(batch_dir, "manifest.json"), "w", encoding="utf-8") as mf:
+            json.dump(manifest, mf)
+
+        return JsonResponse({
+            "success": True,
+            "batch_id": batch_id,
+            "total_files": len(pdf_files),
+            "files": pdf_files,
+            "company_name": company.name if company else None,
+            "overwrite": overwrite
+        })
+
+    except Exception as e:
+        shutil.rmtree(batch_dir, ignore_errors=True)
+        return JsonResponse({"success": False, "error": f"Error al descomprimir el ZIP: {str(e)}"}, status=500)
+
+
+@login_required
+def process_zip_item_view(request):
+    """
+    Procesa un archivo PDF individual perteneciente al lote batch_id.
+    """
+    if request.method != "POST":
+        return JsonResponse({"success": False, "error": "Método no permitido"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+    except Exception:
+        data = request.POST
+
+    batch_id = data.get("batch_id")
+    file_rel_path = data.get("file_path")
+
+    if not batch_id or not file_rel_path:
+        return JsonResponse({"success": False, "error": "Faltan parámetros de lote o archivo"}, status=400)
+
+    if not re.match(r"^[a-zA-Z0-9_\-]+$", batch_id):
+        return JsonResponse({"success": False, "error": "Identificador de lote inválido"}, status=400)
+
+    current_ws = get_active_workspace(request)
+    base_batches_dir = os.path.join(settings.MEDIA_ROOT, "zip_batches")
+    batch_dir = os.path.join(base_batches_dir, batch_id)
+    manifest_path = os.path.join(batch_dir, "manifest.json")
+
+    if not os.path.exists(manifest_path):
+        return JsonResponse({"success": False, "error": "El lote no existe o ya ha expirado"}, status=404)
+
+    with open(manifest_path, "r", encoding="utf-8") as mf:
+        manifest = json.load(mf)
+
+    target_abs_path = os.path.normpath(os.path.join(batch_dir, file_rel_path))
+    if not target_abs_path.startswith(os.path.normpath(batch_dir)) or not os.path.isfile(target_abs_path):
+        return JsonResponse({"success": False, "error": "Archivo no encontrado en el lote"}, status=404)
+
+    company_id = manifest.get("company_id")
+    overwrite = manifest.get("overwrite", False)
+    company = Company.objects.filter(id=company_id, workspace=current_ws).first() if company_id else None
+    filename = os.path.basename(file_rel_path)
+
+    try:
+        existing_report = None
+        if company:
+            existing_report = Report.objects.filter(workspace=current_ws, company=company, name=filename).first()
+        else:
+            existing_report = Report.objects.filter(workspace=current_ws, name=filename).first()
+
+        if existing_report and not overwrite:
+            return JsonResponse({
+                "success": True,
+                "skipped": True,
+                "filename": filename,
+                "message": "Omitido: ya existe un reporte con este nombre en el espacio de trabajo."
+            })
+
+        with open(target_abs_path, "rb") as f:
+            django_file = File(f)
+            if existing_report and overwrite:
+                report = existing_report
+                report.file.save(filename, django_file, save=False)
+            else:
+                report = Report(workspace=current_ws, company=company, name=filename)
+                report.file.save(filename, django_file, save=False)
+            report.save()
+
+        res = process_report(report.file.path, report)
+
+        if res.get("success"):
+            return JsonResponse({
+                "success": True,
+                "skipped": False,
+                "filename": filename,
+                "report_id": report.id,
+                "report_name": report.name,
+                "company_name": report.company.name if report.company else "Detectada automáticamente",
+                "year": report.year or "Sin año",
+                "total_words": report.total_words or 0,
+                "warning": res.get("warning")
+            })
+        elif res.get("warning"):
+            return JsonResponse({
+                "success": True,
+                "skipped": False,
+                "warning": res["warning"],
+                "filename": filename,
+                "report_id": report.id,
+                "total_words": report.total_words or 0
+            })
+        else:
+            return JsonResponse({
+                "success": False,
+                "filename": filename,
+                "error": res.get("error", "Error durante el análisis del documento")
+            })
+
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "filename": filename,
+            "error": str(e)
+        })
+
+
+@login_required
+def finish_zip_batch_view(request):
+    """
+    Limpia los archivos temporales del lote una vez finalizado el procesamiento.
+    """
+    if request.method != "POST":
+        return JsonResponse({"success": False, "error": "Método no permitido"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+    except Exception:
+        data = request.POST
+
+    batch_id = data.get("batch_id")
+    if batch_id and re.match(r"^[a-zA-Z0-9_\-]+$", batch_id):
+        base_batches_dir = os.path.join(settings.MEDIA_ROOT, "zip_batches")
+        batch_dir = os.path.join(base_batches_dir, batch_id)
+        if os.path.exists(batch_dir):
+            shutil.rmtree(batch_dir, ignore_errors=True)
+
+    return JsonResponse({"success": True})
 
 
 @login_required

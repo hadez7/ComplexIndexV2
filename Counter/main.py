@@ -18,20 +18,17 @@ from .utils import (
     contar_palabras_tecnicas
 )
 
+from .cleaner import limpiar_texto_estructural, extraer_palabras_limpias
+
 # --- Constantes ---
 STOPWORDS_ES_NORMALIZADAS = set(quitar_tildes(p) for p in STOPWORDS_ES)
 
 # --- Funciones utilitarias ---
 
 def count_words(texto: str) -> Counter:
-    """Cuenta las palabras en un texto, normalizando y eliminando stopwords."""
-    texto = texto.lower()
-    palabras = re.findall(r"\b[a-záéíóúüñ]+\b", texto)
-    palabras = [quitar_tildes(p) for p in palabras]
-    palabras_filtradas = [
-        p for p in palabras if len(p) > 2 and p not in STOPWORDS_ES_NORMALIZADAS
-    ]
-    return Counter(palabras_filtradas)
+    """Cuenta las palabras en un texto, aplicando saneamiento estructural, des-duplicación y filtrado fonotáctico."""
+    palabras_limpias = extraer_palabras_limpias(texto, STOPWORDS_ES_NORMALIZADAS)
+    return Counter(palabras_limpias)
 
 
 def find_paragraph(report: Report, palabra: str):
@@ -114,6 +111,7 @@ def process_report(report_path: str, report_instance: Report) -> dict:
                     "total_words": 0
                 }
 
+            texto = limpiar_texto_estructural(texto)
             texto = re.sub(r'\n\s*\n', '<<PARA>>', texto)
             texto = texto.replace('\n', ' ')
             texto = texto.replace('<<PARA>>', '\n\n')

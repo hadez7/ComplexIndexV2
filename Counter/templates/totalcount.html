@@ -39,7 +39,7 @@
         <form method="get" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
             <!-- Año -->
             <div>
-                <label for="years" class="block text-xs font-mono font-bold uppercase tracking-wider text-gray-700 dark:text-slate-300 mb-1.5">{% trans "Año" %}:</label>
+                <label for="years" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-slate-300 mb-1.5">{% trans "Año" %}:</label>
                 <select name="selected_year" id="years" data-custom-select="true"
                         class="w-full border border-gray-300 dark:border-slate-700 rounded-xl shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 dark:text-white bg-white dark:bg-slate-950 transition">
                     <option value="">{% trans "Todos los años" %}</option>
@@ -53,7 +53,7 @@
 
             <!-- Empresa -->
             <div>
-                <label for="company" class="block text-xs font-mono font-bold uppercase tracking-wider text-gray-700 dark:text-slate-300 mb-1.5">{% trans "Empresa" %}:</label>
+                <label for="company" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-slate-300 mb-1.5">{% trans "Empresa" %}:</label>
                 <select name="company" id="company" data-custom-select="true"
                         class="w-full border border-gray-300 dark:border-slate-700 rounded-xl shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 dark:text-white bg-white dark:bg-slate-950 transition">
                     <option value="">{% trans "Todas las empresas" %}</option>
@@ -67,7 +67,7 @@
 
             <!-- Listas de experto -->
             <div>
-                <label for="expert_lists" class="block text-xs font-mono font-bold uppercase tracking-wider text-gray-700 dark:text-slate-300 mb-1.5">{% trans "Lista de experto" %}:</label>
+                <label for="expert_lists" class="block text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-slate-300 mb-1.5">{% trans "Lista de experto" %}:</label>
                 <select name="selected_list" id="expert_lists" data-custom-select="true"
                         class="w-full border border-gray-300 dark:border-slate-700 rounded-xl shadow-xs focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 dark:text-white bg-white dark:bg-slate-950 transition">
                     <option value="">{% trans "Todas las listas" %}</option>
@@ -136,7 +136,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
                 <div class="bg-blue-50/80 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/60 rounded-2xl p-4 flex items-center justify-between">
                     <div>
-                        <span class="text-xs font-mono font-bold text-blue-700 dark:text-blue-300 uppercase block tracking-wider">
+                        <span class="text-xs font-bold text-blue-700 dark:text-blue-300 uppercase block tracking-wider">
                             {% trans "Promedio de Frecuencia" %}
                         </span>
                         <span class="text-2xl font-black font-mono tabular-nums text-blue-900 dark:text-blue-100">{{ average }}</span>
@@ -148,7 +148,7 @@
 
                 <div class="bg-slate-50 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 flex items-center justify-between">
                     <div>
-                        <span class="text-xs font-mono font-bold text-slate-600 dark:text-slate-400 uppercase block tracking-wider">
+                        <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase block tracking-wider">
                             {% trans "Términos Únicos" %}
                         </span>
                         <span class="text-2xl font-black font-mono tabular-nums text-slate-900 dark:text-white" id="totalWordsStat">{{ total_counts|length }}</span>
@@ -160,7 +160,7 @@
 
                 <div class="bg-emerald-50/80 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-900/60 rounded-2xl p-4 flex items-center justify-between">
                     <div>
-                        <span class="text-xs font-mono font-bold text-emerald-700 dark:text-emerald-300 uppercase block tracking-wider">
+                        <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase block tracking-wider">
                             {% trans "Filtro Activo" %}
                         </span>
                         <span class="text-sm font-bold text-emerald-900 dark:text-emerald-200 truncate block max-w-[180px]">
@@ -192,7 +192,7 @@
 
                 <!-- Chips de Rango Rápido -->
                 <div class="flex flex-wrap items-center gap-1.5 text-xs">
-                    <span class="text-slate-400 font-mono text-[11px] mr-1">{% trans "Rango" %}:</span>
+                    <span class="text-slate-400 font-semibold text-[11px] mr-1">{% trans "Rango" %}:</span>
                     <button type="button" onclick="setWordRankFilter('all')" class="word-rank-btn px-2.5 py-1 rounded-lg border font-semibold transition bg-blue-600 text-white border-blue-600" data-filter="all">{% trans "Todas" %}</button>
                     <button type="button" onclick="setWordRankFilter('top50')" class="word-rank-btn px-2.5 py-1 rounded-lg border font-semibold transition bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200" data-filter="top50">Top 50</button>
                     <button type="button" onclick="setWordRankFilter('top100')" class="word-rank-btn px-2.5 py-1 rounded-lg border font-semibold transition bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200" data-filter="top100">Top 100</button>
@@ -202,7 +202,7 @@
                 <!-- Selector de Filas por Página -->
                 <div class="flex items-center gap-2 text-xs ml-auto">
                     <span class="text-slate-500 dark:text-slate-400 font-medium whitespace-nowrap">{% trans "Mostrar" %}:</span>
-                    <select id="wordsPageSizeSelect" class="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1 text-slate-800 dark:text-slate-200 font-mono text-xs focus:ring-2 focus:ring-blue-600 focus:outline-none">
+                    <select id="wordsPageSizeSelect" class="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1 text-slate-800 dark:text-slate-200 font-semibold text-xs focus:ring-2 focus:ring-blue-600 focus:outline-none">
                         <option value="25" selected>25</option>
                         <option value="50">50</option>
                         <option value="100">100</option>
@@ -216,7 +216,7 @@
             <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-gray-200/90 dark:border-slate-800 overflow-hidden transition-colors">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-800 text-sm" id="wordsTable">
-                        <thead class="bg-gray-50 dark:bg-slate-950/80 border-b border-gray-200 dark:border-slate-800 text-xs font-mono font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider select-none">
+                        <thead class="bg-gray-50 dark:bg-slate-950/80 border-b border-gray-200 dark:border-slate-800 text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider select-none">
                             <tr>
                                 <th class="px-6 py-3.5 text-left cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 transition" onclick="sortWordsTable('word')">
                                     <div class="inline-flex items-center gap-1.5">
@@ -275,7 +275,7 @@
 
                 <!-- Barra Inferior de Paginación -->
                 <div class="px-6 py-3.5 bg-gray-50 dark:bg-slate-950/80 border-t border-gray-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                    <div class="text-slate-500 dark:text-slate-400 font-mono" id="wordsPaginationInfo">
+                    <div class="text-slate-500 dark:text-slate-400 text-xs" id="wordsPaginationInfo">
                         {% trans "Cargando paginación..." %}
                     </div>
                     <div class="inline-flex items-center gap-1.5" id="wordsPaginationControls">
@@ -362,7 +362,7 @@
                 <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-gray-200/90 dark:border-slate-800 overflow-hidden transition-colors">
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-800 text-sm" id="complexityTable">
-                            <thead class="bg-gray-50 dark:bg-slate-950/80 border-b border-gray-200 dark:border-slate-800 text-xs font-mono font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
+                            <thead class="bg-gray-50 dark:bg-slate-950/80 border-b border-gray-200 dark:border-slate-800 text-xs font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider">
                                 <tr>
                                     <th class="px-5 py-3.5 text-left cursor-pointer hover:text-blue-600 dark:hover:text-blue-400 select-none" onclick="sortComplexityTable('ruc')">
                                         <div class="flex items-center gap-1">
@@ -620,7 +620,7 @@ function toggleFormulaLegend() {
 
         // Actualizar Info
         if (paginationInfo) {
-            paginationInfo.innerHTML = `Mostrando <strong class="font-bold text-slate-800 dark:text-slate-100 tabular-nums">${startIdx + 1} - ${endIdx}</strong> de <strong class="font-bold text-slate-800 dark:text-slate-100 tabular-nums">${totalItems}</strong> palabras`;
+            paginationInfo.innerHTML = `Mostrando <strong class="font-mono font-bold text-slate-800 dark:text-slate-100 tabular-nums">${startIdx + 1} - ${endIdx}</strong> de <strong class="font-mono font-bold text-slate-800 dark:text-slate-100 tabular-nums">${totalItems}</strong> palabras`;
         }
 
         // Renderizar Controles de Paginación

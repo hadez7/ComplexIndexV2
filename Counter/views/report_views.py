@@ -132,3 +132,37 @@ def update_report(request, report_id):
         return JsonResponse({"success": True})
     except Exception as e:
         return JsonResponse({"success": False, "error": str(e)}, status=400)
+
+
+@login_required
+def check_report_duplicate_view(request):
+    """
+    Verifica si ya existe un reporte con la misma empresa y año
+    en el espacio de trabajo actual para validación interactiva previa al envío.
+    """
+    current_ws = get_active_workspace(request)
+    company_id = request.GET.get("company_id")
+    year = request.GET.get("year")
+
+    if not company_id or not year:
+        return JsonResponse({"exists": False})
+
+    try:
+        report = Report.objects.filter(
+            workspace=current_ws,
+            company_id=company_id,
+            year=year
+        ).first()
+
+        if report:
+            return JsonResponse({
+                "exists": True,
+                "report_id": report.id,
+                "report_name": report.name or "Sin nombre",
+                "company_name": report.company.name if report.company else "",
+                "year": report.year,
+            })
+        return JsonResponse({"exists": False})
+    except Exception as e:
+        return JsonResponse({"exists": False, "error": str(e)})
+

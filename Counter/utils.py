@@ -17,90 +17,161 @@ from .models import (
 # Cargar variables de entorno desde .env
 load_dotenv()
 
-#Extraer texto de PDF digital
+from PIL import Image
+
+try:
+    import pytesseract
+except ImportError:
+    pytesseract = None
+
+# Extraer texto de PDF digital
 def extraer_texto_pdf(path: str) -> str:
     texto = ""
-    with fitz.open(path) as doc:
-        for page in doc:
-            texto += page.get_text()
+    try:
+        with fitz.open(path) as doc:
+            for page in doc:
+                texto += page.get_text()
+    except Exception as e:
+        print(f"Error al extraer texto digital con PyMuPDF: {e}")
     return texto 
 
 
-#Extraer texto de PDF Escaneado usando GPT-5-mini
-def extraer_texto_ocr_gpt5mini(path: str) -> str:
+# Extraer texto de PDF Escaneado usando OCR Local Tesseract (gratuito y sin API externa)
+def extraer_texto_ocr_tesseract(path: str) -> str:
     """
-    Extrae texto de PDF escaneado usando la API de OpenAI GPT-5-mini con visión.
-    Convierte el PDF a imágenes y las procesa.
-    Requiere OPENAI_API_KEY en las variables de entorno.
+    Extrae texto de PDF escaneado utilizando Tesseract OCR local.
+    Renderiza cada página en memoria vía PyMuPDF (sin requerir poppler pdftoppm)
+    y prioriza el modelo en español ('spa').
     """
+    if pytesseract is None:
+        print("pytesseract no está disponible en el entorno.")
+        return ""
+
     try:
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise ValueError("OPENAI_API_KEY no está configurada en las variables de entorno")
-        
-        client = OpenAI(api_key=api_key)
-        
-        # Convertir PDF a imágenes
-        paginas = convert_from_path(path)
-        
-        if not paginas:
-            print("El PDF no contiene páginas")
-            return ""
-        
-        texto_completo = ""
-        
-        # Procesar cada página
-        for idx, img in enumerate(paginas):
-            try:
-                # Convertir imagen a base64
-                img_byte_arr = BytesIO()
-                img.save(img_byte_arr, format='PNG')
-                img_base64 = base64.standard_b64encode(img_byte_arr.getvalue()).decode('utf-8')
-                
-                # Enviar a GPT-5-mini Vision API
-                response = client.chat.completions.create(
-                    model="gpt-5-mini",
-                    messages=[
-                        {
-                            "role": "user",
-                            "content": [
-                                {
-                                    "type": "image_url",
-                                    "image_url": {
-                                        "url": f"data:image/png;base64,{img_base64}"
-                                    }
-                                },
-                                {
-                                    "type": "text",
-                                    "text": "Extrae TODO el texto de esta imagen en español. Incluye tablas, números y formato. Solo el texto extraído, sin explicaciones."
-                                }
-                            ]
-                        }
-                    ],
-                    max_completion_tokens=2000
-                )
-                
-                texto_pagina = response.choices[0].message.content
-                texto_completo += texto_pagina + "\n"
-                print(f"Página {idx + 1}/{len(paginas)} procesada correctamente")
-                
-            except Exception as e:
-                print(f"Error procesando página {idx + 1}: {str(e)}")
-                continue
-        
-        return texto_completo.strip()
-        
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        local_tessdata = os.path.join(base_dir, "tessdata")
+        config_params = ""
+        if os.path.isdir(local_tessdata) and os.path.isfile(os.path.join(local_tessdata, "spa.traineddata")):
+            config_params = f'--tessdata-dir "{local_tessdata}"'
+
+        texto_paginas = []
+        with fitz.open(path) as doc:
+            if len(doc) == 0:
+                return ""
+
+            for idx, page in enumerate(doc):
+                try:
+                    pix = page.get_pixmap(dpi=150)
+                    img = Image.open(BytesIO(pix.tobytes("png")))
+
+                    # Intentar en español; si el idioma no está disponible, usar inglés o configuración base
+                    try:
+                        texto_pag = pytesseract.image_to_string(img, lang="spa", config=config_params)
+                    except Exception:
+                        texto_pag = pytesseract.image_to_string(img, lang="eng", config=config_params)
+
+                    if texto_pag and texto_pag.strip():
+                        texto_paginas.append(texto_pag.strip())
+                except Exception as e_page:
+                    print(f"Error en OCR Tesseract para página {idx + 1}: {e_page}")
+                    continue
+
+        return "\n\n".join(texto_paginas).strip()
     except Exception as e:
-        print(f"Error en OCR con GPT-5-mini: {str(e)}")
+        print(f"Error general en OCR Tesseract: {e}")
         return ""
 
 
-#Verificar si el PDF es digital o escaneado
+# Extraer texto de PDF Escaneado usando OpenAI Vision (gpt-4o-mini) como respaldo secundario
+def extraer_texto_ocr_gpt4omini(path: str) -> str:
+    """
+    Extrae texto de PDF escaneado usando la API de OpenAI (gpt-4o-mini con visión).
+    Verifica previamente que OPENAI_API_KEY esté configurada antes de cualquier intento.
+    """
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key or not api_key.strip():
+        print("OPENAI_API_KEY no configurada. Omitiendo OCR de OpenAI.")
+        return ""
+
+    try:
+        client = OpenAI(api_key=api_key.strip())
+        texto_completo = []
+
+        with fitz.open(path) as doc:
+            if len(doc) == 0:
+                return ""
+
+            for idx, page in enumerate(doc):
+                try:
+                    pix = page.get_pixmap(dpi=150)
+                    img_base64 = base64.standard_b64encode(pix.tobytes("png")).decode("utf-8")
+
+                    response = client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=[
+                            {
+                                "role": "user",
+                                "content": [
+                                    {
+                                        "type": "image_url",
+                                        "image_url": {
+                                            "url": f"data:image/png;base64,{img_base64}"
+                                        }
+                                    },
+                                    {
+                                        "type": "text",
+                                        "text": "Extrae TODO el texto de esta imagen en español. Incluye tablas, números y formato. Solo el texto extraído, sin explicaciones ni markdown envolvente."
+                                    }
+                                ]
+                            }
+                        ],
+                        max_completion_tokens=4000
+                    )
+
+                    texto_pagina = response.choices[0].message.content or ""
+                    if texto_pagina.strip():
+                        texto_completo.append(texto_pagina.strip())
+                    print(f"Página {idx + 1}/{len(doc)} procesada con gpt-4o-mini")
+
+                except Exception as e_page:
+                    print(f"Error procesando página {idx + 1} con gpt-4o-mini: {e_page}")
+                    continue
+
+        return "\n\n".join(texto_completo).strip()
+    except Exception as e:
+        print(f"Error en OCR con gpt-4o-mini: {e}")
+        return ""
+
+
+# Alias para compatibilidad con llamadas previas
+extraer_texto_ocr_gpt5mini = extraer_texto_ocr_gpt4omini
+
+
+# Extracción de texto inteligente de PDF en capas
 def extraer_texto_pdf_inteligente(path: str) -> str:
+    """
+    Pipeline inteligente en 3 niveles:
+    1. Extracción digital nativa con PyMuPDF (rápida y de alta fidelidad).
+    2. Si el texto está vacío (PDF escaneado), OCR local gratuito con Tesseract en español.
+    3. Si el OCR local no extrajo texto y existe OPENAI_API_KEY, respaldo con OpenAI gpt-4o-mini.
+    """
     texto = extraer_texto_pdf(path)
-    if not texto.strip():  
-        texto = extraer_texto_ocr_gpt5mini(path)
+    if not texto or len(texto.strip()) < 30:
+        # Nivel 2: OCR local gratuito
+        texto_tesseract = extraer_texto_ocr_tesseract(path)
+        if texto_tesseract and len(texto_tesseract.strip()) >= 30:
+            return texto_tesseract
+
+        # Nivel 3: Respaldo con OpenAI gpt-4o-mini si hay API KEY disponible
+        texto_openai = extraer_texto_ocr_gpt4omini(path)
+        if texto_openai and texto_openai.strip():
+            return texto_openai
+
+        # Retornar lo mejor obtenido
+        return texto_tesseract if texto_tesseract else texto
+
     return texto
+
 
 
 #Quita tildes y diacriticos de una palabra
@@ -176,13 +247,13 @@ def calcular_metricas_complejidad(texto: str) -> dict:
     # Normalizar texto
     texto_limpio = texto.lower().strip()
     
-    # Contar oraciones (por puntos, signos de interrogación, exclamación)
-    oraciones = re.split(r'[.!?]+', texto_limpio)
+    # Contar oraciones sin romper abreviaturas comunes (Art., S.A., Inc.) ni cifras decimales
+    oraciones = re.split(r'(?<!\b[a-záéíóúüñ]{1,4})(?<!\d)\.[ \t\r\n]+(?=[a-záéíóúüñA-ZÁÉÍÓÚÜÑ])|[!?]+', texto_limpio)
     oraciones = [s.strip() for s in oraciones if s.strip()]
     total_sentences = len(oraciones) if oraciones else 1
     
-    # Extraer palabras (solo palabras significativas)
-    palabras = re.findall(r'\b[a-záéíóúñ]+(?:\'[a-záéíóúñ]+)?\b', texto_limpio)
+    # Extraer palabras completas en español (incluye ü)
+    palabras = re.findall(r'\b[a-záéíóúüñ]+\b', texto_limpio)
     total_words = len(palabras)
     unique_words = len(set(palabras))
     

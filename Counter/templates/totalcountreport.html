@@ -63,18 +63,18 @@
     {% if report %}
     <div class="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/90 dark:border-slate-800 p-5 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-xs">
         <div>
-            <span class="text-xs font-mono font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">
+            <span class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">
                 {% trans "Expediente / Documento" %}
             </span>
             <h2 class="text-xl font-black text-gray-900 dark:text-white mt-0.5">{{ report.name }}</h2>
         </div>
         <div class="flex items-center gap-3">
             <div class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs">
-                <span class="text-slate-400 font-mono">{% trans "Año" %}:</span>
+                <span class="text-slate-400 font-medium">{% trans "Año" %}:</span>
                 <strong class="font-mono tabular-nums text-slate-800 dark:text-slate-200 ml-1">{{ report.year }}</strong>
             </div>
             <div class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs">
-                <span class="text-slate-400 font-mono">{% trans "Pares" %}:</span>
+                <span class="text-slate-400 font-medium">{% trans "Pares" %}:</span>
                 <strong class="font-mono tabular-nums text-slate-800 dark:text-slate-200 ml-1">{{ paired_results|length }}</strong>
             </div>
         </div>
@@ -93,7 +93,7 @@
 
         <div class="flex items-center gap-2 text-xs ml-auto">
             <span class="text-slate-500 dark:text-slate-400 font-medium">{% trans "Mostrar por página" %}:</span>
-            <select id="reportPageSizeSelect" class="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1 text-slate-800 dark:text-slate-200 font-mono text-xs focus:ring-2 focus:ring-blue-600 focus:outline-none">
+            <select id="reportPageSizeSelect" class="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1 text-slate-800 dark:text-slate-200 font-semibold text-xs focus:ring-2 focus:ring-blue-600 focus:outline-none">
                 <option value="25" selected>25</option>
                 <option value="50">50</option>
                 <option value="100">100</option>
@@ -106,7 +106,7 @@
     <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-gray-200/90 dark:border-slate-800 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-800 text-sm" id="reportWordsTable">
-                <thead class="bg-gray-50 dark:bg-slate-950/80 border-b border-gray-200 dark:border-slate-800 uppercase text-xs font-mono font-bold text-gray-500 dark:text-slate-400 tracking-wider">
+                <thead class="bg-gray-50 dark:bg-slate-950/80 border-b border-gray-200 dark:border-slate-800 uppercase text-xs font-bold text-gray-500 dark:text-slate-400 tracking-wider">
                     <tr>
                         <th class="px-6 py-3.5 text-left">{% trans "Palabra" %}</th>
                         <th class="px-6 py-3.5 text-right">{% trans "Cantidad" %}</th>
@@ -173,7 +173,7 @@
 
         <!-- Paginador Inferior -->
         <div class="px-6 py-3.5 bg-gray-50 dark:bg-slate-950/80 border-t border-gray-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-            <div class="text-slate-500 dark:text-slate-400 font-mono" id="reportPaginationInfo">
+            <div class="text-slate-500 dark:text-slate-400 text-xs" id="reportPaginationInfo">
                 {% trans "Cargando..." %}
             </div>
             <div class="inline-flex items-center gap-1.5" id="reportPaginationControls"></div>
@@ -282,7 +282,7 @@ function closeModal() {
         }
 
         if (info) {
-            info.innerHTML = `Mostrando <strong class="font-bold text-slate-800 dark:text-slate-100 tabular-nums">${start + 1} - ${end}</strong> de <strong class="font-bold text-slate-800 dark:text-slate-100 tabular-nums">${total}</strong> filas`;
+            info.innerHTML = `Mostrando <strong class="font-mono font-bold text-slate-800 dark:text-slate-100 tabular-nums">${start + 1} - ${end}</strong> de <strong class="font-mono font-bold text-slate-800 dark:text-slate-100 tabular-nums">${total}</strong> filas`;
         }
 
         renderButtons(totalPages);
