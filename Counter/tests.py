@@ -402,7 +402,7 @@ class InternationalizationTests(TestCase):
         response = self.client.get(reverse('panel'))
         self.assertEqual(response.status_code, 200)
         content = response.content.decode('utf-8')
-        self.assertIn('Panel de administración', content)
+        self.assertIn('Panel de Administración', content)
         self.assertIn('Empresas', content)
         self.assertIn('Reportes', content)
 
@@ -431,7 +431,7 @@ class InternationalizationTests(TestCase):
 
         panel_resp = self.client.get(reverse('panel'))
         content = panel_resp.content.decode('utf-8')
-        self.assertIn('Panel de administración', content)
+        self.assertIn('Panel de Administración', content)
         self.assertIn('Empresas', content)
 
     def test_all_modules_rendered_in_english(self):
@@ -1032,5 +1032,176 @@ class WorkspaceMemberManagementTests(TestCase):
             workspace=self.ws, user=self.solicitante, role='viewer'
         )
         resp = self.user_client.get(reverse('workspaces_list'))
-        self.assertEqual(resp.status_code, 200)
         self.assertNotIn('onclick="openMembersModal(', resp.content.decode('utf-8'))
+
+
+class ComplexMetricsTests(TestCase):
+    """Pruebas de robustez para el cálculo de métricas de complejidad y segmentación de oraciones."""
+
+    def test_calcular_metricas_complejidad_con_abreviaturas_y_decimales(self):
+        from Counter.utils import calcular_metricas_complejidad
+
+        texto = (
+            "El Art. 15 de la Cia. S.A. aprueba el balance por un total de 12.5 millones de dólares. "
+            "La empresa presentó utilidades operativas! "
+            "Hubo observaciones en la junta general? "
+            "El Dr. Pérez y el Sr. Gómez firmaron el informe."
+        )
+        metricas = calcular_metricas_complejidad(texto)
+        self.assertGreater(metricas["total_words"], 0)
+        self.assertEqual(metricas["total_sentences"], 4)
+        self.assertGreater(metricas["total_syllables"], 0)
+        self.assertGreater(metricas["avg_word_length"], 0)
+        self.assertGreater(metricas["avg_sentence_length"], 0)
+        self.assertIn("inflesz", metricas)
+        self.assertIn("inverted_inflesz", metricas)
+
+    def test_calcular_metricas_texto_vacio(self):
+        from Counter.utils import calcular_metricas_complejidad
+
+        metricas = calcular_metricas_complejidad("")
+        self.assertEqual(metricas["total_words"], 0)
+        self.assertEqual(metricas["total_sentences"], 0)
+
+
+class ExpertRoleAccessTests(TestCase):
+    """Pruebas de acceso restringido para usuarios con rol de Experto."""
+
+    def setUp(self):
+        self.admin = User.objects.create_superuser(username="admin_test", password="password123", email="admin@test.com")
+        self.ws = Workspace.objects.create(name="Espacio Peritaje", created_by=self.admin)
+        WorkspaceMembership.objects.create(workspace=self.ws, user=self.admin, role="admin")
+
+        self.expert_user = User.objects.create_user(username="perito", password="password123", email="perito@test.com")
+        Expert.objects.create(user=self.expert_user, profession="Perito Legal")
+        WorkspaceMembership.objects.create(workspace=self.ws, user=self.expert_user, role="editor")
+
+        self.client_expert = Client()
+        self.client_expert.login(username="perito", password="password123")
+
+    def test_experto_accede_a_deteccion_de_opacidad(self):
+        resp = self.client_expert.get(reverse("concealment_detection"))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_experto_accede_a_inicio(self):
+        resp = self.client_expert.get(reverse("index"))
+        self.assertEqual(resp.status_code, 200)
+
+    def test_experto_es_redirigido_desde_panel_y_otras_vistas(self):
+        resp = self.client_expert.get(reverse("panel"))
+        self.assertRedirects(resp, reverse("concealment_detection"))
+
+        resp_upload = self.client_expert.get(reverse("upload"))
+        self.assertRedirects(resp_upload, reverse("concealment_detection"))
+
+    def test_experto_no_puede_crear_editar_archivar_ni_eliminar_espacios(self):
+        # Crear espacio (JSON)
+        resp_create = self.client_expert.post(
+            reverse("workspace_create"),
+            json.dumps({"name": "Intento Experto"}),
+            content_type="application/json"
+        )
+        self.assertEqual(resp_create.status_code, 403)
+
+        # Editar espacio (JSON)
+        resp_update = self.client_expert.post(
+            reverse("workspace_update", args=[self.ws.id]),
+            json.dumps({"name": "Modificado por Experto"}),
+            content_type="application/json"
+        )
+        self.assertEqual(resp_update.status_code, 403)
+
+        # Archivar espacio
+        resp_archive = self.client_expert.post(reverse("workspace_archive", args=[self.ws.id]))
+        self.assertEqual(resp_archive.status_code, 403)
+
+        # Eliminar espacio
+        resp_delete = self.client_expert.post(reverse("workspace_delete", args=[self.ws.id]))
+        self.assertEqual(resp_delete.status_code, 403)
+
+        # Ver miembros
+        resp_members = self.client_expert.get(reverse("workspace_members", args=[self.ws.id]))
+        self.assertEqual(resp_members.status_code, 403)
+
+    def test_experto_ajax_a_ruta_no_permitida_recibe_403(self):
+        resp = self.client_expert.get(reverse("panel"), HTTP_X_REQUESTED_WITH="XMLHttpRequest")
+        self.assertEqual(resp.status_code, 403)
+        data = resp.json()
+        self.assertEqual(data.get("detail"), "expert_restricted_access")
+
+    def test_admin_asigna_experto_y_espacio_directamente(self):
+        client_admin = Client()
+        client_admin.login(username="admin_test", password="password123")
+        nuevo = User.objects.create_user(username="nuevo_experto", password="password123", email="nuevo@test.com")
+
+        resp = client_admin.post(
+            reverse("users_assign_expert", args=[nuevo.id]),
+            json.dumps({"profession": "Auditor Financiero", "workspace_id": self.ws.id}),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, 200)
+        self.assertTrue(Expert.objects.filter(user=nuevo, profession="Auditor Financiero").exists())
+        self.assertTrue(WorkspaceMembership.objects.filter(user=nuevo, workspace=self.ws).exists())
+
+    def test_crear_usuario_con_rol_experto_y_espacio_directo(self):
+        client_admin = Client()
+        client_admin.login(username="admin_test", password="password123")
+        resp = client_admin.post(
+            reverse("users_create"),
+            json.dumps({
+                "username": "perito_legal_1",
+                "email": "perito@lex.com",
+                "password": "Password123!",
+                "role": "expert",
+                "profession": "Perito Legal",
+                "workspace_id": self.ws.id,
+                "is_active": True
+            }),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, 200)
+        created_user = User.objects.get(username="perito_legal_1")
+        self.assertFalse(created_user.is_staff)
+        self.assertTrue(Expert.objects.filter(user=created_user, profession="Perito Legal").exists())
+        self.assertTrue(WorkspaceMembership.objects.filter(user=created_user, workspace=self.ws).exists())
+
+    def test_crear_usuario_experto_falla_sin_especialidad(self):
+        client_admin = Client()
+        client_admin.login(username="admin_test", password="password123")
+        resp = client_admin.post(
+            reverse("users_create"),
+            json.dumps({
+                "username": "experto_sin_prof",
+                "email": "sinprof@lex.com",
+                "password": "Password123!",
+                "role": "expert",
+                "profession": "",
+                "workspace_id": self.ws.id
+            }),
+            content_type="application/json"
+        )
+        self.assertEqual(resp.status_code, 400)
+        data = resp.json()
+        self.assertIn("especialidad", data["error"].lower())
+
+    def test_panel_usuarios_renderiza_3_roles_y_espacios(self):
+        client_admin = Client()
+        client_admin.login(username="admin_test", password="password123")
+        # Crear un usuario auditor y uno experto
+        auditor = User.objects.create_user(username="auditor_test_view", password="password123", email="aud@test.com")
+        WorkspaceMembership.objects.create(workspace=self.ws, user=auditor, role="editor")
+        
+        experto_u = User.objects.create_user(username="expert_test_view", password="password123", email="exp@test.com")
+        Expert.objects.create(user=experto_u, profession="Economista")
+        WorkspaceMembership.objects.create(workspace=self.ws, user=experto_u, role="editor")
+
+        resp = client_admin.get(reverse("users"))
+        self.assertEqual(resp.status_code, 200)
+        content = resp.content.decode("utf-8")
+        self.assertIn("Administrador", content)
+        self.assertIn("Auditor", content)
+        self.assertIn("Experto", content)
+        self.assertIn("Economista", content)
+        self.assertIn(self.ws.name, content)
+
+

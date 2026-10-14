@@ -59,3 +59,16 @@ def set_active_workspace(request, workspace_id):
         request.session["active_workspace_id"] = target_ws.id
         return target_ws
     return None
+
+
+def is_expert_user(user):
+    """
+    Retorna True si el usuario es un perito/experto temático y no un administrador.
+    Los usuarios expertos tienen el acceso restringido exclusivamente a la Detección de Opacidad.
+    """
+    if not user or not user.is_authenticated or user.is_staff or user.is_superuser:
+        return False
+    try:
+        return getattr(user, "expert_profile", None) is not None
+    except Exception:
+        return False

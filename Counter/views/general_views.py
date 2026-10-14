@@ -12,11 +12,11 @@ from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.conf import settings
 from django.db import models, IntegrityError
-from ..models import Company, TotalCountReport, Report
+from ..models import Company, TotalCountReport, Report, Workspace, WorkspaceMembership
 from ..forms import IndividualReportUploadForm, ZipUploadForm, ComparativeAnalysisForm
 from ..main import process_report, process_zip
-from ..workspace_utils import get_active_workspace
-from User.models import Expert
+from ..workspace_utils import get_active_workspace, is_expert_user
+from User.models import Expert, PROFESSION_CHOICES
 
 # * ---------------------------------------- VISTAS GENERALES ----------------------------------------
 def index_view(request):
@@ -445,6 +445,7 @@ def user_view(request):
     users_qs = (
         User.objects.all()
         .select_related("profile", "expert_profile")
+        .prefetch_related("workspace_memberships__workspace")
         .order_by("-is_active", "username")
     )
 
@@ -455,23 +456,49 @@ def user_view(request):
         is_deleted = getattr(profile, "is_deleted", False) if profile else False
         deleted_at = getattr(profile, "deleted_at", None) if profile else None
 
+        # Determinar rol inequívoco del sistema
+        if u.is_staff or u.is_superuser:
+            role = "admin"
+            role_display = "Administrador"
+            profession = ""
+        elif expertise:
+            role = "expert"
+            role_display = "Experto"
+            profession = expertise.profession or ""
+        else:
+            role = "auditor"
+            role_display = "Auditor"
+            profession = ""
+
+        # Espacios de trabajo asignados
+        memberships = u.workspace_memberships.filter(workspace__is_archived=False)
+        workspaces = [m.workspace.name for m in memberships]
+        primary_workspace_id = memberships.first().workspace_id if memberships.exists() else None
+
         users.append({
             "id": u.id,
             "username": u.username,
             "email": u.email,
             "is_staff": u.is_staff,
+            "is_superuser": u.is_superuser,
             "is_active": u.is_active,
             "is_deleted": is_deleted,
             "deleted_at": deleted_at,
             "last_login": u.last_login,
             "creation_date": profile.creation_date if profile else u.date_joined,
-            "profession": expertise.profession if expertise else "",
+            "profession": profession,
+            "role": role,
+            "role_display": role_display,
+            "workspaces": workspaces,
+            "primary_workspace_id": primary_workspace_id,
         })
 
     total_users = len(users)
     active_users = sum(1 for u in users if u["is_active"] and not u["is_deleted"])
     deleted_users = sum(1 for u in users if u["is_deleted"])
-    admin_users = sum(1 for u in users if u["is_staff"])
+    admin_users = sum(1 for u in users if u["role"] == "admin")
+    expert_users = sum(1 for u in users if u["role"] == "expert")
+    auditor_users = sum(1 for u in users if u["role"] == "auditor")
 
     return render(
         request,
@@ -482,6 +509,10 @@ def user_view(request):
             "active_users": active_users,
             "deleted_users": deleted_users,
             "admin_users": admin_users,
+            "expert_users": expert_users,
+            "auditor_users": auditor_users,
+            "profession_choices": PROFESSION_CHOICES,
+            "all_workspaces": Workspace.objects.filter(is_archived=False).order_by("name"),
         }
     )
 
@@ -525,13 +556,29 @@ def create_user(request):
     username = (data.get("username") or "").strip()
     email = (data.get("email") or "").strip()
     password = data.get("password") or ""
-    is_admin = bool(data.get("is_staff"))
+    role = (data.get("role") or "").strip().lower()
     is_active = bool(data.get("is_active", True))
     profession = (data.get("profession") or "").strip()
+    workspace_id = data.get("workspace_id")
+
+    # Retrocompatibilidad si envían is_staff en lugar de role
+    if not role:
+        if bool(data.get("is_staff")):
+            role = "admin"
+        elif profession:
+            role = "expert"
+        else:
+            role = "auditor"
 
     if not username or not email or not password:
         return JsonResponse(
             {"success": False, "error": "Usuario, correo y contraseña son obligatorios."},
+            status=400,
+        )
+
+    if role == "expert" and not profession:
+        return JsonResponse(
+            {"success": False, "error": "Debes seleccionar una especialidad del catálogo para el rol de Experto."},
             status=400,
         )
 
@@ -547,36 +594,56 @@ def create_user(request):
             status=400,
         )
 
+    is_staff = (role == "admin")
+
     try:
         user = User.objects.create_user(
             username=username,
             email=email,
             password=password,
-            is_staff=is_admin,
+            is_staff=is_staff,
             is_active=is_active,
         )
     except IntegrityError:
         return JsonResponse({"success": False, "error": "No se pudo crear el usuario."}, status=400)
 
-    if is_admin:
-        _sync_admin_group(user, True)
+    _sync_admin_group(user, is_staff)
 
-    if profession:
+    assigned_ws_name = None
+    if role == "expert":
         _set_expert(user, profession)
+    else:
+        Expert.objects.filter(user=user).delete()
+
+    if workspace_id:
+        ws = Workspace.objects.filter(id=workspace_id, is_archived=False).first()
+        if ws:
+            role_in_ws = "admin" if role == "admin" else "editor"
+            WorkspaceMembership.objects.get_or_create(
+                workspace=ws,
+                user=user,
+                defaults={"role": role_in_ws}
+            )
+            assigned_ws_name = ws.name
 
     # Registrar en auditoría
     from User.utils import log_user_action
+    desc_extra = f" con especialidad '{profession}'" if role == "expert" else ""
+    ws_extra = f" y asignado al espacio '{assigned_ws_name}'" if assigned_ws_name else ""
+    role_names = {"admin": "Administrador", "expert": "Experto", "auditor": "Auditor"}
     log_user_action(
         actor=request.user,
         target_username=user.username,
         target_user=user,
         action='CREATE',
-        description=f"El administrador '{request.user.username}' creó la cuenta de '{user.username}'.",
+        description=f"El administrador '{request.user.username}' creó la cuenta de '{user.username}' con rol '{role_names.get(role, role)}'{desc_extra}{ws_extra}.",
         details={
             "email": email,
-            "is_staff": is_admin,
+            "role": role,
+            "is_staff": is_staff,
             "is_active": is_active,
-            "profession": profession
+            "profession": profession if role == "expert" else None,
+            "workspace": assigned_ws_name,
         },
         request=request
     )
@@ -606,6 +673,9 @@ def update_user(request):
     username = (data.get("username") or "").strip()
     email = (data.get("email") or "").strip()
     password = data.get("password")
+    role = (data.get("role") or "").strip().lower()
+    profession = (data.get("profession") or "").strip()
+    workspace_id = data.get("workspace_id")
 
     changes = {}
 
@@ -625,13 +695,6 @@ def update_user(request):
         user.set_password(password)
         changes["password"] = "Contraseña actualizada administrativamente"
 
-    if "is_staff" in data:
-        new_staff = bool(data["is_staff"])
-        if new_staff != user.is_staff:
-            changes["is_staff"] = {"anterior": user.is_staff, "nuevo": new_staff}
-            user.is_staff = new_staff
-            _sync_admin_group(user, user.is_staff)
-
     if "is_active" in data:
         new_active = bool(data["is_active"])
         if new_active != user.is_active:
@@ -644,22 +707,73 @@ def update_user(request):
                 user.profile.save()
                 changes["is_deleted"] = {"anterior": True, "nuevo": False}
 
+    # Procesar rol
+    current_exp = getattr(user, "expert_profile", None)
+    old_role = "admin" if user.is_staff else ("expert" if current_exp else "auditor")
+
+    if role:
+        if role == "admin":
+            if not user.is_staff:
+                user.is_staff = True
+                _sync_admin_group(user, True)
+                changes["role"] = {"anterior": old_role, "nuevo": "admin"}
+            if current_exp:
+                Expert.objects.filter(user=user).delete()
+                changes["profession"] = {"anterior": current_exp.profession, "nuevo": None}
+        elif role == "expert":
+            if not profession:
+                return JsonResponse({"success": False, "error": "Debes seleccionar una especialidad del catálogo para el rol de Experto."}, status=400)
+            if user.is_staff:
+                user.is_staff = False
+                _sync_admin_group(user, False)
+                changes["role"] = {"anterior": old_role, "nuevo": "expert"}
+            old_prof = current_exp.profession if current_exp else ""
+            if profession != old_prof:
+                _set_expert(user, profession)
+                changes["profession"] = {"anterior": old_prof, "nuevo": profession}
+        elif role == "auditor":
+            if user.is_staff:
+                user.is_staff = False
+                _sync_admin_group(user, False)
+                changes["role"] = {"anterior": old_role, "nuevo": "auditor"}
+            if current_exp:
+                Expert.objects.filter(user=user).delete()
+                changes["profession"] = {"anterior": current_exp.profession, "nuevo": None}
+    else:
+        # Retrocompatibilidad si mandaron is_staff
+        if "is_staff" in data:
+            new_staff = bool(data["is_staff"])
+            if new_staff != user.is_staff:
+                changes["is_staff"] = {"anterior": user.is_staff, "nuevo": new_staff}
+                user.is_staff = new_staff
+                _sync_admin_group(user, user.is_staff)
+        if "profession" in data:
+            old_prof = current_exp.profession if current_exp else ""
+            if profession != old_prof:
+                changes["profession"] = {"anterior": old_prof, "nuevo": profession}
+                if profession:
+                    _set_expert(user, profession)
+                else:
+                    Expert.objects.filter(user=user).delete()
+
     user.save()
 
-    if "profession" in data:
-        profession = (data.get("profession") or "").strip()
-        current_exp = getattr(user, "expert_profile", None)
-        old_prof = current_exp.profession if current_exp else ""
-        if profession != old_prof:
-            changes["profession"] = {"anterior": old_prof, "nuevo": profession}
-            if profession:
-                _set_expert(user, profession)
-            else:
-                Expert.objects.filter(user=user).delete()
+    # Procesar asignación de espacio si fue provisto
+    if workspace_id:
+        ws = Workspace.objects.filter(id=workspace_id, is_archived=False).first()
+        if ws:
+            role_in_ws = "admin" if user.is_staff else "editor"
+            _, created_mem = WorkspaceMembership.objects.get_or_create(
+                workspace=ws,
+                user=user,
+                defaults={"role": role_in_ws}
+            )
+            if created_mem:
+                changes["workspace_assigned"] = ws.name
 
     # Registrar en auditoría
     from User.utils import log_user_action
-    action_type = 'ROLE_CHANGE' if 'is_staff' in changes else ('PASSWORD_CHANGE' if 'password' in changes and len(changes) == 1 else 'UPDATE')
+    action_type = 'ROLE_CHANGE' if 'role' in changes or 'is_staff' in changes else ('PASSWORD_CHANGE' if 'password' in changes and len(changes) == 1 else 'UPDATE')
     log_user_action(
         actor=request.user,
         target_username=user.username,
@@ -733,25 +847,38 @@ def assign_expert(request, user_id):
     profession = (data.get("profession") or "").strip()
     remove = bool(data.get("remove"))
 
+    workspace_id = data.get("workspace_id")
+    assigned_ws_name = None
+
     if remove or not profession:
         Expert.objects.filter(user=user).delete()
         res_expert = False
     else:
         _set_expert(user, profession)
         res_expert = True
+        if workspace_id:
+            ws = Workspace.objects.filter(id=workspace_id, is_archived=False).first()
+            if ws:
+                WorkspaceMembership.objects.get_or_create(
+                    workspace=ws,
+                    user=user,
+                    defaults={"role": "editor"}
+                )
+                assigned_ws_name = ws.name
 
     from User.utils import log_user_action
+    desc_extra = f" y lo vinculó al espacio '{assigned_ws_name}'" if assigned_ws_name else ""
     log_user_action(
         actor=request.user,
         target_username=user.username,
         target_user=user,
         action='EXPERT_CHANGE',
-        description=f"El administrador '{request.user.username}' asignó la especialidad '{profession}' a '{user.username}'." if res_expert else f"El administrador '{request.user.username}' retiró la especialidad de '{user.username}'.",
-        details={"profession": profession if res_expert else None},
+        description=f"El administrador '{request.user.username}' asignó la especialidad '{profession}' a '{user.username}'{desc_extra}." if res_expert else f"El administrador '{request.user.username}' retiró la especialidad de '{user.username}'.",
+        details={"profession": profession if res_expert else None, "workspace": assigned_ws_name},
         request=request
     )
 
-    return JsonResponse({"success": True, "expert": res_expert})
+    return JsonResponse({"success": True, "expert": res_expert, "workspace": assigned_ws_name})
 
 
 @login_required

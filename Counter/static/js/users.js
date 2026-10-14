@@ -19,6 +19,72 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* ------------------------------------------------------------------ */
+  /* Control dinámico de roles (Auditor / Experto / Admin)               */
+  /* ------------------------------------------------------------------ */
+  window.setRoleRadio = (mode, role) => {
+    const prefix = mode === 'create' ? 'cu' : 'eu';
+    const radio = document.querySelector(`input[name="${prefix}-role"][value="${role}"]`);
+    if (radio) {
+      radio.checked = true;
+    }
+    window.toggleRoleFields(mode);
+  };
+
+  window.toggleRoleFields = (mode) => {
+    const isCreate = mode === 'create';
+    const prefix = isCreate ? 'cu' : 'eu';
+    const roleRadio = document.querySelector(`input[name="${prefix}-role"]:checked`);
+    const role = roleRadio ? roleRadio.value : 'auditor';
+
+    // Feedback visual instantáneo para las 3 tarjetas de rol
+    document.querySelectorAll(`input[name="${prefix}-role"]`).forEach((radio) => {
+      const card = radio.closest('.role-card');
+      if (!card) return;
+      card.classList.remove(
+        'border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-600',
+        'border-purple-600', 'bg-purple-50/70', 'ring-2', 'ring-purple-600',
+        'border-slate-800', 'bg-slate-50', 'ring-2', 'ring-slate-800',
+        'border-gray-200', 'bg-white'
+      );
+      if (radio.checked) {
+        if (radio.value === 'admin') {
+          card.classList.add('border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-600');
+        } else if (radio.value === 'expert') {
+          card.classList.add('border-purple-600', 'bg-purple-50/70', 'ring-2', 'ring-purple-600');
+        } else {
+          card.classList.add('border-slate-800', 'bg-slate-50', 'ring-2', 'ring-slate-800');
+        }
+      } else {
+        card.classList.add('border-gray-200', 'bg-white');
+      }
+    });
+
+    const expertContainer = document.getElementById(isCreate ? 'cu-expert-fields' : 'eu-expert-fields');
+    const professionSelect = document.getElementById(isCreate ? 'cu-profession' : 'eu-profession');
+    const wsHint = document.getElementById('cu-workspace-hint');
+
+    // La elección de profesiones SOLO debe aparecer cuando se seleccione Experto
+    if (role === 'expert') {
+      if (expertContainer) expertContainer.classList.remove('hidden');
+      if (professionSelect) professionSelect.required = true;
+      if (isCreate && wsHint) {
+        wsHint.textContent = 'Obligatorio para que el experto pueda acceder de inmediato a los reportes de opacidad.';
+        wsHint.className = 'text-xs text-purple-700 font-medium mt-1';
+      }
+    } else {
+      if (expertContainer) expertContainer.classList.add('hidden');
+      if (professionSelect) {
+        professionSelect.required = false;
+        professionSelect.value = '';
+      }
+      if (isCreate && wsHint) {
+        wsHint.textContent = 'Vincula al usuario a este proyecto para que acceda inmediatamente sin bloqueos.';
+        wsHint.className = 'text-xs text-gray-500 mt-1';
+      }
+    }
+  };
+
+  /* ------------------------------------------------------------------ */
   /* Modal crear usuario                                                */
   /* ------------------------------------------------------------------ */
   const createModal  = document.getElementById('createUserModal');
@@ -27,7 +93,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   window.openCreateModal = () => {
     if (createError) createError.classList.add('hidden');
-    if (createForm) createForm.reset();
+    if (createForm) {
+      createForm.reset();
+      const defaultRole = document.querySelector('input[name="cu-role"][value="auditor"]');
+      if (defaultRole) defaultRole.checked = true;
+      window.toggleRoleFields('create');
+    }
     createModal.classList.remove('hidden');
   };
   window.closeCreateModal = () => createModal.classList.add('hidden');
@@ -37,13 +108,25 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       createError.classList.add('hidden');
 
+      const roleRadio = document.querySelector('input[name="cu-role"]:checked');
+      const role = roleRadio ? roleRadio.value : 'auditor';
+      const profession = document.getElementById('cu-profession').value.trim();
+      const workspaceElem = document.getElementById('cu-workspace');
+      const workspaceId = workspaceElem && workspaceElem.value ? workspaceElem.value : null;
+
+      if (role === 'expert' && !profession) {
+        showError(createError, 'Debes seleccionar una especialidad del catálogo oficial para el rol de Experto.');
+        return;
+      }
+
       const payload = {
-        username  : document.getElementById('cu-username').value.trim(),
-        email     : document.getElementById('cu-email').value.trim(),
-        password  : document.getElementById('cu-password').value,
-        profession: document.getElementById('cu-profession').value.trim(),
-        is_staff  : document.getElementById('cu-is-staff').checked,
-        is_active : document.getElementById('cu-is-active').checked,
+        username    : document.getElementById('cu-username').value.trim(),
+        email       : document.getElementById('cu-email').value.trim(),
+        password    : document.getElementById('cu-password').value,
+        role        : role,
+        profession  : role === 'expert' ? profession : '',
+        workspace_id: workspaceId,
+        is_active   : document.getElementById('cu-is-active').checked,
       };
 
       try {
@@ -72,16 +155,45 @@ document.addEventListener('DOMContentLoaded', () => {
   const editError = document.getElementById('edit-error');
 
   window.openEditModal = (btn) => {
+    if (!btn) return;
+    const button = (btn.closest && btn.closest('.edit-user-btn')) ? btn.closest('.edit-user-btn') : btn;
     if (editError) editError.classList.add('hidden');
-    document.getElementById('eu-user-id').value     = btn.dataset.id;
-    document.getElementById('eu-username').value    = btn.dataset.username;
-    document.getElementById('eu-email').value       = btn.dataset.email;
-    document.getElementById('eu-profession').value  = btn.dataset.profession || '';
-    document.getElementById('eu-is-staff').checked  = btn.dataset.isStaff === '1';
-    document.getElementById('eu-is-active').checked = btn.dataset.isActive === '1';
-    editModal.classList.remove('hidden');
+
+    const idInput = document.getElementById('eu-user-id');
+    if (idInput) idInput.value = button.dataset.id || '';
+
+    const userInput = document.getElementById('eu-username');
+    if (userInput) userInput.value = button.dataset.username || '';
+
+    const emailInput = document.getElementById('eu-email');
+    if (emailInput) emailInput.value = button.dataset.email || '';
+
+    const pwdInput = document.getElementById('eu-password');
+    if (pwdInput) pwdInput.value = '';
+
+    const role = button.dataset.role || (button.dataset.isStaff === '1' ? 'admin' : (button.dataset.profession ? 'expert' : 'auditor'));
+    const roleRadio = document.querySelector(`input[name="eu-role"][value="${role}"]`);
+    if (roleRadio) roleRadio.checked = true;
+
+    // Actualiza tarjetas y muestra/oculta el selector de profesión
+    window.toggleRoleFields('edit');
+
+    const profSelect = document.getElementById('eu-profession');
+    if (role === 'expert' && profSelect) {
+      profSelect.value = button.dataset.profession || '';
+    }
+
+    const wsSelect = document.getElementById('eu-workspace');
+    if (wsSelect) wsSelect.value = button.dataset.workspaceId || '';
+
+    const activeCheckbox = document.getElementById('eu-is-active');
+    if (activeCheckbox) activeCheckbox.checked = button.dataset.isActive === '1';
+
+    if (editModal) editModal.classList.remove('hidden');
   };
-  window.closeEditModal = () => editModal.classList.add('hidden');
+  window.closeEditModal = () => {
+    if (editModal) editModal.classList.add('hidden');
+  };
 
   document.querySelectorAll('.edit-user-btn').forEach((btn) => {
     btn.addEventListener('click', () => window.openEditModal(btn));
@@ -92,14 +204,31 @@ document.addEventListener('DOMContentLoaded', () => {
       e.preventDefault();
       editError.classList.add('hidden');
 
+      const roleRadio = document.querySelector('input[name="eu-role"]:checked');
+      const role = roleRadio ? roleRadio.value : 'auditor';
+      const profession = document.getElementById('eu-profession').value.trim();
+      const workspaceElem = document.getElementById('eu-workspace');
+      const workspaceId = workspaceElem && workspaceElem.value ? workspaceElem.value : null;
+
+      if (role === 'expert' && !profession) {
+        showError(editError, 'Debes seleccionar una especialidad del catálogo oficial para el rol de Experto.');
+        return;
+      }
+
       const payload = {
-        user_id    : document.getElementById('eu-user-id').value,
-        username   : document.getElementById('eu-username').value.trim(),
-        email      : document.getElementById('eu-email').value.trim(),
-        profession : document.getElementById('eu-profession').value.trim(),
-        is_staff   : document.getElementById('eu-is-staff').checked,
-        is_active  : document.getElementById('eu-is-active').checked,
+        user_id     : document.getElementById('eu-user-id').value,
+        username    : document.getElementById('eu-username').value.trim(),
+        email       : document.getElementById('eu-email').value.trim(),
+        role        : role,
+        profession  : role === 'expert' ? profession : '',
+        workspace_id: workspaceId,
+        is_active   : document.getElementById('eu-is-active').checked,
       };
+
+      const newPassword = document.getElementById('eu-password') ? document.getElementById('eu-password').value : '';
+      if (newPassword) {
+        payload.password = newPassword;
+      }
 
       try {
         const res = await fetch(routes.update, {
@@ -147,75 +276,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
-
-  /* ------------------------------------------------------------------ */
-  /* Modal experto                                                       */
-  /* ------------------------------------------------------------------ */
-  const expertModal = document.getElementById('expertUserModal');
-  const expertForm  = document.getElementById('expert-user-form');
-  const expertError = document.getElementById('expert-error');
-
-  window.openExpertUserModal = (btn) => {
-    if (expertError) expertError.classList.add('hidden');
-    document.getElementById('xu-user-id').value      = btn.dataset.id;
-    document.getElementById('xu-username').textContent = btn.dataset.username;
-    document.getElementById('xu-profession').value   = btn.dataset.profession || '';
-    document.getElementById('xu-profession').placeholder = btn.dataset.profession ? btn.dataset.profession : 'Ej. Perito Legal';
-    expertModal.classList.remove('hidden');
-  };
-  window.closeExpertUserModal = () => expertModal.classList.add('hidden');
-
-  document.querySelectorAll('.expert-user-btn').forEach((btn) => {
-    btn.addEventListener('click', () => window.openExpertUserModal(btn));
-  });
-
-  if (expertForm) {
-    expertForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      expertError.classList.add('hidden');
-
-      const payload = { profession: document.getElementById('xu-profession').value.trim() };
-
-      try {
-        const res = await fetch(routes.expert(document.getElementById('xu-user-id').value), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRF() },
-          body: JSON.stringify(payload),
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          showError(expertError, data.error || 'No se pudo asignar la especialidad.');
-          return;
-        }
-        window.location.reload();
-      } catch (err) {
-        showError(expertError, 'Error de conexión.');
-      }
-    });
-  }
-
-  const xuRemoveBtn = document.getElementById('xu-remove');
-  if (xuRemoveBtn) {
-    xuRemoveBtn.addEventListener('click', async () => {
-      if (!window.confirm('¿Quitar a este usuario como experto?')) return;
-
-      try {
-        const res = await fetch(routes.expert(document.getElementById('xu-user-id').value), {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCSRF() },
-          body: JSON.stringify({ remove: true }),
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          showError(expertError, data.error || 'No se pudo quitar la especialidad.');
-          return;
-        }
-        window.location.reload();
-      } catch (err) {
-        showError(expertError, 'Error de conexión.');
-      }
-    });
-  }
 
   /* ------------------------------------------------------------------ */
   /* Soft Delete (Baja Lógica Segura)                                    */

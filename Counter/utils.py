@@ -221,6 +221,14 @@ def encontrar_compañia_año(text: str, workspace=None):
     return best_company, year
 
 
+# Patrón para proteger abreviaturas comunes en español (jurídicas, societarias y académicas)
+# y letras sueltas con punto (como incisos o iniciales) para no considerarlas fin de oración.
+_ABREV_SENTENCE_PATTERN = re.compile(
+    r"\b(art|arts|s\.a|c\.a|cia|inc|corp|ltda|dr|dra|sr|sra|pág|págs|pag|pags|ej|etc|núm|num|no|nro|av|tel|ing|lic|prof|dto|dpto|depto|ref|reg|res|sec|gob|cap|coord|univ|vol|vols|[a-záéíóúüñ])\.",
+    re.IGNORECASE,
+)
+
+
 #Calcular métricas de complejidad del texto
 def calcular_metricas_complejidad(texto: str) -> dict:
     """
@@ -248,7 +256,14 @@ def calcular_metricas_complejidad(texto: str) -> dict:
     texto_limpio = texto.lower().strip()
     
     # Contar oraciones sin romper abreviaturas comunes (Art., S.A., Inc.) ni cifras decimales
-    oraciones = re.split(r'(?<!\b[a-záéíóúüñ]{1,4})(?<!\d)\.[ \t\r\n]+(?=[a-záéíóúüñA-ZÁÉÍÓÚÜÑ])|[!?]+', texto_limpio)
+    # Compatible con Python 3.13+ (evita look-behind de ancho variable)
+    texto_oraciones = re.sub(r"(\d)\.(\d)", r"\1__NUMDOT__\2", texto_limpio)
+    while True:
+        nuevo_texto, n = _ABREV_SENTENCE_PATTERN.subn(r"\1__DOT__", texto_oraciones)
+        if n == 0:
+            break
+        texto_oraciones = nuevo_texto
+    oraciones = re.split(r"[.!?]+", texto_oraciones)
     oraciones = [s.strip() for s in oraciones if s.strip()]
     total_sentences = len(oraciones) if oraciones else 1
     

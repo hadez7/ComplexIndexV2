@@ -7,11 +7,13 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
 from django.utils.translation import gettext as _
 from ..models import Workspace, WorkspaceMembership, Report, Company, TotalCount
-from ..workspace_utils import get_user_workspaces, get_active_workspace, set_active_workspace
+from ..workspace_utils import get_user_workspaces, get_active_workspace, set_active_workspace, is_expert_user
 
 
 def _es_admin_del_espacio(request, workspace):
     """staff/superuser o rol 'admin' en el espacio."""
+    if is_expert_user(request.user):
+        return False
     return (
         request.user.is_superuser
         or request.user.is_staff
@@ -145,6 +147,12 @@ def workspace_create_view(request):
     Crea un nuevo espacio de trabajo aislado.
     Acepta tanto JSON (para modales AJAX) como envío tradicional POST.
     """
+    if is_expert_user(request.user):
+        if request.content_type == "application/json":
+            return JsonResponse({"error": _("Los usuarios expertos no tienen permiso para crear espacios de trabajo.")}, status=403)
+        messages.error(request, _("Los usuarios expertos no tienen permiso para crear espacios de trabajo."))
+        return redirect("workspaces_list")
+
     if request.method != "POST":
         return JsonResponse({"error": _("Método no permitido")}, status=405)
 
@@ -218,6 +226,8 @@ def workspace_select_view(request, workspace_id):
         return redirect(next_url)
 
     messages.success(request, _("Cambiado al espacio: %s") % selected.name)
+    if is_expert_user(request.user):
+        return redirect("concealment_detection")
     return redirect("panel")
 
 
@@ -226,6 +236,9 @@ def workspace_update_view(request, workspace_id):
     """
     Actualiza la información de un espacio de trabajo.
     """
+    if is_expert_user(request.user):
+        return JsonResponse({"error": _("Los usuarios expertos no tienen permiso para editar espacios de trabajo.")}, status=403)
+
     workspace = get_object_or_404(Workspace, id=workspace_id)
 
     # Validar permisos: staff, superuser, o admin del workspace
@@ -264,6 +277,9 @@ def workspace_archive_view(request, workspace_id):
     if request.method != "POST":
         return HttpResponseNotAllowed(["POST"])
 
+    if is_expert_user(request.user):
+        return JsonResponse({"error": _("Los usuarios expertos no tienen permiso para modificar espacios de trabajo.")}, status=403)
+
     workspace = get_object_or_404(Workspace, id=workspace_id)
 
     if not _es_admin_del_espacio(request, workspace):
@@ -298,6 +314,9 @@ def workspace_delete_view(request, workspace_id):
     """
     if request.method != "POST":
         return HttpResponseNotAllowed(["POST"])
+
+    if is_expert_user(request.user):
+        return JsonResponse({"error": _("Los usuarios expertos no tienen permiso para eliminar espacios de trabajo.")}, status=403)
 
     workspace = get_object_or_404(Workspace, id=workspace_id)
 

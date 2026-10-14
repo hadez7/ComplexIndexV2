@@ -1174,6 +1174,41 @@
         <!-- Menú de Navegación de la Barra Lateral -->
         <nav class="flex-1 px-3 py-3 space-y-4 overflow-y-auto">
             
+            {% if is_expert_user %}
+            <!-- Modo Experto: Acceso a Inicio, Espacios y Detección de Opacidad -->
+            <div>
+                <span class="sidebar-text px-3 text-[10px] font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
+                    {% trans "Navegación" %}
+                </span>
+                <div class="space-y-0.5">
+                    <a href="{% url 'index' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'index' %}" data-tooltip="{% trans 'Inicio' %}" title="{% trans 'Inicio / Visión General' %}">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        <span class="sidebar-text truncate">{% trans "Inicio" %}</span>
+                    </a>
+                    <a href="{% url 'workspaces_list' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'workspaces_list' %}" data-tooltip="{% trans 'Espacios de Trabajo' %}" title="{% trans 'Espacios de Trabajo' %}">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                        </svg>
+                        <span class="sidebar-text truncate">{% trans "Espacios de Trabajo" %}</span>
+                    </a>
+                </div>
+            </div>
+            <div>
+                <span class="sidebar-text px-3 text-[10px] font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
+                    {% trans "Peritaje Forense" %}
+                </span>
+                <div class="space-y-0.5">
+                    <a href="{% url 'concealment_detection' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'concealment_detection' %}" data-tooltip="{% trans 'Detección de Opacidad' %}" title="{% trans 'Detección Forense de Opacidad Contractual' %}">
+                        <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path>
+                        </svg>
+                        <span class="sidebar-text truncate font-bold text-blue-700">{% trans "Detección de Opacidad" %}</span>
+                    </a>
+                </div>
+            </div>
+            {% else %}
             <!-- Grupo: Plataforma Central -->
             <div>
                 <span class="sidebar-text px-3 text-[10px] font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
@@ -1286,6 +1321,7 @@
                     </a>
                 </div>
             </div>
+            {% endif %}
             {% endif %}
             {% endif %}
 
@@ -1539,10 +1575,29 @@
                 {% endif %}
 
                 <nav class="space-y-1 text-sm font-semibold text-slate-700">
+                    {% if is_expert_user %}
+                    <a href="{% url 'index' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        <span>{% trans "Inicio" %}</span>
+                    </a>
+                    <a href="{% url 'workspaces_list' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
+                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                        </svg>
+                        <span>{% trans "Espacios de Trabajo" %}</span>
+                    </a>
+                    <a href="{% url 'concealment_detection' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl bg-blue-50 text-blue-700 font-bold hover:bg-blue-100">
+                        <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path>
+                        </svg>
+                        <span>{% trans "Detección de Opacidad" %}</span>
+                    </a>
+                    {% elif user.is_authenticated %}
                     <a href="{% url 'index' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
                         <span>{% trans "Inicio" %}</span>
                     </a>
-                    {% if user.is_authenticated %}
                     <a href="{% url 'panel' %}" class="flex items-center space-x-3 px-3 py-2 rounded-xl hover:bg-slate-100">
                         <span>{% trans "Panel de Control" %}</span>
                     </a>

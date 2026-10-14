@@ -252,6 +252,9 @@
                                     <span class="font-bold text-gray-900 dark:text-white text-sm block truncate">
                                         {% if report.company.name %}{{ report.company.name }}{% else %}{% trans "Empresa no asignada" %}{% endif %}
                                     </span>
+                                    {% if report.name %}
+                                    <span class="text-xs text-gray-500 dark:text-slate-400 block truncate">{{ report.name }}</span>
+                                    {% endif %}
                                     {% if report.company.ruc %}
                                     <span class="text-[11px] font-mono text-gray-400 dark:text-slate-400">RUC: {{ report.company.ruc }}</span>
                                     {% endif %}

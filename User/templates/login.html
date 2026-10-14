@@ -56,7 +56,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                     </svg>
                     <div class="flex-1">
-                        <p class="font-bold text-red-900 dark:text-red-200">{% trans "Error de autenticación" %}</p>
+                        <p class="font-bold text-red-900 dark:text-red-200">{% trans "No pudimos iniciar tu sesión" %}</p>
                         <ul class="mt-1 list-disc list-inside space-y-0.5 text-xs text-red-700 dark:text-red-300">
                             {% for error in form.non_field_errors %}
                             <li>{{ error }}</li>

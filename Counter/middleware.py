@@ -4,7 +4,7 @@ from django.http import JsonResponse
 from django.shortcuts import redirect
 from django.utils.translation import gettext as _
 
-from .workspace_utils import get_active_workspace
+from .workspace_utils import get_active_workspace, is_expert_user
 
 
 class WorkspaceAccessGuardMiddleware:
@@ -17,9 +17,8 @@ class WorkspaceAccessGuardMiddleware:
     puede añadirlo a un espacio. Los staff/superusuarios ven todos los espacios
     porque son quienes aprueban los accesos.
 
-    Este middleware es la primera barrera; además las vistas filtran siempre por
-    el espacio activo, de modo que aunque alguna vista se escape de aquí,
-    "sin espacio activo" se traduce en "sin resultados" y nunca en "todo".
+    Además, restringe a los usuarios con rol de Experto para que operen exclusivamente
+    sobre la herramienta de Detección de Opacidad y la selección de sus espacios asignados.
     """
 
     def __init__(self, get_response):
@@ -40,9 +39,29 @@ class WorkspaceAccessGuardMiddleware:
                 and user.is_authenticated
                 and not user.is_staff
                 and not user.is_superuser
-                and get_active_workspace(request) is None
             ):
-                return self._sin_acceso(request)
+                if get_active_workspace(request) is None:
+                    return self._sin_acceso(request)
+
+                if is_expert_user(user):
+                    path = request.path_info
+                    permitidas = (
+                        "/concealment_detection/",
+                        "/workspaces/",
+                        "/Auth/",
+                        "/i18n/",
+                        "/jsi18n/",
+                    )
+                    if path != "/" and not any(path.startswith(prefix) for prefix in permitidas):
+                        if self._es_ajax(request):
+                            return JsonResponse(
+                                {
+                                    "error": _("El usuario experto solo tiene acceso a la página de inicio y al Detector de Ocultamiento."),
+                                    "detail": "expert_restricted_access",
+                                },
+                                status=403,
+                            )
+                        return redirect("concealment_detection")
 
         return self.get_response(request)
 

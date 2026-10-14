@@ -13,12 +13,24 @@ class UserProfile(models.Model):
         return self.user.username
 
 
+PROFESSION_CHOICES = [
+    ('Economista', 'Economista / Finanzas'),
+    ('Auditor Contable', 'Auditor Contable / Financiero'),
+    ('Auditor Financiero', 'Auditor Financiero / Bursátil'),
+    ('Perito Legal', 'Perito Legal / Jurídico'),
+    ('Perito Lingüístico', 'Perito Lingüístico / Semiótica Forense'),
+    ('Perito Tributario', 'Perito Tributario / Fiscal'),
+    ('Auditor Forense', 'Auditor Forense / Antifraude'),
+    ('Perito Técnico', 'Perito Técnico / Sectorial'),
+]
+
+
 class Expert(models.Model):
     user = models.OneToOneField('auth.User', on_delete=models.CASCADE, related_name='expert_profile')
-    profession = models.CharField(max_length=100, null=True, blank=True)
+    profession = models.CharField(max_length=100, choices=PROFESSION_CHOICES, null=True, blank=True, verbose_name="Especialidad / Profesión")
 
     def __str__(self):
-        return self.user.username
+        return f"{self.user.username} - {self.profession or 'Sin especialidad'}"
 
 
 class UserAuditLog(models.Model):
