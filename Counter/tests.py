@@ -1205,3 +1205,109 @@ class ExpertRoleAccessTests(TestCase):
         self.assertIn(self.ws.name, content)
 
 
+class LinguisticProcessingEngineTests(TestCase):
+    """
+    Pruebas unitarias para el motor de procesamiento léxico, fonotáctico
+    y métricas lingüísticas en español (Bloque I de Auditoría).
+    """
+
+    def setUp(self):
+        from Counter.cleaner import quitar_tildes
+        from Counter.stopwords import STOPWORDS_ES
+        self.sw = set(quitar_tildes(p) for p in STOPWORDS_ES)
+
+    def test_quitar_tildes_preserva_enie(self):
+        from Counter.cleaner import quitar_tildes
+        self.assertEqual(quitar_tildes("año"), "año")
+        self.assertEqual(quitar_tildes("daño"), "daño")
+        self.assertEqual(quitar_tildes("compañía"), "compañia")
+        self.assertEqual(quitar_tildes("AÑO"), "AÑO")
+        self.assertEqual(quitar_tildes("canción"), "cancion")
+
+    def test_recuperacion_ocr_h_caida(self):
+        from Counter.cleaner import procesar_palabra_individual
+        self.assertEqual(procesar_palabra_individual("abitacion", self.sw), ["habitacion"])
+        self.assertEqual(procesar_palabra_individual("onorarios", self.sw), ["honorarios"])
+        self.assertEqual(procesar_palabra_individual("ospitales", self.sw), ["hospitales"])
+        # Palabras reales no deben ser mutadas
+        self.assertEqual(procesar_palabra_individual("espero", self.sw), ["espero"])
+        self.assertEqual(procesar_palabra_individual("echa", self.sw), ["echa"])
+        self.assertEqual(procesar_palabra_individual("abrir", self.sw), ["abrir"])
+
+    def test_rechazo_pseudopalabras_faux_bold_y_triples(self):
+        from Counter.cleaner import procesar_palabra_individual
+        self.assertEqual(procesar_palabra_individual("aaaab", self.sw), [])
+        self.assertEqual(procesar_palabra_individual("aaabc", self.sw), [])
+        self.assertEqual(procesar_palabra_individual("zzzz", self.sw), [])
+        self.assertEqual(procesar_palabra_individual("abb", self.sw), [])
+        # Faux-bold de palabra real se colapsa a palabra válida
+        self.assertEqual(procesar_palabra_individual("bbbbancos", self.sw), ["bancos"])
+
+    def test_rechazo_grupos_consonanticos_invalidos(self):
+        from Counter.cleaner import procesar_palabra_individual
+        self.assertEqual(procesar_palabra_individual("inmv", self.sw), [])
+        self.assertEqual(procesar_palabra_individual("agpm", self.sw), [])
+        self.assertEqual(procesar_palabra_individual("cztp", self.sw), [])
+
+    def test_stopwords_protegidas_contabilidad(self):
+        from Counter.stopwords import STOPWORDS_ES
+        self.assertNotIn("estados", STOPWORDS_ES)
+        self.assertNotIn("estado", STOPWORDS_ES)
+        self.assertNotIn("empleo", STOPWORDS_ES)
+        self.assertNotIn("cuenta", STOPWORDS_ES)
+        self.assertNotIn("balance", STOPWORDS_ES)
+
+        from Counter.cleaner import procesar_palabra_individual
+        self.assertEqual(procesar_palabra_individual("estados", self.sw), ["estados"])
+        self.assertEqual(procesar_palabra_individual("empleo", self.sw), ["empleo"])
+
+    def test_palabras_tecnicas_con_dieresis(self):
+        from django.contrib.auth.models import User
+        from User.models import Expert
+        from Counter.models import Workspace, ExpertWord
+        from Counter.utils import contar_palabras_tecnicas
+
+        user = User.objects.create_user(username="perito_dieresis", password="password123")
+        expert = Expert.objects.create(user=user, profession="Perito Legal")
+        ws = Workspace.objects.create(name="Espacio Diéresis")
+        ExpertWord.objects.create(
+            expert=expert,
+            workspace=ws,
+            name="Lista Auditoría Lingüística",
+            words=["lingüística", "antigüedad"]
+        )
+
+        texto = "El perito evaluó la lingüística del informe y la antigüedad de los saldos."
+        cant = contar_palabras_tecnicas(texto, workspace=ws)
+        self.assertEqual(cant, 2)
+
+    def test_calculo_complejidad_general_y_legibilidad(self):
+        from Counter.utils import calcular_complejidad_general, calcular_metricas_complejidad
+
+        # Legibilidad alta (0.8) -> menor complejidad
+        comp_facil = calcular_complejidad_general(0.3, 0.8, 0.1)
+        # Legibilidad baja (0.2) -> mayor complejidad
+        comp_dificil = calcular_complejidad_general(0.3, 0.2, 0.1)
+        self.assertLess(comp_facil, comp_dificil)
+
+        texto = "Este informe financiero presenta utilidades consistentes en el ejercicio económico anual."
+        m = calcular_metricas_complejidad(texto)
+        self.assertIn("readability_score", m)
+        self.assertIn("inverted_inflesz", m)
+        self.assertGreaterEqual(m["inverted_inflesz"], 0.0)
+        self.assertLessEqual(m["inverted_inflesz"], 1.0)
+
+    def test_dehyphenation_multilinea_con_paginacion(self):
+        from Counter.cleaner import extraer_palabras_limpias
+        texto = (
+            "La admi-\n"
+            "------------------ Página 12 de 85 ------------------\n"
+            "nistración de la empresa presentó los resultados."
+        )
+        palabras = extraer_palabras_limpias(texto, self.sw)
+        self.assertIn("administracion", palabras)
+        self.assertNotIn("admi", palabras)
+        self.assertNotIn("nistracion", palabras)
+
+
+

@@ -174,13 +174,7 @@ def extraer_texto_pdf_inteligente(path: str) -> str:
 
 
 
-#Quita tildes y diacriticos de una palabra
-def quitar_tildes(palabra: str) -> str:
-    return "".join(
-        c
-        for c in unicodedata.normalize("NFD", palabra)
-        if unicodedata.category(c) != "Mn"
-    )
+from .cleaner import quitar_tildes, limpiar_texto_estructural
 
 def contar_silabas_palabra(palabra: str) -> int:
     """
@@ -234,11 +228,15 @@ def calcular_metricas_complejidad(texto: str) -> dict:
     """
     Calcula métricas de complejidad basadas en el texto extraído.
     Retorna un diccionario con:
-    - total_words: Total de palabras
+    - total_words: Total de palabras léxicas
     - unique_words: Palabras únicas
     - total_sentences: Total de oraciones
     - avg_word_length: Longitud promedio de palabras
     - avg_sentence_length: Promedio de palabras por oración
+    - total_syllables: Sílabas totales calculadas
+    - inflesz: Puntuación de legibilidad INFLESZ / Flesch-Szigriszt (0-100)
+    - inverted_inflesz: Factor de opacidad / complejidad inversa (0-1)
+    - readability_score: Índice de legibilidad normalizado (0-100)
     """
     if not texto or not texto.strip():
         return {
@@ -249,14 +247,15 @@ def calcular_metricas_complejidad(texto: str) -> dict:
             "avg_sentence_length": 0.0,
             "total_syllables": 0,
             "inflesz": 0.0,
-            "inverted_inflesz": 0.0
+            "inverted_inflesz": 0.0,
+            "readability_score": 0.0,
         }
-    
-    # Normalizar texto
-    texto_limpio = texto.lower().strip()
-    
-    # Contar oraciones sin romper abreviaturas comunes (Art., S.A., Inc.) ni cifras decimales
-    # Compatible con Python 3.13+ (evita look-behind de ancho variable)
+
+    # 1. Limpieza estructural previa (de-hyphenation multi-página, ligaduras tipográficas, etc.)
+    texto_estructural = limpiar_texto_estructural(texto)
+    texto_limpio = texto_estructural.lower().strip()
+
+    # 2. Contar oraciones sin romper abreviaturas comunes (Art., S.A., Inc.) ni cifras decimales
     texto_oraciones = re.sub(r"(\d)\.(\d)", r"\1__NUMDOT__\2", texto_limpio)
     while True:
         nuevo_texto, n = _ABREV_SENTENCE_PATTERN.subn(r"\1__DOT__", texto_oraciones)
@@ -266,91 +265,93 @@ def calcular_metricas_complejidad(texto: str) -> dict:
     oraciones = re.split(r"[.!?]+", texto_oraciones)
     oraciones = [s.strip() for s in oraciones if s.strip()]
     total_sentences = len(oraciones) if oraciones else 1
-    
-    # Extraer palabras completas en español (incluye ü)
-    palabras = re.findall(r'\b[a-záéíóúüñ]+\b', texto_limpio)
-    total_words = len(palabras)
-    unique_words = len(set(palabras))
-    
-    # Calcular longitud promedio de palabras
-    avg_word_length = sum(len(p) for p in palabras) / total_words if total_words > 0 else 0
-    
-    # Calcular palabras por oración
-    avg_sentence_length = total_words / total_sentences if total_sentences > 0 else 0
 
-    # Calcular sílabas totales
+    # 3. Palabras totales para métricas oracionales (incluye palabras gramaticales)
+    tokens_oracion = re.findall(r'\b[a-záéíóúüñA-ZÁÉÍÓÚÜÑ]+\b', texto_estructural)
+    total_tokens = len(tokens_oracion) if tokens_oracion else 1
+
+    # 4. Palabras limpias para vocabulario léxico (incluye diéresis y eñe)
+    palabras_raw = re.findall(r'\b[a-záéíóúüñA-ZÁÉÍÓÚÜÑ]+\b', texto_limpio)
+    palabras_validas = [quitar_tildes(p) for p in palabras_raw if len(p) >= 3]
+    if not palabras_validas:
+        palabras_validas = [quitar_tildes(p) for p in palabras_raw]
+
+    total_words = len(palabras_validas) if palabras_validas else total_tokens
+    unique_words = len(set(palabras_validas)) if palabras_validas else 1
+
+    # Calcular longitud promedio de palabras y palabras por oración
+    avg_word_length = sum(len(p) for p in palabras_validas) / total_words if total_words > 0 else 0
+    avg_sentence_length = total_tokens / total_sentences if total_sentences > 0 else 0
+
+    # 5. Calcular sílabas totales (adaptado a lengua española)
     total_syllables = sum(
         contar_silabas_palabra(p)
-        for p in palabras
+        for p in tokens_oracion
     )
 
-    # INFLESZ
-    words_per_sentence = avg_sentence_length
-
+    # INFLESZ: Fórmula oficial Flesch-Szigriszt adaptada a lengua española
+    # INFLESZ = 206.84 - 0.623 * (sílabas / palabras * 100) - (palabras / oraciones)
     syllables_per_100_words = (
-        (total_syllables / total_words) * 100
-        if total_words > 0 else 0
+        (total_syllables / total_tokens) * 100
+        if total_tokens > 0 else 0
     )
+    words_per_sentence = avg_sentence_length
 
     inflesz = (
         206.84
-        - (0.60 * syllables_per_100_words)
-        - (1.02 * words_per_sentence)
+        - (0.623 * syllables_per_100_words)
+        - words_per_sentence
     )
 
-    # Normalización 0-1
-    inflesz_normalized = max(
-        0,
-        min(1, inflesz / 100)
-    )
+    # Normalización a escala 0-100 para legibilidad
+    readability_score = max(0.0, min(100.0, inflesz))
 
-    # Inversión
-    inverted_inflesz = 1 - inflesz_normalized
+    # Inversión de legibilidad a factor de complejidad (0-1: 0 = simple, 1 = complejo)
+    inverted_inflesz = max(0.0, min(1.0, 1.0 - (readability_score / 100.0)))
 
-
-    
     return {
         "total_words": total_words,
         "unique_words": unique_words,
         "total_sentences": total_sentences,
         "avg_word_length": round(avg_word_length, 2),
         "avg_sentence_length": round(avg_sentence_length, 2),
-
         "total_syllables": total_syllables,
         "inflesz": round(inflesz, 2),
-        "inverted_inflesz": round(inverted_inflesz, 3)
+        "readability_score": round(readability_score, 1),
+        "inverted_inflesz": round(inverted_inflesz, 3),
     }
 
 #Contar palabras técnicas basadas en listas de expertos
 def contar_palabras_tecnicas(texto: str, year: int = None, workspace=None) -> int:
     """
     Cuenta cuántas palabras del texto están en las listas de palabras técnicas de expertos.
-    Si se proporciona un año, considera solo palabras técnicas relevantes para ese período.
-    Filtra por espacio de trabajo si se especifica.
+    Incluye caracteres en español con diéresis (ü) y eñe (ñ), con coincidencia canónica y normalizada.
+    Filtra estrictamente por el espacio de trabajo indicado.
     """
     if not texto or not texto.strip():
         return 0
-    
-    # Extraer palabras del texto
-    palabras_texto = set(re.findall(r'\b[a-záéíóúñ]+(?:\'[a-záéíóúñ]+)?\b', texto.lower()))
-    
+
+    # Extraer palabras del texto incluyendo diéresis y eñe
+    palabras_texto_raw = set(re.findall(r"\b[a-záéíóúüñA-ZÁÉÍÓÚÜÑ]+(?:\'[a-záéíóúüñA-ZÁÉÍÓÚÜÑ]+)?\b", texto))
+    palabras_texto = {p.lower() for p in palabras_texto_raw}
+    palabras_texto_norm = {quitar_tildes(p) for p in palabras_texto}
+
     # Listas de palabras técnicas: estrictamente las del espacio de trabajo indicado.
-    # Sin espacio activo no se usan listas de ningún otro espacio.
     if workspace:
         listas_expertos = ExpertWord.objects.filter(workspace=workspace)
     else:
         listas_expertos = ExpertWord.objects.none()
-    
+
     palabras_tecnicas_encontradas = set()
-    
+
     for lista in listas_expertos:
         if lista.words:
             for palabra_tecnica in lista.words:
-                palabra_tecnica_lower = str(palabra_tecnica).lower()
-                # Buscar coincidencias exactas
-                if palabra_tecnica_lower in palabras_texto:
-                    palabras_tecnicas_encontradas.add(palabra_tecnica_lower)
-    
+                pt_lower = str(palabra_tecnica).lower().strip()
+                pt_norm = quitar_tildes(pt_lower)
+                # Coincidencia directa o insensible a tildes
+                if pt_lower in palabras_texto or pt_norm in palabras_texto_norm:
+                    palabras_tecnicas_encontradas.add(pt_lower)
 
     return len(palabras_tecnicas_encontradas)
 
@@ -359,28 +360,28 @@ def calcular_complejidad_general(diversidad_lexica: float, legibilidad: float, d
     """
     Calcula el índice de complejidad general combinando tres parámetros.
     Todos los parámetros deben estar en escala 0-1.
-    
+
     Fórmula: 
     Complejidad General = (Diversidad Léxica + (1 - Legibilidad) + Densidad Técnica) / 3
-    
+
     Parámetros:
     - diversidad_lexica: unique_words / total_words (0-1)
-    - legibilidad: 1 - (avg_sentence_length / max_length) (0-1, donde 1=legible, 0=no legible)
+    - legibilidad: legibilidad del documento en escala 0-1 (donde 1=legible, 0=no legible / opaco)
     - densidad_tecnica: technical_words / total_words (0-1)
-    
+
     Retorna un valor entre 0 y 1:
     - Cercano a 0: Documento simple (baja complejidad)
     - Cercano a 0.5: Complejidad media
     - Cercano a 1: Documento muy complejo (alta complejidad)
     """
-    # Asegurar que los valores están en rango 0-1
-    diversidad_lexica = max(0, min(1, diversidad_lexica))
-    legibilidad = max(0, min(1, legibilidad))
-    densidad_tecnica = max(0, min(1, densidad_tecnica))
-    
-    # Fórmula: promedio de diversidad, inverso de legibilidad (más difícil = más complejo), y densidad técnica
-    complejidad = (diversidad_lexica + legibilidad + densidad_tecnica) / 3
-    
+    diversidad_lexica = max(0.0, min(1.0, float(diversidad_lexica or 0)))
+    legibilidad = max(0.0, min(1.0, float(legibilidad or 0)))
+    densidad_tecnica = max(0.0, min(1.0, float(densidad_tecnica or 0)))
+
+    # Inverso de legibilidad: menor legibilidad (texto difícil) incrementa la complejidad
+    inverso_legibilidad = 1.0 - legibilidad
+    complejidad = (diversidad_lexica + inverso_legibilidad + densidad_tecnica) / 3.0
+
     return round(complejidad, 3)
 
 

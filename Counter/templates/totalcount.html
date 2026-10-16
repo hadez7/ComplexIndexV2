@@ -151,7 +151,7 @@
                         <span class="text-xs font-bold text-slate-600 dark:text-slate-400 uppercase block tracking-wider">
                             {% trans "Términos Únicos" %}
                         </span>
-                        <span class="text-2xl font-black font-mono tabular-nums text-slate-900 dark:text-white" id="totalWordsStat">{{ total_counts|length }}</span>
+                        <span class="text-2xl font-black font-mono tabular-nums text-slate-900 dark:text-white" id="totalWordsStat">{{ total_words_count|default:total_counts|length }}</span>
                     </div>
                     <div class="w-10 h-10 rounded-xl bg-slate-200/70 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
@@ -528,21 +528,19 @@ function toggleFormulaLegend() {
 }
 
 // =========================================================================
-// MOTOR DE PAGINACIÓN, BÚSQUEDA Y ORDENAMIENTO DE PALABRAS
+// MOTOR DE PAGINACIÓN, BÚSQUEDA Y ORDENAMIENTO ASÍNCRONO DE PALABRAS
 // =========================================================================
 (function initWordsTableManager() {
     const tableBody = document.getElementById('wordsTableBody');
     if (!tableBody) return;
 
-    let allRows = Array.from(tableBody.querySelectorAll('tr.word-data-row'));
-    let filteredRows = [...allRows];
-    
     let currentPage = 1;
     let pageSize = 25;
     let currentSortColumn = 'quantity';
     let currentSortAsc = false;
     let currentRankFilter = 'all';
     let currentSearchTerm = '';
+    let debounceTimer = null;
 
     const searchInput = document.getElementById('wordSearchInput');
     const clearSearchBtn = document.getElementById('clearWordSearchBtn');
@@ -550,87 +548,82 @@ function toggleFormulaLegend() {
     const paginationInfo = document.getElementById('wordsPaginationInfo');
     const paginationControls = document.getElementById('wordsPaginationControls');
     const noMatchRow = document.getElementById('noWordsMatchRow');
+    const totalWordsStat = document.getElementById('totalWordsStat');
 
-    function applyFilters() {
-        const query = currentSearchTerm.trim().toLowerCase();
-        
-        filteredRows = allRows.filter((row, index) => {
-            const word = row.dataset.word || '';
-            const qty = parseFloat(row.dataset.quantity || 0);
+    async function fetchWords() {
+        tableBody.style.opacity = '0.4';
+        const params = new URLSearchParams(window.location.search);
+        params.set('ajax', '1');
+        params.set('action', 'words');
+        params.set('page', currentPage);
+        params.set('page_size', pageSize);
+        params.set('search', currentSearchTerm);
+        params.set('rank', currentRankFilter);
+        params.set('sort', currentSortColumn);
+        params.set('dir', currentSortAsc ? 'asc' : 'desc');
+        params.set('global_avg', '{{ average }}');
 
-            // Filtro por término
-            if (query && !word.includes(query)) return false;
+        try {
+            const resp = await fetch(`{% url 'totalcount' %}?${params.toString()}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await resp.json();
+            tableBody.style.opacity = '1';
 
-            // Filtros de Rango Rápido
-            if (currentRankFilter === 'top50' && index >= 50) return false;
-            if (currentRankFilter === 'top100' && index >= 100) return false;
-            if (currentRankFilter === 'min5' && qty < 5) return false;
-
-            return true;
-        });
-
-        // Ordenamiento
-        sortRows(filteredRows);
-
-        currentPage = 1;
-        renderPage();
-    }
-
-    function sortRows(rowsList) {
-        rowsList.sort((a, b) => {
-            let valA, valB;
-            if (currentSortColumn === 'word') {
-                valA = a.dataset.word;
-                valB = b.dataset.word;
-                return currentSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
-            } else if (currentSortColumn === 'quantity') {
-                valA = parseFloat(a.dataset.quantity) || 0;
-                valB = parseFloat(b.dataset.quantity) || 0;
-            } else if (currentSortColumn === 'weight') {
-                valA = parseFloat(a.dataset.weight) || 0;
-                valB = parseFloat(b.dataset.weight) || 0;
+            if (!data.success || !data.words || data.words.length === 0) {
+                tableBody.innerHTML = '';
+                if (noMatchRow) noMatchRow.classList.remove('hidden');
+                if (paginationInfo) paginationInfo.textContent = "{% trans 'Sin resultados' %}";
+                if (paginationControls) paginationControls.innerHTML = '';
+                return;
             }
-            return currentSortAsc ? (valA - valB) : (valB - valA);
-        });
-    }
 
-    function renderPage() {
-        // Ocultar todas
-        allRows.forEach(row => row.classList.add('hidden'));
+            if (noMatchRow) noMatchRow.classList.add('hidden');
 
-        if (filteredRows.length === 0) {
-            if (noMatchRow) noMatchRow.classList.remove('hidden');
-            if (paginationInfo) paginationInfo.textContent = "{% trans 'Sin resultados' %}";
-            if (paginationControls) paginationControls.innerHTML = '';
-            return;
+            // Renderizar filas dinámicamente
+            tableBody.innerHTML = data.words.map(item => `
+                <tr class="hover:bg-blue-50/50 dark:hover:bg-slate-800/50 transition-colors word-data-row"
+                    data-word="${item.word.toLowerCase()}"
+                    data-quantity="${item.quantity}"
+                    data-weight="${item.weight}">
+                    <td class="px-6 py-3 font-semibold text-gray-900 dark:text-white">
+                        <span class="inline-flex items-center gap-2">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-500/70"></span>
+                            ${item.word}
+                        </span>
+                    </td>
+                    <td class="px-6 py-3 text-right font-mono tabular-nums text-gray-700 dark:text-slate-300 font-medium">
+                        ${Number(item.quantity).toLocaleString()}
+                    </td>
+                    <td class="px-6 py-3 text-right font-mono tabular-nums text-blue-600 dark:text-blue-400 font-bold">
+                        ${item.weight}
+                    </td>
+                </tr>
+            `).join('');
+
+            // Actualizar información
+            const totalItems = data.total;
+            const startIdx = pageSize === 'all' ? 1 : (data.page - 1) * data.page_size + 1;
+            const endIdx = pageSize === 'all' ? totalItems : Math.min(startIdx + data.page_size - 1, totalItems);
+
+            if (paginationInfo) {
+                paginationInfo.innerHTML = `Mostrando <strong class="font-mono font-bold text-slate-800 dark:text-slate-100 tabular-nums">${startIdx} - ${endIdx}</strong> de <strong class="font-mono font-bold text-slate-800 dark:text-slate-100 tabular-nums">${totalItems.toLocaleString()}</strong> palabras`;
+            }
+
+            if (totalWordsStat && !currentSearchTerm && currentRankFilter === 'all') {
+                totalWordsStat.textContent = totalItems.toLocaleString();
+            }
+
+            renderPaginationButtons(data.total_pages);
+        } catch (e) {
+            console.error("Error al cargar palabras:", e);
+            tableBody.style.opacity = '1';
         }
-
-        if (noMatchRow) noMatchRow.classList.add('hidden');
-
-        const totalItems = filteredRows.length;
-        const totalPages = pageSize === 'all' ? 1 : Math.ceil(totalItems / pageSize);
-        if (currentPage > totalPages) currentPage = totalPages;
-
-        const startIdx = pageSize === 'all' ? 0 : (currentPage - 1) * pageSize;
-        const endIdx = pageSize === 'all' ? totalItems : Math.min(startIdx + pageSize, totalItems);
-
-        for (let i = startIdx; i < endIdx; i++) {
-            filteredRows[i].classList.remove('hidden');
-        }
-
-        // Actualizar Info
-        if (paginationInfo) {
-            paginationInfo.innerHTML = `Mostrando <strong class="font-mono font-bold text-slate-800 dark:text-slate-100 tabular-nums">${startIdx + 1} - ${endIdx}</strong> de <strong class="font-mono font-bold text-slate-800 dark:text-slate-100 tabular-nums">${totalItems}</strong> palabras`;
-        }
-
-        // Renderizar Controles de Paginación
-        renderPaginationButtons(totalPages);
     }
 
     function renderPaginationButtons(totalPages) {
         if (!paginationControls) return;
         paginationControls.innerHTML = '';
-
         if (totalPages <= 1) return;
 
         // Botón Anterior
@@ -639,10 +632,9 @@ function toggleFormulaLegend() {
         prevBtn.className = `px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${currentPage === 1 ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-slate-700' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`;
         prevBtn.textContent = '←';
         prevBtn.disabled = currentPage === 1;
-        prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; renderPage(); } };
+        prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; fetchWords(); } };
         paginationControls.appendChild(prevBtn);
 
-        // Números de páginas con elipsis
         const maxButtons = 5;
         let startPage = Math.max(1, currentPage - 2);
         let endPage = Math.min(totalPages, startPage + maxButtons - 1);
@@ -655,7 +647,7 @@ function toggleFormulaLegend() {
             pageBtn.type = 'button';
             pageBtn.className = `px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition ${p === currentPage ? 'bg-blue-600 text-white shadow-2xs' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'}`;
             pageBtn.textContent = p;
-            pageBtn.onclick = () => { currentPage = p; renderPage(); };
+            pageBtn.onclick = () => { currentPage = p; fetchWords(); };
             paginationControls.appendChild(pageBtn);
         }
 
@@ -665,7 +657,7 @@ function toggleFormulaLegend() {
         nextBtn.className = `px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-slate-700' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`;
         nextBtn.textContent = '→';
         nextBtn.disabled = currentPage === totalPages;
-        nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; renderPage(); } };
+        nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; fetchWords(); } };
         paginationControls.appendChild(nextBtn);
     }
 
@@ -673,20 +665,25 @@ function toggleFormulaLegend() {
     searchInput?.addEventListener('input', (e) => {
         currentSearchTerm = e.target.value;
         if (clearSearchBtn) clearSearchBtn.classList.toggle('hidden', !currentSearchTerm);
-        applyFilters();
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            currentPage = 1;
+            fetchWords();
+        }, 250);
     });
 
     clearSearchBtn?.addEventListener('click', () => {
         if (searchInput) searchInput.value = '';
         currentSearchTerm = '';
         clearSearchBtn.classList.add('hidden');
-        applyFilters();
+        currentPage = 1;
+        fetchWords();
     });
 
     pageSizeSelect?.addEventListener('change', (e) => {
         pageSize = e.target.value === 'all' ? 'all' : parseInt(e.target.value, 10);
         currentPage = 1;
-        renderPage();
+        fetchWords();
     });
 
     window.sortWordsTable = function(columnName) {
@@ -694,9 +691,10 @@ function toggleFormulaLegend() {
             currentSortAsc = !currentSortAsc;
         } else {
             currentSortColumn = columnName;
-            currentSortAsc = (columnName === 'word'); // Palabras por defecto A-Z, cantidades mayor-menor
+            currentSortAsc = (columnName === 'word');
         }
-        applyFilters();
+        currentPage = 1;
+        fetchWords();
     };
 
     window.setWordRankFilter = function(filterName) {
@@ -705,28 +703,34 @@ function toggleFormulaLegend() {
             const isMatch = btn.dataset.filter === filterName;
             btn.className = `word-rank-btn px-2.5 py-1 rounded-lg border font-semibold transition ${isMatch ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-200'}`;
         });
-        applyFilters();
+        currentPage = 1;
+        fetchWords();
     };
 
-    // Inicializar
-    applyFilters();
+    // Inicializar controles con la primera página renderizada por el servidor
+    const totalWordsInitial = parseInt("{{ total_words_count|default:0 }}", 10);
+    if (totalWordsInitial > 0) {
+        const initialTotalPages = Math.ceil(totalWordsInitial / pageSize);
+        if (paginationInfo) {
+            paginationInfo.innerHTML = `Mostrando <strong class="font-mono font-bold text-slate-800 dark:text-slate-100 tabular-nums">1 - ${Math.min(25, totalWordsInitial)}</strong> de <strong class="font-mono font-bold text-slate-800 dark:text-slate-100 tabular-nums">${totalWordsInitial.toLocaleString()}</strong> palabras`;
+        }
+        renderPaginationButtons(initialTotalPages);
+    }
 })();
 
 // =========================================================================
-// MOTOR DE PAGINACIÓN, BÚSQUEDA Y ORDENAMIENTO DE COMPLEJIDAD
+// MOTOR DE PAGINACIÓN, BÚSQUEDA Y ORDENAMIENTO ASÍNCRONO DE COMPLEJIDAD
 // =========================================================================
 (function initComplexityTableManager() {
     const tableBody = document.getElementById('complexityTableBody');
     if (!tableBody) return;
 
-    let allRows = Array.from(tableBody.querySelectorAll('tr.complexity-row'));
-    let filteredRows = [...allRows];
-
     let currentPage = 1;
     let pageSize = 25;
-    let currentSortColumn = 'complexity';
-    let currentSortAsc = false;
+    let currentSortColumn = 'company';
+    let currentSortAsc = true;
     let currentSearchTerm = '';
+    let debounceTimer = null;
 
     const searchInput = document.getElementById('complexitySearchInput');
     const clearSearchBtn = document.getElementById('clearComplexitySearchBtn');
@@ -735,63 +739,87 @@ function toggleFormulaLegend() {
     const paginationControls = document.getElementById('complexityPaginationControls');
     const noMatchRow = document.getElementById('noComplexityMatchRow');
 
-    function applyFilters() {
-        const query = currentSearchTerm.trim().toLowerCase();
+    async function fetchComplexity() {
+        tableBody.style.opacity = '0.4';
+        const params = new URLSearchParams(window.location.search);
+        params.set('ajax', '1');
+        params.set('action', 'complexity');
+        params.set('page', currentPage);
+        params.set('page_size', pageSize);
+        params.set('search', currentSearchTerm);
+        params.set('sort', currentSortColumn);
+        params.set('dir', currentSortAsc ? 'asc' : 'desc');
 
-        filteredRows = allRows.filter((row) => {
-            const searchData = (row.dataset.search || '').toLowerCase();
-            if (query && !searchData.includes(query)) return false;
-            return true;
-        });
+        try {
+            const resp = await fetch(`{% url 'totalcount' %}?${params.toString()}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+            const data = await resp.json();
+            tableBody.style.opacity = '1';
 
-        sortRows(filteredRows);
-        currentPage = 1;
-        renderPage();
-    }
-
-    function sortRows(rowsList) {
-        rowsList.sort((a, b) => {
-            let valA, valB;
-            if (currentSortColumn === 'ruc' || currentSortColumn === 'company') {
-                valA = a.dataset[currentSortColumn] || '';
-                valB = b.dataset[currentSortColumn] || '';
-                return currentSortAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
-            } else {
-                valA = parseFloat(a.dataset[currentSortColumn]) || 0;
-                valB = parseFloat(b.dataset[currentSortColumn]) || 0;
-                return currentSortAsc ? (valA - valB) : (valB - valA);
+            if (!data.success || !data.reports || data.reports.length === 0) {
+                tableBody.innerHTML = '';
+                if (noMatchRow) noMatchRow.classList.remove('hidden');
+                if (paginationInfo) paginationInfo.textContent = "{% trans 'Sin resultados' %}";
+                if (paginationControls) paginationControls.innerHTML = '';
+                return;
             }
-        });
-    }
 
-    function renderPage() {
-        allRows.forEach(row => row.classList.add('hidden'));
+            if (noMatchRow) noMatchRow.classList.add('hidden');
 
-        if (filteredRows.length === 0) {
-            if (noMatchRow) noMatchRow.classList.remove('hidden');
-            if (paginationInfo) paginationInfo.textContent = "{% trans 'Sin resultados' %}";
-            if (paginationControls) paginationControls.innerHTML = '';
-            return;
+            tableBody.innerHTML = data.reports.map(report => {
+                let badge = '';
+                if (report.complexity_general >= 0.66) {
+                    badge = `<span class="bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-900/60 px-2.5 py-0.5 rounded-full text-xs font-bold font-mono tabular-nums mb-1">${report.complexity_general} ({% trans 'Alta' %})</span>`;
+                } else if (report.complexity_general >= 0.33) {
+                    badge = `<span class="bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-900/60 px-2.5 py-0.5 rounded-full text-xs font-bold font-mono tabular-nums mb-1">${report.complexity_general} ({% trans 'Media' %})</span>`;
+                } else {
+                    badge = `<span class="bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/60 px-2.5 py-0.5 rounded-full text-xs font-bold font-mono tabular-nums mb-1">${report.complexity_general} ({% trans 'Baja' %})</span>`;
+                }
+
+                return `
+                    <tr class="hover:bg-blue-50/50 dark:hover:bg-slate-800/50 transition-colors complexity-row">
+                        <td class="px-5 py-3.5 font-mono tabular-nums text-blue-600 dark:text-blue-400 font-bold whitespace-nowrap">
+                            ${report.ruc || 'N/A'}
+                        </td>
+                        <td class="px-5 py-3.5">
+                            <span class="font-bold text-gray-900 dark:text-white block">${report.company_name}</span>
+                            <span class="text-xs text-gray-500 dark:text-slate-400 block truncate max-w-xs">${report.report_name}</span>
+                        </td>
+                        <td class="px-4 py-3.5 text-center whitespace-nowrap">
+                            <span class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-2.5 py-0.5 rounded-full text-xs font-mono tabular-nums font-semibold">
+                                ${report.year || 'N/A'}
+                            </span>
+                        </td>
+                        <td class="px-5 py-3.5 text-center whitespace-nowrap">
+                            <div class="inline-flex flex-col items-center">${badge}</div>
+                        </td>
+                        <td class="px-4 py-3.5 text-center font-mono tabular-nums font-bold text-pink-600 dark:text-pink-400 whitespace-nowrap">
+                            ${report.diversity_index}
+                        </td>
+                        <td class="px-4 py-3.5 text-center font-mono tabular-nums font-bold text-teal-600 dark:text-teal-400 whitespace-nowrap">
+                            ${report.readability_index}
+                        </td>
+                        <td class="px-4 py-3.5 text-center font-mono tabular-nums font-bold text-indigo-600 dark:text-indigo-400 whitespace-nowrap">
+                            ${report.technical_density}
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            const totalItems = data.total;
+            const startIdx = pageSize === 'all' ? 1 : (data.page - 1) * data.page_size + 1;
+            const endIdx = pageSize === 'all' ? totalItems : Math.min(startIdx + data.page_size - 1, totalItems);
+
+            if (paginationInfo) {
+                paginationInfo.innerHTML = `Mostrando <strong class="font-bold text-slate-800 dark:text-slate-100 tabular-nums">${startIdx} - ${endIdx}</strong> de <strong class="font-bold text-slate-800 dark:text-slate-100 tabular-nums">${totalItems.toLocaleString()}</strong> registros de complejidad`;
+            }
+
+            renderPaginationButtons(data.total_pages);
+        } catch (e) {
+            console.error("Error al cargar complejidad:", e);
+            tableBody.style.opacity = '1';
         }
-
-        if (noMatchRow) noMatchRow.classList.add('hidden');
-
-        const totalItems = filteredRows.length;
-        const totalPages = pageSize === 'all' ? 1 : Math.ceil(totalItems / pageSize);
-        if (currentPage > totalPages) currentPage = totalPages;
-
-        const startIdx = pageSize === 'all' ? 0 : (currentPage - 1) * pageSize;
-        const endIdx = pageSize === 'all' ? totalItems : Math.min(startIdx + pageSize, totalItems);
-
-        for (let i = startIdx; i < endIdx; i++) {
-            filteredRows[i].classList.remove('hidden');
-        }
-
-        if (paginationInfo) {
-            paginationInfo.innerHTML = `Mostrando <strong class="font-bold text-slate-800 dark:text-slate-100 tabular-nums">${startIdx + 1} - ${endIdx}</strong> de <strong class="font-bold text-slate-800 dark:text-slate-100 tabular-nums">${totalItems}</strong> registros de complejidad`;
-        }
-
-        renderPaginationButtons(totalPages);
     }
 
     function renderPaginationButtons(totalPages) {
@@ -799,16 +827,14 @@ function toggleFormulaLegend() {
         paginationControls.innerHTML = '';
         if (totalPages <= 1) return;
 
-        // Botón Anterior
         const prevBtn = document.createElement('button');
         prevBtn.type = 'button';
         prevBtn.className = `px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${currentPage === 1 ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-slate-700' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`;
         prevBtn.textContent = '←';
         prevBtn.disabled = currentPage === 1;
-        prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; renderPage(); } };
+        prevBtn.onclick = () => { if (currentPage > 1) { currentPage--; fetchComplexity(); } };
         paginationControls.appendChild(prevBtn);
 
-        // Números de páginas con elipsis
         const maxButtons = 5;
         let startPage = Math.max(1, currentPage - 2);
         let endPage = Math.min(totalPages, startPage + maxButtons - 1);
@@ -821,38 +847,41 @@ function toggleFormulaLegend() {
             pageBtn.type = 'button';
             pageBtn.className = `px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition ${p === currentPage ? 'bg-blue-600 text-white shadow-2xs' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800'}`;
             pageBtn.textContent = p;
-            pageBtn.onclick = () => { currentPage = p; renderPage(); };
+            pageBtn.onclick = () => { currentPage = p; fetchComplexity(); };
             paginationControls.appendChild(pageBtn);
         }
 
-        // Botón Siguiente
         const nextBtn = document.createElement('button');
         nextBtn.type = 'button';
         nextBtn.className = `px-2.5 py-1 rounded-lg border text-xs font-semibold transition ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-slate-700' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`;
         nextBtn.textContent = '→';
         nextBtn.disabled = currentPage === totalPages;
-        nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; renderPage(); } };
+        nextBtn.onclick = () => { if (currentPage < totalPages) { currentPage++; fetchComplexity(); } };
         paginationControls.appendChild(nextBtn);
     }
 
-    // Eventos
     searchInput?.addEventListener('input', (e) => {
         currentSearchTerm = e.target.value;
         if (clearSearchBtn) clearSearchBtn.classList.toggle('hidden', !currentSearchTerm);
-        applyFilters();
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            currentPage = 1;
+            fetchComplexity();
+        }, 250);
     });
 
     clearSearchBtn?.addEventListener('click', () => {
         if (searchInput) searchInput.value = '';
         currentSearchTerm = '';
         clearSearchBtn.classList.add('hidden');
-        applyFilters();
+        currentPage = 1;
+        fetchComplexity();
     });
 
     pageSizeSelect?.addEventListener('change', (e) => {
         pageSize = e.target.value === 'all' ? 'all' : parseInt(e.target.value, 10);
         currentPage = 1;
-        renderPage();
+        fetchComplexity();
     });
 
     window.sortComplexityTable = function(columnName) {
@@ -862,11 +891,18 @@ function toggleFormulaLegend() {
             currentSortColumn = columnName;
             currentSortAsc = (columnName === 'company' || columnName === 'ruc');
         }
-        applyFilters();
+        currentPage = 1;
+        fetchComplexity();
     };
 
-    // Inicializar
-    applyFilters();
+    const totalCompInitial = parseInt("{{ total_complexity_count|default:0 }}", 10);
+    if (totalCompInitial > 0) {
+        const initialTotalPages = Math.ceil(totalCompInitial / pageSize);
+        if (paginationInfo) {
+            paginationInfo.innerHTML = `Mostrando <strong class="font-bold text-slate-800 dark:text-slate-100 tabular-nums">1 - ${Math.min(25, totalCompInitial)}</strong> de <strong class="font-bold text-slate-800 dark:text-slate-100 tabular-nums">${totalCompInitial.toLocaleString()}</strong> registros de complejidad`;
+        }
+        renderPaginationButtons(initialTotalPages);
+    }
 })();
 </script>
 {% endblock %}
