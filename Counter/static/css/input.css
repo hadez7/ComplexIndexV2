@@ -506,6 +506,461 @@
 }
 
 /* ========================================================================= */
+/* FASE 3 — Autenticación ELI: shell dividido observatorio + acceso          */
+/* ========================================================================= */
+
+.auth-shell {
+  display: grid;
+  min-height: 100vh;
+  background: var(--surface);
+  color: var(--ink);
+}
+
+.auth-observatory {
+  position: relative;
+  display: none;
+  overflow: hidden;
+  flex-direction: column;
+  justify-content: space-between;
+  background:
+    radial-gradient(circle at 70% 35%, rgba(42, 116, 255, 0.25), transparent 29%),
+    radial-gradient(circle at 12% 92%, rgba(75, 212, 232, 0.12), transparent 28%),
+    linear-gradient(145deg, #071c3b, #061329);
+  padding: 42px 48px;
+  color: white;
+}
+
+.auth-observatory::before {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(132, 190, 255, 0.35) 0.7px, transparent 0.7px);
+  background-size: 28px 28px;
+  content: "";
+  opacity: 0.18;
+  -webkit-mask-image: linear-gradient(to bottom, black, transparent 75%);
+  mask-image: linear-gradient(to bottom, black, transparent 75%);
+}
+
+.auth-brand,
+.auth-mobile-brand {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.auth-brand p,
+.auth-mobile-brand p {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.auth-brand small,
+.auth-mobile-brand small {
+  display: block;
+  margin-top: 3px;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  opacity: 0.45;
+}
+
+.auth-orbit {
+  position: absolute;
+  top: 20%;
+  right: -8%;
+  width: min(38vw, 520px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(112, 177, 255, 0.14);
+  border-radius: 50%;
+}
+
+.auth-orbit::before,
+.auth-orbit::after {
+  position: absolute;
+  inset: 12%;
+  border: 1px solid rgba(112, 177, 255, 0.12);
+  border-radius: 50%;
+  content: "";
+}
+
+.auth-orbit::after {
+  inset: 28%;
+  border-color: rgba(75, 212, 232, 0.18);
+}
+
+.auth-orbit > span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 2;
+  display: flex;
+  width: 64px;
+  height: 64px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(120, 184, 255, 0.3);
+  border-radius: 20px;
+  background: rgba(25, 75, 143, 0.34);
+  color: #77dded;
+  box-shadow: 0 0 60px rgba(47, 123, 255, 0.25);
+  transform: translate(-50%, -50%);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.auth-orbit > i {
+  position: absolute;
+  z-index: 2;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #4bd4e8;
+  box-shadow: 0 0 14px #4bd4e8;
+}
+
+.auth-orbit > i:nth-child(1) { top: 7%; left: 43%; }
+.auth-orbit > i:nth-child(2) { top: 57%; left: 11%; background: #538aff; box-shadow: 0 0 14px #538aff; }
+.auth-orbit > i:nth-child(3) { right: 13%; bottom: 21%; width: 5px; height: 5px; }
+
+.auth-statement {
+  position: relative;
+  z-index: 2;
+  max-width: 560px;
+  margin-bottom: 11vh;
+}
+
+.auth-statement h1 {
+  margin-top: 18px;
+  font-size: clamp(2.8rem, 4.3vw, 5.2rem);
+  font-weight: 600;
+  letter-spacing: -0.065em;
+  line-height: 0.98;
+}
+
+.auth-statement > p:last-child {
+  max-width: 480px;
+  margin-top: 25px;
+  color: rgba(202, 224, 250, 0.58);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.auth-trust {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 18px;
+  color: rgba(187, 216, 248, 0.4);
+  font-family: var(--font-mono);
+  font-size: 7px;
+  letter-spacing: 0.08em;
+}
+
+.auth-trust span:first-child {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(129, 224, 222, 0.58);
+}
+
+.auth-access {
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  padding: 22px;
+  background:
+    radial-gradient(circle at 100% 0%, var(--blue-soft), transparent 28%),
+    var(--surface);
+}
+
+.auth-mobile-brand .logo-orbit {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.auth-mobile-brand .logo-orbit::after { border-color: var(--cyan); }
+.auth-mobile-brand small { color: var(--muted); opacity: 0.65; }
+
+.auth-form-wrap {
+  width: 100%;
+  max-width: 410px;
+  margin: auto;
+  padding: 42px 0;
+}
+
+.auth-form-heading h2 {
+  margin-top: 12px;
+  font-size: clamp(2rem, 4vw, 2.65rem);
+  font-weight: 600;
+  letter-spacing: -0.055em;
+}
+
+.auth-form-heading > p:last-child {
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: 10px;
+  line-height: 1.7;
+}
+
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  margin-top: 28px;
+  border-radius: 12px;
+  background: var(--canvas);
+  padding: 4px;
+}
+
+.auth-tabs a {
+  border-radius: 9px;
+  padding: 10px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+  transition: 160ms ease;
+}
+
+.auth-tabs a.active {
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: 0 4px 14px rgba(21, 58, 102, 0.08);
+}
+
+.auth-form {
+  margin-top: 24px;
+}
+
+.auth-form label {
+  display: block;
+  margin-top: 16px;
+}
+
+.auth-form label > span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.auth-form label > div {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--surface);
+  padding: 0 13px;
+  color: var(--faint);
+  transition: 160ms ease;
+}
+
+.auth-form label > div:focus-within {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-soft);
+  color: var(--blue);
+}
+
+.auth-form input:not([type="checkbox"]) {
+  width: 100%;
+  min-width: 0;
+  background: transparent;
+  padding: 12px;
+  color: var(--ink);
+  font-size: 10px;
+  outline: none;
+}
+
+.auth-form input::placeholder { color: var(--faint); }
+
+.auth-eye {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  padding: 4px;
+  color: var(--faint);
+  transition: color 160ms ease;
+}
+
+.auth-eye:hover { color: var(--ink); }
+
+.auth-grid-2 {
+  display: grid;
+  gap: 12px;
+}
+
+.auth-options {
+  display: flex;
+  align-items: center;
+  margin-top: 16px;
+  font-size: 8px;
+}
+
+.auth-hint {
+  margin-left: auto;
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.auth-submit {
+  display: flex;
+  width: 100%;
+  min-height: 43px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  margin-top: 22px;
+  border-radius: 11px;
+  background: var(--blue);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  box-shadow: 0 10px 28px rgba(36, 99, 235, 0.22);
+  transition: filter 160ms ease;
+}
+
+.auth-submit:hover { filter: brightness(1.06); }
+
+.auth-switch {
+  margin-top: 26px;
+  color: var(--muted);
+  font-size: 9px;
+  text-align: center;
+}
+
+.auth-switch a {
+  margin-left: 5px;
+  color: var(--blue);
+  font-weight: 700;
+}
+
+.auth-footer {
+  display: flex;
+  justify-content: space-between;
+  border-top: 1px solid var(--line);
+  padding-top: 18px;
+  color: var(--faint);
+  font-size: 7px;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+/* Alertas de formulario */
+.form-alert {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  margin-top: 20px;
+  border: 1px solid #f4c7c3;
+  border-radius: 12px;
+  background: #fff3f1;
+  padding: 12px 14px;
+  color: #a63a2a;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.form-alert strong {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.form-alert ul {
+  margin-top: 3px;
+  list-style: disc inside;
+}
+
+.dark .form-alert {
+  border-color: #4a2320;
+  background: #2a1614;
+  color: #f0a193;
+}
+
+.form-error {
+  margin-top: 6px;
+  color: #c43d2f;
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.dark .form-error { color: #f0a193; }
+
+.auth-requirements {
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--canvas);
+  padding: 12px;
+}
+
+.auth-requirements > span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.auth-requirements div {
+  display: grid;
+  gap: 5px;
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.auth-requirements i {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-style: normal;
+}
+
+.auth-requirements i svg {
+  flex: 0 0 auto;
+  color: var(--cyan);
+}
+
+@media (min-width: 640px) {
+  .auth-grid-2 {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .auth-requirements div {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 960px) {
+  .auth-shell {
+    grid-template-columns: minmax(500px, 1.25fr) minmax(430px, 0.75fr);
+  }
+
+  .auth-observatory {
+    display: flex;
+  }
+
+  .auth-access {
+    padding: 30px 42px;
+  }
+
+  .auth-mobile-brand {
+    visibility: hidden;
+  }
+}
+
+/* ========================================================================= */
 /* FASE 1 — Logo órbita ELI (nav-rail)                                       */
 /* ========================================================================= */
 
