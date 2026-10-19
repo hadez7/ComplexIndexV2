@@ -245,6 +245,267 @@
 }
 
 /* ========================================================================= */
+/* FASE 2 — Observatorio: hero, signal board y tarjetas de módulo            */
+/* ========================================================================= */
+
+.hero-grid {
+  display: grid;
+  gap: 28px;
+  align-items: end;
+}
+
+.pulse {
+  position: relative;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+
+.pulse::after {
+  position: absolute;
+  inset: -4px;
+  border: 1px solid var(--blue);
+  border-radius: inherit;
+  content: "";
+  opacity: 0.35;
+}
+
+.observatory-title {
+  margin-top: 16px;
+  max-width: 760px;
+  color: var(--ink);
+  font-size: clamp(2rem, 4.2vw, 4.2rem);
+  font-weight: 600;
+  letter-spacing: -0.055em;
+  line-height: 0.98;
+}
+
+.signal-board {
+  overflow: hidden;
+  border: 1px solid rgba(99, 161, 255, 0.16);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 8% 10%, rgba(39, 106, 230, 0.34), transparent 34%),
+    radial-gradient(circle at 80% 120%, rgba(27, 190, 223, 0.11), transparent 35%),
+    #071a36;
+  box-shadow: 0 22px 60px rgba(10, 39, 82, 0.14);
+}
+
+.signal-main {
+  display: flex;
+  flex-direction: column;
+  padding: 24px;
+}
+
+.signal-body {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.score-orbit {
+  position: relative;
+  display: flex;
+  width: 190px;
+  height: 190px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: conic-gradient(from 210deg, #4bd4e8, #397cff 42%, #2a5fd1 72%, #4bd4e8);
+  box-shadow: 0 0 40px rgba(46, 120, 255, 0.16);
+}
+
+.score-orbit::before {
+  position: absolute;
+  inset: 9px;
+  border-radius: inherit;
+  background: #081b38;
+  content: "";
+}
+
+.score-orbit::after {
+  position: absolute;
+  inset: 20px;
+  border: 1px solid rgba(120, 180, 255, 0.16);
+  border-radius: inherit;
+  content: "";
+}
+
+.score-orbit > div {
+  z-index: 1;
+  max-width: 150px;
+  text-align: center;
+}
+
+.score-orbit strong {
+  display: block;
+  color: white;
+  font-family: var(--font-mono);
+  font-size: 43px;
+  font-weight: 500;
+  letter-spacing: -0.08em;
+  line-height: 1;
+}
+
+.score-orbit-wide strong {
+  font-size: clamp(1.15rem, 2.1vw, 2.05rem);
+  letter-spacing: -0.05em;
+}
+
+.score-orbit span {
+  display: block;
+  margin-top: 8px;
+  color: rgba(190, 218, 252, 0.42);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.signal-metrics {
+  display: grid;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.signal-metric {
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.signal-metric:last-child {
+  border-bottom: 0;
+}
+
+.metric-icon {
+  display: flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+}
+
+.metric-icon.good { background: rgba(72, 211, 160, 0.1); color: #71dfb4; }
+.metric-icon.warn { background: rgba(255, 172, 91, 0.1); color: #ffb770; }
+.metric-icon.info { background: rgba(84, 178, 255, 0.1); color: #79c5ff; }
+
+/* Tarjetas de módulo */
+.module-tile {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  padding: 20px;
+  transition: border-color 160ms ease, transform 160ms ease, box-shadow 160ms ease;
+}
+
+.module-tile:hover {
+  border-color: var(--blue);
+  box-shadow: 0 14px 34px rgba(36, 99, 235, 0.1);
+  transform: translateY(-2px);
+}
+
+.module-icon {
+  display: flex;
+  width: 38px;
+  height: 38px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 11px;
+  background: var(--blue-soft);
+  color: var(--blue);
+  transition: background-color 160ms ease, color 160ms ease;
+}
+
+.module-tile:hover .module-icon {
+  background: var(--blue);
+  color: white;
+}
+
+.module-body {
+  display: block;
+  margin-bottom: 18px;
+}
+
+.module-arrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  transition: color 160ms ease;
+}
+
+.module-tile:hover .module-arrow {
+  color: var(--blue);
+}
+
+/* Índice de pasos del onboarding */
+.step-index {
+  display: flex;
+  width: 26px;
+  height: 26px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+@media (min-width: 640px) {
+  .signal-metrics {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .signal-metric {
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 0;
+  }
+
+  .signal-metric:last-child {
+    border-right: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .hero-grid {
+    grid-template-columns: minmax(0, 1fr) 260px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .signal-board {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 240px;
+  }
+
+  .signal-main {
+    padding: 28px 30px;
+  }
+
+  .signal-metrics {
+    grid-template-columns: 1fr;
+    border-top: 0;
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .signal-metric {
+    border-right: 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* ========================================================================= */
 /* FASE 1 — Logo órbita ELI (nav-rail)                                       */
 /* ========================================================================= */
 
