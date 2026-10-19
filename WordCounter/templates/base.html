@@ -55,7 +55,7 @@
     /* Lienzo global celeste: baja la carga de blanco puro y mejora la separación
        de las tarjetas (superficies #FFFFFF) sin sacrificar contraste del texto. */
     :root {
-        --eli-canvas: #ECF4FD;
+        --eli-canvas: #EFF5FC;
         --eli-canvas-ink: #0F172A;
     }
 
@@ -158,14 +158,38 @@
         animation: dropdownSlideFade 0.15s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* Transición de barra lateral activa */
+    /* Transición de barra lateral activa (estilo ELI: gradiente + barra cian) */
+    .sidebar-nav-item {
+        color: rgba(191, 218, 249, 0.56);
+    }
+    .sidebar-nav-item svg {
+        color: rgba(163, 197, 242, 0.55);
+        transition: color 160ms ease;
+    }
+    .sidebar-nav-item:hover {
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        color: #FFFFFF !important;
+    }
+    .sidebar-nav-item:hover svg {
+        color: rgba(226, 240, 255, 0.9) !important;
+    }
     .sidebar-nav-item.active {
-        background-color: #EFF6FF !important;
-        color: #1D4ED8 !important;
+        background: linear-gradient(90deg, rgba(55, 123, 255, 0.22), rgba(55, 123, 255, 0.08)) !important;
+        color: #FFFFFF !important;
         font-weight: 700 !important;
     }
     .sidebar-nav-item.active svg {
-        color: #2563EB !important;
+        color: #7DD3FC !important;
+    }
+    .sidebar-nav-item.active::before {
+        position: absolute;
+        left: 0;
+        width: 2px;
+        height: 18px;
+        border-radius: 2px;
+        background: #54d9ee;
+        box-shadow: 0 0 12px rgba(84, 217, 238, 0.8);
+        content: "";
     }
 
     /* ========================================================================= */
@@ -425,6 +449,129 @@
     }
 
     /* ========================================================================= */
+    /* FASE 1 — SHELL ELI: NAV-RAIL OSCURO, HEADER TRANSLÚCIDO Y DRAWER          */
+    /* ========================================================================= */
+
+    #desktopSidebar {
+        background:
+            radial-gradient(circle at 20% 0%, rgba(50, 116, 255, 0.24), transparent 32%),
+            linear-gradient(180deg, #071c3b 0%, #06152d 100%);
+        border-right-color: rgba(116, 188, 255, 0.12);
+    }
+
+    /* Remapeo de utilidades de color dentro del nav-rail (las reglas .dark con
+       !important más abajo siguen teniendo prioridad en modo oscuro) */
+    #desktopSidebar .border-slate-100,
+    #desktopSidebar .border-slate-200 {
+        border-color: rgba(148, 180, 225, 0.12);
+    }
+    #desktopSidebar .bg-slate-50\/60,
+    #desktopSidebar .bg-slate-50\/70,
+    #desktopSidebar .bg-slate-50\/80 {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+    #desktopSidebar .bg-white {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(148, 180, 225, 0.16);
+    }
+    #desktopSidebar .text-slate-300 { color: rgba(191, 218, 249, 0.65); }
+    #desktopSidebar .text-slate-400 { color: rgba(146, 183, 229, 0.5); }
+    #desktopSidebar .text-slate-500 { color: rgba(163, 197, 242, 0.55); }
+    #desktopSidebar .text-slate-600 { color: rgba(191, 218, 249, 0.56); }
+    #desktopSidebar .text-slate-700,
+    #desktopSidebar .text-slate-800,
+    #desktopSidebar .text-slate-900 { color: #eaf2fc; }
+    #desktopSidebar .hover\:text-slate-900:hover { color: #FFFFFF; }
+    #desktopSidebar .hover\:bg-slate-100:hover { background-color: rgba(255, 255, 255, 0.05); }
+    #desktopSidebar .hover\:bg-red-50:hover,
+    #desktopSidebar .hover\:bg-red-100:hover { background-color: rgba(239, 68, 68, 0.15); }
+    #desktopSidebar .text-red-600 { color: #fca5a5; }
+    #desktopSidebar .text-blue-600,
+    #desktopSidebar .group-hover\:text-blue-600,
+    #desktopSidebar .hover\:text-blue-600:hover { color: #82b5ff; }
+    #desktopSidebar .text-blue-700,
+    #desktopSidebar .hover\:text-blue-700:hover { color: #9ec5ff; }
+    #desktopSidebar .text-blue-800,
+    #desktopSidebar .hover\:text-blue-800:hover { color: #a9cdff; }
+    #desktopSidebar .hover\:border-blue-300:hover { border-color: rgba(96, 165, 250, 0.55); }
+    #desktopSidebar .hover\:bg-blue-50:hover { background-color: rgba(55, 123, 255, 0.18); }
+    #desktopSidebar .bg-blue-50\/80 { background-color: rgba(55, 123, 255, 0.22); }
+
+    /* Menús desplegable flotantes del nav-rail */
+    #desktopSidebar #sidebarWorkspaceDropdown,
+    #desktopSidebar #sidebarLanguageDropdown,
+    #desktopSidebar #sidebarUserDropdown {
+        background-color: #0a1e3f;
+        border-color: rgba(148, 180, 225, 0.16);
+        box-shadow: 0 18px 45px rgba(2, 10, 26, 0.55);
+    }
+    #desktopSidebar #sidebarWorkspaceDropdown > div:first-child,
+    #desktopSidebar #sidebarLanguageDropdown > div:first-child,
+    #desktopSidebar #sidebarUserDropdown > div:first-child {
+        background-color: rgba(255, 255, 255, 0.03);
+        border-color: rgba(148, 180, 225, 0.12);
+    }
+    #desktopSidebar #sidebarWorkspaceDropdown a,
+    #desktopSidebar #sidebarUserDropdown a {
+        color: #cfe1ff;
+    }
+    #desktopSidebar #sidebarWorkspaceDropdown a:hover,
+    #desktopSidebar #sidebarUserDropdown a:hover {
+        background-color: rgba(55, 123, 255, 0.18);
+        color: #FFFFFF;
+    }
+    #desktopSidebar #sidebarWorkspaceDropdown .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
+    #desktopSidebar #sidebarUserDropdown .border-slate-100 {
+        border-color: rgba(148, 180, 225, 0.12);
+    }
+
+    /* Header superior: fondo translúcido basado en el token --header */
+    .main-canvas-area > header {
+        background-color: var(--header);
+        border-bottom-color: var(--line);
+    }
+
+    /* Drawer móvil: mismo nav-rail oscuro */
+    #mobileDrawerPanel {
+        background:
+            radial-gradient(circle at 20% 0%, rgba(50, 116, 255, 0.24), transparent 32%),
+            linear-gradient(180deg, #071c3b 0%, #06152d 100%);
+        border-right: 1px solid rgba(116, 188, 255, 0.12);
+    }
+    #mobileDrawerPanel .border-slate-200 { border-color: rgba(148, 180, 225, 0.12); }
+    #mobileDrawerPanel .text-slate-300 { color: rgba(191, 218, 249, 0.65); }
+    #mobileDrawerPanel .text-slate-400 { color: rgba(146, 183, 229, 0.5); }
+    #mobileDrawerPanel .text-slate-500 { color: rgba(163, 197, 242, 0.55); }
+    #mobileDrawerPanel .text-slate-600 { color: rgba(191, 218, 249, 0.6); }
+    #mobileDrawerPanel .text-slate-700 { color: rgba(191, 218, 249, 0.72); }
+    #mobileDrawerPanel .text-slate-800,
+    #mobileDrawerPanel .text-slate-900 { color: #eaf2fc; }
+    #mobileDrawerPanel .hover\:text-slate-900:hover,
+    #mobileDrawerPanel .hover\:text-slate-700:hover { color: #FFFFFF; }
+    #mobileDrawerPanel .hover\:bg-slate-100:hover { background-color: rgba(255, 255, 255, 0.05); }
+    #mobileDrawerPanel .bg-white {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(148, 180, 225, 0.16);
+    }
+    #mobileDrawerPanel .bg-slate-50 {
+        background-color: rgba(255, 255, 255, 0.03);
+        border-color: rgba(148, 180, 225, 0.12);
+    }
+    #mobileDrawerPanel .bg-blue-50\/80 {
+        background-color: rgba(55, 123, 255, 0.18);
+        border-color: rgba(96, 165, 250, 0.3);
+    }
+    #mobileDrawerPanel .text-blue-600 { color: #82b5ff; }
+    #mobileDrawerPanel .text-blue-700,
+    #mobileDrawerPanel .text-blue-900 { color: #dbeafe; }
+    #mobileDrawerPanel .hover\:bg-blue-100:hover { background-color: rgba(55, 123, 255, 0.22); }
+    #mobileDrawerPanel .bg-red-50 { background-color: rgba(239, 68, 68, 0.12); }
+    #mobileDrawerPanel .hover\:bg-red-100:hover { background-color: rgba(239, 68, 68, 0.18); }
+    #mobileDrawerPanel .text-red-600 { color: #fca5a5; }
+    #mobileDrawerPanel .text-blue-300 { color: #93c5fd; }
+    #mobileDrawerPanel .bg-blue-600 { background-color: #2563eb; }
+
+    /* ========================================================================= */
     /* MODO OSCURO INSTITUCIONAL (Abyssal Navy & Blue Precision)                 */
     /* ========================================================================= */
     .dark body {
@@ -655,20 +802,26 @@
         color: #94A3B8 !important;
     }
 
-    /* Navegación activa y elementos del menú */
+    /* Navegación activa y elementos del menú (tono ELI sobre rail oscuro) */
     .dark .sidebar-nav-item {
-        color: #94A3B8 !important;
+        color: rgba(191, 218, 249, 0.6) !important;
+    }
+    .dark .sidebar-nav-item svg {
+        color: rgba(163, 197, 242, 0.55) !important;
     }
     .dark .sidebar-nav-item:hover {
-        background-color: #162032 !important;
+        background-color: rgba(255, 255, 255, 0.06) !important;
         color: #F8FAFC !important;
     }
+    .dark .sidebar-nav-item:hover svg {
+        color: rgba(226, 240, 255, 0.9) !important;
+    }
     .dark .sidebar-nav-item.active {
-        background-color: rgba(30, 58, 138, 0.35) !important;
-        color: #60A5FA !important;
+        background: linear-gradient(90deg, rgba(55, 123, 255, 0.22), rgba(55, 123, 255, 0.08)) !important;
+        color: #FFFFFF !important;
     }
     .dark .sidebar-nav-item.active svg {
-        color: #60A5FA !important;
+        color: #7DD3FC !important;
     }
 
     /* Tipografía y textos de alta jerarquía */
@@ -1061,14 +1214,12 @@
     <!-- ========================================================================= -->
     <!-- 1. BARRA LATERAL CONTRAÍBLE DE COMANDO (Command Rail Sidebar - Desktop)   -->
     <!-- ========================================================================= -->
-    <aside id="desktopSidebar" class="hidden lg:flex lg:flex-col lg:w-64 xl:w-72 fixed inset-y-0 left-0 z-30 bg-white border-r border-slate-200 select-none shadow-xs">
+    <aside id="desktopSidebar" class="hidden lg:flex lg:flex-col lg:w-64 xl:w-72 fixed inset-y-0 left-0 z-30 border-r border-white/10 select-none shadow-xs">
         
         <!-- Header del Logo ELI -->
         <div class="sidebar-header-box h-16 flex items-center px-4 border-b border-slate-200 justify-between shrink-0">
             <a href="{% url 'index' %}" class="flex items-center space-x-3 group truncate" title="Enterprise Lex Index">
-                <div class="w-9 h-9 rounded-xl bg-blue-600 text-white font-black text-sm flex items-center justify-center shadow-xs group-hover:bg-blue-700 transition shrink-0">
-                    ELI
-                </div>
+                <div class="logo-orbit"><span>e</span></div>
                 <div class="sidebar-text leading-tight truncate">
                     <span class="text-sm font-black text-slate-900 tracking-tight block">Enterprise Lex</span>
                     <span class="text-[10px] text-slate-500 font-semibold tracking-wider uppercase block">Auditoría Contractual</span>
@@ -1525,9 +1676,7 @@
     <!-- ========================================================================= -->
     <header class="lg:hidden h-14 bg-white border-b border-slate-200 px-4 flex items-center justify-between sticky top-0 z-40 shrink-0 shadow-2xs">
         <a href="{% url 'index' %}" class="flex items-center space-x-2">
-            <div class="w-7 h-7 rounded-lg bg-blue-600 text-white font-black text-xs flex items-center justify-center">
-                ELI
-            </div>
+            <div class="logo-orbit logo-orbit-sm"><span>e</span></div>
             <span class="text-xs font-extrabold text-slate-900 tracking-tight">Enterprise Lex</span>
         </a>
 

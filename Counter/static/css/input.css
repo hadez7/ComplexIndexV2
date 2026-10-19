@@ -243,3 +243,49 @@
   font-size: 10px;
   outline: none;
 }
+
+/* ========================================================================= */
+/* FASE 1 — Logo órbita ELI (nav-rail)                                       */
+/* ========================================================================= */
+
+.logo-orbit {
+  position: relative;
+  display: flex;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(116, 188, 255, 0.55);
+  border-radius: 50%;
+  color: white;
+}
+
+.logo-orbit::after {
+  position: absolute;
+  width: 42px;
+  height: 16px;
+  border: 1px solid rgba(75, 212, 232, 0.35);
+  border-radius: 50%;
+  content: "";
+  transform: rotate(-32deg);
+}
+
+.logo-orbit span {
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.logo-orbit-sm {
+  width: 28px;
+  height: 28px;
+}
+
+.logo-orbit-sm::after {
+  width: 34px;
+  height: 13px;
+}
+
+.logo-orbit-sm span {
+  font-size: 13px;
+}
