@@ -1,84 +1,112 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block title %}Historial de Auditoría | ELI{% endblock %}
+{% block title %}{% trans "Historial de auditoría" %} | ELI{% endblock %}
+{% block body_class %}eli-theme{% endblock %}
 
-{% load i18n %}
 {% block content %}
-<div class="container mx-auto px-4 py-6">
-    <!-- Cabecera de Página / Breadcrumb y Acciones -->
-    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200">
+<div class="mx-auto max-w-[1440px] px-5 py-7 sm:px-7 lg:px-9">
+
+    <!-- ===================================================================== -->
+    <!-- Cabecera: trazabilidad de revisiones                                  -->
+    <!-- ===================================================================== -->
+    <header class="flex flex-col gap-5 border-b border-[var(--line)] pb-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
-            <div class="flex items-center space-x-2 text-xs text-gray-500 mb-2">
-                <a href="{% url 'panel' %}" class="hover:text-blue-600 transition flex items-center space-x-1 font-medium">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            <div class="flex flex-wrap items-center gap-2 text-[10px] font-semibold text-[var(--muted)]">
+                <a href="{% url 'panel' %}" class="inline-flex items-center gap-1.5 transition hover:text-[var(--blue)]">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                     <span>{% trans "Panel de administración" %}</span>
                 </a>
-                <span>/</span>
-                <a href="{% url 'concealment_detection' %}" class="hover:text-blue-600 transition">{% trans "Detección de ocultamiento" %}</a>
-                <span>/</span>
-                <span class="text-gray-700 font-semibold">{% trans "Historial" %}</span>
+                <span class="text-[var(--faint)]">/</span>
+                <a href="{% url 'concealment_detection' %}" class="transition hover:text-[var(--blue)]">{% trans "Detección de ocultamiento" %}</a>
+                <span class="text-[var(--faint)]">/</span>
+                <span class="text-[var(--ink)]">{% trans "Historial" %}</span>
             </div>
 
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-                {% trans "Historial de Auditoría de Ocultamiento" %}
+            <div class="mt-5 flex flex-wrap items-center gap-3">
+                <p class="eyebrow">{% trans "Trazabilidad" %}</p>
+                <span class="inline-flex items-center rounded-full border border-[var(--line)] bg-[var(--blue-soft)] px-2.5 py-1 font-mono text-[9px] font-semibold text-[var(--blue)]">
+                    {% trans "Auditoría" %}
+                </span>
+            </div>
+
+            <h1 class="mt-2 text-3xl font-semibold tracking-[-0.045em] text-[var(--ink)] sm:text-4xl">
+                {% trans "Historial de auditoría" %}
             </h1>
-            <p class="text-sm text-gray-500 mt-1">
+            <p class="mt-3 max-w-2xl text-xs leading-6 text-[var(--muted)]">
                 {% trans "Trazabilidad de revisiones efectuadas, auditores responsables y párrafos analizados." %}
             </p>
         </div>
 
-        <div class="flex items-center space-x-3 flex-shrink-0">
-            <a href="{% url 'concealment_detection' %}"
-               class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow-sm hover:shadow transition-all text-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-                <span>{% trans "Volver a Detección" %}</span>
-            </a>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 border-l-4 border-l-blue-500">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{% trans "Revisiones encontradas" %}</p>
-            <p class="text-2xl font-bold text-gray-800 mt-1 font-mono tabular-nums">{{ total_reviews_count }}</p>
-        </div>
-        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 border-l-4 border-l-green-500">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{% trans "Ocurrencias validadas" %}</p>
-            <p class="text-2xl font-bold text-green-600 mt-1 font-mono tabular-nums">{{ total_words_validated }}</p>
-        </div>
-        <div class="bg-white rounded-xl p-5 shadow-sm border border-gray-100 border-l-4 border-l-red-500">
-            <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider">{% trans "Ocurrencias descartadas" %}</p>
-            <p class="text-2xl font-bold text-red-600 mt-1 font-mono tabular-nums">{{ total_words_discarded }}</p>
-        </div>
-    </div>
-
-    <!-- Filtros de búsqueda desplegables e interactivos -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
-        <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+        <a href="{% url 'concealment_detection' %}" class="secondary-action inline-flex items-center gap-2 self-start lg:self-end">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
             </svg>
-            {% trans "Filtros de búsqueda" %}
-        </h2>
-        <form id="filterForm" method="get" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 items-end">
+            {% trans "Volver a detección" %}
+        </a>
+    </header>
+
+    <!-- ===================================================================== -->
+    <!-- Lectura rápida del historial                                          -->
+    <!-- ===================================================================== -->
+    <div class="mt-6 grid gap-3.5 sm:grid-cols-3">
+        <div class="surface-panel flex items-center justify-between p-4">
             <div>
-                <label for="year" class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Año del reporte" %}</label>
-                <select name="year" id="year" data-custom-select="true"
-                        class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
+                <span class="block text-[8px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{% trans "Revisiones encontradas" %}</span>
+                <span class="mt-1 block font-mono text-2xl font-semibold tabular-nums text-[var(--ink)]">{{ total_reviews_count }}</span>
+            </div>
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)]">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                </svg>
+            </span>
+        </div>
+
+        <div class="surface-panel flex items-center justify-between p-4">
+            <div>
+                <span class="block text-[8px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{% trans "Ocurrencias validadas" %}</span>
+                <span class="mt-1 block font-mono text-2xl font-semibold tabular-nums text-[var(--teal)]">{{ total_words_validated }}</span>
+            </div>
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--teal-soft)] text-[var(--teal)]">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                </svg>
+            </span>
+        </div>
+
+        <div class="surface-panel flex items-center justify-between p-4">
+            <div>
+                <span class="block text-[8px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{% trans "Ocurrencias descartadas" %}</span>
+                <span class="mt-1 block font-mono text-2xl font-semibold tabular-nums text-[var(--red)]">{{ total_words_discarded }}</span>
+            </div>
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--red-soft)] text-[var(--red)]">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </span>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- Filtros: año, empresa, auditor y palabra                              -->
+    <!-- ===================================================================== -->
+    <form id="filterForm" method="get" class="mt-6 rounded-[14px] border border-[var(--line)] bg-[var(--surface)] p-4">
+        <div class="flex flex-wrap gap-3">
+            <div class="form-field min-w-[170px] flex-1">
+                <span>{% trans "Año del reporte" %}</span>
+                <select name="year" id="year" data-custom-select="true" class="eli-input">
                     <option value="">{% trans "Todos los años" %}</option>
                     {% for y in years %}
                     <option value="{{ y }}" {% if year_filter == y|stringformat:"s" %}selected{% endif %}>{{ y }}</option>
                     {% endfor %}
                 </select>
             </div>
-            <div>
-                <label for="company" class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Empresa" %}</label>
-                <select name="company" id="company" data-custom-select="true"
-                        class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
+
+            <div class="form-field min-w-[170px] flex-1">
+                <span>{% trans "Empresa" %}</span>
+                <select name="company" id="company" data-custom-select="true" class="eli-input">
                     <option value="">{% trans "Todas las empresas" %}</option>
                     {% for c in companies %}
                     <option value="{{ c.id }}" {% if company_filter == c.id|stringformat:"s" or company_filter == c.name or company_filter == c.clean_name %}selected{% endif %}>
@@ -87,10 +115,10 @@
                     {% endfor %}
                 </select>
             </div>
-            <div>
-                <label for="user" class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Auditor" %}</label>
-                <select name="user" id="user" data-custom-select="true"
-                        class="w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition">
+
+            <div class="form-field min-w-[170px] flex-1">
+                <span>{% trans "Auditor" %}</span>
+                <select name="user" id="user" data-custom-select="true" class="eli-input">
                     <option value="">{% trans "Todos los auditores" %}</option>
                     {% for a in auditors %}
                     <option value="{{ a.username }}" {% if user_filter == a.username %}selected{% endif %}>
@@ -99,110 +127,104 @@
                     {% endfor %}
                 </select>
             </div>
-            <div>
-                <label for="word" class="block text-sm font-medium text-gray-700 mb-1.5">{% trans "Palabra auditada" %}</label>
+
+            <div class="form-field min-w-[200px] flex-[1.4]">
+                <span>{% trans "Palabra auditada" %}</span>
                 <div class="relative">
-                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--faint)]">
+                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
-                    </div>
-                    <input type="text" name="word" id="word" value="{{ word_filter }}" placeholder="{% trans "Buscar palabra..." %}"
-                           class="w-full pl-10 pr-3.5 py-2.5 border border-gray-300 rounded-lg shadow-sm text-sm text-gray-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition placeholder-gray-400 font-normal">
+                    </span>
+                    <input type="text"
+                           name="word"
+                           id="word"
+                           value="{{ word_filter }}"
+                           placeholder="{% trans 'Buscar palabra...' %}"
+                           class="eli-input !pl-9">
                 </div>
             </div>
-            <div class="sm:col-span-2 md:col-span-4 flex justify-end items-center gap-3 pt-2">
-                {% if year_filter or company_filter or user_filter or word_filter %}
-                <a href="{% url 'concealment_history' %}"
-                   class="inline-flex items-center justify-center gap-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 px-4 rounded-xl text-sm transition">
-                    <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                    <span>{% trans "Limpiar filtros" %}</span>
-                </a>
-                {% endif %}
-                <button type="submit"
-                        class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-xl text-sm shadow-sm hover:shadow transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                    </svg>
-                    <span>{% trans "Filtrar" %}</span>
-                </button>
-            </div>
-        </form>
-    </div>
+        </div>
 
-    <!-- Tabla de historial -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <div class="mt-4 flex flex-col-reverse gap-2 border-t border-[var(--line)] pt-4 sm:flex-row sm:items-center sm:justify-end">
+            {% if year_filter or company_filter or user_filter or word_filter %}
+            <a href="{% url 'concealment_history' %}" class="dialog-cancel w-full gap-1.5 sm:w-auto">
+                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+                {% trans "Limpiar filtros" %}
+            </a>
+            {% endif %}
+            <button type="submit" class="dialog-confirm w-full gap-2 sm:w-auto">
+                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+                </svg>
+                {% trans "Filtrar" %}
+            </button>
+        </div>
+    </form>
+
+    <!-- ===================================================================== -->
+    <!-- Tabla de auditorías                                                   -->
+    <!-- ===================================================================== -->
+    <section class="surface-panel mt-5">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 text-left text-sm">
-                <thead class="bg-gray-50/75 border-b border-gray-200 text-gray-500 uppercase text-xs tracking-wider">
+            <table class="data-table min-w-[1000px]">
+                <thead>
                     <tr>
-                        <th class="py-3.5 px-4 font-semibold">{% trans "Fecha y Hora" %}</th>
-                        <th class="py-3.5 px-4 font-semibold">{% trans "Auditor" %}</th>
-                        <th class="py-3.5 px-4 font-semibold">{% trans "Empresa / Año" %}</th>
-                        <th class="py-3.5 px-4 font-semibold">{% trans "Palabra" %}</th>
-                        <th class="py-3.5 px-4 font-semibold text-center">{% trans "Detectadas" %}</th>
-                        <th class="py-3.5 px-4 font-semibold text-center">{% trans "Válidas" %}</th>
-                        <th class="py-3.5 px-4 font-semibold text-center">{% trans "Descartadas" %}</th>
-                        <th class="py-3.5 px-4 font-semibold text-right">{% trans "Detalle" %}</th>
+                        <th>{% trans "Fecha y hora" %}</th>
+                        <th>{% trans "Auditor" %}</th>
+                        <th>{% trans "Empresa / año" %}</th>
+                        <th>{% trans "Palabra" %}</th>
+                        <th class="text-center">{% trans "Detectadas" %}</th>
+                        <th class="text-center">{% trans "Válidas" %}</th>
+                        <th class="text-center">{% trans "Descartadas" %}</th>
+                        <th class="text-right">{% trans "Detalle" %}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 text-gray-700">
+                <tbody>
                     {% for r in reviews %}
-                    <tr class="hover:bg-blue-50/40 transition-colors">
-                        <td class="py-3 px-4 whitespace-nowrap text-gray-500 font-mono text-xs tabular-nums">
+                    <tr class="transition-colors hover:bg-[var(--surface-hover)]">
+                        <td class="whitespace-nowrap font-mono text-[10px] tabular-nums text-[var(--muted)]">
                             {{ r.reviewed_at|date:"d/m/Y H:i" }}
                         </td>
-                        <td class="py-3 px-4 whitespace-nowrap">
+                        <td class="whitespace-nowrap">
                             {% if r.user %}
-                            <span class="inline-flex items-center gap-1.5 font-medium text-blue-700 bg-blue-50 px-2.5 py-1 rounded-full text-xs">
-                                <svg class="w-3.5 h-3.5 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                            <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--blue-soft)] px-2.5 py-1 font-mono text-[9px] font-semibold text-[var(--blue)]">
+                                <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
                                 </svg>
                                 {{ r.user.username }}
                             </span>
                             {% else %}
-                            <span class="text-xs text-gray-400 italic">{% trans "Sin registrar" %}</span>
+                            <span class="text-[10px] italic text-[var(--faint)]">{% trans "Sin registrar" %}</span>
                             {% endif %}
                         </td>
-                        <td class="py-3 px-4 font-medium text-gray-900">
+                        <td>
                             {% if r.report and r.report.company %}
-                                {{ r.clean_company|default:r.report.company.name }}
+                                <span class="font-semibold text-[var(--ink)]">{{ r.clean_company|default:r.report.company.name }}</span>
                                 {% if r.report.year %}
-                                <span class="text-xs text-gray-500 font-mono tabular-nums">({{ r.report.year }})</span>
+                                <span class="period-chip ml-2">{{ r.report.year }}</span>
                                 {% endif %}
                             {% else %}
-                                {{ r.report.name|default:"Reporte" }}
+                                <span class="font-semibold text-[var(--ink)]">{{ r.report.name|default:"Reporte" }}</span>
                             {% endif %}
                         </td>
-                        <td class="py-3 px-4 font-semibold text-blue-600">
-                            "{{ r.word }}"
-                        </td>
-                        <td class="py-3 px-4 text-center font-mono tabular-nums font-semibold text-gray-700">
-                            {{ r.total_found }}
-                        </td>
-                        <td class="py-3 px-4 text-center">
-                            <span class="inline-block bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono tabular-nums">
-                                {{ r.total_valid }}
-                            </span>
-                        </td>
-                        <td class="py-3 px-4 text-center">
-                            <span class="inline-block bg-red-100 text-red-800 text-xs font-semibold px-2.5 py-0.5 rounded-full font-mono tabular-nums">
-                                {{ r.total_discarded }}
-                            </span>
-                        </td>
-                        <td class="py-3 px-4 text-right">
+                        <td class="font-semibold text-[var(--blue)]">"{{ r.word }}"</td>
+                        <td class="text-center font-mono font-semibold tabular-nums text-[var(--ink)]">{{ r.total_found }}</td>
+                        <td class="text-center"><span class="metric-badge low">{{ r.total_valid }}</span></td>
+                        <td class="text-center"><span class="metric-badge high">{{ r.total_discarded }}</span></td>
+                        <td class="text-right">
                             <button type="button"
                                     onclick="abrirModalDetalle({{ r.id }})"
-                                    class="text-blue-600 hover:text-blue-800 font-medium text-xs bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition btn-interactive">
+                                    class="inline-flex items-center gap-1.5 rounded-lg bg-[var(--blue-soft)] px-2.5 py-1.5 text-[9px] font-semibold text-[var(--blue)] transition hover:brightness-105">
                                 {% trans "Ver párrafos" %}
                             </button>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="8" class="py-8 text-center text-gray-500">
+                        <td colspan="8" class="!py-12 text-center text-[11px] italic text-[var(--muted)]">
                             {% trans "No se encontraron registros de auditoría que coincidan con los filtros seleccionados." %}
                         </td>
                     </tr>
@@ -210,28 +232,30 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    </section>
 </div>
 
 <!-- Modal para ver detalle de párrafos auditados -->
-<div id="modalDetalle" class="fixed inset-0 z-50 hidden bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl shadow-xl max-w-3xl w-full max-h-[85vh] flex flex-col overflow-hidden">
-        <div class="p-5 border-b flex items-center justify-between bg-gray-50">
+<div id="modalDetalle" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-[rgba(3,10,22,0.72)] p-4 backdrop-blur-sm">
+    <div class="flex max-h-[85vh] w-full max-w-3xl flex-col overflow-hidden rounded-[18px] border border-[var(--line)] bg-[var(--surface)] shadow-2xl">
+        <div class="flex items-start justify-between border-b border-[var(--line)] bg-[var(--surface-hover)] p-5">
             <div>
-                <h3 class="text-lg font-bold text-gray-800" id="modalTitulo">{% trans "Detalle de la auditoría" %}</h3>
-                <p class="text-xs text-gray-500" id="modalSubtitulo"></p>
+                <h3 class="text-sm font-semibold tracking-tight text-[var(--ink)]" id="modalTitulo">{% trans "Detalle de la auditoría" %}</h3>
+                <p class="mt-1 text-[10px] text-[var(--muted)]" id="modalSubtitulo"></p>
             </div>
-            <button type="button" onclick="cerrarModalDetalle()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <button type="button" onclick="cerrarModalDetalle()" class="modal-close" aria-label="{% trans 'Cerrar' %}">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
                 </svg>
             </button>
         </div>
-        <div class="p-6 overflow-y-auto space-y-4 flex-1" id="modalContenido">
-            <p class="text-gray-500 text-center py-4">{% trans "Cargando detalle..." %}</p>
+
+        <div class="flex-1 space-y-4 overflow-y-auto p-6" id="modalContenido">
+            <p class="py-4 text-center text-[11px] text-[var(--muted)]">{% trans "Cargando detalle..." %}</p>
         </div>
-        <div class="p-4 border-t bg-gray-50 flex justify-end">
-            <button type="button" onclick="cerrarModalDetalle()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-xl text-sm transition">
+
+        <div class="flex justify-end border-t border-[var(--line)] bg-[var(--surface-hover)] p-4">
+            <button type="button" onclick="cerrarModalDetalle()" class="dialog-cancel">
                 {% trans "Cerrar" %}
             </button>
         </div>
@@ -287,7 +311,7 @@ function abrirModalDetalle(reviewId) {
     const contenido = document.getElementById("modalContenido");
 
     modal.classList.remove("hidden");
-    contenido.innerHTML = '<p class="text-gray-500 text-center py-4">{{ t_cargando|escapejs }}</p>';
+    contenido.innerHTML = '<p class="py-4 text-center text-[11px] text-[var(--muted)]">{{ t_cargando|escapejs }}</p>';
 
     fetch(`/concealment_detection/historial/${reviewId}/detalle/`)
         .then(response => {
@@ -299,25 +323,25 @@ function abrirModalDetalle(reviewId) {
             subtitulo.textContent = `{{ t_subtitulo|escapejs }}`;
 
             if (!data.paragraphs || data.paragraphs.length === 0) {
-                contenido.innerHTML = '<p class="text-gray-500 text-center py-4">{{ t_sin_detalle|escapejs }}</p>';
+                contenido.innerHTML = '<p class="py-4 text-center text-[11px] text-[var(--muted)]">{{ t_sin_detalle|escapejs }}</p>';
                 return;
             }
 
             let html = "";
             data.paragraphs.forEach((p, idx) => {
                 const esDescartado = p.discarded;
-                const borderClass = esDescartado ? "border-red-300 bg-red-50" : "border-green-300 bg-green-50";
+                const borderClass = esDescartado ? "border-[var(--red)] bg-[var(--red-soft)]" : "border-[var(--teal)] bg-[var(--teal-soft)]";
                 const badge = esDescartado
-                    ? '<span class="text-xs font-semibold px-2 py-0.5 rounded bg-red-200 text-red-800">{{ t_descartado|escapejs }}</span>'
-                    : '<span class="text-xs font-semibold px-2 py-0.5 rounded bg-green-200 text-green-800">{{ t_valido|escapejs }}</span>';
+                    ? '<span class="metric-badge high">{{ t_descartado|escapejs }}</span>'
+                    : '<span class="metric-badge low">{{ t_valido|escapejs }}</span>';
 
                 html += `
-                    <div class="border rounded-xl p-4 ${borderClass} transition">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-xs font-bold text-gray-600">{{ t_parrafo|escapejs }} #${idx + 1} (${p.occurrences} ${p.occurrences > 1 ? '{{ t_ocurrencias|escapejs }}' : '{{ t_ocurrencia|escapejs }}'})</span>
+                    <div class="rounded-xl border p-4 ${borderClass}">
+                        <div class="mb-2 flex items-center justify-between gap-3">
+                            <span class="text-[10px] font-semibold text-[var(--muted)]">{{ t_parrafo|escapejs }} #${idx + 1} (${p.occurrences} ${p.occurrences > 1 ? '{{ t_ocurrencias|escapejs }}' : '{{ t_ocurrencia|escapejs }}'})</span>
                             ${badge}
                         </div>
-                        <p class="text-sm text-gray-800 leading-relaxed">${p.paragraph_text}</p>
+                        <p class="text-[11px] leading-6 text-[var(--ink)]">${p.paragraph_text}</p>
                     </div>
                 `;
             });
@@ -325,7 +349,7 @@ function abrirModalDetalle(reviewId) {
             contenido.innerHTML = html;
         })
         .catch(err => {
-            contenido.innerHTML = '<p class="text-red-500 text-center py-4">{{ t_error_detalle|escapejs }}</p>';
+            contenido.innerHTML = '<p class="py-4 text-center text-[11px] text-[var(--red)]">{{ t_error_detalle|escapejs }}</p>';
             console.error(err);
         });
 }
