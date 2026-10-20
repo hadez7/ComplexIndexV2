@@ -26,6 +26,12 @@
   --blue-deep: #081b38;
   --blue-soft: #e6efff;
   --cyan: #4bd4e8;
+  --violet: #7c3aed;
+  --violet-soft: #f3e8ff;
+  --amber: #b45309;
+  --amber-soft: #fef3c7;
+  --red: #dc2626;
+  --red-soft: #fee2e2;
 }
 
 .dark {
@@ -43,6 +49,12 @@
   --blue-deep: #061329;
   --blue-soft: #142b4c;
   --cyan: #4bd4e8;
+  --violet: #c4b5fd;
+  --violet-soft: #2a1b46;
+  --amber: #fbbf24;
+  --amber-soft: #3a2a10;
+  --red: #fca5a5;
+  --red-soft: #3b1717;
 }
 
 /* ========================================================================= */
@@ -1501,4 +1513,206 @@
 
 #zipBatchActions.hidden {
   display: none;
+}
+
+/* ========================================================================= */
+/* FASE 5 — Expedientes: tabla, acciones de fila y paginación                */
+/* ========================================================================= */
+
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.report-table thead {
+  background: var(--surface-hover);
+}
+
+.report-table th {
+  border-bottom: 1px solid var(--line);
+  padding: 12px 20px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.report-table td {
+  border-bottom: 1px solid var(--line);
+  padding: 14px 20px;
+  vertical-align: middle;
+}
+
+.report-table tbody tr {
+  transition: background-color 160ms ease;
+}
+
+.report-table tbody tr:hover {
+  background: var(--surface-hover);
+}
+
+.report-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.report-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: inherit;
+  transition: color 160ms ease;
+}
+
+.report-sort:hover,
+.report-sort.is-active {
+  color: var(--blue);
+}
+
+.report-year {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--blue-soft);
+  padding: 4px 9px;
+  color: var(--blue);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.report-avatar {
+  display: inline-flex;
+  height: 34px;
+  width: 34px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+
+.row-action {
+  display: inline-flex;
+  height: 30px;
+  width: 30px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  transition: transform 160ms ease, filter 160ms ease, border-color 160ms ease;
+}
+
+.row-action:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+
+.row-action.brand { background: var(--blue-soft); color: var(--blue); }
+.row-action.violet { background: var(--violet-soft); color: var(--violet); }
+.row-action.amber { background: var(--amber-soft); color: var(--amber); }
+.row-action.danger { background: var(--red-soft); color: var(--red); }
+
+.pager {
+  display: inline-flex;
+  height: 28px;
+  min-width: 28px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 0 7px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  transition: 160ms ease;
+}
+
+.pager:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.pager.active {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #fff;
+}
+
+.pager.disabled {
+  background: var(--canvas);
+  color: var(--faint);
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.dialog-cancel,
+.dialog-confirm,
+.dialog-danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font-size: 10px;
+  font-weight: 600;
+  transition: 160ms ease;
+}
+
+.dialog-cancel {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+}
+
+.dialog-cancel:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.dialog-confirm {
+  background: var(--blue);
+  color: #fff;
+}
+
+.dialog-danger {
+  background: var(--red);
+  color: #fff;
+}
+
+.dialog-confirm:hover,
+.dialog-danger:hover {
+  filter: brightness(1.06);
+}
+
+.modal-close {
+  display: inline-flex;
+  height: 30px;
+  width: 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  color: var(--muted);
+  transition: 160ms ease;
+}
+
+.modal-close:hover {
+  background: var(--surface-hover);
+  color: var(--ink);
+}
+
+@media (max-width: 640px) {
+  .report-table th,
+  .report-table td {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
 }
