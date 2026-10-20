@@ -2,354 +2,376 @@
 {% load i18n %}
 
 {% block title %}{% trans "Empresas" %} | ELI{% endblock %}
-
-{% block custom_css %}
-<style>
-/* Colores de las iniciales en función de la primera letra */
-.avatar-A, .avatar-B { background-color: #818cf8; color: #fff; }
-.avatar-C, .avatar-D { background-color: #34d399; color: #fff; }
-.avatar-E, .avatar-F { background-color: #f87171; color: #fff; }
-.avatar-G, .avatar-H { background-color: #fbbf24; color: #fff; }
-.avatar-I, .avatar-J { background-color: #60a5fa; color: #fff; }
-.avatar-K, .avatar-L { background-color: #a78bfa; color: #fff; }
-.avatar-M, .avatar-N { background-color: #f472b6; color: #fff; }
-.avatar-O, .avatar-P { background-color: #2dd4bf; color: #fff; }
-.avatar-Q, .avatar-R { background-color: #fb923c; color: #fff; }
-.avatar-S, .avatar-T { background-color: #38bdf8; color: #fff; }
-.avatar-U, .avatar-V { background-color: #c084fc; color: #fff; }
-.avatar-W, .avatar-X { background-color: #4ade80; color: #fff; }
-.avatar-Y, .avatar-Z { background-color: #e879f9; color: #fff; }
-.avatar-default { background-color: #94a3b8; color: #fff; }
-
-.company-row {
-    transition: background-color 0.15s ease;
-}
-.company-row:hover {
-    background-color: #f8fafc;
-}
-.dark .company-row:hover {
-    background-color: #162032 !important;
-}
-</style>
-{% endblock %}
+{% block body_class %}eli-theme{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4">
-    <!-- Cabecera de Página / Breadcrumb y Acciones -->
-    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200">
+<div class="mx-auto max-w-[1440px] px-5 py-7 sm:px-7 lg:px-9">
+
+    <!-- ===================================================================== -->
+    <!-- Cabecera: directorio de entidades                                     -->
+    <!-- ===================================================================== -->
+    <header class="flex flex-col gap-5 border-b border-[var(--line)] pb-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
-            <div class="flex items-center space-x-2 text-xs text-gray-500 mb-2">
-                <a href="{% url 'panel' %}" class="hover:text-blue-600 transition flex items-center space-x-1 font-medium">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            <div class="flex flex-wrap items-center gap-2 text-[10px] font-semibold text-[var(--muted)]">
+                <a href="{% url 'panel' %}" class="inline-flex items-center gap-1.5 transition hover:text-[var(--blue)]">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                     <span>{% trans "Panel de administración" %}</span>
                 </a>
-                <span>/</span>
-                <span class="text-gray-700 font-semibold">{% trans "Empresas" %}</span>
+                <span class="text-[var(--faint)]">/</span>
+                <span class="text-[var(--ink)]">{% trans "Empresas" %}</span>
             </div>
 
-            <div class="flex items-center space-x-3">
-                <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-                    {% trans "Directorio de Empresas" %}
-                </h1>
-                <span class="text-xs bg-blue-100 text-blue-800 font-bold px-2.5 py-0.5 rounded-full border border-blue-200">
-                    {% blocktrans count counter=companies|length %}{{ counter }} Empresa{% plural %}{{ counter }} Empresas{% endblocktrans %}
+            <div class="mt-5 flex flex-wrap items-center gap-3">
+                <p class="eyebrow">{% trans "Entidades" %}</p>
+                <span class="inline-flex items-center rounded-full border border-[var(--line)] bg-[var(--blue-soft)] px-2.5 py-1 font-mono text-[9px] font-semibold text-[var(--blue)]">
+                    {% blocktrans count counter=page_obj.paginator.count %}{{ counter }} empresa{% plural %}{{ counter }} empresas{% endblocktrans %}
                 </span>
             </div>
-            <p class="text-sm text-gray-500 mt-1">
+
+            <h1 class="mt-2 text-3xl font-semibold tracking-[-0.045em] text-[var(--ink)] sm:text-4xl">
+                {% trans "Organizaciones auditadas" %}
+            </h1>
+            <p class="mt-3 max-w-2xl text-xs leading-6 text-[var(--muted)]">
                 {% trans "Administra las razones sociales, RUC y provincias de las entidades registradas para auditoría." %}
             </p>
         </div>
 
-        <div class="flex items-center space-x-3 flex-shrink-0">
-            <button onclick="openCreateModal()"
-                    class="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-5 rounded-xl shadow-md hover:shadow-lg transition-all duration-200 text-sm">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
-                </svg>
-                <span>{% trans "Crear Empresa" %}</span>
-            </button>
+        <button type="button" onclick="openCreateModal()" class="primary-action self-start lg:self-end">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+            </svg>
+            <span>{% trans "Crear empresa" %}</span>
+        </button>
+    </header>
+
+    <!-- ===================================================================== -->
+    <!-- Filtros: búsqueda libre y provincia                                   -->
+    <!-- ===================================================================== -->
+    <form method="get" action="{% url 'companies' %}" id="filterForm" class="filter-strip mt-6 items-center">
+        <label class="filter-search">
+            <svg class="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input type="text"
+                   name="q"
+                   value="{{ search }}"
+                   placeholder="{% trans 'Buscar por RUC, razón social o provincia...' %}"
+                   autocomplete="off">
+        </label>
+
+        <div class="form-field w-full sm:w-56">
+            <select name="province" id="provinceFilter" data-custom-select="true" class="eli-input">
+                <option value="">{% trans "Todas las provincias" %}</option>
+                {% for province in provinces %}
+                <option value="{{ province.id }}" {% if province_filter == province.id|stringformat:"s" %}selected{% endif %}>
+                    {{ province.name }}
+                </option>
+                {% endfor %}
+            </select>
         </div>
-    </div>
 
-    <!-- !Filtros de búsqueda: Barra de texto + Dropdown de provincia -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 mb-6">
-        <form method="get" action="{% url 'companies' %}" id="filterForm" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4">
-            <!-- Buscador de texto -->
-            <div class="flex-1 relative">
-                <span class="absolute inset-y-0 left-3 flex items-center text-gray-400 pointer-events-none">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
-                </span>
-                <input type="text" name="q" value="{{ search }}" placeholder="{% trans "Buscar por RUC, razón social o provincia..." %}"
-                       class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition placeholder-gray-400 font-normal">
-            </div>
-            <!-- Filtro de provincia -->
-            <div class="sm:w-56">
-                <select name="province" id="provinceFilter" data-custom-select="true"
-                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white transition">
-                    <option value="">{% trans "Todas las provincias" %}</option>
-                    {% for province in provinces %}
-                    <option value="{{ province.id }}" {% if province_filter == province.id|stringformat:"s" %}selected{% endif %}>
-                        {{ province.name }}
-                    </option>
-                    {% endfor %}
-                </select>
-            </div>
-            <!-- Botón filtrar (oculto: el select auto-envía) -->
-            <button type="submit" class="hidden">{% trans "Filtrar" %}</button>
-        </form>
-    </div>
+        <button type="submit" class="h-[38px] w-full sm:w-auto">{% trans "Filtrar" %}</button>
 
-    <!-- !Modal Crear empresa -->
-    <div id="createModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white p-6 sm:p-7 rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 relative">
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+        {% if search or province_filter %}
+        <a href="{% url 'companies' %}"
+           class="inline-flex h-[38px] w-full items-center justify-center gap-1.5 rounded-[9px] border border-[var(--line)] bg-[var(--surface)] px-3 text-[9px] font-semibold text-[var(--muted)] transition hover:border-[var(--blue)] hover:text-[var(--blue)] sm:w-auto">
+            <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            {% trans "Limpiar" %}
+        </a>
+        {% endif %}
+    </form>
+
+    <!-- ===================================================================== -->
+    <!-- Modal: crear empresa                                                  -->
+    <!-- ===================================================================== -->
+    <div id="createModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-[rgba(3,10,22,0.72)] p-4 backdrop-blur-sm">
+        <div class="w-full max-w-md rounded-[18px] border border-[var(--line)] bg-[var(--surface)] p-6 shadow-2xl">
+            <div class="flex items-start justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)]">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                         </svg>
                     </div>
-                    <h2 class="text-lg font-bold text-gray-900">{% trans "Nueva Empresa" %}</h2>
+                    <h2 class="text-sm font-semibold tracking-tight text-[var(--ink)]">{% trans "Nueva empresa" %}</h2>
                 </div>
-                <button type="button" onclick="closeCreateModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition focus:outline-none" aria-label="{% trans 'Cerrar' %}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                <button type="button" onclick="closeCreateModal()" class="modal-close" aria-label="{% trans 'Cerrar' %}">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
                 </button>
             </div>
-            <form id="createForm" class="space-y-4">
+
+            <form id="createForm" class="mt-5 space-y-4">
                 {% csrf_token %}
+
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">{% trans "RUC" %}</label>
-                    <input type="text" name="ruc" placeholder="Ej. 1790012345001" class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
-                    <p class="text-red-500 text-xs mt-1 font-medium" id="error-ruc"></p>
+                    <label for="create-ruc" class="mb-1.5 block text-[9px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]">RUC</label>
+                    <input type="text" id="create-ruc" name="ruc" placeholder="Ej. 1790012345001" class="eli-input">
+                    <p class="mt-1 text-[10px] font-medium text-[var(--red)]" id="error-ruc"></p>
                 </div>
+
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">{% trans "Razón Social / Nombre" %}</label>
-                    <input type="text" name="name" placeholder="Ej. CORPORACIÓN ANDINA S.A." class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
-                    <p class="text-red-500 text-xs mt-1 font-medium" id="error-name"></p>
+                    <label for="create-name" class="mb-1.5 block text-[9px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]">
+                        {% trans "Razón social / nombre" %}
+                    </label>
+                    <input type="text" id="create-name" name="name" placeholder="Ej. CORPORACIÓN ANDINA S.A." class="eli-input">
+                    <p class="mt-1 text-[10px] font-medium text-[var(--red)]" id="error-name"></p>
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">{% trans "Provincia" %}</label>
-                    <select name="province" data-custom-select="true" class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition">
+
+                <div class="form-field">
+                    <span>{% trans "Provincia" %}</span>
+                    <select name="province" data-custom-select="true" class="eli-input">
                         {% for province in provinces %}
                         <option value="{{ province.id }}">{{ province.name }}</option>
                         {% endfor %}
                     </select>
-                    <p class="text-red-500 text-xs mt-1 font-medium" id="error-province"></p>
+                    <p class="mt-1 text-[10px] font-medium text-[var(--red)]" id="error-province"></p>
                 </div>
-                <div class="flex justify-end pt-3 border-t border-gray-100 gap-2">
-                    <button type="button" onclick="closeCreateModal()"
-                        class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">{% trans "Cancelar" %}</button>
-                    <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-xl font-semibold shadow-md transition text-sm">{% trans "Guardar Empresa" %}</button>
+
+                <div class="flex justify-end gap-2 border-t border-[var(--line)] pt-4">
+                    <button type="button" onclick="closeCreateModal()" class="dialog-cancel">{% trans "Cancelar" %}</button>
+                    <button type="submit" class="dialog-confirm">{% trans "Guardar empresa" %}</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- !Modal Editar empresa -->
-    <div id="editModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white p-6 sm:p-7 rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 relative">
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-lg bg-yellow-50 text-yellow-600 flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z" />
+    <!-- ===================================================================== -->
+    <!-- Modal: editar empresa                                                 -->
+    <!-- ===================================================================== -->
+    <div id="editModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-[rgba(3,10,22,0.72)] p-4 backdrop-blur-sm">
+        <div class="w-full max-w-md rounded-[18px] border border-[var(--line)] bg-[var(--surface)] p-6 shadow-2xl">
+            <div class="flex items-start justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--amber-soft)] text-[var(--amber)]">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z"/>
                         </svg>
                     </div>
-                    <h2 class="text-lg font-bold text-gray-900">{% trans "Editar Empresa" %}</h2>
+                    <h2 class="text-sm font-semibold tracking-tight text-[var(--ink)]">{% trans "Editar empresa" %}</h2>
                 </div>
-                <button type="button" onclick="closeEditModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition focus:outline-none" aria-label="{% trans 'Cerrar' %}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                <button type="button" onclick="closeEditModal()" class="modal-close" aria-label="{% trans 'Cerrar' %}">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
                 </button>
             </div>
-            <form id="editCompanyForm" onsubmit="submitEditForm(event)" class="space-y-4">
+
+            <form id="editCompanyForm" onsubmit="submitEditForm(event)" class="mt-5 space-y-4">
                 <input type="hidden" id="edit-id">
+
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">RUC:</label>
-                    <input type="text" id="edit-ruc" class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
+                    <label for="edit-ruc" class="mb-1.5 block text-[9px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]">RUC</label>
+                    <input type="text" id="edit-ruc" class="eli-input" required>
                 </div>
+
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">{% trans "Razón Social / Nombre" %}:</label>
-                    <input type="text" id="edit-name" class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
+                    <label for="edit-name" class="mb-1.5 block text-[9px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]">
+                        {% trans "Razón social / nombre" %}
+                    </label>
+                    <input type="text" id="edit-name" class="eli-input" required>
                 </div>
-                <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">{% trans "Provincia" %}:</label>
-                    <select id="edit-province" data-custom-select="true" class="w-full border border-gray-300 rounded-xl px-3.5 py-2 text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition" required>
+
+                <div class="form-field">
+                    <span>{% trans "Provincia" %}</span>
+                    <select id="edit-province" data-custom-select="true" class="eli-input" required>
                         {% for province in provinces %}
                         <option value="{{ province.id }}">{{ province.name }}</option>
                         {% endfor %}
                     </select>
                 </div>
-                <div class="flex justify-end pt-3 border-t border-gray-100 gap-2">
-                    <button type="button" onclick="closeEditModal()" class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">{% trans "Cancelar" %}</button>
-                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-xl text-sm shadow-md transition">{% trans "Guardar Cambios" %}</button>
+
+                <div class="flex justify-end gap-2 border-t border-[var(--line)] pt-4">
+                    <button type="button" onclick="closeEditModal()" class="dialog-cancel">{% trans "Cancelar" %}</button>
+                    <button type="submit" class="dialog-confirm">{% trans "Guardar cambios" %}</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- !Modal Detalles empresa -->
-    <div id="detailsModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white p-6 sm:p-7 rounded-2xl w-full max-w-md shadow-2xl border border-gray-100 relative">
-            <div class="flex items-center justify-between mb-4">
-                <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    <!-- ===================================================================== -->
+    <!-- Modal: detalles de la empresa                                         -->
+    <!-- ===================================================================== -->
+    <div id="detailsModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-[rgba(3,10,22,0.72)] p-4 backdrop-blur-sm">
+        <div class="w-full max-w-md rounded-[18px] border border-[var(--line)] bg-[var(--surface)] p-6 shadow-2xl">
+            <div class="flex items-start justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)]">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                     </div>
-                    <h2 class="text-lg font-bold text-gray-900">{% trans "Detalles de la Empresa" %}</h2>
+                    <h2 class="text-sm font-semibold tracking-tight text-[var(--ink)]">{% trans "Detalles de la empresa" %}</h2>
                 </div>
-                <button type="button" onclick="closeDetailsModal()" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100 transition focus:outline-none" aria-label="{% trans 'Cerrar' %}">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                <button type="button" onclick="closeDetailsModal()" class="modal-close" aria-label="{% trans 'Cerrar' %}">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
                 </button>
             </div>
-            <div class="space-y-3 bg-gray-50 p-4 rounded-xl border border-gray-100 text-sm mb-4">
-                <p class="flex justify-between"><span class="text-gray-500 font-medium">RUC:</span> <span id="detail-ruc" class="font-mono font-bold text-gray-800"></span></p>
-                <p class="flex justify-between"><span class="text-gray-500 font-medium">{% trans "Razón Social" %}:</span> <span id="detail-name" class="font-semibold text-gray-800 text-right"></span></p>
-                <p class="flex justify-between"><span class="text-gray-500 font-medium">{% trans "Provincia" %}:</span> <span id="detail-province" class="text-gray-700 font-medium"></span></p>
+
+            <div class="mt-5 space-y-2.5 rounded-xl border border-[var(--line)] bg-[var(--canvas)] p-4 text-[11px]">
+                <p class="flex items-baseline justify-between gap-4">
+                    <span class="font-medium text-[var(--muted)]">RUC:</span>
+                    <span id="detail-ruc" class="font-mono font-semibold text-[var(--ink)]"></span>
+                </p>
+                <p class="flex items-baseline justify-between gap-4">
+                    <span class="font-medium text-[var(--muted)]">{% trans "Razón social" %}:</span>
+                    <span id="detail-name" class="text-right font-semibold text-[var(--ink)]"></span>
+                </p>
+                <p class="flex items-baseline justify-between gap-4">
+                    <span class="font-medium text-[var(--muted)]">{% trans "Provincia" %}:</span>
+                    <span id="detail-province" class="font-medium text-[var(--ink)]"></span>
+                </p>
             </div>
-            <div class="flex justify-end pt-2">
-                <button onclick="closeDetailsModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold px-4 py-2 rounded-xl text-sm transition">{% trans "Cerrar" %}</button>
+
+            <div class="mt-5 flex justify-end border-t border-[var(--line)] pt-4">
+                <button type="button" onclick="closeDetailsModal()" class="dialog-cancel">{% trans "Cerrar" %}</button>
             </div>
         </div>
     </div>
 
-    <!-- !Modal Borrar empresa -->
-    <div id="deleteModal" class="fixed inset-0 bg-gray-900 bg-opacity-50 backdrop-filter backdrop-blur-sm flex items-center justify-center hidden z-50 p-4">
-        <div class="bg-white p-6 sm:p-7 rounded-2xl w-full max-w-sm shadow-2xl border border-gray-100 relative">
-            <div class="w-12 h-12 rounded-full bg-red-50 text-red-600 flex items-center justify-center mx-auto mb-3">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+    <!-- ===================================================================== -->
+    <!-- Modal: eliminar empresa                                               -->
+    <!-- ===================================================================== -->
+    <div id="deleteModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-[rgba(3,10,22,0.72)] p-4 backdrop-blur-sm">
+        <div class="w-full max-w-sm rounded-[18px] border border-[var(--line)] bg-[var(--surface)] p-6 text-center shadow-2xl">
+            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-[var(--red-soft)] text-[var(--red)]">
+                <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                 </svg>
             </div>
-            <h2 class="text-lg font-bold text-gray-900 text-center mb-1">{% trans "¿Eliminar Empresa?" %}</h2>
-            <p class="text-sm text-gray-500 text-center mb-6 leading-relaxed">{% trans "Esta acción eliminará la empresa y sus registros asociados de forma permanente." %}</p>
-            <div class="flex justify-center gap-3">
-                <button onclick="closeDeleteModal()" class="text-gray-600 hover:text-gray-800 px-4 py-2 rounded-xl text-sm font-medium transition">{% trans "Cancelar" %}</button>
-                <button onclick="deleteCompany()" class="bg-red-600 hover:bg-red-700 text-white font-semibold px-5 py-2 rounded-xl text-sm shadow-md transition">{% trans "Eliminar" %}</button>
+            <h2 class="mt-4 text-sm font-semibold tracking-tight text-[var(--ink)]">{% trans "¿Eliminar empresa?" %}</h2>
+            <p class="mt-2 text-[11px] leading-5 text-[var(--muted)]">
+                {% trans "Esta acción eliminará la empresa y sus registros asociados de forma permanente." %}
+            </p>
+            <div class="mt-5 flex justify-center gap-2">
+                <button type="button" onclick="closeDeleteModal()" class="dialog-cancel">{% trans "Cancelar" %}</button>
+                <button type="button" onclick="deleteCompany()" class="dialog-danger">{% trans "Eliminar" %}</button>
             </div>
         </div>
     </div>
 
-    <!-- !Lista de empresas estilo tarjeta -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-        <!-- Encabezado de columnas -->
-        <div class="hidden sm:grid grid-cols-12 gap-4 px-6 py-3 bg-gray-50 border-b border-gray-200 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-            <div class="col-span-3">{% trans "RUC" %}</div>
-            <div class="col-span-5">{% trans "Empresa" %}</div>
-            <div class="col-span-2 text-right">{% trans "Provincia" %}</div>
-            <div class="col-span-2 text-right">{% trans "Acciones" %}</div>
-        </div>
+    <!-- ===================================================================== -->
+    <!-- Directorio: tarjetas de entidad                                       -->
+    <!-- ===================================================================== -->
+    {% if companies %}
+    <div class="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {% for company in companies %}
+        <article id="empresa-{{ company.id }}" class="company-card">
+            <div class="flex items-start justify-between gap-3">
+                {% with company.name|make_list as letters %}
+                <span class="company-logo">{{ letters.0|default:"?" }}{{ letters.1|default:"" }}</span>
+                {% endwith %}
 
-        <!-- Filas de empresas -->
-        <div id="companyListBody">
-            {% if companies %}
-                {% for company in companies %}
-                <div id="empresa-{{ company.id }}" class="company-row grid grid-cols-1 sm:grid-cols-12 gap-2 sm:gap-4 items-center px-6 py-4 border-b border-gray-100">
-                    <!-- RUC -->
-                    <div class="sm:col-span-3">
-                        <span class="text-xs text-gray-500 sm:hidden font-medium">RUC: </span>
-                        <span class="text-sm text-gray-600 font-mono">{{ company.ruc }}</span>
-                    </div>
-
-                    <!-- Empresa: Iniciales + Nombre -->
-                    <div class="sm:col-span-5 flex items-center gap-3">
-                        {% with company.name|make_list as letters %}
-                        <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0 avatar-{{ letters.0|default:'?' }}">
-                            {{ letters.0|default:"?" }}{{ letters.1|default:"" }}
-                        </div>
-                        {% endwith %}
-                        <div class="min-w-0">
-                            <p class="text-sm font-semibold text-gray-900 leading-tight truncate">{{ company.name }}</p>
-                        </div>
-                    </div>
-
-                    <!-- Provincia -->
-                    <div class="sm:col-span-2 sm:text-right">
-                        <span class="text-xs text-gray-500 sm:hidden font-medium">{% trans "Provincia" %}: </span>
-                        <span class="text-sm text-gray-600">{{ company.province.name }}</span>
-                    </div>
-
-                    <!-- Acciones -->
-                    <div class="sm:col-span-2 flex items-center justify-end gap-1.5">
-                        <button onclick="showDetails({{ company.id }})" title="{% trans "Ver detalles" %}"
-                                class="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                            </svg>
-                        </button>
-                        <button onclick="openEditModal({{ company.id }})" title="{% trans "Editar" %}"
-                                class="p-2 rounded-lg bg-yellow-50 text-yellow-600 hover:bg-yellow-100 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z"></path>
-                            </svg>
-                        </button>
-                        <button onclick="openDeleteModal({{ company.id }})" title="{% trans "Eliminar" %}"
-                                class="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                            </svg>
-                        </button>
-                    </div>
+                <div class="flex items-center gap-1.5">
+                    <button type="button"
+                            onclick="openEditModal({{ company.id }})"
+                            title="{% trans 'Editar' %}"
+                            aria-label="{% trans 'Editar' %}"
+                            class="row-action amber">
+                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z"/>
+                        </svg>
+                    </button>
+                    <button type="button"
+                            onclick="openDeleteModal({{ company.id }})"
+                            title="{% trans 'Eliminar' %}"
+                            aria-label="{% trans 'Eliminar' %}"
+                            class="row-action danger">
+                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                        </svg>
+                    </button>
                 </div>
-                {% endfor %}
-            {% else %}
-                <div class="px-6 py-12 text-center text-gray-500">
-                    <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path>
+            </div>
+
+            <h2 class="mt-4 text-[13px] font-semibold leading-snug tracking-[-0.02em] text-[var(--ink)]" title="{{ company.name }}">
+                {{ company.name }}
+            </h2>
+            <p class="mt-1.5 font-mono text-[9px] text-[var(--faint)]">RUC: {{ company.ruc }}</p>
+
+            <div class="mt-5 flex items-end justify-between gap-3 border-t border-[var(--line)] pt-3.5">
+                <div>
+                    <span class="block text-[8px] font-bold uppercase tracking-[0.14em] text-[var(--faint)]">{% trans "Provincia" %}</span>
+                    <span class="mt-1 block text-[10px] font-semibold text-[var(--ink)]">{{ company.province.name }}</span>
+                </div>
+                <button type="button" onclick="showDetails({{ company.id }})" class="text-link">
+                    {% trans "Ver ficha" %}
+                    <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14m-5-5l5 5-5 5"/>
                     </svg>
-                    <p class="text-sm">{% trans "No se encontraron empresas que coincidan con los filtros." %}</p>
-                </div>
+                </button>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div id="noCompaniesMessage" class="surface-panel mt-5 px-6 py-14 text-center">
+        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--canvas)] text-[var(--faint)]">
+            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+            </svg>
+        </div>
+        <p class="mt-3 text-[11px] font-medium text-[var(--muted)]">
+            {% trans "No se encontraron empresas que coincidan con los filtros." %}
+        </p>
+    </div>
+    {% endif %}
+
+    <!-- ===================================================================== -->
+    <!-- Rango visible y paginación                                            -->
+    <!-- ===================================================================== -->
+    <div class="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <p class="text-[10px] text-[var(--muted)]">
+            {% if page_obj.paginator.count > 0 %}
+                {% blocktrans with start=page_obj.start_index end=page_obj.end_index total=page_obj.paginator.count %}Mostrando {{ start }}–{{ end }} de {{ total }} empresas{% endblocktrans %}
+            {% else %}
+                {% trans "0 empresas" %}
             {% endif %}
-        </div>
+        </p>
 
-        <!-- Paginación -->
         {% if page_obj.paginator.num_pages > 1 %}
-        <div class="flex flex-col sm:flex-row items-center justify-between px-6 py-4 bg-gray-50 border-t border-gray-200 gap-3">
-            <p class="text-sm text-gray-500">
-                {% blocktrans with start=page_obj.start_index end=page_obj.end_index count counter=page_obj.paginator.count %}Mostrando {{ start }} a {{ end }} de {{ counter }} empresa{% plural %}Mostrando {{ start }} a {{ end }} de {{ counter }} empresas{% endblocktrans %}
-            </p>
-            <nav class="flex items-center gap-1" aria-label="Paginación">
-                {% if page_obj.has_previous %}
-                <a href="?page={{ page_obj.previous_page_number }}{% if search %}&q={{ search }}{% endif %}{% if province_filter %}&province={{ province_filter }}{% endif %}"
-                   class="px-3 py-1.5 text-sm rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition">&lsaquo;</a>
-                {% endif %}
+        <nav class="flex items-center gap-1" aria-label="{% trans 'Paginación' %}">
+            {% if page_obj.has_previous %}
+            <a href="?page={{ page_obj.previous_page_number }}{% if search %}&q={{ search|urlencode }}{% endif %}{% if province_filter %}&province={{ province_filter }}{% endif %}"
+               class="pager" title="{% trans 'Página anterior' %}">←</a>
+            {% else %}
+            <span class="pager disabled" aria-disabled="true">←</span>
+            {% endif %}
 
-                {% for num in page_obj.paginator.page_range %}
-                    {% if page_obj.number == num %}
-                    <span class="px-3 py-1.5 text-sm rounded-lg bg-blue-600 text-white font-semibold">{{ num }}</span>
-                    {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
-                    <a href="?page={{ num }}{% if search %}&q={{ search }}{% endif %}{% if province_filter %}&province={{ province_filter }}{% endif %}"
-                       class="px-3 py-1.5 text-sm rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition">{{ num }}</a>
-                    {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
-                    <span class="px-2 text-gray-400 text-sm">…</span>
-                    {% endif %}
-                {% endfor %}
-
-                {% if page_obj.has_next %}
-                <a href="?page={{ page_obj.next_page_number }}{% if search %}&q={{ search }}{% endif %}{% if province_filter %}&province={{ province_filter }}{% endif %}"
-                   class="px-3 py-1.5 text-sm rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 transition">&rsaquo;</a>
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                    <span class="pager active">{{ num }}</span>
+                {% elif num == 1 or num == page_obj.paginator.num_pages %}
+                    <a href="?page={{ num }}{% if search %}&q={{ search|urlencode }}{% endif %}{% if province_filter %}&province={{ province_filter }}{% endif %}"
+                       class="pager">{{ num }}</a>
+                {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                    <a href="?page={{ num }}{% if search %}&q={{ search|urlencode }}{% endif %}{% if province_filter %}&province={{ province_filter }}{% endif %}"
+                       class="pager">{{ num }}</a>
+                {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
+                    <span class="px-1 text-[9px] text-[var(--faint)]">…</span>
                 {% endif %}
-            </nav>
-        </div>
-        {% elif page_obj.paginator.count > 0 %}
-        <div class="px-6 py-3 bg-gray-50 border-t border-gray-200">
-            {% blocktrans count counter=page_obj.paginator.count %}Mostrando {{ counter }} empresa{% plural %}Mostrando {{ counter }} empresas{% endblocktrans %}
-        </div>
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if search %}&q={{ search|urlencode }}{% endif %}{% if province_filter %}&province={{ province_filter }}{% endif %}"
+               class="pager" title="{% trans 'Página siguiente' %}">→</a>
+            {% else %}
+            <span class="pager disabled" aria-disabled="true">→</span>
+            {% endif %}
+        </nav>
         {% endif %}
     </div>
 </div>
-
 {% endblock %}
 
 {% block scripts %}
-
 <script>
     const createCompanyUrl = "{% url 'create_company' %}";
 
@@ -366,5 +388,4 @@
 
 {% load static %}
 <script src="{% static 'js/companies.js' %}"></script>
-
 {% endblock %}
