@@ -2,431 +2,465 @@
 {% load i18n %}
 {% load widget_tweaks %}
 
-{% block title %}{% trans "Subida de Reportes" %} | ELI{% endblock %}
+{% block title %}{% trans "Ingesta documental" %} | ELI{% endblock %}
 
 {% block content %}
 
 <!-- Overlay de carga interactivo con feedback visual de etapas -->
-<div id="loadingOverlay" class="fixed inset-0 bg-gray-900/80 backdrop-blur-xs flex flex-col items-center justify-center text-white text-center z-50 hidden px-6 transition-all duration-300">
-    <div class="bg-white dark:bg-slate-900 text-gray-800 dark:text-slate-100 p-8 sm:p-10 rounded-3xl shadow-2xl max-w-md w-full border border-gray-100 dark:border-slate-800 flex flex-col items-center text-center">
-        
-        <!-- Spinner animado con pulso -->
-        <div class="w-16 h-16 bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 rounded-2xl flex items-center justify-center mb-5 shadow-inner">
-            <svg class="animate-spin h-8 w-8 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+<div id="loadingOverlay" class="fixed inset-0 z-50 hidden flex-col items-center justify-center bg-[rgba(5,14,28,0.82)] px-5 backdrop-blur-sm">
+    <div class="w-full max-w-md rounded-[20px] border border-[var(--line)] bg-[var(--surface)] p-7 text-center shadow-2xl">
+        <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--blue-soft)] text-[var(--blue)]">
+            <svg class="h-6 w-6 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
             </svg>
         </div>
 
-        <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-1.5" id="loadingStageTitle">
+        <h3 class="mt-5 text-base font-semibold tracking-tight text-[var(--ink)]" id="loadingStageTitle">
             {% trans "Procesando documento..." %}
         </h3>
-        <p class="text-xs text-gray-500 dark:text-slate-400 mb-5 leading-relaxed" id="loadingStageDesc">
+        <p class="mt-2 text-[11px] leading-5 text-[var(--muted)]" id="loadingStageDesc">
             {% trans "Extrayendo texto digital, conteo léxico y calculando índices de complejidad." %}
         </p>
 
-        <!-- Indicador de Etapas -->
-        <div class="w-full space-y-2 mb-5 text-left text-xs font-medium">
-            <div class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300">
-                <span class="w-2 h-2 rounded-full bg-blue-600 animate-ping"></span>
-                <span class="font-bold">1. {% trans "Lectura y extracción OCR" %}</span>
+        <div class="mt-5 space-y-2 text-left">
+            <div class="flex items-center gap-2.5 rounded-xl border border-[var(--line)] bg-[var(--canvas)] p-2.5">
+                <span class="h-1.5 w-1.5 rounded-full bg-[var(--blue)]"></span>
+                <span class="text-[10px] font-semibold text-[var(--ink)]">1. {% trans "Lectura y extracción OCR" %}</span>
             </div>
-            <div class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300">
-                <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
-                <span>2. {% trans "Normalización de vocabulario" %}</span>
+            <div class="flex items-center gap-2.5 rounded-xl border border-[var(--line)] bg-[var(--canvas)] p-2.5">
+                <span class="h-1.5 w-1.5 rounded-full bg-[var(--blue)]"></span>
+                <span class="text-[10px] font-semibold text-[var(--ink)]">2. {% trans "Normalización de vocabulario" %}</span>
             </div>
-            <div class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                <span>3. {% trans "Cálculo de asimetría y guardado" %}</span>
+            <div class="flex items-center gap-2.5 rounded-xl border border-[var(--line)] bg-[var(--canvas)] p-2.5">
+                <span class="h-1.5 w-1.5 rounded-full bg-[var(--blue)]"></span>
+                <span class="text-[10px] font-semibold text-[var(--ink)]">3. {% trans "Cálculo de asimetría y guardado" %}</span>
             </div>
         </div>
 
-        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/60">
+        <span class="mt-5 inline-flex items-center rounded-full bg-[var(--blue-soft)] px-3 py-1.5 text-[9px] font-bold text-[var(--blue)]">
             {% trans "Por favor, no cierres ni recargues la página" %}
         </span>
     </div>
 </div>
 
 <!-- Modal interactivo de procesamiento por lotes ZIP -->
-<div id="zipBatchModal" class="fixed inset-0 bg-gray-900/80 backdrop-blur-xs flex flex-col items-center justify-center z-50 hidden px-4 sm:px-6 transition-all duration-300">
-    <div class="bg-white dark:bg-slate-900 text-gray-800 dark:text-slate-100 p-6 sm:p-8 rounded-3xl shadow-2xl max-w-lg w-full border border-gray-200 dark:border-slate-800 flex flex-col">
-        
-        <!-- Cabecera del lote -->
-        <div class="flex items-center space-x-3 pb-4 border-b border-gray-100 dark:border-slate-800 mb-5">
-            <div id="zipBatchStatusIcon" class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
-                <svg class="animate-spin h-6 w-6" id="zipBatchSpinner" fill="none" viewBox="0 0 24 24">
+<div id="zipBatchModal" class="fixed inset-0 z-50 hidden flex-col items-center justify-center bg-[rgba(5,14,28,0.82)] px-4 backdrop-blur-sm sm:px-6">
+    <div class="w-full max-w-lg rounded-[20px] border border-[var(--line)] bg-[var(--surface)] p-6 shadow-2xl sm:p-7">
+        <div class="mb-5 flex items-center gap-3 border-b border-[var(--line)] pb-4">
+            <div id="zipBatchStatusIcon" class="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-[#e8f8fb] text-[#16859c] dark:bg-[#12313a] dark:text-[#63cede]">
+                <svg class="h-5 w-5 animate-spin" id="zipBatchSpinner" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                 </svg>
-                <svg class="h-6 w-6 hidden text-emerald-600 dark:text-emerald-400" id="zipBatchSuccessIcon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                <svg class="hidden h-5 w-5" id="zipBatchSuccessIcon" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
                 </svg>
             </div>
             <div class="min-w-0 flex-1">
-                <h3 class="text-lg font-bold text-gray-900 dark:text-white truncate" id="zipBatchTitle">
+                <h3 class="truncate text-sm font-semibold tracking-tight text-[var(--ink)]" id="zipBatchTitle">
                     {% trans "Procesando Lote de Reportes" %}
                 </h3>
-                <p class="text-xs text-gray-500 dark:text-slate-400 truncate" id="zipBatchSubtitle">
+                <p class="truncate text-[10px] text-[var(--muted)]" id="zipBatchSubtitle">
                     {% trans "Extrayendo y analizando archivos PDF en secuencia..." %}
                 </p>
             </div>
         </div>
 
-        <!-- Barra de Progreso Principal -->
         <div class="mb-5">
-            <div class="flex items-center justify-between text-xs font-semibold mb-2">
-                <span class="text-gray-700 dark:text-slate-300" id="zipBatchProgressLabel">
+            <div class="mb-2 flex items-center justify-between">
+                <span class="text-[9px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]" id="zipBatchProgressLabel">
                     {% trans "Progreso general del lote" %}
                 </span>
-                <span class="font-mono text-emerald-600 dark:text-emerald-400 font-bold" id="zipBatchProgressPercent">
-                    0%
-                </span>
+                <span class="font-mono text-[10px] font-bold text-[var(--blue)]" id="zipBatchProgressPercent">0%</span>
             </div>
-            <div class="w-full bg-gray-100 dark:bg-slate-800 rounded-full h-3 overflow-hidden border border-gray-200 dark:border-slate-700">
-                <div id="zipBatchProgressBar" class="bg-gradient-to-r from-emerald-500 to-teal-600 h-full rounded-full transition-all duration-300 w-0"></div>
+            <div class="h-2 w-full overflow-hidden rounded-full border border-[var(--line)] bg-[var(--canvas)]">
+                <div id="zipBatchProgressBar" class="h-full w-0 rounded-full bg-[var(--blue)] transition-all duration-300"></div>
             </div>
-            <div class="flex items-center justify-between text-[11px] text-gray-500 dark:text-slate-400 mt-1.5 font-mono">
-                <span id="zipBatchCurrentFileName" class="truncate max-w-[280px]">{% trans "Iniciando lote..." %}</span>
-                <span id="zipBatchCountRatio" class="shrink-0 font-bold text-gray-700 dark:text-slate-200">0 / 0</span>
+            <div class="mt-2 flex items-center justify-between gap-4 font-mono text-[9px] text-[var(--muted)]">
+                <span id="zipBatchCurrentFileName" class="truncate">{% trans "Iniciando lote..." %}</span>
+                <span id="zipBatchCountRatio" class="shrink-0 font-bold text-[var(--ink)]">0 / 0</span>
             </div>
         </div>
 
-        <!-- Registro de Documentos en Tiempo Real -->
         <div class="mb-5">
-            <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-slate-400 mb-2">
+            <p class="mb-2 text-[9px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]">
                 {% trans "Documentos analizados" %}
             </p>
-            <div id="zipBatchLogList" class="space-y-1.5 max-h-48 overflow-y-auto pr-1 text-xs font-medium border border-gray-200/80 dark:border-slate-800 rounded-2xl p-3 bg-gray-50/50 dark:bg-slate-950/60 divide-y divide-gray-100 dark:divide-slate-800/60">
+            <div id="zipBatchLogList" class="max-h-48 space-y-1 overflow-y-auto rounded-xl border border-[var(--line)] bg-[var(--canvas)] p-3 text-[10px] font-medium">
                 <!-- Se insertan dinámicamente -->
             </div>
         </div>
 
-        <!-- Resumen final y acciones -->
-        <div id="zipBatchActions" class="hidden pt-3 border-t border-gray-100 dark:border-slate-800 flex items-center justify-between gap-3">
-            <button type="button" onclick="location.reload()" class="flex-1 py-2.5 px-4 text-xs font-semibold text-gray-700 dark:text-slate-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 rounded-xl transition">
+        <div id="zipBatchActions" class="hidden items-center justify-between gap-3 border-t border-[var(--line)] pt-4">
+            <button type="button" onclick="location.reload()" class="flex-1 rounded-[10px] border border-[var(--line)] bg-[var(--surface-hover)] px-4 py-2.5 text-[10px] font-bold text-[var(--muted)] transition hover:text-[var(--ink)]">
                 {% trans "Subir otro lote" %}
             </button>
-            <a href="{% url 'reports' %}" class="flex-1 py-2.5 px-4 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition text-center shadow-xs">
+            <a href="{% url 'reports' %}" class="flex-1 rounded-[10px] bg-[var(--blue)] px-4 py-2.5 text-center text-[10px] font-bold text-white transition hover:bg-[#1d54c9]">
                 {% trans "Ver Catálogo de Reportes" %}
             </a>
         </div>
 
-        <div id="zipBatchAlertWait" class="text-center pt-2">
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-medium bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-900/60">
+        <div id="zipBatchAlertWait" class="pt-3 text-center">
+            <span class="inline-flex items-center rounded-full bg-[var(--blue-soft)] px-3 py-1.5 text-[9px] font-bold text-[var(--blue)]">
                 {% trans "Por favor, no cierres esta pestaña hasta completar el lote" %}
             </span>
         </div>
     </div>
 </div>
 
-<div class="container mx-auto px-4 sm:px-6 max-w-4xl py-6">
+<div class="mx-auto max-w-[1240px] px-5 py-7 sm:px-7 lg:px-9">
 
-    <!-- Cabecera de Página / Breadcrumb y Acciones -->
-    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200 dark:border-slate-800">
+    <!-- Cabecera de página -->
+    <section class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
-            <div class="flex items-center space-x-2 text-xs text-gray-500 dark:text-slate-400 mb-2">
-                <a href="{% url 'panel' %}" class="hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center space-x-1 font-medium">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    <span>{% trans "Panel de administración" %}</span>
-                </a>
-                <span>/</span>
-                <span class="text-gray-700 dark:text-slate-200 font-semibold">{% trans "Subida de reportes" %}</span>
-            </div>
-
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
-                {% trans "Subida y Procesamiento de Reportes" %}
+            <p class="eyebrow">{% trans "Ingesta documental" %}</p>
+            <h1 class="mt-3 text-[clamp(2rem,4vw,3.2rem)] font-semibold leading-none tracking-[-0.055em] text-[var(--ink)]">
+                {% trans "Incorporar nuevo material" %}
             </h1>
-            <p class="text-sm text-gray-500 dark:text-slate-400 mt-1">
-                {% trans "Carga documentos individuales en PDF o archivos masivos en formato ZIP para auditoría forense." %}
+            <p class="mt-4 max-w-[620px] text-xs leading-6 text-[var(--muted)]">
+                {% trans "Añade documentos al corpus. ELI identificará la entidad, el periodo y el método de extracción más adecuado para cada archivo." %}
             </p>
         </div>
 
-        <div class="flex items-center space-x-3 flex-shrink-0">
-            <a href="{% url 'reports' %}"
-               class="inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-200 font-semibold py-2.5 px-4 rounded-xl transition text-sm">
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                <span>{% trans "Catálogo de Reportes" %}</span>
-            </a>
-        </div>
-    </div>
+        <a href="{% url 'reports' %}" class="secondary-action inline-flex items-center gap-2">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <span>{% trans "Catálogo de reportes" %}</span>
+        </a>
+    </section>
 
-    <!-- Pestañas de Modo de Carga (Individual vs Masivo) -->
-    <div class="flex gap-4 border-b border-gray-200 dark:border-slate-800 mb-8">
-        <button id="uploadTabPdf" onclick="switchUploadMode('pdf')" 
-                class="px-5 py-3 font-bold text-sm border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 transition-all inline-flex items-center gap-2.5 btn-interactive">
-            <div class="w-6 h-6 rounded-lg bg-blue-100 dark:bg-blue-900/60 text-blue-600 dark:text-blue-400 flex items-center justify-center">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            </div>
-            <span>{% trans "Reporte Individual (PDF)" %}</span>
-        </button>
-        <button id="uploadTabZip" onclick="switchUploadMode('zip')" 
-                class="px-5 py-3 font-bold text-sm border-b-2 border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200 transition-all inline-flex items-center gap-2.5 btn-interactive">
-            <div class="w-6 h-6 rounded-lg bg-emerald-100 dark:bg-emerald-900/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
-            </div>
-            <span>{% trans "Lote Masivo (ZIP)" %}</span>
-        </button>
-    </div>
+    <div class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(300px,.55fr)]">
 
-    <!-- ========================================================================= -->
-    <!-- 1. MODO: SUBIDA INDIVIDUAL (PDF)                                         -->
-    <!-- ========================================================================= -->
-    <section id="panelUploadPdf" class="bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl shadow-xs border border-gray-200/90 dark:border-slate-800 transition">
-        <div class="flex items-center space-x-3 mb-6 pb-4 border-b border-gray-100 dark:border-slate-800">
-            <div class="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center shadow-xs">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-            </div>
-            <div>
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white">{% trans "Subir Reporte Individual (PDF)" %}</h2>
-                <p class="text-xs text-gray-500 dark:text-slate-400">{% trans "Procesa un único contrato o informe en formato PDF digital con extracción OCR automática." %}</p>
-            </div>
-        </div>
-
-        <form method="post" enctype="multipart/form-data" id="individualUploadForm" novalidate>
-            {% csrf_token %}
-
-            {% if individual_form.non_field_errors %}
-                <div class="mb-5 p-4 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-300 text-sm font-medium">
-                    {{ individual_form.non_field_errors }}
-                </div>
-            {% endif %}
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
-                <div>
-                    <label for="{{ individual_form.company.id_for_label }}" class="block mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-slate-300">
-                        {% trans "Empresa" %} <span class="text-xs font-normal text-gray-400">({% trans "opcional si está en el texto" %})</span>
-                    </label>
-                    {{ individual_form.company|add_class:"w-full border border-gray-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600" }}
-                    {% if individual_form.company.errors %}
-                        <p class="text-red-600 text-xs mt-1">{{ individual_form.company.errors.0 }}</p>
-                    {% endif %}
-                </div>
-
-                <div>
-                    <label for="{{ individual_form.year.id_for_label }}" class="block mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-slate-300">
-                        {% trans "Año del Reporte" %} <span class="text-xs font-normal text-gray-400">({% trans "opcional si está en el texto" %})</span>
-                    </label>
-                    {{ individual_form.year|add_class:"w-full border border-gray-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600" }}
-                    {% if individual_form.year.errors %}
-                        <p class="text-red-600 text-xs mt-1">{{ individual_form.year.errors.0 }}</p>
-                    {% endif %}
-                </div>
-            </div>
-
-            <div class="mb-5">
-                <label for="{{ individual_form.name.id_for_label }}" class="block mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-slate-300">
-                    {% trans "Título o Nombre del Reporte" %} <span class="text-xs font-normal text-gray-400">({% trans "opcional" %})</span>
-                </label>
-                {{ individual_form.name|add_class:"w-full border border-gray-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600" }}
-                {% if individual_form.name.errors %}
-                    <p class="text-red-600 text-xs mt-1">{{ individual_form.name.errors.0 }}</p>
-                {% endif %}
-            </div>
-
-            <!-- Zona Drag & Drop para PDF -->
-            <div class="mb-6">
-                <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-slate-300">
-                    {% trans "Archivo PDF" %} <span class="text-blue-600">*</span>
-                </label>
-
-                <div id="pdfDropzone"
-                     class="border-2 border-dashed border-gray-300 dark:border-slate-700 hover:border-blue-500 rounded-2xl p-6 text-center cursor-pointer transition bg-gray-50 dark:bg-slate-950/60 hover:bg-blue-50/40 dark:hover:bg-blue-950/20 relative">
-                    <input type="file" name="file" id="id_file" accept=".pdf,application/pdf" class="hidden" required />
-
-                    <div id="pdfPrompt" class="flex flex-col items-center">
-                        <div class="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center mb-3">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                            </svg>
-                        </div>
-                        <p class="text-sm font-semibold text-gray-800 dark:text-slate-200">
-                            {% trans "Arrastra tu documento PDF aquí, o" %} <span class="text-blue-600 dark:text-blue-400 hover:underline">{% trans "haz clic para examinar" %}</span>
-                        </p>
-                        <p class="text-xs text-gray-400 mt-1">{% trans "Solo formato .PDF digital (máx. 100 MB)" %}</p>
-                    </div>
-
-                    <!-- Previsualización de archivo seleccionado -->
-                    <div id="pdfPreview" class="hidden flex items-center justify-between p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 shadow-xs">
-                        <div class="flex items-center space-x-3 truncate">
-                            <div class="w-9 h-9 rounded-lg bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400 flex items-center justify-center flex-shrink-0 font-bold text-xs font-mono">
-                                PDF
-                            </div>
-                            <div class="truncate text-left">
-                                <p id="pdfFileName" class="text-sm font-bold text-gray-900 dark:text-white truncate"></p>
-                                <p id="pdfFileSize" class="text-xs font-mono text-gray-500 dark:text-slate-400"></p>
-                            </div>
-                        </div>
-                        <button type="button" id="removePdfBtn"
-                                class="text-gray-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition flex-shrink-0"
-                                title="{% trans 'Cambiar archivo' %}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-                {% if individual_form.file.errors %}
-                    <p class="text-red-600 text-xs mt-1.5 font-medium">{{ individual_form.file.errors.0 }}</p>
-                {% endif %}
-            </div>
-
-            <!-- Casilla de Sobrescritura -->
-            <div class="mb-6 p-4 rounded-2xl bg-gray-50 dark:bg-slate-950/60 border border-gray-200/80 dark:border-slate-800 flex items-start space-x-3">
-                <div class="flex items-center h-5 mt-0.5">
-                    {{ individual_form.overwrite }}
-                </div>
-                <div class="text-xs">
-                    <label for="{{ individual_form.overwrite.id_for_label }}" class="font-bold text-gray-800 dark:text-slate-200 cursor-pointer">
-                        {% trans "Sobrescribir si ya existe un reporte para la misma empresa y año" %}
-                    </label>
-                    <p class="text-gray-500 dark:text-slate-400 mt-0.5">
-                        {% trans "Si ya está registrado, reemplazará el archivo y recalculará las estadísticas sin duplicar datos." %}
-                    </p>
-                </div>
-            </div>
-
-            <!-- Contenedor interactivo de alerta de duplicado previo al envío -->
-            <div id="duplicateWarningAlert" class="hidden mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800/80 text-amber-900 dark:text-amber-200 text-xs">
-                <div class="flex items-start gap-3">
-                    <div class="w-6 h-6 rounded-lg bg-amber-200 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300 flex items-center justify-center shrink-0 mt-0.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        <div>
+            <!-- Selector de modo de carga -->
+            <div class="mode-switch grid-cols-1 sm:grid-cols-2" role="tablist" aria-label="{% trans 'Modo de carga' %}">
+                <button type="button" id="uploadTabPdf" onclick="switchUploadMode('pdf')" role="tab" aria-selected="true" class="mode-tab active">
+                    <span class="mode-tab-icon">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
+                    </span>
+                    <span>
+                        <strong>{% trans "Reporte individual" %}</strong>
+                        <small>PDF · {% trans "OCR automático" %}</small>
+                    </span>
+                </button>
+                <button type="button" id="uploadTabZip" onclick="switchUploadMode('zip')" role="tab" aria-selected="false" class="mode-tab batch">
+                    <span class="mode-tab-icon">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
+                        </svg>
+                    </span>
+                    <span>
+                        <strong>{% trans "Lote masivo" %}</strong>
+                        <small>ZIP · {% trans "varios documentos" %}</small>
+                    </span>
+                </button>
+            </div>
+
+            <!-- ============================================================= -->
+            <!-- 1. MODO: SUBIDA INDIVIDUAL (PDF)                               -->
+            <!-- ============================================================= -->
+            <section id="panelUploadPdf" class="surface-panel mt-4">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">{% trans "Documento individual" %}</p>
+                        <h2>{% trans "Subir reporte en PDF" %}</h2>
                     </div>
-                    <div class="flex-1">
-                        <p class="font-bold text-sm mb-1" id="duplicateWarningTitle">{% trans "Reporte ya registrado en este espacio de trabajo" %}</p>
-                        <p id="duplicateWarningText" class="leading-relaxed">
-                            {% trans "Ya existe un reporte registrado para esta empresa y año. Si deseas reemplazarlo, activa la casilla 'Sobrescribir si ya existe'." %}
-                        </p>
-                    </div>
+                    <span class="status-pill pending">PDF · {% trans "máx. 100 MB" %}</span>
                 </div>
-            </div>
 
-            <button type="submit" name="upload_individual"
-                class="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-bold py-3.5 px-4 rounded-xl shadow-xs transition flex items-center justify-center space-x-2 btn-interactive">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                </svg>
-                <span>{% trans "Subir y Procesar PDF" %}</span>
-            </button>
-        </form>
-    </section>
+                <form method="post" enctype="multipart/form-data" id="individualUploadForm" novalidate class="p-5 sm:p-6">
+                    {% csrf_token %}
 
-    <!-- ========================================================================= -->
-    <!-- 2. MODO: SUBIDA MASIVA (LOTE ZIP)                                         -->
-    <!-- ========================================================================= -->
-    <section id="panelUploadZip" class="hidden bg-white dark:bg-slate-900 p-6 sm:p-8 rounded-3xl shadow-xs border border-gray-200/90 dark:border-slate-800 transition">
-        <div class="flex items-center space-x-3 mb-6 pb-4 border-b border-gray-100 dark:border-slate-800">
-            <div class="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shadow-xs">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"></path>
-                </svg>
-            </div>
-            <div>
-                <h2 class="text-xl font-bold text-gray-900 dark:text-white">{% trans "Subir Múltiples Reportes (Lote ZIP)" %}</h2>
-                <p class="text-xs text-gray-500 dark:text-slate-400">{% trans "Carga un archivo ZIP con múltiples documentos PDF para analizarlos en secuencia automática." %}</p>
-            </div>
+                    {% if individual_form.non_field_errors %}
+                        <div class="form-alert mb-5">
+                            {{ individual_form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-5 grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <label class="form-field" for="{{ individual_form.company.id_for_label }}">
+                            <span>{% trans "Empresa" %} <em class="font-normal normal-case tracking-normal text-[var(--faint)]">({% trans "opcional si está en el texto" %})</em></span>
+                            {% render_field individual_form.company class="eli-input" %}
+                            {% if individual_form.company.errors %}
+                                <p class="mt-1.5 text-[10px] font-semibold text-[#b34a2e] dark:text-[#ff9c76]">{{ individual_form.company.errors.0 }}</p>
+                            {% endif %}
+                        </label>
+
+                        <label class="form-field" for="{{ individual_form.year.id_for_label }}">
+                            <span>{% trans "Año del reporte" %} <em class="font-normal normal-case tracking-normal text-[var(--faint)]">({% trans "opcional si está en el texto" %})</em></span>
+                            {% render_field individual_form.year class="eli-input" %}
+                            {% if individual_form.year.errors %}
+                                <p class="mt-1.5 text-[10px] font-semibold text-[#b34a2e] dark:text-[#ff9c76]">{{ individual_form.year.errors.0 }}</p>
+                            {% endif %}
+                        </label>
+                    </div>
+
+                    <label class="form-field mb-5 block" for="{{ individual_form.name.id_for_label }}">
+                        <span>{% trans "Título o nombre del reporte" %} <em class="font-normal normal-case tracking-normal text-[var(--faint)]">({% trans "opcional" %})</em></span>
+                        {% render_field individual_form.name class="eli-input" %}
+                        {% if individual_form.name.errors %}
+                            <p class="mt-1.5 text-[10px] font-semibold text-[#b34a2e] dark:text-[#ff9c76]">{{ individual_form.name.errors.0 }}</p>
+                        {% endif %}
+                    </label>
+
+                    <!-- Zona Drag & Drop para PDF -->
+                    <div class="mb-5">
+                        <label class="mb-2 block text-[9px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]">
+                            {% trans "Archivo PDF" %} <span class="text-[var(--blue)]">*</span>
+                        </label>
+
+                        <div id="pdfDropzone" class="dropzone">
+                            <input type="file" name="file" id="id_file" accept=".pdf,application/pdf" class="hidden" required />
+
+                            <div id="pdfPrompt" class="flex flex-col items-center">
+                                <span class="dropzone-icon">
+                                    <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                </span>
+                                <p class="mt-4 text-xs font-semibold text-[var(--ink)]">
+                                    {% trans "Arrastra tu documento PDF aquí, o" %} <span class="text-[var(--blue)]">{% trans "haz clic para examinar" %}</span>
+                                </p>
+                                <p class="mt-1 text-[10px] text-[var(--faint)]">{% trans "Solo formato .PDF digital (máx. 100 MB)" %}</p>
+                                <span class="mt-4 rounded-lg bg-[var(--blue-soft)] px-3 py-2 text-[9px] font-bold text-[var(--blue)]">
+                                    {% trans "SELECCIONAR PDF" %}
+                                </span>
+                            </div>
+
+                            <div id="pdfPreview" class="file-preview hidden">
+                                <div class="flex min-w-0 items-center gap-3">
+                                    <span class="file-badge">PDF</span>
+                                    <div class="min-w-0 text-left">
+                                        <p id="pdfFileName" class="truncate text-xs font-semibold text-[var(--ink)]"></p>
+                                        <p id="pdfFileSize" class="font-mono text-[9px] text-[var(--muted)]"></p>
+                                    </div>
+                                </div>
+                                <button type="button" id="removePdfBtn" class="flex-none rounded-lg p-1.5 text-[var(--faint)] transition hover:bg-[var(--surface-hover)] hover:text-[#b34a2e]" title="{% trans 'Cambiar archivo' %}">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        {% if individual_form.file.errors %}
+                            <p class="mt-1.5 text-[10px] font-semibold text-[#b34a2e] dark:text-[#ff9c76]">{{ individual_form.file.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Casilla de Sobrescritura -->
+                    <div class="checkbox-row mb-5">
+                        {% render_field individual_form.overwrite class="checkbox-input" %}
+                        <div>
+                            <label for="{{ individual_form.overwrite.id_for_label }}" class="cursor-pointer text-[10px] font-bold text-[var(--ink)]">
+                                {% trans "Sobrescribir si ya existe un reporte para la misma empresa y año" %}
+                            </label>
+                            <p class="mt-1 text-[9px] leading-4 text-[var(--muted)]">
+                                {% trans "Si ya está registrado, reemplazará el archivo y recalculará las estadísticas sin duplicar datos." %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Alerta de duplicado previo al envío -->
+                    <div id="duplicateWarningAlert" class="notice mb-5 hidden">
+                        <span class="notice-icon">
+                            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                        </span>
+                        <div class="flex-1">
+                            <p class="text-[10px] font-bold" id="duplicateWarningTitle">{% trans "Reporte ya registrado en este espacio de trabajo" %}</p>
+                            <p id="duplicateWarningText" class="mt-1 leading-5">
+                                {% trans "Ya existe un reporte registrado para esta empresa y año. Si deseas reemplazarlo, activa la casilla 'Sobrescribir si ya existe'." %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <button type="submit" name="upload_individual" class="action-submit">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                        </svg>
+                        <span>{% trans "Subir y procesar PDF" %}</span>
+                    </button>
+                </form>
+            </section>
+
+            <!-- ============================================================= -->
+            <!-- 2. MODO: SUBIDA MASIVA (LOTE ZIP)                              -->
+            <!-- ============================================================= -->
+            <section id="panelUploadZip" class="surface-panel mt-4 hidden">
+                <div class="panel-heading">
+                    <div>
+                        <p class="eyebrow">{% trans "Procesamiento por lote" %}</p>
+                        <h2>{% trans "Subir lote de reportes" %}</h2>
+                    </div>
+                    <span class="status-pill pending">ZIP · {% trans "máx. 300 MB" %}</span>
+                </div>
+
+                <form method="post" enctype="multipart/form-data" id="zipUploadForm" novalidate class="p-5 sm:p-6">
+                    {% csrf_token %}
+
+                    {% if zip_form.non_field_errors %}
+                        <div class="form-alert mb-5">
+                            {{ zip_form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    <div class="form-field mb-5">
+                        <span>{% trans "Asignar una sola empresa a todo el lote" %} <em class="font-normal normal-case tracking-normal text-[var(--faint)]">({% trans "opcional" %})</em></span>
+                        <p class="mb-2 text-[9px] leading-4 text-[var(--muted)]">
+                            {% trans "Si todos los PDFs del ZIP pertenecen a la misma entidad, selecciónala aquí. Si incluye varias empresas, déjalo vacío para autodetección por OCR." %}
+                        </p>
+                        {% render_field zip_form.company class="eli-input" %}
+                        {% if zip_form.company.errors %}
+                            <p class="mt-1.5 text-[10px] font-semibold text-[#b34a2e] dark:text-[#ff9c76]">{{ zip_form.company.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Zona Drag & Drop para ZIP -->
+                    <div class="mb-5">
+                        <label class="mb-2 block text-[9px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]">
+                            {% trans "Archivo ZIP comprimido" %} <span class="text-[#16859c] dark:text-[#63cede]">*</span>
+                        </label>
+
+                        <div id="zipDropzone" class="dropzone dropzone-batch">
+                            <input type="file" name="zip_file" id="id_zip_file" accept=".zip,application/zip" class="hidden" required />
+
+                            <div id="zipPrompt" class="flex flex-col items-center">
+                                <span class="dropzone-icon">
+                                    <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                                    </svg>
+                                </span>
+                                <p class="mt-4 text-xs font-semibold text-[var(--ink)]">
+                                    {% trans "Arrastra tu archivo comprimido .ZIP aquí, o" %} <span class="text-[#16859c] dark:text-[#63cede]">{% trans "haz clic para examinar" %}</span>
+                                </p>
+                                <p class="mt-1 text-[10px] text-[var(--faint)]">{% trans "Solo formato .ZIP (máx. 300 MB)" %}</p>
+                                <span class="mt-4 rounded-lg bg-[#e8f8fb] px-3 py-2 text-[9px] font-bold text-[#0d7185] dark:bg-[#12313a] dark:text-[#63cede]">
+                                    {% trans "SELECCIONAR ZIP" %}
+                                </span>
+                            </div>
+
+                            <div id="zipPreview" class="file-preview hidden">
+                                <div class="flex min-w-0 items-center gap-3">
+                                    <span class="file-badge zip">ZIP</span>
+                                    <div class="min-w-0 text-left">
+                                        <p id="zipFileName" class="truncate text-xs font-semibold text-[var(--ink)]"></p>
+                                        <p id="zipFileSize" class="font-mono text-[9px] text-[var(--muted)]"></p>
+                                    </div>
+                                </div>
+                                <button type="button" id="removeZipBtn" class="flex-none rounded-lg p-1.5 text-[var(--faint)] transition hover:bg-[var(--surface-hover)] hover:text-[#b34a2e]" title="{% trans 'Cambiar archivo' %}">
+                                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        {% if zip_form.zip_file.errors %}
+                            <p class="mt-1.5 text-[10px] font-semibold text-[#b34a2e] dark:text-[#ff9c76]">{{ zip_form.zip_file.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+
+                    <!-- Casilla de Sobrescritura en ZIP -->
+                    <div class="checkbox-row mb-5">
+                        {% render_field zip_form.overwrite class="checkbox-input" %}
+                        <div>
+                            <label for="{{ zip_form.overwrite.id_for_label }}" class="cursor-pointer text-[10px] font-bold text-[var(--ink)]">
+                                {% trans "Sobrescribir reportes con el mismo nombre si ya existen" %}
+                            </label>
+                            <p class="mt-1 text-[9px] leading-4 text-[var(--muted)]">
+                                {% trans "Si está desmarcado, los archivos ya registrados serán omitidos sin duplicarse." %}
+                            </p>
+                        </div>
+                    </div>
+
+                    <button type="submit" name="upload_zip" class="action-submit">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                        </svg>
+                        <span>{% trans "Subir y procesar lote ZIP" %}</span>
+                    </button>
+                </form>
+            </section>
         </div>
 
-        <form method="post" enctype="multipart/form-data" id="zipUploadForm" novalidate>
-            {% csrf_token %}
+        <!-- Panel lateral: protocolo de extracción -->
+        <aside class="space-y-5">
+            <section class="surface-panel p-5 sm:p-6">
+                <p class="eyebrow">{% trans "Configuración de análisis" %}</p>
+                <h2 class="mt-2 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Protocolo de extracción" %}</h2>
 
-            {% if zip_form.non_field_errors %}
-                <div class="mb-5 p-4 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 text-red-700 dark:text-red-300 text-sm font-medium">
-                    {{ zip_form.non_field_errors }}
-                </div>
-            {% endif %}
-
-            <div class="mb-5">
-                <label for="{{ zip_form.company.id_for_label }}" class="block mb-1 text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-slate-300">
-                    {% trans "Asignar una sola empresa a todo el lote" %} <span class="text-xs font-normal text-gray-400">({% trans "opcional" %})</span>
-                </label>
-                <p class="text-xs text-gray-500 dark:text-slate-400 mb-2 leading-relaxed">
-                    {% trans "Si todos los PDFs del ZIP pertenecen a la misma entidad, selecciónala aquí. Si incluye varias empresas, déjalo vacío para autodetección por OCR." %}
-                </p>
-                {{ zip_form.company|add_class:"w-full border border-gray-300 dark:border-slate-700 rounded-xl px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-600" }}
-                {% if zip_form.company.errors %}
-                    <p class="text-red-600 text-xs mt-1">{{ zip_form.company.errors.0 }}</p>
-                {% endif %}
-            </div>
-
-            <!-- Zona Drag & Drop para ZIP -->
-            <div class="mb-6">
-                <label class="block mb-1.5 text-xs font-semibold uppercase tracking-wider text-gray-700 dark:text-slate-300">
-                    {% trans "Archivo ZIP comprimido" %} <span class="text-emerald-600">*</span>
-                </label>
-
-                <div id="zipDropzone"
-                     class="border-2 border-dashed border-gray-300 dark:border-slate-700 hover:border-emerald-500 rounded-2xl p-6 text-center cursor-pointer transition bg-gray-50 dark:bg-slate-950/60 hover:bg-emerald-50/40 dark:hover:bg-emerald-950/20 relative">
-                    <input type="file" name="zip_file" id="id_zip_file" accept=".zip,application/zip" class="hidden" required />
-
-                    <div id="zipPrompt" class="flex flex-col items-center">
-                        <div class="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mb-3">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+                <div class="mt-5 space-y-5">
+                    <div class="protocol-item">
+                        <span class="protocol-icon">
+                            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
+                        </span>
+                        <div>
+                            <p class="protocol-title">{% trans "Detección de entidad" %}</p>
+                            <p class="protocol-copy">{% trans "Si no indicas empresa y año, ELI los infiere del encabezado y del cuerpo del documento." %}</p>
                         </div>
-                        <p class="text-sm font-semibold text-gray-800 dark:text-slate-200">
-                            {% trans "Arrastra tu archivo comprimido .ZIP aquí, o" %} <span class="text-emerald-600 dark:text-emerald-400 hover:underline">{% trans "haz clic para examinar" %}</span>
-                        </p>
-                        <p class="text-xs text-gray-400 mt-1">{% trans "Solo formato .ZIP (máx. 300 MB)" %}</p>
                     </div>
 
-                    <!-- Previsualización de ZIP seleccionado -->
-                    <div id="zipPreview" class="hidden flex items-center justify-between p-3.5 bg-white dark:bg-slate-900 rounded-xl border border-gray-200 dark:border-slate-800 shadow-xs">
-                        <div class="flex items-center space-x-3 truncate">
-                            <div class="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 flex items-center justify-center flex-shrink-0 font-bold text-xs font-mono">
-                                ZIP
-                            </div>
-                            <div class="truncate text-left">
-                                <p id="zipFileName" class="text-sm font-bold text-gray-900 dark:text-white truncate"></p>
-                                <p id="zipFileSize" class="text-xs font-mono text-gray-500 dark:text-slate-400"></p>
-                            </div>
-                        </div>
-                        <button type="button" id="removeZipBtn"
-                                class="text-gray-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/40 transition flex-shrink-0"
-                                title="{% trans 'Cambiar archivo' %}">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                    <div class="protocol-item">
+                        <span class="protocol-icon">
+                            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                             </svg>
-                        </button>
+                        </span>
+                        <div>
+                            <p class="protocol-title">{% trans "Extracción OCR" %}</p>
+                            <p class="protocol-copy">{% trans "El texto digital se lee directamente; las páginas sin capa de texto pasan por reconocimiento óptico." %}</p>
+                        </div>
+                    </div>
+
+                    <div class="protocol-item">
+                        <span class="protocol-icon">
+                            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 7v10c0 2 1.5 3 3.5 3h9c2 0 3.5-1 3.5-3V7c0-2-1.5-3-3.5-3h-9C5.5 4 4 5 4 7zm4 4h8m-8 4h5"></path>
+                            </svg>
+                        </span>
+                        <div>
+                            <p class="protocol-title">{% trans "Conteo y complejidad" %}</p>
+                            <p class="protocol-copy">{% trans "Cada reporte se normaliza y se somete al conteo léxico y a los índices de complejidad del espacio." %}</p>
+                        </div>
                     </div>
                 </div>
-                {% if zip_form.zip_file.errors %}
-                    <p class="text-red-600 text-xs mt-1.5 font-medium">{{ zip_form.zip_file.errors.0 }}</p>
-                {% endif %}
-            </div>
 
-            <!-- Casilla de Sobrescritura en ZIP -->
-            <div class="mb-6 p-4 rounded-2xl bg-gray-50 dark:bg-slate-950/60 border border-gray-200/80 dark:border-slate-800 flex items-start space-x-3">
-                <div class="flex items-center h-5 mt-0.5">
-                    {{ zip_form.overwrite }}
-                </div>
-                <div class="text-xs">
-                    <label for="{{ zip_form.overwrite.id_for_label }}" class="font-bold text-gray-800 dark:text-slate-200 cursor-pointer">
-                        {% trans "Sobrescribir reportes con el mismo nombre si ya existen" %}
-                    </label>
-                    <p class="text-gray-500 dark:text-slate-400 mt-0.5">
-                        {% trans "Si está desmarcado, los archivos ya registrados serán omitidos sin duplicarse." %}
+                <div class="mt-5 rounded-xl bg-[var(--blue-soft)] p-4">
+                    <p class="eyebrow">{% trans "Espacio de trabajo" %}</p>
+                    <p class="mt-1.5 text-xs font-semibold text-[var(--ink)]">
+                        {% blocktrans count counter=companies|length %}{{ counter }} entidad disponible{% plural %}{{ counter }} entidades disponibles{% endblocktrans %}
+                    </p>
+                    <p class="mt-1 text-[9px] leading-4 text-[var(--muted)]">
+                        {% trans "Los selectores de empresa muestran únicamente las entidades del espacio activo." %}
                     </p>
                 </div>
-            </div>
+            </section>
 
-            <button type="submit" name="upload_zip"
-                class="w-full bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold py-3.5 px-4 rounded-xl shadow-xs transition flex items-center justify-center space-x-2 btn-interactive">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                </svg>
-                <span>{% trans "Subir y Procesar Lote ZIP" %}</span>
-            </button>
-        </form>
-    </section>
+            <section class="surface-panel p-5 sm:p-6">
+                <p class="eyebrow">{% trans "Antes de cargar" %}</p>
+                <ol class="mt-4 space-y-4">
+                    <li class="flex gap-3">
+                        <span class="step-number">01</span>
+                        <p class="text-[10px] leading-5 text-[var(--muted)]">{% trans "Verifica que el PDF tenga capa de texto o buena calidad de escaneo." %}</p>
+                    </li>
+                    <li class="flex gap-3">
+                        <span class="step-number">02</span>
+                        <p class="text-[10px] leading-5 text-[var(--muted)]">{% trans "Indicar empresa y año mejora la trazabilidad y evita duplicados." %}</p>
+                    </li>
+                    <li class="flex gap-3">
+                        <span class="step-number">03</span>
+                        <p class="text-[10px] leading-5 text-[var(--muted)]">{% trans "En lotes ZIP incluye un PDF por reporte y evita archivos ya registrados." %}</p>
+                    </li>
+                </ol>
+            </section>
+        </aside>
+    </div>
 </div>
 {% endblock %}
 
@@ -441,13 +475,10 @@ function switchUploadMode(mode) {
     const tabPdf = document.getElementById('uploadTabPdf');
     const tabZip = document.getElementById('uploadTabZip');
 
-    if (isPdf) {
-        tabPdf.className = "px-5 py-3 font-bold text-sm border-b-2 border-blue-600 text-blue-600 dark:text-blue-400 transition-all inline-flex items-center gap-2.5 btn-interactive";
-        tabZip.className = "px-5 py-3 font-bold text-sm border-b-2 border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200 transition-all inline-flex items-center gap-2.5 btn-interactive";
-    } else {
-        tabZip.className = "px-5 py-3 font-bold text-sm border-b-2 border-emerald-600 text-emerald-600 dark:text-emerald-400 transition-all inline-flex items-center gap-2.5 btn-interactive";
-        tabPdf.className = "px-5 py-3 font-bold text-sm border-b-2 border-transparent text-gray-500 dark:text-slate-400 hover:text-gray-800 dark:hover:text-slate-200 transition-all inline-flex items-center gap-2.5 btn-interactive";
-    }
+    tabPdf.classList.toggle('active', isPdf);
+    tabZip.classList.toggle('active', !isPdf);
+    tabPdf.setAttribute('aria-selected', isPdf ? 'true' : 'false');
+    tabZip.setAttribute('aria-selected', isPdf ? 'false' : 'true');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -512,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pdfDropzone.addEventListener(eventName, (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                pdfDropzone.classList.add('border-blue-500', 'bg-blue-50/50');
+                pdfDropzone.classList.add('is-dragging');
             }, false);
         });
 
@@ -520,7 +551,7 @@ document.addEventListener('DOMContentLoaded', () => {
             pdfDropzone.addEventListener(eventName, (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                pdfDropzone.classList.remove('border-blue-500', 'bg-blue-50/50');
+                pdfDropzone.classList.remove('is-dragging');
             }, false);
         });
 
@@ -584,7 +615,7 @@ document.addEventListener('DOMContentLoaded', () => {
             zipDropzone.addEventListener(eventName, (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                zipDropzone.classList.add('border-emerald-500', 'bg-emerald-50/50');
+                zipDropzone.classList.add('is-dragging');
             }, false);
         });
 
@@ -592,7 +623,7 @@ document.addEventListener('DOMContentLoaded', () => {
             zipDropzone.addEventListener(eventName, (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                zipDropzone.classList.remove('border-emerald-500', 'bg-emerald-50/50');
+                zipDropzone.classList.remove('is-dragging');
             }, false);
         });
 
@@ -782,26 +813,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         zipBatchCountRatio.textContent = `${processedCount} / ${totalFiles}`;
 
                         const logItem = document.createElement('div');
-                        logItem.className = 'py-1.5 flex items-center justify-between gap-2';
+                        logItem.className = 'flex items-center justify-between gap-2 py-1.5';
 
                         if (itemData.skipped) {
                             skippedCount++;
                             logItem.innerHTML = `
-                                <span class="truncate text-gray-500 dark:text-slate-400 font-normal" title="${fname}">📄 ${fname}</span>
-                                <span class="shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold bg-gray-100 text-gray-600 dark:bg-slate-800 dark:text-slate-300">{% trans "Omitido (Existe)" %}</span>
+                                <span class="truncate font-normal text-[var(--muted)]" title="${fname}">📄 ${fname}</span>
+                                <span class="log-badge muted">{% trans "Omitido (Existe)" %}</span>
                             `;
                         } else if (itemData.success) {
                             successCount++;
                             const wordsFormatted = itemData.total_words ? Number(itemData.total_words).toLocaleString() : '0';
                             logItem.innerHTML = `
-                                <span class="truncate text-gray-800 dark:text-slate-200" title="${fname}">📄 ${fname}</span>
-                                <span class="shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">✓ ${wordsFormatted} {% trans 'palabras' %}</span>
+                                <span class="truncate text-[var(--ink)]" title="${fname}">📄 ${fname}</span>
+                                <span class="log-badge success">✓ ${wordsFormatted} {% trans 'palabras' %}</span>
                             `;
                         } else {
                             errorCount++;
                             logItem.innerHTML = `
-                                <span class="truncate text-red-600 dark:text-red-400" title="${fname}">⚠️ ${fname}</span>
-                                <span class="shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold bg-red-100 text-red-700 dark:bg-red-950 dark:text-red-300">{% trans "Error" %}</span>
+                                <span class="truncate text-[#b34a2e] dark:text-[#ff9c76]" title="${fname}">⚠️ ${fname}</span>
+                                <span class="log-badge danger">{% trans "Error" %}</span>
                             `;
                         }
                         zipBatchLogList.appendChild(logItem);
@@ -811,10 +842,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         processedCount++;
                         errorCount++;
                         const logItem = document.createElement('div');
-                        logItem.className = 'py-1.5 flex items-center justify-between gap-2';
+                        logItem.className = 'flex items-center justify-between gap-2 py-1.5';
                         logItem.innerHTML = `
-                            <span class="truncate text-red-600 dark:text-red-400" title="${fname}">⚠️ ${fname}</span>
-                            <span class="shrink-0 px-2 py-0.5 rounded-md text-[10px] font-bold bg-red-100 text-red-700">{% trans "Error de red" %}</span>
+                            <span class="truncate text-[#b34a2e] dark:text-[#ff9c76]" title="${fname}">⚠️ ${fname}</span>
+                            <span class="log-badge danger">{% trans "Error de red" %}</span>
                         `;
                         zipBatchLogList.appendChild(logItem);
                     }
