@@ -32,6 +32,12 @@
   --amber-soft: #fef3c7;
   --red: #dc2626;
   --red-soft: #fee2e2;
+  --teal: #0f766e;
+  --teal-soft: #ccfbf1;
+  --indigo: #4f46e5;
+  --indigo-soft: #e0e7ff;
+  --pink: #db2777;
+  --pink-soft: #fce7f3;
 }
 
 .dark {
@@ -55,6 +61,12 @@
   --amber-soft: #3a2a10;
   --red: #fca5a5;
   --red-soft: #3b1717;
+  --teal: #5eead4;
+  --teal-soft: #123b38;
+  --indigo: #a5b4fc;
+  --indigo-soft: #1e1b4b;
+  --pink: #f9a8d4;
+  --pink-soft: #3b0d22;
 }
 
 /* ========================================================================= */
@@ -1652,6 +1664,151 @@
   color: var(--faint);
   cursor: not-allowed;
   opacity: 0.55;
+}
+
+/* Tabla genérica de métricas y expedientes */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.data-table thead {
+  background: var(--surface-hover);
+}
+
+.data-table th {
+  border-bottom: 1px solid var(--line);
+  padding: 12px 20px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.data-table td {
+  border-bottom: 1px solid var(--line);
+  padding: 12px 20px;
+  vertical-align: middle;
+}
+
+.data-table tbody tr {
+  transition: background-color 160ms ease;
+}
+
+.data-table tbody tr:hover {
+  background: var(--surface-hover);
+}
+
+.data-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Pestañas internas de métricas */
+.workspace-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 2px solid transparent;
+  padding: 11px 16px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: 160ms ease;
+}
+
+.workspace-tab:hover {
+  color: var(--ink);
+}
+
+.workspace-tab.is-active {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.tab-badge {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--canvas);
+  padding: 2px 7px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 600;
+}
+
+.workspace-tab.is-active .tab-badge {
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+
+@media (max-width: 640px) {
+  .workspace-tab {
+    gap: 6px;
+    padding: 10px;
+    font-size: 10px;
+  }
+
+  .tab-badge {
+    padding: 2px 5px;
+  }
+}
+
+/* Chips de rango y filtros rápidos */
+.rank-chip {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 5px 9px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 600;
+  transition: 160ms ease;
+}
+
+.rank-chip:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.rank-chip.is-active {
+  border-color: var(--blue);
+  background: var(--blue);
+  color: #fff;
+}
+
+/* Insignias de nivel de complejidad */
+.metric-badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 3px 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.metric-badge.high { background: var(--red-soft); color: var(--red); }
+.metric-badge.medium { background: var(--amber-soft); color: var(--amber); }
+.metric-badge.low { background: var(--teal-soft); color: var(--teal); }
+
+.period-chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--blue-soft);
+  padding: 4px 9px;
+  color: var(--blue);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
 }
 
 .dialog-cancel,
