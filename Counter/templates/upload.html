@@ -112,23 +112,25 @@
 <div class="mx-auto max-w-[1240px] px-5 py-7 sm:px-7 lg:px-9">
 
     <!-- Cabecera de página -->
-    <section class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-        <div>
-            <p class="eyebrow">{% trans "Ingesta documental" %}</p>
-            <h1 class="mt-3 text-[clamp(2rem,4vw,3.2rem)] font-semibold leading-none tracking-[-0.055em] text-[var(--ink)]">
+    <section>
+        <p class="eyebrow">{% trans "Ingesta documental" %}</p>
+
+        <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <h1 class="text-[clamp(2rem,4vw,3.2rem)] font-semibold leading-none tracking-[-0.055em] text-[var(--ink)]">
                 {% trans "Incorporar nuevo material" %}
             </h1>
-            <p class="mt-4 max-w-[620px] text-xs leading-6 text-[var(--muted)]">
-                {% trans "Añade documentos al corpus. ELI identificará la entidad, el periodo y el método de extracción más adecuado para cada archivo." %}
-            </p>
+
+            <a href="{% url 'reports' %}" class="secondary-action inline-flex shrink-0 items-center gap-2 self-start sm:self-end">
+                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span>{% trans "Catálogo de reportes" %}</span>
+            </a>
         </div>
 
-        <a href="{% url 'reports' %}" class="secondary-action inline-flex items-center gap-2">
-            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-            </svg>
-            <span>{% trans "Catálogo de reportes" %}</span>
-        </a>
+        <p class="mt-4 max-w-[620px] text-xs leading-6 text-[var(--muted)]">
+            {% trans "Añade documentos al corpus. ELI identificará la entidad, el periodo y el método de extracción más adecuado para cada archivo." %}
+        </p>
     </section>
 
     <div class="mt-8 grid gap-6 xl:grid-cols-[minmax(0,1.45fr)_minmax(300px,.55fr)]">
