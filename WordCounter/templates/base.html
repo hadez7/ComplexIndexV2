@@ -37,7 +37,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS 3 (Estilos Estáticos Precompilados AOT - Cero FOUC, Renderizado Instantáneo 0ms) -->
-    <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}?v=eli-5">
+    <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}?v=eli-6">
 
     <style>
     /* Desactivar transiciones durante la carga de página (elimina el deslizamiento y parpadeo FOUC) */
@@ -992,143 +992,143 @@
     }
 
     /* Tablas en modo oscuro */
-    .dark thead.bg-gray-50,
-    .dark thead {
+    .dark body:not(.eli-theme) thead.bg-gray-50,
+    .dark body:not(.eli-theme) thead {
         background-color: #0E1424 !important;
         color: #94A3B8 !important;
         border-color: #1E293B !important;
     }
-    .dark tbody tr {
+    .dark body:not(.eli-theme) tbody tr {
         background-color: #111827 !important;
     }
-    .dark tbody tr:hover,
+    .dark body:not(.eli-theme) tbody tr:hover,
     .dark .company-row:hover {
         background-color: #162032 !important;
     }
 
     /* Formularios, Inputs, Selectores y Checkboxes */
-    .dark input,
-    .dark select,
-    .dark textarea {
+    .dark body:not(.eli-theme) input,
+    .dark body:not(.eli-theme) select,
+    .dark body:not(.eli-theme) textarea {
         background-color: #0E1424 !important;
         border-color: #27354E !important;
         color: #F8FAFC !important;
     }
-    .dark input:focus,
-    .dark select:focus,
-    .dark textarea:focus {
+    .dark body:not(.eli-theme) input:focus,
+    .dark body:not(.eli-theme) select:focus,
+    .dark body:not(.eli-theme) textarea:focus {
         background-color: #0E1424 !important;
         border-color: #3B82F6 !important;
         color: #F8FAFC !important;
         box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.25) !important;
     }
-    .dark input::placeholder,
-    .dark textarea::placeholder {
+    .dark body:not(.eli-theme) input::placeholder,
+    .dark body:not(.eli-theme) textarea::placeholder {
         color: #64748B !important;
     }
-    .dark select option {
+    .dark body:not(.eli-theme) select option {
         background-color: #0E1424 !important;
         color: #F8FAFC !important;
     }
-    .dark select option[value=""] {
+    .dark body:not(.eli-theme) select option[value=""] {
         color: #64748B !important;
     }
-    .dark input[type="checkbox"],
-    .dark input[type="radio"] {
+    .dark body:not(.eli-theme) input[type="checkbox"],
+    .dark body:not(.eli-theme) input[type="radio"] {
         background-color: #0E1424 !important;
         border-color: #334155 !important;
         color: #3B82F6 !important;
     }
-    .dark input[type="checkbox"]:checked,
-    .dark input[type="radio"]:checked {
+    .dark body:not(.eli-theme) input[type="checkbox"]:checked,
+    .dark body:not(.eli-theme) input[type="radio"]:checked {
         background-color: #2563EB !important;
         border-color: #2563EB !important;
     }
-    .dark input:-webkit-autofill,
-    .dark input:-webkit-autofill:hover,
-    .dark input:-webkit-autofill:focus,
-    .dark textarea:-webkit-autofill,
-    .dark textarea:-webkit-autofill:hover,
-    .dark textarea:-webkit-autofill:focus,
-    .dark select:-webkit-autofill,
-    .dark select:-webkit-autofill:hover,
-    .dark select:-webkit-autofill:focus {
+    .dark body:not(.eli-theme) input:-webkit-autofill,
+    .dark body:not(.eli-theme) input:-webkit-autofill:hover,
+    .dark body:not(.eli-theme) input:-webkit-autofill:focus,
+    .dark body:not(.eli-theme) textarea:-webkit-autofill,
+    .dark body:not(.eli-theme) textarea:-webkit-autofill:hover,
+    .dark body:not(.eli-theme) textarea:-webkit-autofill:focus,
+    .dark body:not(.eli-theme) select:-webkit-autofill,
+    .dark body:not(.eli-theme) select:-webkit-autofill:hover,
+    .dark body:not(.eli-theme) select:-webkit-autofill:focus {
         -webkit-box-shadow: 0 0 0 1000px #0E1424 inset !important;
         -webkit-text-fill-color: #F8FAFC !important;
         transition: background-color 5000s ease-in-out 0s;
     }
 
     /* Custom Select Component en Modo Oscuro */
-    .dark .custom-select-trigger {
+    .dark body:not(.eli-theme) .custom-select-trigger {
         background-color: #0E1424 !important;
         border-color: #27354E !important;
         color: #F8FAFC !important;
     }
-    .dark .custom-select-trigger:hover {
+    .dark body:not(.eli-theme) .custom-select-trigger:hover {
         border-color: #3B82F6 !important;
     }
-    .dark .custom-select-dropdown {
+    .dark body:not(.eli-theme) .custom-select-dropdown {
         background-color: #0E1424 !important;
         border-color: #1E293B !important;
         color: #F8FAFC !important;
         box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6) !important;
     }
-    .dark .custom-select-dropdown .border-b,
-    .dark .custom-select-dropdown > div:first-child {
+    .dark body:not(.eli-theme) .custom-select-dropdown .border-b,
+    .dark body:not(.eli-theme) .custom-select-dropdown > div:first-child {
         background-color: #0B0F19 !important;
         border-color: #1E293B !important;
     }
-    .dark .custom-select-search {
+    .dark body:not(.eli-theme) .custom-select-search {
         background-color: #0E1424 !important;
         border-color: #27354E !important;
         color: #F8FAFC !important;
     }
-    .dark .custom-select-search:focus {
+    .dark body:not(.eli-theme) .custom-select-search:focus {
         border-color: #3B82F6 !important;
     }
-    .dark .custom-select-item {
+    .dark body:not(.eli-theme) .custom-select-item {
         color: #E2E8F0 !important;
     }
-    .dark .custom-select-item:hover {
+    .dark body:not(.eli-theme) .custom-select-item:hover {
         background-color: rgba(30, 58, 138, 0.3) !important;
         color: #93C5FD !important;
     }
-    .dark .custom-select-item.bg-blue-50\/70 {
+    .dark body:not(.eli-theme) .custom-select-item.bg-blue-50\/70 {
         background-color: rgba(30, 58, 138, 0.45) !important;
         color: #93C5FD !important;
         font-weight: 600 !important;
     }
-    .dark .custom-select-options .divide-y > :not([hidden]) ~ :not([hidden]) {
+    .dark body:not(.eli-theme) .custom-select-options .divide-y > :not([hidden]) ~ :not([hidden]) {
         border-color: #1E293B !important;
     }
-    .dark .custom-select-empty {
+    .dark body:not(.eli-theme) .custom-select-empty {
         color: #64748B !important;
     }
 
     /* Pestañas y estados de navegación interna */
-    .dark [id^="tab-"]:not(.border-blue-600) {
+    .dark body:not(.eli-theme) [id^="tab-"]:not(.border-blue-600) {
         color: #94A3B8 !important;
     }
-    .dark [id^="tab-"]:not(.border-blue-600):hover {
+    .dark body:not(.eli-theme) [id^="tab-"]:not(.border-blue-600):hover {
         color: #F8FAFC !important;
     }
-    .dark [id^="tab-"].border-blue-600 {
+    .dark body:not(.eli-theme) [id^="tab-"].border-blue-600 {
         color: #60A5FA !important;
         border-color: #3B82F6 !important;
     }
 
     /* Dropzones de subida y estados vacíos */
-    .dark #pdfDropzone,
-    .dark #zipDropzone {
+    .dark body:not(.eli-theme) #pdfDropzone,
+    .dark body:not(.eli-theme) #zipDropzone {
         background-color: #0E1424 !important;
         border-color: #27354E !important;
     }
-    .dark #pdfDropzone:hover,
-    .dark #zipDropzone:hover {
+    .dark body:not(.eli-theme) #pdfDropzone:hover,
+    .dark body:not(.eli-theme) #zipDropzone:hover {
         background-color: rgba(30, 58, 138, 0.15) !important;
         border-color: #3B82F6 !important;
     }
-    .dark .border-dashed {
+    .dark body:not(.eli-theme) .border-dashed {
         border-color: #27354E !important;
     }
 
@@ -1209,7 +1209,7 @@
     <script type="text/javascript" src="{% url 'javascript-catalog' %}" defer></script>
 </head>
 
-<body class="h-full text-slate-900 flex flex-col antialiased">
+<body class="{% block body_class %}{% endblock %} h-full text-slate-900 flex flex-col antialiased">
 
     <!-- ========================================================================= -->
     <!-- 1. BARRA LATERAL CONTRAÍBLE DE COMANDO (Command Rail Sidebar - Desktop)   -->

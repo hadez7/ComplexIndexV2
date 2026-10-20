@@ -17,6 +17,24 @@ module.exports = {
         mono: ['"IBM Plex Mono"', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
       },
       colors: {
+        canvas: 'var(--canvas)',
+        surface: {
+          DEFAULT: 'var(--surface)',
+          hover: 'var(--surface-hover)',
+        },
+        ink: 'var(--ink)',
+        muted: 'var(--muted)',
+        faint: 'var(--faint)',
+        line: {
+          DEFAULT: 'var(--line)',
+          strong: 'var(--line-strong)',
+        },
+        brand: {
+          DEFAULT: 'var(--blue)',
+          deep: 'var(--blue-deep)',
+          soft: 'var(--blue-soft)',
+        },
+        cyan: 'var(--cyan)',
         slate: {
           850: '#151F32',
           950: '#070A10',
