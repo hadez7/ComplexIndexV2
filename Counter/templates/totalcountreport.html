@@ -2,98 +2,108 @@
 {% load i18n %}
 
 {% block title %}{% trans "Conteo por reporte" %} | ELI{% endblock %}
+{% block body_class %}eli-theme{% endblock %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-6">
+<div class="mx-auto max-w-[1440px] px-5 py-7 sm:px-7 lg:px-9">
 
-    <!-- Cabecera de Página / Breadcrumb y Acciones -->
-    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200 dark:border-slate-800">
+    <!-- ===================================================================== -->
+    <!-- Cabecera                                                              -->
+    <!-- ===================================================================== -->
+    <header class="flex flex-col gap-5 border-b border-[var(--line)] pb-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
-            <div class="flex items-center space-x-2 text-xs text-gray-500 dark:text-slate-400 mb-2">
-                <a href="{% url 'panel' %}" class="hover:text-blue-600 dark:hover:text-blue-400 transition flex items-center space-x-1 font-medium">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            <div class="flex flex-wrap items-center gap-2 text-[10px] font-semibold text-[var(--muted)]">
+                <a href="{% url 'panel' %}" class="inline-flex items-center gap-1.5 transition hover:text-[var(--blue)]">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                     <span>{% trans "Panel de administración" %}</span>
                 </a>
-                <span>/</span>
-                <a href="{% url 'reports' %}" class="hover:text-blue-600 dark:hover:text-blue-400 transition">{% trans "Reportes" %}</a>
-                <span>/</span>
-                <span class="text-gray-700 dark:text-slate-200 font-semibold">{% trans "Conteo por reporte" %}</span>
+                <span class="text-[var(--faint)]">/</span>
+                <a href="{% url 'reports' %}" class="transition hover:text-[var(--blue)]">{% trans "Reportes" %}</a>
+                <span class="text-[var(--faint)]">/</span>
+                <span class="text-[var(--ink)]">{% trans "Conteo por reporte" %}</span>
             </div>
 
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">
+            <div class="mt-5 flex flex-wrap items-center gap-3">
+                <p class="eyebrow">{% trans "Trazabilidad léxica" %}</p>
+                <span class="inline-flex items-center rounded-full border border-[var(--line)] bg-[var(--blue-soft)] px-2.5 py-1 font-mono text-[9px] font-semibold text-[var(--blue)]">
+                    {{ paired_results|length }} {% trans "pares" %}
+                </span>
+            </div>
+
+            <h1 class="mt-2 text-3xl font-semibold tracking-[-0.045em] text-[var(--ink)] sm:text-4xl">
                 {% trans "Frecuencia Léxica del Reporte" %}
             </h1>
-            <p class="text-sm text-gray-500 dark:text-slate-400 mt-1">
+            <p class="mt-3 max-w-2xl text-xs leading-6 text-[var(--muted)]">
                 {% trans "Distribución detallada de frecuencias y vocabulario para el reporte seleccionado." %}
             </p>
         </div>
 
-        <div class="flex items-center space-x-3 flex-shrink-0">
-            <button onclick="openModal()" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-sm text-white font-bold py-2.5 px-5 rounded-xl shadow-xs transition btn-interactive">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+        <div class="flex flex-col gap-2 sm:flex-row">
+            <button type="button" onclick="openModal()" class="primary-action w-full justify-center sm:w-auto">
+                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/>
+                </svg>
                 <span>{% trans "Gráfico Top 10" %}</span>
             </button>
 
-            <a href="{% url 'reports' %}"
-               class="inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-gray-700 dark:text-slate-200 font-semibold py-2.5 px-4 rounded-xl transition text-sm">
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            <a href="{% url 'reports' %}" class="secondary-action inline-flex w-full items-center justify-center gap-2 sm:w-auto">
+                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>
                 <span>{% trans "Volver a Reportes" %}</span>
             </a>
         </div>
-    </div>
+    </header>
 
-    <!-- Modal gráfico -->
-    <div id="chartModal" class="fixed inset-0 bg-gray-900/60 backdrop-blur-xs hidden z-50 flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl p-6 w-full max-w-xl relative border border-gray-100 dark:border-slate-800">
-            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-slate-200 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 transition" aria-label="{% trans 'Cerrar' %}">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-            </button>
-            <h2 class="text-lg font-bold text-center mb-4 text-gray-900 dark:text-white">{% trans "Top 10 palabras más frecuentes" %}</h2>
-            <div class="p-2">
-                <canvas id="wordPieChart"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <!-- Tarjeta Informativa del Reporte -->
+    <!-- ===================================================================== -->
+    <!-- Tarjeta informativa del reporte                                       -->
+    <!-- ===================================================================== -->
     {% if report %}
-    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/90 dark:border-slate-800 p-5 mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 shadow-xs">
-        <div>
-            <span class="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider block">
-                {% trans "Expediente / Documento" %}
-            </span>
-            <h2 class="text-xl font-black text-gray-900 dark:text-white mt-0.5">{{ report.name }}</h2>
+    <div class="surface-panel mt-6 flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div class="flex min-w-0 items-center gap-3">
+            <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)]">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                </svg>
+            </div>
+            <div class="min-w-0">
+                <p class="eyebrow">{% trans "Expediente / Documento" %}</p>
+                <h2 class="mt-1 truncate text-lg font-semibold tracking-tight text-[var(--ink)]">{{ report.name }}</h2>
+            </div>
         </div>
-        <div class="flex items-center gap-3">
-            <div class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs">
-                <span class="text-slate-400 font-medium">{% trans "Año" %}:</span>
-                <strong class="font-mono tabular-nums text-slate-800 dark:text-slate-200 ml-1">{{ report.year }}</strong>
-            </div>
-            <div class="px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-xs">
-                <span class="text-slate-400 font-medium">{% trans "Pares" %}:</span>
-                <strong class="font-mono tabular-nums text-slate-800 dark:text-slate-200 ml-1">{{ paired_results|length }}</strong>
-            </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+            <span class="inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--canvas)] px-3 py-1.5 text-[9px] font-semibold text-[var(--muted)]">
+                {% trans "Año" %}
+                <strong class="font-mono text-[10px] font-semibold text-[var(--ink)]">{{ report.year }}</strong>
+            </span>
+            <span class="inline-flex items-center gap-2 rounded-full border border-[var(--line)] bg-[var(--canvas)] px-3 py-1.5 text-[9px] font-semibold text-[var(--muted)]">
+                {% trans "Pares" %}
+                <strong class="font-mono text-[10px] font-semibold text-[var(--ink)]">{{ paired_results|length }}</strong>
+            </span>
         </div>
     </div>
     {% endif %}
 
-    <!-- Toolbar de Búsqueda y Paginador -->
-    <div class="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200/90 dark:border-slate-800 p-4 mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 shadow-xs">
-        <div class="relative flex-1 max-w-md">
-            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-            </div>
-            <input type="text" id="reportWordSearch" placeholder="{% trans 'Buscar palabra en este reporte...' %}"
-                   class="w-full pl-10 pr-4 py-2 bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl text-sm text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition">
-        </div>
+    <!-- ===================================================================== -->
+    <!-- Filtros de la tabla                                                   -->
+    <!-- ===================================================================== -->
+    <div class="filter-strip mt-5 items-center">
+        <label class="filter-search">
+            <svg class="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+            <input type="text" id="reportWordSearch" placeholder="{% trans 'Buscar palabra en este reporte...' %}" autocomplete="off">
+        </label>
 
-        <div class="flex items-center gap-2 text-xs ml-auto">
-            <span class="text-slate-500 dark:text-slate-400 font-medium">{% trans "Mostrar por página" %}:</span>
-            <select id="reportPageSizeSelect" class="bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg px-2.5 py-1 text-slate-800 dark:text-slate-200 font-semibold text-xs focus:ring-2 focus:ring-blue-600 focus:outline-none">
+        <div class="ml-auto flex w-full items-center justify-end gap-2 sm:w-auto">
+            <span class="whitespace-nowrap text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--muted)]">
+                {% trans "Mostrar por página" %}
+            </span>
+            <select id="reportPageSizeSelect" aria-label="{% trans 'Palabras por página' %}">
                 <option value="25" selected>25</option>
                 <option value="50">50</option>
                 <option value="100">100</option>
@@ -102,68 +112,63 @@
         </div>
     </div>
 
-    <!-- Tabla Pareada con Paginación -->
-    <div class="bg-white dark:bg-slate-900 rounded-2xl shadow-xs border border-gray-200/90 dark:border-slate-800 overflow-hidden">
+    <!-- ===================================================================== -->
+    <!-- Tabla pareada                                                        -->
+    <!-- ===================================================================== -->
+    <p class="mt-3 text-[9px] italic text-[var(--faint)] sm:hidden">
+        {% trans "Desliza la tabla para ver el par completo." %}
+    </p>
+
+    <div class="surface-panel mt-3 overflow-hidden sm:mt-4">
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-slate-800 text-sm" id="reportWordsTable">
-                <thead class="bg-gray-50 dark:bg-slate-950/80 border-b border-gray-200 dark:border-slate-800 uppercase text-xs font-bold text-gray-500 dark:text-slate-400 tracking-wider">
+            <table class="data-table min-w-[760px]" id="reportWordsTable">
+                <thead>
                     <tr>
-                        <th class="px-6 py-3.5 text-left">{% trans "Palabra" %}</th>
-                        <th class="px-6 py-3.5 text-right">{% trans "Cantidad" %}</th>
-                        <th class="px-6 py-3.5 text-left border-l border-gray-200 dark:border-slate-800">{% trans "Palabra" %}</th>
-                        <th class="px-6 py-3.5 text-right">{% trans "Cantidad" %}</th>
+                        <th class="text-left">{% trans "Palabra" %}</th>
+                        <th class="text-right">{% trans "Cantidad" %}</th>
+                        <th class="border-l border-[var(--line)] text-left">{% trans "Palabra" %}</th>
+                        <th class="text-right">{% trans "Cantidad" %}</th>
                     </tr>
                 </thead>
-                <tbody id="reportWordsTableBody" class="divide-y divide-gray-100 dark:divide-slate-800/80 bg-white dark:bg-slate-900">
+                <tbody id="reportWordsTableBody">
                     {% for left, right in paired_results %}
-                    <tr class="hover:bg-blue-50/50 dark:hover:bg-slate-800/50 transition-colors report-word-row"
-                        data-search="{{ left.word|default:''|lower }} {{ right.word|default:''|lower }}">
-                        <!-- Columna Izquierda -->
-                        <td class="px-6 py-3 font-semibold text-gray-900 dark:text-white">
+                    <tr class="report-word-row" data-search="{{ left.word|default:''|lower }} {{ right.word|default:''|lower }}">
+                        <td>
                             {% if left %}
-                                <span class="inline-flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500/70"></span>
-                                    {{ left.word }}
-                                </span>
+                            <span class="inline-flex items-center gap-2 text-[11px] font-semibold text-[var(--ink)]">
+                                <span class="h-1.5 w-1.5 rounded-full bg-[var(--blue)]"></span>
+                                {{ left.word }}
+                            </span>
                             {% else %}
-                                <span class="text-slate-300 dark:text-slate-700">-</span>
+                            <span class="text-[var(--faint)]">—</span>
                             {% endif %}
                         </td>
-                        <td class="px-6 py-3 text-right font-mono tabular-nums text-gray-700 dark:text-slate-300 font-semibold">
-                            {% if left %}
-                                {{ left.quantity }}
-                            {% else %}
-                                -
-                            {% endif %}
+                        <td class="text-right font-mono text-[10px] font-semibold tabular-nums text-[var(--muted)]">
+                            {% if left %}{{ left.quantity }}{% else %}—{% endif %}
                         </td>
-                        <!-- Columna Derecha -->
-                        <td class="px-6 py-3 font-semibold text-gray-900 dark:text-white border-l border-gray-100 dark:border-slate-800/80">
+                        <td class="border-l border-[var(--line)]">
                             {% if right %}
-                                <span class="inline-flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500/70"></span>
-                                    {{ right.word }}
-                                </span>
+                            <span class="inline-flex items-center gap-2 text-[11px] font-semibold text-[var(--ink)]">
+                                <span class="h-1.5 w-1.5 rounded-full bg-[var(--indigo)]"></span>
+                                {{ right.word }}
+                            </span>
                             {% else %}
-                                <span class="text-slate-300 dark:text-slate-700">-</span>
+                            <span class="text-[var(--faint)]">—</span>
                             {% endif %}
                         </td>
-                        <td class="px-6 py-3 text-right font-mono tabular-nums text-gray-700 dark:text-slate-300 font-semibold">
-                            {% if right %}
-                                {{ right.quantity }}
-                            {% else %}
-                                -
-                            {% endif %}
+                        <td class="text-right font-mono text-[10px] font-semibold tabular-nums text-[var(--muted)]">
+                            {% if right %}{{ right.quantity }}{% else %}—{% endif %}
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="4" class="px-6 py-12 text-center text-gray-500 dark:text-slate-400 italic">
+                        <td colspan="4" class="px-6 py-12 text-center text-xs italic text-[var(--muted)]">
                             {% trans "No se ha procesado el archivo o está vacío." %}
                         </td>
                     </tr>
                     {% endfor %}
                     <tr id="noReportMatchRow" class="hidden">
-                        <td colspan="4" class="px-6 py-10 text-center text-gray-500 dark:text-slate-400 italic">
+                        <td colspan="4" class="px-6 py-10 text-center text-xs italic text-[var(--muted)]">
                             {% trans "No hay términos que coincidan con la búsqueda." %}
                         </td>
                     </tr>
@@ -171,12 +176,33 @@
             </table>
         </div>
 
-        <!-- Paginador Inferior -->
-        <div class="px-6 py-3.5 bg-gray-50 dark:bg-slate-950/80 border-t border-gray-200 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-            <div class="text-slate-500 dark:text-slate-400 text-xs" id="reportPaginationInfo">
+        <div class="flex flex-col items-center justify-between gap-3 border-t border-[var(--line)] bg-[var(--surface-hover)] px-5 py-3 sm:flex-row">
+            <div class="text-[10px] text-[var(--muted)]" id="reportPaginationInfo">
                 {% trans "Cargando..." %}
             </div>
             <div class="inline-flex items-center gap-1.5" id="reportPaginationControls"></div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- Modal gráfico Top 10                                                  -->
+    <!-- ===================================================================== -->
+    <div id="chartModal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-[rgba(3,10,22,0.72)] p-4 backdrop-blur-sm">
+        <div class="max-h-[calc(100vh-2rem)] w-full max-w-xl overflow-y-auto rounded-[18px] border border-[var(--line)] bg-[var(--surface)] p-5 shadow-2xl">
+            <div class="flex items-start justify-between gap-4">
+                <div>
+                    <p class="eyebrow">{% trans "Distribución" %}</p>
+                    <h2 class="mt-1 text-sm font-semibold tracking-tight text-[var(--ink)]">{% trans "Top 10 palabras más frecuentes" %}</h2>
+                </div>
+                <button type="button" onclick="closeModal()" class="modal-close" aria-label="{% trans 'Cerrar' %}">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="relative mt-4 h-[min(60vh,480px)] rounded-xl border border-[var(--line)] bg-[var(--canvas)] p-3">
+                <canvas id="wordPieChart"></canvas>
+            </div>
         </div>
     </div>
 
@@ -191,12 +217,14 @@ let chartInstance = null;
 function openModal() {
     document.getElementById('chartModal').classList.remove('hidden');
 
+    const isDark = document.documentElement.classList.contains('dark');
+
     if (!chartInstance) {
         const ctx = document.getElementById('wordPieChart').getContext('2d');
         const data = {
             labels: [
                 {% for item in top10_words %}
-                    "{{ item.word }}"{% if not forloop.last %},{% endif %}
+                    "{{ item.word|escapejs }}"{% if not forloop.last %},{% endif %}
                 {% endfor %}
             ],
             datasets: [{
@@ -219,11 +247,22 @@ function openModal() {
             data: data,
             options: {
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
-                    legend: { position: 'bottom' }
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            color: isDark ? '#eaf2fc' : '#0b1b33',
+                            boxWidth: 10,
+                            font: { size: 10 }
+                        }
+                    }
                 }
             }
         });
+    } else {
+        chartInstance.options.plugins.legend.labels.color = isDark ? '#eaf2fc' : '#0b1b33';
+        chartInstance.update();
     }
 }
 
@@ -261,6 +300,13 @@ function closeModal() {
     function render() {
         rows.forEach(r => r.classList.add('hidden'));
 
+        if (rows.length === 0) {
+            if (noMatch) noMatch.classList.add('hidden');
+            if (info) info.textContent = '';
+            if (controls) controls.innerHTML = '';
+            return;
+        }
+
         if (filteredRows.length === 0) {
             if (noMatch) noMatch.classList.remove('hidden');
             if (info) info.textContent = "{% trans 'Sin coincidencias' %}";
@@ -282,7 +328,7 @@ function closeModal() {
         }
 
         if (info) {
-            info.innerHTML = `Mostrando <strong class="font-mono font-bold text-slate-800 dark:text-slate-100 tabular-nums">${start + 1} - ${end}</strong> de <strong class="font-mono font-bold text-slate-800 dark:text-slate-100 tabular-nums">${total}</strong> filas`;
+            info.innerHTML = `Mostrando <strong class="font-mono font-bold text-[var(--ink)] tabular-nums">${start + 1} - ${end}</strong> de <strong class="font-mono font-bold text-[var(--ink)] tabular-nums">${total}</strong> filas`;
         }
 
         renderButtons(totalPages);
@@ -294,25 +340,40 @@ function closeModal() {
         if (totalPages <= 1) return;
 
         const prev = document.createElement('button');
-        prev.className = `px-2.5 py-1 rounded-lg border text-xs font-semibold ${currentPage === 1 ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-slate-700' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`;
+        prev.type = 'button';
+        prev.className = `pager${currentPage === 1 ? ' disabled' : ''}`;
         prev.textContent = '←';
         prev.disabled = currentPage === 1;
+        prev.setAttribute('aria-label', '{% trans "Página anterior" %}');
         prev.onclick = () => { if (currentPage > 1) { currentPage--; render(); } };
         controls.appendChild(prev);
 
+        let lastRendered = 0;
         for (let p = 1; p <= totalPages; p++) {
             if (totalPages > 7 && Math.abs(p - currentPage) > 2 && p !== 1 && p !== totalPages) continue;
+            if (lastRendered && p - lastRendered > 1) {
+                const gap = document.createElement('span');
+                gap.className = 'px-1 text-[var(--faint)]';
+                gap.textContent = '…';
+                gap.setAttribute('aria-hidden', 'true');
+                controls.appendChild(gap);
+            }
             const btn = document.createElement('button');
-            btn.className = `px-2.5 py-1 rounded-lg text-xs font-mono font-bold ${p === currentPage ? 'bg-blue-600 text-white' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`;
+            btn.type = 'button';
+            btn.className = `pager${p === currentPage ? ' active' : ''}`;
             btn.textContent = p;
+            btn.setAttribute('aria-label', `{% trans "Página" %} ${p}`);
             btn.onclick = () => { currentPage = p; render(); };
             controls.appendChild(btn);
+            lastRendered = p;
         }
 
         const next = document.createElement('button');
-        next.className = `px-2.5 py-1 rounded-lg border text-xs font-semibold ${currentPage === totalPages ? 'opacity-40 cursor-not-allowed bg-slate-100 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-slate-700' : 'bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-300 dark:border-slate-700 hover:bg-slate-100'}`;
+        next.type = 'button';
+        next.className = `pager${currentPage === totalPages ? ' disabled' : ''}`;
         next.textContent = '→';
         next.disabled = currentPage === totalPages;
+        next.setAttribute('aria-label', '{% trans "Página siguiente" %}');
         next.onclick = () => { if (currentPage < totalPages) { currentPage++; render(); } };
         controls.appendChild(next);
     }
