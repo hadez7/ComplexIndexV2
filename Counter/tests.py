@@ -284,7 +284,7 @@ class PanelViewTests(TestCase):
         self.client.login(username='paneluser', password='password123')
         resp = self.client.get(reverse('panel'))
         self.assertEqual(resp.status_code, 200)
-        self.assertContains(resp, 'Panel de Administración')
+        self.assertContains(resp, 'Observatorio')
         self.assertContains(resp, 'Empresas')
         self.assertContains(resp, 'Reportes')
 
@@ -402,7 +402,7 @@ class InternationalizationTests(TestCase):
         response = self.client.get(reverse('panel'))
         self.assertEqual(response.status_code, 200)
         content = response.content.decode('utf-8')
-        self.assertIn('Panel de Administración', content)
+        self.assertIn('Observatorio', content)
         self.assertIn('Empresas', content)
         self.assertIn('Reportes', content)
 
@@ -417,7 +417,7 @@ class InternationalizationTests(TestCase):
         panel_resp = self.client.get(reverse('panel'))
         self.assertEqual(panel_resp.status_code, 200)
         content = panel_resp.content.decode('utf-8')
-        self.assertIn('Admin Panel', content)
+        self.assertIn('Dashboard', content)
         self.assertIn('Companies', content)
         self.assertIn('Reports', content)
 
@@ -431,7 +431,7 @@ class InternationalizationTests(TestCase):
 
         panel_resp = self.client.get(reverse('panel'))
         content = panel_resp.content.decode('utf-8')
-        self.assertIn('Panel de Administración', content)
+        self.assertIn('Observatorio', content)
         self.assertIn('Empresas', content)
 
     def test_all_modules_rendered_in_english(self):

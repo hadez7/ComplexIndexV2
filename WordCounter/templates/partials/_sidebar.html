@@ -3,7 +3,11 @@
         
         <!-- Header del Logo ELI -->
         <div class="sidebar-header-box h-16 flex items-center px-4 border-b border-slate-200 justify-between shrink-0">
+            {% if user.is_authenticated and not is_expert_user %}
+            <a href="{% url 'panel' %}" class="flex items-center space-x-3 group truncate" title="Observatorio">
+            {% else %}
             <a href="{% url 'index' %}" class="flex items-center space-x-3 group truncate" title="Enterprise Lex Index">
+            {% endif %}
                 <div class="logo-orbit"><span>e</span></div>
                 <div class="sidebar-text leading-tight truncate">
                     <span class="text-sm font-black text-slate-900 tracking-tight block">Enterprise Lex</span>

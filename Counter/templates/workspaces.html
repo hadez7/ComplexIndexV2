@@ -13,12 +13,21 @@
     <header class="flex flex-col gap-5 border-b border-[var(--line)] pb-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
             <div class="flex flex-wrap items-center gap-2 text-[10px] font-semibold text-[var(--muted)]">
+                {% if is_expert_user %}
                 <a href="{% url 'index' %}" class="inline-flex items-center gap-1.5 transition hover:text-[var(--blue)]">
                     <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                     <span>{% trans "Inicio" %}</span>
                 </a>
+                {% else %}
+                <a href="{% url 'panel' %}" class="inline-flex items-center gap-1.5 transition hover:text-[var(--blue)]">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    <span>{% trans "Observatorio" %}</span>
+                </a>
+                {% endif %}
                 <span class="text-[var(--faint)]">/</span>
                 <span class="text-[var(--ink)]">{% trans "Espacios de trabajo" %}</span>
             </div>
@@ -200,7 +209,7 @@
                         {% if is_expert_user %}
                             {% if item.is_active %}{% trans "Ir a detección" %}{% else %}{% trans "Seleccionar espacio" %}{% endif %}
                         {% else %}
-                            {% if item.is_active %}{% trans "Entrar al panel" %}{% else %}{% trans "Abrir espacio" %}{% endif %}
+                            {% if item.is_active %}{% trans "Entrar al Observatorio" %}{% else %}{% trans "Abrir espacio" %}{% endif %}
                         {% endif %}
                     </span>
                     <svg class="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
