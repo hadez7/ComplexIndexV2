@@ -118,7 +118,7 @@
 
         <div class="mt-3 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <h1 class="text-[clamp(2rem,4vw,3.2rem)] font-semibold leading-none tracking-[-0.055em] text-[var(--ink)]">
-                {% trans "Incorporar nuevo material" %}
+                {% trans "Subida y Procesamiento de Reportes" %}
             </h1>
 
             <a href="{% url 'reports' %}" class="secondary-action inline-flex shrink-0 items-center gap-2 self-start sm:self-end">
@@ -170,7 +170,7 @@
                 <div class="panel-heading">
                     <div>
                         <p class="eyebrow">{% trans "Documento individual" %}</p>
-                        <h2>{% trans "Subir reporte en PDF" %}</h2>
+                        <h2>{% trans "Subir Reporte Individual (PDF)" %}</h2>
                     </div>
                     <span class="status-pill pending">PDF · {% trans "máx. 100 MB" %}</span>
                 </div>
@@ -298,7 +298,7 @@
                 <div class="panel-heading">
                     <div>
                         <p class="eyebrow">{% trans "Procesamiento por lote" %}</p>
-                        <h2>{% trans "Subir lote de reportes" %}</h2>
+                        <h2>{% trans "Subir Múltiples Reportes (Lote ZIP)" %}</h2>
                     </div>
                     <span class="status-pill pending">ZIP · {% trans "máx. 300 MB" %}</span>
                 </div>
