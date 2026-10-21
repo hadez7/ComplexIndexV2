@@ -198,7 +198,8 @@
 .dark .status-pill.alert { background: #3c261f; color: #ff9c76; }
 .dark .status-pill.success { background: #17352c; color: #75caa5; }
 
-.form-field > span {
+.form-field > span,
+.form-field > label {
   display: block;
   margin-bottom: 8px;
   color: var(--muted);

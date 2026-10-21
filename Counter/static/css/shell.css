@@ -643,7 +643,8 @@
         color: #F8FAFC;
     }
 
-    .dark header {
+    .dark .main-canvas-area > header,
+    .dark body > header {
         background-color: rgba(14, 20, 36, 0.95);
         border-color: #1E293B;
         color: #F8FAFC;
