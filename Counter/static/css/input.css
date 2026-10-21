@@ -2112,3 +2112,82 @@
   text-overflow: clip;
   line-height: 1.4;
 }
+
+/* ========================================================================= */
+/* FASE 11 — Espacios de trabajo: tarjetas, color temático y miembros        */
+/* ========================================================================= */
+
+.workspace-card {
+  transition: border-color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+}
+
+.workspace-card:hover {
+  border-color: var(--line-strong);
+  box-shadow: 0 14px 35px rgba(21, 58, 102, 0.08);
+  transform: translateY(-2px);
+}
+
+.workspace-card.is-active {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-soft);
+}
+
+.workspace-card.is-archived {
+  opacity: 0.72;
+}
+
+.workspace-card.is-archived:hover {
+  opacity: 0.9;
+}
+
+.workspace-icon {
+  display: flex;
+  height: 46px;
+  width: 46px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+}
+
+.workspace-icon[data-color="blue"] { background: var(--blue-soft); color: var(--blue); }
+.workspace-icon[data-color="purple"] { background: var(--violet-soft); color: var(--violet); }
+.workspace-icon[data-color="green"] { background: var(--teal-soft); color: var(--teal); }
+.workspace-icon[data-color="amber"] { background: var(--amber-soft); color: var(--amber); }
+.workspace-icon[data-color="indigo"] { background: var(--indigo-soft); color: var(--indigo); }
+.workspace-icon[data-color="red"] { background: var(--red-soft); color: var(--red); }
+
+.workspace-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface-hover);
+  padding: 2px 7px;
+  color: var(--muted);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.workspace-dot {
+  display: inline-block;
+  height: 6px;
+  width: 6px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+}
+
+.workspace-dot[data-color="blue"] { background: var(--blue); }
+.workspace-dot[data-color="purple"] { background: var(--violet); }
+.workspace-dot[data-color="green"] { background: var(--teal); }
+.workspace-dot[data-color="amber"] { background: var(--amber); }
+.workspace-dot[data-color="indigo"] { background: var(--indigo); }
+.workspace-dot[data-color="red"] { background: var(--red); }
+
+.workspace-metrics {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface-hover);
+}
