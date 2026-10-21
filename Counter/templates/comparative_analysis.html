@@ -2,146 +2,357 @@
 {% load i18n %}
 
 {% block title %}{% trans "Análisis comparativo" %} | ELI{% endblock %}
+{% block body_class %}eli-theme{% endblock %}
 
-{% load i18n %}
 {% block content %}
+<div class="mx-auto max-w-[1440px] px-5 py-7 sm:px-7 lg:px-9">
 
-<div class="container mx-auto px-4">
-    <!-- Cabecera de Página / Breadcrumb y Acciones -->
-    <div class="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-gray-200">
+    <!-- ===================================================================== -->
+    <!-- Cabecera: contraste de vocabularios                                   -->
+    <!-- ===================================================================== -->
+    <header class="flex flex-col gap-5 border-b border-[var(--line)] pb-6 lg:flex-row lg:items-end lg:justify-between">
         <div>
-            <div class="flex items-center space-x-2 text-xs text-gray-500 mb-2">
-                <a href="{% url 'panel' %}" class="hover:text-blue-600 transition flex items-center space-x-1 font-medium">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            <div class="flex flex-wrap items-center gap-2 text-[10px] font-semibold text-[var(--muted)]">
+                <a href="{% url 'panel' %}" class="inline-flex items-center gap-1.5 transition hover:text-[var(--blue)]">
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                     </svg>
                     <span>{% trans "Panel de administración" %}</span>
                 </a>
-                <span>/</span>
-                <span class="text-gray-700 font-semibold">{% trans "Análisis comparativo" %}</span>
+                <span class="text-[var(--faint)]">/</span>
+                <span class="text-[var(--ink)]">{% trans "Análisis comparativo" %}</span>
             </div>
 
-            <h1 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
-                {% trans "Análisis Comparativo de Vocabulario" %}
+            <div class="mt-5 flex flex-wrap items-center gap-3">
+                <p class="eyebrow">{% trans "Análisis comparativo" %}</p>
+                <span class="inline-flex items-center rounded-full border border-[var(--line)] bg-[var(--blue-soft)] px-2.5 py-1 font-mono text-[9px] font-semibold text-[var(--blue)]">
+                    {% trans "Venn de vocabularios" %}
+                </span>
+            </div>
+
+            <h1 class="mt-2 text-3xl font-semibold tracking-[-0.045em] text-[var(--ink)] sm:text-4xl">
+                {% trans "Contraste de vocabularios" %}
             </h1>
-            <p class="text-sm text-gray-500 mt-1">
-                {% trans "Contrasta las palabras clave y cláusulas de un reporte contra las listas estructuradas por expertos legales." %}
+            <p class="mt-3 max-w-2xl text-xs leading-6 text-[var(--muted)]">
+                {% trans "Identifica coincidencias y diferencias entre el vocabulario de un reporte y un marco de conocimiento experto." %}
             </p>
         </div>
 
-        <div class="flex items-center space-x-3 flex-shrink-0">
-            <a href="{% url 'expert_lists' %}"
-               class="inline-flex items-center justify-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold py-2.5 px-4 rounded-xl transition text-sm">
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
-                </svg>
-                <span>{% trans "Ver Listas de Expertos" %}</span>
-            </a>
-        </div>
-    </div>
-
-    <!-- Formulario de comparación -->
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 mb-8">
-        <h2 class="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        <a href="{% url 'expert_lists' %}" class="secondary-action inline-flex items-center gap-2 self-start lg:self-end">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
             </svg>
-            {% trans "Comparar reporte con lista de experto" %}
-        </h2>
+            {% trans "Ver listas de expertos" %}
+        </a>
+    </header>
 
-        <form method="post">
-            {% csrf_token %}
+    <!-- ===================================================================== -->
+    <!-- Selectores A/B: reporte contra lista de experto                       -->
+    <!-- ===================================================================== -->
+    <form method="post" id="compareForm" class="mt-6">
+        {% csrf_token %}
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+        <div class="grid gap-4 lg:grid-cols-2">
+            <div class="compare-select">
+                <span class="compare-letter">A</span>
+                <div class="min-w-0">
+                    <small>{% trans "VOCABULARIO BASE" %}</small>
+                    <strong>{% trans "Reporte corporativo" %}</strong>
+                    <em>{% trans "Selecciona el informe que actuará como base." %}</em>
 
-                <div>
-                    <label for="id_year" class="block text-sm font-medium text-gray-700 mb-1.5">
-                        {% trans "Año del reporte" %}
-                    </label>
-                    {{ form.year }}
+                    <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-[118px_minmax(0,1fr)]">
+                        <div class="form-field">
+                            <span>{% trans "Año" %}</span>
+                            {{ form.year }}
+                        </div>
+                        <div class="form-field">
+                            <span>{% trans "Reporte" %}</span>
+                            {{ form.report }}
+                        </div>
+                    </div>
                 </div>
+            </div>
 
-                <div>
-                    <label for="id_report" class="block text-sm font-medium text-gray-700 mb-1.5">
-                        {% trans "Reporte / Empresa" %}
-                    </label>
-                    {{ form.report }}
+            <div class="compare-select second">
+                <span class="compare-letter">B</span>
+                <div class="min-w-0">
+                    <small>{% trans "VOCABULARIO DE CONTRASTE" %}</small>
+                    <strong>{% trans "Lista de experto" %}</strong>
+                    <em>{% trans "Selecciona el marco de conocimiento pericial." %}</em>
+
+                    <div class="mt-3 form-field">
+                        <span>{% trans "Lista" %}</span>
+                        {{ form.expert_list }}
+                    </div>
                 </div>
+            </div>
+        </div>
 
-                <div>
-                    <label for="id_expert_list" class="block text-sm font-medium text-gray-700 mb-1.5">
-                        {% trans "Lista de experto" %}
-                    </label>
-                    {{ form.expert_list }}
-                </div>
+        <div class="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p class="text-[9px] leading-5 text-[var(--muted)]">
+                {% trans "El vocabulario base se cruza contra la lista de experto para obtener coincidencias y términos exclusivos." %}
+            </p>
+            <button type="submit" class="dialog-confirm w-full gap-2 px-5 py-2.5 sm:w-auto">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                </svg>
+                {% trans "Comparar vocabularios" %}
+            </button>
+        </div>
+    </form>
 
-                <div>
-                    <button type="submit"
-                            class="w-full inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-xl shadow-sm hover:shadow transition duration-200 btn-interactive">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                        {% trans "Comparar" %}
+    {% if resultado %}
+
+    <!-- ===================================================================== -->
+    <!-- Resultado: diagrama de Venn                                           -->
+    <!-- ===================================================================== -->
+    <section class="surface-panel mt-8 overflow-hidden">
+        <div class="panel-heading">
+            <div>
+                <p class="eyebrow">{% trans "Intersección detectada" %}</p>
+                <h2>{{ resultado.comunes|length }} {% trans "términos compartidos" %}</h2>
+                <p class="mt-1 text-[10px] text-[var(--muted)]">
+                    {% trans "Base" %}:
+                    <strong class="font-semibold text-[var(--ink)]">
+                        {% if resultado.report_label %}{{ resultado.report_label }}{% elif resultado.report.company %}{{ resultado.report.company.name }}{% else %}{{ resultado.report.name }}{% endif %}
+                    </strong>
+                    <span class="mx-1 text-[var(--faint)]">·</span>
+                    {% trans "Contraste" %}:
+                    <strong class="font-semibold text-[var(--ink)]">{{ resultado.expert_list.name }}</strong>
+                </p>
+            </div>
+
+            <span class="metric-badge low shrink-0">
+                {{ resultado.comunes|length }} {% trans "coincidencias" %}
+            </span>
+        </div>
+
+        <div class="grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,.9fr)] lg:items-center">
+            <div class="venn-stage">
+                <svg viewBox="0 0 480 300" role="img" aria-labelledby="venn-title venn-desc">
+                    <title id="venn-title">{% trans "Diagrama de Venn de vocabularios" %}</title>
+                    <desc id="venn-desc">
+                        {% trans "Círculo A: términos exclusivos del reporte. Zona central: coincidencias. Círculo B: términos exclusivos de la lista de experto." %}
+                    </desc>
+
+                    <defs>
+                        <clipPath id="venn-clip-base">
+                            <circle cx="170" cy="150" r="110"/>
+                        </clipPath>
+                    </defs>
+
+                    <g class="venn-region" data-compare-region="documento" tabindex="0" role="button"
+                       aria-label="{% trans 'Enfocar términos solo en el reporte' %}">
+                        <title>{% trans "Solo en el reporte" %}</title>
+                        <circle cx="170" cy="150" r="110"
+                                style="fill: var(--blue-soft); stroke: var(--blue);"
+                                stroke-width="1.5"/>
+                    </g>
+
+                    <g class="venn-region" data-compare-region="lista" tabindex="0" role="button"
+                       aria-label="{% trans 'Enfocar términos solo en la lista de experto' %}">
+                        <title>{% trans "Solo en la lista de experto" %}</title>
+                        <circle cx="310" cy="150" r="110"
+                                style="fill: var(--indigo-soft); stroke: var(--indigo);"
+                                stroke-width="1.5"/>
+                    </g>
+
+                    <g class="venn-region" data-compare-region="comunes" tabindex="0" role="button"
+                       aria-label="{% trans 'Enfocar términos compartidos' %}">
+                        <title>{% trans "Términos compartidos" %}</title>
+                        <circle cx="310" cy="150" r="110"
+                                clip-path="url(#venn-clip-base)"
+                                style="fill: var(--teal-soft); stroke: none;"/>
+                    </g>
+
+                    <g pointer-events="none">
+                        <text x="112" y="138" text-anchor="middle" class="venn-count" style="fill: var(--blue);">
+                            {{ resultado.solo_documento|length }}
+                        </text>
+                        <text x="112" y="158" text-anchor="middle" class="venn-label" style="fill: var(--blue);">
+                            {% trans "Solo en reporte" %}
+                        </text>
+
+                        <text x="240" y="138" text-anchor="middle" class="venn-count" style="fill: var(--teal);">
+                            {{ resultado.comunes|length }}
+                        </text>
+                        <text x="240" y="158" text-anchor="middle" class="venn-label" style="fill: var(--teal);">
+                            {% trans "En ambos" %}
+                        </text>
+
+                        <text x="368" y="138" text-anchor="middle" class="venn-count" style="fill: var(--indigo);">
+                            {{ resultado.solo_lista|length }}
+                        </text>
+                        <text x="368" y="158" text-anchor="middle" class="venn-label" style="fill: var(--indigo);">
+                            {% trans "Solo en lista" %}
+                        </text>
+                    </g>
+
+                    <text x="96" y="54" text-anchor="middle" class="venn-label" style="fill: var(--faint);">A</text>
+                    <text x="384" y="54" text-anchor="middle" class="venn-label" style="fill: var(--faint);">B</text>
+                </svg>
+            </div>
+
+            <div>
+                <div class="grid grid-cols-3 gap-2">
+                    <button type="button" class="compare-stat a" data-compare-region="documento" aria-pressed="false">
+                        <strong>{{ resultado.solo_documento|length }}</strong>
+                        <span>{% trans "Solo en reporte" %}</span>
+                    </button>
+                    <button type="button" class="compare-stat overlap" data-compare-region="comunes" aria-pressed="false">
+                        <strong>{{ resultado.comunes|length }}</strong>
+                        <span>{% trans "Coincidencias" %}</span>
+                    </button>
+                    <button type="button" class="compare-stat b" data-compare-region="lista" aria-pressed="false">
+                        <strong>{{ resultado.solo_lista|length }}</strong>
+                        <span>{% trans "Solo en lista" %}</span>
                     </button>
                 </div>
 
+                <p class="mt-3 text-center text-[9px] leading-5 text-[var(--muted)]">
+                    {% trans "Haz clic en una región del diagrama para enfocar su listado." %}
+                </p>
             </div>
-        </form>
-    </div>
-
-    {% if resultado %}
-    <div class="grid md:grid-cols-3 gap-6">
-
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-            <h3 class="font-semibold text-blue-700 mb-3 flex items-center justify-between">
-                <span>{% trans "Palabras encontradas en ambos" %}</span>
-                <span class="bg-blue-100 text-blue-800 text-xs px-2.5 py-0.5 rounded-full font-bold font-mono tabular-nums">{{ resultado.comunes|length }}</span>
-            </h3>
-
-            <ul class="text-sm space-y-1 max-h-72 overflow-y-auto divide-y divide-gray-100">
-                {% for word in resultado.comunes %}
-                    <li class="py-1 text-gray-700">{{ word }}</li>
-                {% empty %}
-                    <li class="py-2 text-gray-400 italic">{% trans "Ninguna" %}</li>
-                {% endfor %}
-            </ul>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-            <h3 class="font-semibold text-green-700 mb-3 flex items-center justify-between">
-                <span class="truncate" title="{% if resultado.report_label %}{{ resultado.report_label }}{% elif resultado.report.company %}{{ resultado.report.company.name }}{% else %}{{ resultado.report.name }}{% endif %}">{% trans "Solo en reporte" %} ({% if resultado.report_label %}{{ resultado.report_label }}{% elif resultado.report.company %}{{ resultado.report.company.name }}{% else %}{{ resultado.report.name }}{% endif %})</span>
-                <span class="bg-green-100 text-green-800 text-xs px-2.5 py-0.5 rounded-full font-bold font-mono tabular-nums ml-2">{{ resultado.solo_documento|length }}</span>
-            </h3>
+        <div class="flex flex-col gap-2 border-t border-[var(--line)] bg-[var(--surface-hover)] px-5 py-4 sm:flex-row sm:items-center">
+            <span class="shrink-0 text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]">
+                {% trans "Términos compartidos" %}
+            </span>
 
-            <ul class="text-sm space-y-1 max-h-72 overflow-y-auto divide-y divide-gray-100">
-                {% for word in resultado.solo_documento %}
-                    <li class="py-1 text-gray-700">{{ word }}</li>
+            <div class="flex flex-wrap gap-1.5">
+                {% for word in resultado.comunes|slice:":18" %}
+                    <span class="term-chip strong">{{ word }}</span>
                 {% empty %}
-                    <li class="py-2 text-gray-400 italic">{% trans "Ninguna" %}</li>
+                    <span class="text-[10px] italic text-[var(--faint)]">{% trans "Sin coincidencias." %}</span>
                 {% endfor %}
-            </ul>
+
+                {% if resultado.comunes|length > 18 %}
+                    <span class="term-chip">+{{ resultado.comunes|length|add:"-18" }} {% trans "más" %}</span>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- Desglose por región                                                   -->
+    <!-- ===================================================================== -->
+    <section class="mt-6" id="compareDetails">
+        <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+            <div>
+                <p class="eyebrow">{% trans "Desglose" %}</p>
+                <h2 class="mt-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--ink)]">
+                    {% trans "Términos por región" %}
+                </h2>
+            </div>
+
+            <button type="button" id="clearVennFocus" class="text-link hidden">
+                {% trans "Mostrar todo" %}
+            </button>
         </div>
 
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
-            <h3 class="font-semibold text-red-700 mb-3 flex items-center justify-between">
-                <span class="truncate" title="{{ resultado.expert_list.name }}">{% trans "Solo en lista" %} ({{ resultado.expert_list.name }})</span>
-                <span class="bg-red-100 text-red-800 text-xs px-2.5 py-0.5 rounded-full font-bold font-mono tabular-nums ml-2">{{ resultado.solo_lista|length }}</span>
-            </h3>
+        <div class="grid gap-4 lg:grid-cols-3">
+            <article class="surface-panel compare-detail" data-region="documento">
+                <div class="flex items-center justify-between border-b border-[var(--line)] p-4">
+                    <div>
+                        <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--blue)]">
+                            {% trans "Región A · Vocabulario base" %}
+                        </p>
+                        <h3 class="mt-1 text-sm font-semibold text-[var(--ink)]">{% trans "Solo en reporte" %}</h3>
+                    </div>
+                    <span class="tab-badge">{{ resultado.solo_documento|length }}</span>
+                </div>
 
-            <ul class="text-sm space-y-1 max-h-72 overflow-y-auto divide-y divide-gray-100">
-                {% for word in resultado.solo_lista %}
-                    <li class="py-1 text-gray-700">{{ word }}</li>
-                {% empty %}
-                    <li class="py-2 text-gray-400 italic">{% trans "Ninguna" %}</li>
-                {% endfor %}
-            </ul>
+                <div class="max-h-80 overflow-y-auto p-4">
+                    <div class="flex flex-wrap gap-1.5">
+                        {% for word in resultado.solo_documento %}
+                            <span class="term-chip">{{ word }}</span>
+                        {% empty %}
+                            <p class="text-[10px] italic text-[var(--faint)]">{% trans "Sin términos exclusivos en el reporte." %}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </article>
+
+            <article class="surface-panel compare-detail" data-region="comunes">
+                <div class="flex items-center justify-between border-b border-[var(--line)] p-4">
+                    <div>
+                        <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--teal)]">
+                            {% trans "Intersección A ∩ B" %}
+                        </p>
+                        <h3 class="mt-1 text-sm font-semibold text-[var(--ink)]">{% trans "Coincidencias" %}</h3>
+                    </div>
+                    <span class="tab-badge">{{ resultado.comunes|length }}</span>
+                </div>
+
+                <div class="max-h-80 overflow-y-auto p-4">
+                    <div class="flex flex-wrap gap-1.5">
+                        {% for word in resultado.comunes %}
+                            <span class="term-chip strong">{{ word }}</span>
+                        {% empty %}
+                            <p class="text-[10px] italic text-[var(--faint)]">{% trans "Sin coincidencias entre ambos vocabularios." %}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </article>
+
+            <article class="surface-panel compare-detail" data-region="lista">
+                <div class="flex items-center justify-between border-b border-[var(--line)] p-4">
+                    <div>
+                        <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--indigo)]">
+                            {% trans "Región B · Vocabulario de contraste" %}
+                        </p>
+                        <h3 class="mt-1 text-sm font-semibold text-[var(--ink)]">{% trans "Solo en lista" %}</h3>
+                    </div>
+                    <span class="tab-badge">{{ resultado.solo_lista|length }}</span>
+                </div>
+
+                <div class="max-h-80 overflow-y-auto p-4">
+                    <div class="flex flex-wrap gap-1.5">
+                        {% for word in resultado.solo_lista %}
+                            <span class="term-chip">{{ word }}</span>
+                        {% empty %}
+                            <p class="text-[10px] italic text-[var(--faint)]">{% trans "Sin términos exclusivos en la lista de experto." %}</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </article>
         </div>
+    </section>
 
-    </div>
+    {% else %}
+
+    <!-- ===================================================================== -->
+    <!-- Estado inicial: esperando ambos vocabularios                          -->
+    <!-- ===================================================================== -->
+    <section class="surface-panel mt-8 overflow-hidden">
+        <div class="grid gap-6 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,.8fr)] lg:items-center">
+            <div class="venn-stage opacity-70">
+                <svg viewBox="0 0 480 300" role="img" aria-label="{% trans 'Diagrama de Venn pendiente de comparación' %}">
+                    <circle cx="170" cy="150" r="110" fill="none" stroke="var(--line-strong)" stroke-width="1.5" stroke-dasharray="7 6"/>
+                    <circle cx="310" cy="150" r="110" fill="none" stroke="var(--line-strong)" stroke-width="1.5" stroke-dasharray="7 6"/>
+                    <text x="112" y="154" text-anchor="middle" class="venn-label" style="fill: var(--faint);">A</text>
+                    <text x="368" y="154" text-anchor="middle" class="venn-label" style="fill: var(--faint);">B</text>
+                    <text x="240" y="154" text-anchor="middle" class="venn-label" style="fill: var(--faint);">A ∩ B</text>
+                </svg>
+            </div>
+
+            <div>
+                <p class="eyebrow">{% trans "Esperando comparación" %}</p>
+                <h2 class="mt-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--ink)]">
+                    {% trans "Selecciona los dos vocabularios" %}
+                </h2>
+                <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                    {% trans "El vocabulario base es el reporte corporativo. El vocabulario de contraste es la lista de experto. Al comparar, el diagrama mostrará los términos exclusivos de cada lado y la intersección." %}
+                </p>
+            </div>
+        </div>
+    </section>
+
     {% endif %}
 </div>
 
 {% load static %}
-<script src="{% static 'js/comparative_analysis.js' %}"></script>
+<script src="{% static 'js/comparative_analysis.js' %}?v=2.0"></script>
 
 {% endblock %}

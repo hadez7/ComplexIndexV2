@@ -1908,3 +1908,207 @@
     padding-right: 14px;
   }
 }
+
+/* ========================================================================= */
+/* FASE 9 — Análisis comparativo: selectores A/B, Venn y desglose            */
+/* ========================================================================= */
+
+.compare-select {
+  display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
+  align-items: start;
+  gap: 12px;
+  height: 100%;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  padding: 16px;
+}
+
+.compare-letter {
+  display: flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--blue);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.compare-select.second .compare-letter {
+  background: var(--teal);
+}
+
+.compare-select small,
+.compare-select strong,
+.compare-select em {
+  display: block;
+}
+
+.compare-select small {
+  color: var(--faint);
+  font-size: 7px;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+
+.compare-select strong {
+  margin-top: 3px;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.compare-select em {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 8px;
+  font-style: normal;
+}
+
+.term-chip {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 6px;
+  overflow-wrap: anywhere;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--surface);
+  padding: 6px 9px;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.term-chip.strong {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+
+.compare-stat {
+  display: block;
+  width: 100%;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  padding: 14px 8px;
+  text-align: center;
+  transition: 160ms ease;
+}
+
+.compare-stat.a { background: var(--blue-soft); color: var(--blue); }
+.compare-stat.overlap { background: var(--teal-soft); color: var(--teal); }
+.compare-stat.b { background: var(--indigo-soft); color: var(--indigo); }
+
+.compare-stat:hover,
+.compare-stat.is-active {
+  border-color: currentColor;
+  transform: translateY(-1px);
+}
+
+.compare-stat strong {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.compare-stat span {
+  display: block;
+  margin-top: 6px;
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.venn-stage {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.venn-stage svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.venn-region {
+  cursor: pointer;
+  outline: none;
+}
+
+.venn-region circle {
+  transition: stroke-width 160ms ease, opacity 160ms ease;
+}
+
+.venn-region:hover circle,
+.venn-region:focus-visible circle {
+  stroke-width: 2.5;
+}
+
+.venn-region.is-active circle {
+  stroke-width: 3;
+}
+
+.venn-count {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  font-weight: 600;
+}
+
+.venn-label {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.compare-detail {
+  transition: border-color 160ms ease, box-shadow 160ms ease, opacity 160ms ease;
+}
+
+.compare-detail.is-focused {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px var(--blue-soft);
+}
+
+.compare-detail.is-dimmed {
+  opacity: 0.55;
+}
+
+.compare-detail.is-dimmed:hover {
+  opacity: 0.85;
+}
+
+@media (max-width: 640px) {
+  .compare-stat strong {
+    font-size: 18px;
+  }
+
+  .compare-stat span {
+    font-size: 6px;
+  }
+}
+
+/* El enlace de foco debe poder ocultarse aunque .text-link defina display */
+.text-link.hidden {
+  display: none;
+}
+
+/* Los nombres largos de reportes pueden ocupar dos líneas dentro de A/B */
+.compare-select .custom-select-label {
+  overflow: visible;
+  white-space: normal;
+  text-overflow: clip;
+  line-height: 1.4;
+}
