@@ -2191,3 +2191,45 @@
   border-radius: 12px;
   background: var(--surface-hover);
 }
+
+/* ========================================================================= */
+/* FASE 11 — Usuarios: tarjetas de rol y métricas                           */
+/* ========================================================================= */
+
+.role-card {
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  cursor: pointer;
+  transition: background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.role-card:hover {
+  border-color: var(--line-strong);
+  background: var(--surface-hover);
+}
+
+.role-card.is-selected {
+  border-color: var(--blue);
+  background: var(--blue-soft);
+  box-shadow: 0 0 0 2px var(--blue-soft);
+}
+
+.role-card[data-role="expert"].is-selected {
+  border-color: var(--violet);
+  background: var(--violet-soft);
+  box-shadow: 0 0 0 2px var(--violet-soft);
+}
+
+.role-card[data-role="auditor"].is-selected {
+  border-color: var(--indigo);
+  background: var(--indigo-soft);
+  box-shadow: 0 0 0 2px var(--indigo-soft);
+}
+
+/* Tabla de usuarios: compacta para mantener visibles las acciones */
+.users-table th,
+.users-table td {
+  padding-left: 10px;
+  padding-right: 10px;
+}

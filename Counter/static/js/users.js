@@ -36,27 +36,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const roleRadio = document.querySelector(`input[name="${prefix}-role"]:checked`);
     const role = roleRadio ? roleRadio.value : 'auditor';
 
-    // Feedback visual instantáneo para las 3 tarjetas de rol
+    // Feedback visual de las 3 tarjetas de rol
     document.querySelectorAll(`input[name="${prefix}-role"]`).forEach((radio) => {
       const card = radio.closest('.role-card');
       if (!card) return;
-      card.classList.remove(
-        'border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-600',
-        'border-purple-600', 'bg-purple-50/70', 'ring-2', 'ring-purple-600',
-        'border-slate-800', 'bg-slate-50', 'ring-2', 'ring-slate-800',
-        'border-gray-200', 'bg-white'
-      );
-      if (radio.checked) {
-        if (radio.value === 'admin') {
-          card.classList.add('border-blue-600', 'bg-blue-50/70', 'ring-2', 'ring-blue-600');
-        } else if (radio.value === 'expert') {
-          card.classList.add('border-purple-600', 'bg-purple-50/70', 'ring-2', 'ring-purple-600');
-        } else {
-          card.classList.add('border-slate-800', 'bg-slate-50', 'ring-2', 'ring-slate-800');
-        }
-      } else {
-        card.classList.add('border-gray-200', 'bg-white');
-      }
+      card.classList.toggle('is-selected', radio.checked);
     });
 
     const expertContainer = document.getElementById(isCreate ? 'cu-expert-fields' : 'eu-expert-fields');
@@ -69,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (professionSelect) professionSelect.required = true;
       if (isCreate && wsHint) {
         wsHint.textContent = 'Obligatorio para que el experto pueda acceder de inmediato a los reportes de opacidad.';
-        wsHint.className = 'text-xs text-purple-700 font-medium mt-1';
+        wsHint.className = 'mt-1 text-[9px] font-medium text-[var(--violet)]';
       }
     } else {
       if (expertContainer) expertContainer.classList.add('hidden');
@@ -79,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       if (isCreate && wsHint) {
         wsHint.textContent = 'Vincula al usuario a este proyecto para que acceda inmediatamente sin bloqueos.';
-        wsHint.className = 'text-xs text-gray-500 mt-1';
+        wsHint.className = 'mt-1 text-[9px] text-[var(--muted)]';
       }
     }
   };
@@ -345,12 +329,12 @@ document.addEventListener('DOMContentLoaded', () => {
   async function loadAuditLogs() {
     if (!auditLogsList) return;
     auditLogsList.innerHTML = `
-      <div class="py-12 text-center text-gray-500">
-        <svg class="animate-spin h-6 w-6 mx-auto mb-2 text-blue-600" fill="none" viewBox="0 0 24 24">
+      <div class="py-12 text-center text-[var(--muted)]">
+        <svg class="mx-auto mb-2 h-6 w-6 animate-spin text-[var(--blue)]" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
         </svg>
-        <p class="text-sm">Cargando registros de auditoría...</p>
+        <p class="text-[10px]">Cargando registros de auditoría...</p>
       </div>
     `;
 
@@ -365,59 +349,59 @@ document.addEventListener('DOMContentLoaded', () => {
       const res = await fetch(url);
       const data = await res.json();
       if (!res.ok || !data.success) {
-        auditLogsList.innerHTML = `<p class="p-6 text-center text-sm text-red-600">Error al cargar registros.</p>`;
+        auditLogsList.innerHTML = `<p class="p-6 text-center text-[10px] text-[var(--red)]">Error al cargar registros.</p>`;
         return;
       }
 
       if (data.logs.length === 0) {
         auditLogsList.innerHTML = `
-          <div class="py-12 text-center text-gray-400">
-            <svg class="w-10 h-10 mx-auto mb-2 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="py-12 text-center text-[var(--faint)]">
+            <svg class="mx-auto mb-2 h-9 w-9 text-[var(--faint)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
             </svg>
-            <p class="text-sm font-medium">No se encontraron eventos registrados.</p>
+            <p class="text-[10px] font-medium">No se encontraron eventos registrados.</p>
           </div>
         `;
         return;
       }
 
       const getActionBadge = (action, display) => {
-        let colors = 'bg-blue-50 text-blue-700 border-blue-200';
-        if (action === 'CREATE') colors = 'bg-green-50 text-green-700 border-green-200';
-        if (action === 'SOFT_DELETE') colors = 'bg-red-50 text-red-700 border-red-200';
-        if (action === 'RESTORE') colors = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-        if (action === 'ROLE_CHANGE') colors = 'bg-purple-50 text-purple-700 border-purple-200';
-        if (action === 'LOGIN') colors = 'bg-sky-50 text-sky-700 border-sky-200';
-        return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold border ${colors}">${display}</span>`;
+        let colors = 'border-[var(--line)] bg-[var(--blue-soft)] text-[var(--blue)]';
+        if (action === 'CREATE') colors = 'border-[var(--line)] bg-[var(--teal-soft)] text-[var(--teal)]';
+        if (action === 'SOFT_DELETE') colors = 'border-[var(--line)] bg-[var(--red-soft)] text-[var(--red)]';
+        if (action === 'RESTORE') colors = 'border-[var(--line)] bg-[var(--teal-soft)] text-[var(--teal)]';
+        if (action === 'ROLE_CHANGE') colors = 'border-[var(--line)] bg-[var(--violet-soft)] text-[var(--violet)]';
+        if (action === 'LOGIN') colors = 'border-[var(--line)] bg-[var(--indigo-soft)] text-[var(--indigo)]';
+        return `<span class="inline-flex items-center rounded-full border px-2 py-0.5 text-[8px] font-semibold ${colors}">${display}</span>`;
       };
 
       auditLogsList.innerHTML = data.logs.map(log => `
-        <div class="p-4 hover:bg-gray-50/80 transition flex items-start space-x-3.5 border-b border-gray-100 last:border-b-0">
-          <div class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <div class="flex items-start gap-3 border-b border-[var(--line)] p-4 transition last:border-b-0 hover:bg-[var(--surface-hover)]">
+          <div class="mt-0.5 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[var(--surface-hover)] text-[var(--muted)]">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
           </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center justify-between mb-1">
-              <div class="flex items-center space-x-2">
+          <div class="min-w-0 flex-1">
+            <div class="mb-1 flex items-center justify-between gap-2">
+              <div class="flex items-center gap-2">
                 ${getActionBadge(log.action, log.action_display)}
-                <span class="text-xs font-bold text-gray-800">${log.target}</span>
+                <span class="text-[10px] font-semibold text-[var(--ink)]">${log.target}</span>
               </div>
-              <span class="text-xs text-gray-400 font-mono">${log.timestamp}</span>
+              <span class="font-mono text-[9px] text-[var(--faint)]">${log.timestamp}</span>
             </div>
-            <p class="text-sm text-gray-700 leading-snug">${log.description}</p>
-            <div class="mt-1 flex items-center space-x-3 text-xs text-gray-400">
-              <span>Por: <strong class="text-gray-600 font-medium">${log.actor}</strong></span>
+            <p class="text-[10px] leading-5 text-[var(--muted)]">${log.description}</p>
+            <div class="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[9px] text-[var(--faint)]">
+              <span>Por: <strong class="font-medium text-[var(--muted)]">${log.actor}</strong></span>
               <span>•</span>
-              <span>IP: <code class="font-mono text-gray-500">${log.ip_address}</code></span>
+              <span>IP: <code class="font-mono text-[var(--muted)]">${log.ip_address}</code></span>
             </div>
           </div>
         </div>
       `).join('');
 
     } catch (err) {
-      auditLogsList.innerHTML = `<p class="p-6 text-center text-sm text-red-600">Error de conexión al cargar auditoría.</p>`;
+      auditLogsList.innerHTML = `<p class="p-6 text-center text-[10px] text-[var(--red)]">Error de conexión al cargar auditoría.</p>`;
     }
   }
 
