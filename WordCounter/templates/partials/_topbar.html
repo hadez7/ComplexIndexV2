@@ -1,0 +1,36 @@
+{% load i18n %}
+<header class="hidden lg:flex h-14 bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 sm:px-8 items-center justify-between sticky top-0 z-20 shrink-0">
+            <div class="flex items-center space-x-2 text-xs font-medium text-slate-500 truncate">
+                <!-- Botón rápido para contraer barra lateral desde el header -->
+                <button type="button" onclick="toggleSidebarCollapse()" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 transition mr-1" title="{% trans 'Colapsar / Expandir barra lateral' %}">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h16"></path>
+                    </svg>
+                </button>
+                <span class="text-blue-600 font-black tracking-tight">ELI</span>
+                <span>/</span>
+                {% if current_workspace %}
+                <span class="font-bold text-slate-800 truncate">{{ current_workspace.name }}</span>
+                {% else %}
+                <span class="font-bold text-slate-800">{% trans "Auditoría Contractual" %}</span>
+                {% endif %}
+            </div>
+
+            <div class="flex items-center space-x-3">
+                <!-- Toggle Rápido de Modo Oscuro -->
+                <button type="button" onclick="toggleTheme()" class="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-slate-100 transition focus:outline-none btn-interactive" title="{% trans 'Alternar tema claro / oscuro' %}">
+                    <span id="themeTopIcon" class="w-4 h-4 flex items-center justify-center shrink-0">
+                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+                    </span>
+                </button>
+
+                {% if user.is_authenticated %}
+                <a href="{% url 'upload' %}" class="inline-flex items-center space-x-1.5 py-1.5 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs rounded-xl border border-blue-200 transition btn-interactive">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    <span>{% trans "Nuevo Informe" %}</span>
+                </a>
+                {% endif %}
+            </div>
+        </header>
