@@ -269,6 +269,41 @@
 }
 
 /* ========================================================================= */
+/* FASE 13 — Landing pública: hero, órbita y capacidades                     */
+/* ========================================================================= */
+
+.landing-hero {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 72% 18%, var(--blue-soft), transparent 34%),
+    radial-gradient(circle at 4% 100%, var(--teal-soft), transparent 30%),
+    var(--surface);
+}
+
+.landing-hero::before {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: 56px 56px;
+  content: "";
+  opacity: 0.2;
+  pointer-events: none;
+  -webkit-mask-image: radial-gradient(circle at 76% 40%, black, transparent 68%);
+  mask-image: radial-gradient(circle at 76% 40%, black, transparent 68%);
+}
+
+@media (max-width: 640px) {
+  .landing-hero {
+    border-radius: 22px;
+  }
+}
+
+/* ========================================================================= */
 /* FASE 2 — Observatorio: hero, signal board y tarjetas de módulo            */
 /* ========================================================================= */
 
