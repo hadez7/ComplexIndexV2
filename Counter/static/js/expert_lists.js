@@ -183,7 +183,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   document.querySelectorAll('.delete-list-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      openDeleteListModal(btn.dataset.id);
+      openDeleteListModal(btn.dataset.id, btn.dataset.name);
     });
   });
 
