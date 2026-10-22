@@ -23,6 +23,9 @@
             if (localStorage.getItem('eli_sidebar_collapsed') === 'true' || window.location.search.includes('test_collapsed=1')) {
                 document.documentElement.classList.add('sidebar-collapsed');
             }
+            if (localStorage.getItem('eli_sidebar_hidden') === 'true') {
+                document.documentElement.classList.add('sidebar-hidden');
+            }
         })();
     </script>
 
@@ -37,9 +40,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS 3 (Estilos Estáticos Precompilados AOT - Cero FOUC) -->
-    <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}?v=eli-21">
+    <link rel="stylesheet" href="{% static 'css/tailwind.min.css' %}?v=eli-47">
     <!-- Shell ELI: rail, header, drawer, tema y microinteracciones -->
-    <link rel="stylesheet" href="{% static 'css/shell.css' %}?v=eli-19">
+    <link rel="stylesheet" href="{% static 'css/shell.css' %}?v=eli-47">
 
     {% block custom_css %}{% endblock %}
     <script type="text/javascript" src="{% url 'javascript-catalog' %}" defer></script>
@@ -51,7 +54,6 @@
          plantillas con carcasa propia (p. ej. la landing pública). -->
     {% block app_shell %}
     {% include "partials/_sidebar.html" %}
-    {% include "partials/_mobile_shell.html" %}
 
     <!-- ========================================================================= -->
     <!-- CANVAS PRINCIPAL DE TRABAJO (Main Workspace Canvas)                        -->
@@ -60,12 +62,18 @@
 
         {% include "partials/_topbar.html" %}
 
-        <main class="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            {% include "partials/_messages.html" %}
+        <main class="flex-1 w-full min-w-0 flex flex-col">
+            {% if messages %}
+            <div class="mx-auto w-full max-w-[1440px] px-5 pt-4 sm:px-7 lg:px-9">
+                {% include "partials/_messages.html" %}
+            </div>
+            {% endif %}
             {% block content %}{% endblock %}
         </main>
 
+        {% block footer %}
         {% include "partials/_footer.html" %}
+        {% endblock %}
 
     </div>
     {% endblock %}
@@ -73,7 +81,7 @@
     <!-- ========================================================================= -->
     <!-- SCRIPTS DE CONTROL DEL SHELL                                               -->
     <!-- ========================================================================= -->
-    <script src="{% static 'js/shell.js' %}?v=eli-17"></script>
+    <script src="{% static 'js/shell.js' %}?v=eli-35"></script>
     <script src="{% static 'js/custom_select.js' %}?v=eli-17"></script>
     {% block scripts %}
     {% endblock %}

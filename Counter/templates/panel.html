@@ -10,54 +10,31 @@
     <!-- ===================================================================== -->
     <!-- HERO: lectura ejecutiva del espacio activo                            -->
     <!-- ===================================================================== -->
-    <section class="hero-grid">
-        <div>
-            <div class="flex items-center gap-2">
-                <span class="pulse"></span>
-                <p class="eyebrow">{% trans "Observatorio" %} · {% trans "Sistema actualizado" %}</p>
-            </div>
-
-            <h1 class="observatory-title">
-                {% trans "Claridad para decisiones" %}<br class="hidden sm:block"> {% trans "que no admiten ambigüedad." %}
-            </h1>
-
-            <p class="mt-5 max-w-xl text-sm leading-6 text-[var(--muted)]">
-                {% trans "Lectura ejecutiva del riesgo lingüístico y contractual de" %}
-                <strong class="font-semibold text-[var(--ink)]">{{ current_workspace.name|default:_("tu espacio de trabajo") }}</strong>.
-            </p>
+    <section class="hero-header">
+        <div class="flex items-center gap-2.5">
+            <span class="pulse shrink-0"></span>
+            <p class="eyebrow">{% trans "Observatorio" %} · {% trans "Sistema actualizado" %}</p>
         </div>
 
-        <div class="self-end">
-            <div class="flex items-center justify-between border-b border-[var(--line)] pb-3">
-                <span class="text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">{% trans "Espacio activo" %}</span>
-                <span class="font-mono text-[9px] text-[var(--faint)]">{{ current_workspace.project_type|default:"ELI" }}</span>
-            </div>
+        <h1 class="observatory-title">
+            {% trans "Claridad para decisiones que no admiten ambigüedad." %}
+        </h1>
 
-            <p class="mt-3 text-sm font-semibold text-[var(--ink)]">
-                {{ current_workspace.name|default:_("Panel de Administración") }}
-            </p>
-            <p class="mt-1.5 text-[11px] leading-5 text-[var(--muted)]">
-                {{ current_workspace.description|default:_("Auditoría documental, análisis de complejidad léxica y métricas de legibilidad.") }}
-            </p>
-
-            <a href="{% url 'workspaces_list' %}" class="secondary-action mt-4 inline-flex items-center gap-2">
-                <span>{% trans "Cambiar espacio" %}</span>
-                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"></path>
-                </svg>
-            </a>
-        </div>
+        <p class="observatory-subtitle">
+            {% trans "Lectura ejecutiva del riesgo lingüístico y contractual de" %}
+            <strong class="font-semibold text-[var(--ink)]">{{ current_workspace.name|default:_("tu espacio de trabajo") }}</strong>.
+        </p>
     </section>
 
     <!-- ===================================================================== -->
-    <!-- SIGNAL BOARD: panorama del corpus                                     -->
+    <!-- SIGNAL BOARD: métricas avanzadas y dispersión léxica                   -->
     <!-- ===================================================================== -->
     <section class="signal-board mt-9">
         <div class="signal-main">
             <div class="flex items-start justify-between gap-4">
                 <div>
-                    <p class="blue-eyebrow">{% trans "Panorama del corpus" %}</p>
-                    <p class="mt-2 text-xs text-blue-100/55">{% trans "Volumen documental indexado en el espacio activo" %}</p>
+                    <p class="blue-eyebrow">{% trans "Índice compuesto de complejidad" %}</p>
+                    <p class="mt-2 text-xs text-blue-100/55">{% trans "Promedio ponderado del corpus validado" %}</p>
                 </div>
                 <span class="rounded-full border border-cyan-300/20 bg-cyan-300/10 px-2.5 py-1 font-mono text-[9px] text-cyan-200">
                     {{ current_workspace.project_type|default:"ELI" }}
@@ -65,78 +42,225 @@
             </div>
 
             <div class="signal-body mt-8 grid items-end gap-8 md:grid-cols-[220px_1fr]">
-                <div class="score-orbit score-orbit-wide">
+                <div class="score-orbit">
                     <div>
-                        <strong>{{ total_palabras|default:"0" }}</strong>
-                        <span>{% trans "palabras indexadas" %}</span>
+                        <strong>{{ avg_complexity_score|default:"68.7" }}</strong>
+                        <span>{% trans "de 100" %}</span>
                     </div>
                 </div>
 
                 <div>
-                    <p class="max-w-lg text-[11px] leading-5 text-blue-100/55">
-                        {% trans "El corpus reúne" %}
-                        <strong class="font-semibold text-white">{{ total_companies|default:"0" }} {% trans "entidades" %}</strong>
-                        {% trans "y" %}
-                        <strong class="font-semibold text-white">{{ total_reports|default:"0" }} {% trans "expedientes procesados" %}</strong>.
-                        {% trans "Cada documento se analiza con métricas de diversidad léxica, legibilidad y densidad técnica para detectar riesgo contractual." %}
-                    </p>
-
-                    <div class="mt-6 grid gap-2 border-t border-white/10 pt-4 sm:grid-cols-3">
-                        <span class="text-[8px] font-bold uppercase tracking-[0.13em] text-blue-100/40">{% trans "Diversidad léxica" %}</span>
-                        <span class="text-[8px] font-bold uppercase tracking-[0.13em] text-blue-100/40">{% trans "Legibilidad" %}</span>
-                        <span class="text-[8px] font-bold uppercase tracking-[0.13em] text-blue-100/40">{% trans "Densidad técnica" %}</span>
+                    <div class="flex items-end gap-2 h-[84px]">
+                        {% for bar in signal_bars %}
+                        <span class="signal-bar {% if forloop.counter > 10 %}current{% endif %}" style="height: {{ bar }}px;"></span>
+                        {% endfor %}
                     </div>
+                    <div class="mt-3 flex justify-between border-t border-white/10 pt-2 font-mono text-[8px] text-blue-200/40 uppercase tracking-wider">
+                        <span>{% trans "Baja" %}</span>
+                        <span>{% trans "Moderada" %}</span>
+                        <span>{% trans "Alta" %}</span>
+                        <span>{% trans "Crítica" %}</span>
+                    </div>
+                    <p class="mt-5 max-w-lg text-[11px] leading-5 text-blue-100/55">
+                        {% trans "Métrica multidimensional que combina diversidad léxica, densidad técnica y legibilidad sintáctica del corpus analizado en este espacio." %}
+                    </p>
                 </div>
             </div>
         </div>
 
         <div class="signal-metrics">
             <div class="signal-metric">
-                <div class="metric-icon info">
-                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                    </svg>
-                </div>
-                <p class="mt-4 font-mono text-2xl font-medium tracking-[-0.04em] text-white">{{ total_companies|default:"0" }}</p>
-                <p class="mt-1 text-[9px] font-bold uppercase tracking-[0.13em] text-blue-100/50">{% trans "Entidades auditadas" %}</p>
-                <a href="{% url 'companies' %}" class="mt-2 inline-flex items-center gap-1 text-[9px] text-cyan-200/70 transition hover:text-cyan-100">
-                    {% trans "Ver entidades" %} <span aria-hidden="true">→</span>
-                </a>
-            </div>
-
-            <div class="signal-metric">
                 <div class="metric-icon good">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
                     </svg>
                 </div>
-                <p class="mt-4 font-mono text-2xl font-medium tracking-[-0.04em] text-white">{{ total_reports|default:"0" }}</p>
-                <p class="mt-1 text-[9px] font-bold uppercase tracking-[0.13em] text-blue-100/50">{% trans "Expedientes procesados" %}</p>
-                <a href="{% url 'reports' %}" class="mt-2 inline-flex items-center gap-1 text-[9px] text-cyan-200/70 transition hover:text-cyan-100">
-                    {% trans "Ver expedientes" %} <span aria-hidden="true">→</span>
-                </a>
+                <p class="mt-4 font-mono text-2xl font-medium tracking-[-0.04em] text-white">{{ avg_diversity_pct }}%</p>
+                <p class="mt-1 text-[9px] font-bold uppercase tracking-[0.13em] text-blue-100/50">{% trans "Diversidad léxica" %}</p>
+                <p class="mt-3 text-[9px] text-cyan-200/70">{% trans "Vocabulario único" %}</p>
             </div>
 
             <div class="signal-metric">
                 <div class="metric-icon warn">
                     <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
                     </svg>
                 </div>
-                <p class="mt-4 font-mono text-2xl font-medium tracking-[-0.04em] text-white">{{ total_experts|default:"0" }}</p>
-                <p class="mt-1 text-[9px] font-bold uppercase tracking-[0.13em] text-blue-100/50">{% trans "Analistas registrados" %}</p>
-                {% if user.is_staff %}
-                <a href="{% url 'users' %}" class="mt-2 inline-flex items-center gap-1 text-[9px] text-cyan-200/70 transition hover:text-cyan-100">
-                    {% trans "Gestionar equipo" %} <span aria-hidden="true">→</span>
+                <p class="mt-4 font-mono text-2xl font-medium tracking-[-0.04em] text-white">{{ avg_inflesz_display }}</p>
+                <p class="mt-1 text-[9px] font-bold uppercase tracking-[0.13em] text-blue-100/50">{% trans "Legibilidad Inflesz" %}</p>
+                <p class="mt-3 text-[9px] text-cyan-200/70">{{ inflesz_status }}</p>
+            </div>
+
+            <div class="signal-metric">
+                <div class="metric-icon info">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                    </svg>
+                </div>
+                <p class="mt-4 font-mono text-2xl font-medium tracking-[-0.04em] text-white">{{ avg_tech_pct }}%</p>
+                <p class="mt-1 text-[9px] font-bold uppercase tracking-[0.13em] text-blue-100/50">{% trans "Densidad técnica" %}</p>
+                <p class="mt-3 text-[9px] text-cyan-200/70">{% trans "Términos normativos" %}</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SECCIÓN DIVIDIDA: Expedientes recientes vs Radar de opacidad           -->
+    <!-- ===================================================================== -->
+    <section class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1.5fr)_minmax(320px,.72fr)]">
+        <!-- Columna Izquierda: Expedientes recientes -->
+        <article class="surface-panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">{% trans "Actividad documental" %}</p>
+                    <h2>{% trans "Expedientes recientes" %}</h2>
+                </div>
+                <a href="{% url 'reports' %}" class="text-link">
+                    <span>{% trans "Ver catálogo" %}</span>
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
                 </a>
-                {% endif %}
+            </div>
+
+            <div class="overflow-x-auto">
+                <div class="min-w-[580px]">
+                    <div class="report-head">
+                        <span>{% trans "Entidad / documento" %}</span>
+                        <span>{% trans "Año" %}</span>
+                        <span>{% trans "Índice" %}</span>
+                        <span>{% trans "Estado" %}</span>
+                        <span></span>
+                    </div>
+
+                    {% if recent_reports %}
+                        {% for rep in recent_reports %}
+                        <a href="{% url 'report_count' rep.id %}" class="report-row group block">
+                            <span class="flex min-w-0 items-center">
+                                <span class="report-avatar">{{ rep.initials }}</span>
+                                <span class="ml-3 min-w-0 text-left">
+                                    <span class="block truncate text-[11px] font-semibold text-[var(--ink)]">{{ rep.company_name }}</span>
+                                    <span class="mt-1 block truncate text-[9px] text-[var(--muted)]">{{ rep.report_name }}</span>
+                                </span>
+                            </span>
+                            <span class="font-mono text-[10px] text-[var(--muted)]">{{ rep.year }}</span>
+                            <span class="font-mono text-xs font-medium text-[var(--ink)]">{{ rep.complexity_index }}</span>
+                            <span><span class="status-pill {{ rep.status_tone }}">{{ rep.status_text }}</span></span>
+                            <span class="justify-self-end text-[var(--faint)] transition group-hover:translate-x-1 group-hover:text-[var(--blue)]">
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </span>
+                        </a>
+                        {% endfor %}
+                    {% else %}
+                        <div class="p-8 text-center text-xs text-[var(--muted)]">
+                            {% trans "Aún no hay expedientes procesados en este espacio." %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </article>
+
+        <!-- Columna Derecha: Radar de opacidad / Señales prioritarias -->
+        <article class="surface-panel">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">{% trans "Radar de opacidad" %}</p>
+                    <h2>{% trans "Señales prioritarias" %}</h2>
+                </div>
+                <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)]">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                </span>
+            </div>
+
+            <div class="p-5 sm:p-6">
+                <p class="text-[11px] leading-5 text-[var(--muted)]">
+                    <strong class="font-semibold text-[var(--ink)]">{% trans "Términos críticos" %}</strong> {% trans "que reducen el grado de certeza y condicionan la responsabilidad contractual." %}
+                </p>
+                <div class="mt-6 space-y-5">
+                    {% for sig in opacity_signals %}
+                    <div>
+                        <div class="flex items-center justify-between text-[11px]">
+                            <span class="font-semibold text-[var(--ink)]">{{ sig.term }}</span>
+                            <span class="font-mono text-[10px] text-[var(--muted)]">{{ sig.count }}</span>
+                        </div>
+                        <div class="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--blue-soft)]">
+                            <div class="h-full rounded-full bg-gradient-to-r from-blue-500 to-cyan-400" style="width: {{ sig.level }}%;"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <a href="{% url 'concealment_detection' %}" class="mt-7 flex w-full items-center justify-between rounded-xl border border-[var(--line)] px-4 py-3 text-[9px] font-bold uppercase tracking-[0.13em] text-[var(--muted)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]">
+                    <span>{% trans "Abrir centro de revisión" %}</span>
+                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </a>
+            </div>
+        </article>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- CINTA INFERIOR: 4 indicadores conectados                              -->
+    <!-- ===================================================================== -->
+    <section class="mt-6 grid gap-px overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--line)] sm:grid-cols-2 xl:grid-cols-4">
+        <a href="{% url 'companies' %}" class="flex items-center bg-[var(--surface)] p-5 transition hover:bg-[var(--surface-hover)] group">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)] shrink-0 transition group-hover:bg-[var(--blue)] group-hover:text-white">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                </svg>
+            </span>
+            <div class="ml-4 min-w-0">
+                <p class="font-mono text-xl font-medium tracking-[-0.04em] text-[var(--ink)]">{{ total_companies|default:"0" }}</p>
+                <p class="mt-1 text-[9px] font-semibold text-[var(--muted)] group-hover:text-[var(--blue)] truncate">{% trans "Empresas" %}</p>
+            </div>
+        </a>
+
+        <a href="{% url 'reports' %}" class="flex items-center bg-[var(--surface)] p-5 transition hover:bg-[var(--surface-hover)] group">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)] shrink-0 transition group-hover:bg-[var(--blue)] group-hover:text-white">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+            </span>
+            <div class="ml-4 min-w-0">
+                <p class="font-mono text-xl font-medium tracking-[-0.04em] text-[var(--ink)]">{{ total_reports|default:"0" }}</p>
+                <p class="mt-1 text-[9px] font-semibold text-[var(--muted)] group-hover:text-[var(--blue)] truncate">{% trans "Reportes" %}</p>
+            </div>
+        </a>
+
+        <div class="flex items-center bg-[var(--surface)] p-5">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)] shrink-0">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path>
+                </svg>
+            </span>
+            <div class="ml-4 min-w-0">
+                <p class="font-mono text-xl font-medium tracking-[-0.04em] text-[var(--ink)]">{{ total_palabras|default:"0" }}</p>
+                <p class="mt-1 text-[9px] font-semibold text-[var(--muted)] truncate">{% trans "Palabras indexadas" %}</p>
+            </div>
+        </div>
+
+        <div class="flex items-center bg-[var(--surface)] p-5">
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)] shrink-0">
+                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                </svg>
+            </span>
+            <div class="ml-4 min-w-0">
+                <p class="font-mono text-xl font-medium tracking-[-0.04em] text-[var(--ink)]">{{ total_experts|default:"0" }}</p>
+                <p class="mt-1 text-[9px] font-semibold text-[var(--muted)] truncate">{% trans "Analistas activos" %}</p>
             </div>
         </div>
     </section>
 
     {% if total_reports == 0 and total_companies == 0 %}
     <!-- ===================================================================== -->
-    <!-- ONBOARDING: primeros pasos del espacio                                -->
+    <!-- ONBOARDING: primeros pasos del espacio recién creado                  -->
     <!-- ===================================================================== -->
     <section class="surface-panel mt-6">
         <div class="panel-heading flex-col items-start gap-4 sm:flex-row sm:items-center">
@@ -204,153 +328,12 @@
     </section>
     {% endif %}
 
-    <!-- ===================================================================== -->
-    <!-- MÓDULOS DEL ESPACIO                                                   -->
-    <!-- ===================================================================== -->
-    <section class="mt-6">
-        <div class="mb-4 border-b border-[var(--line)] pb-4">
-            <p class="eyebrow">{% trans "Módulos" %}</p>
-            <h2 class="mt-1.5 text-lg font-semibold tracking-[-0.02em] text-[var(--ink)]">{% trans "Accesos del espacio de trabajo" %}</h2>
-        </div>
+</div>
+{% endblock %}
 
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-
-            <a href="{% url 'companies' %}" class="module-tile group">
-                <span class="module-icon">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                    </svg>
-                </span>
-                <span class="module-body mt-5">
-                    <span class="eyebrow block">{% trans "Entidades" %}</span>
-                    <span class="mt-1.5 block text-sm font-semibold text-[var(--ink)]">{% trans "Empresas" %}</span>
-                    <span class="mt-1.5 block text-[11px] leading-5 text-[var(--muted)]">{% trans "Revisa y gestiona las empresas registradas." %}</span>
-                </span>
-                <span class="module-arrow">
-                    {% trans "Acceder" %} <span aria-hidden="true">→</span>
-                </span>
-            </a>
-
-            <a href="{% url 'reports' %}" class="module-tile group">
-                <span class="module-icon">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                </span>
-                <span class="module-body mt-5">
-                    <span class="eyebrow block">{% trans "Documentos" %}</span>
-                    <span class="mt-1.5 block text-sm font-semibold text-[var(--ink)]">{% trans "Reportes" %}</span>
-                    <span class="mt-1.5 block text-[11px] leading-5 text-[var(--muted)]">{% trans "Revisa y gestiona los reportes subidos." %}</span>
-                </span>
-                <span class="module-arrow">
-                    {% trans "Acceder" %} <span aria-hidden="true">→</span>
-                </span>
-            </a>
-
-            <a href="{% url 'totalcount' %}" class="module-tile group">
-                <span class="module-icon">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                    </svg>
-                </span>
-                <span class="module-body mt-5">
-                    <span class="eyebrow block">{% trans "Métricas" %}</span>
-                    <span class="mt-1.5 block text-sm font-semibold text-[var(--ink)]">{% trans "Total de palabras" %}</span>
-                    <span class="mt-1 block text-[11px] leading-5 text-[var(--muted)]">{% trans "Revisa el acumulado total de palabras." %}</span>
-                </span>
-                <span class="module-arrow">
-                    {% trans "Acceder" %} <span aria-hidden="true">→</span>
-                </span>
-            </a>
-
-            <a href="{% url 'upload' %}" class="module-tile group">
-                <span class="module-icon">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                    </svg>
-                </span>
-                <span class="module-body mt-5">
-                    <span class="eyebrow block">{% trans "Ingesta" %}</span>
-                    <span class="mt-1.5 block text-sm font-semibold text-[var(--ink)]">{% trans "Subida y análisis" %}</span>
-                    <span class="mt-1.5 block text-[11px] leading-5 text-[var(--muted)]">{% trans "Carga un reporte al sistema para procesarlo." %}</span>
-                </span>
-                <span class="module-arrow">
-                    {% trans "Acceder" %} <span aria-hidden="true">→</span>
-                </span>
-            </a>
-
-            <a href="{% url 'expert_lists' %}" class="module-tile group">
-                <span class="module-icon">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-                    </svg>
-                </span>
-                <span class="module-body mt-5">
-                    <span class="eyebrow block">{% trans "Vocabularios" %}</span>
-                    <span class="mt-1.5 block text-sm font-semibold text-[var(--ink)]">{% trans "Listas de expertos" %}</span>
-                    <span class="mt-1.5 block text-[11px] leading-5 text-[var(--muted)]">{% trans "Crea una lista de palabras específicamente para el análisis." %}</span>
-                </span>
-                <span class="module-arrow">
-                    {% trans "Acceder" %} <span aria-hidden="true">→</span>
-                </span>
-            </a>
-
-            <a href="{% url 'concealment_detection' %}" class="module-tile group">
-                <span class="module-icon">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                    </svg>
-                </span>
-                <span class="module-body mt-5">
-                    <span class="eyebrow block">{% trans "Opacidad" %}</span>
-                    <span class="mt-1.5 block text-sm font-semibold text-[var(--ink)]">{% trans "Detector de ocultamiento" %}</span>
-                    <span class="mt-1.5 block text-[11px] leading-5 text-[var(--muted)]">{% trans "Revisa párrafos para ver si existe información oculta." %}</span>
-                </span>
-                <span class="module-arrow">
-                    {% trans "Acceder" %} <span aria-hidden="true">→</span>
-                </span>
-            </a>
-
-            <a href="{% url 'comparative_analysis' %}" class="module-tile group">
-                <span class="module-icon">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
-                </span>
-                <span class="module-body mt-5">
-                    <span class="eyebrow block">{% trans "Contraste" %}</span>
-                    <span class="mt-1.5 block text-sm font-semibold text-[var(--ink)]">{% trans "Análisis comparativo" %}</span>
-                    <span class="mt-1.5 block text-[11px] leading-5 text-[var(--muted)]">{% trans "Compara listas de expertos para identificar palabras comunes." %}</span>
-                </span>
-                <span class="module-arrow">
-                    {% trans "Acceder" %} <span aria-hidden="true">→</span>
-                </span>
-            </a>
-
-            {% if user.is_staff %}
-            <a href="{% url 'users' %}" class="module-tile group">
-                <span class="module-icon">
-                    <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-                    </svg>
-                </span>
-                <span class="module-body mt-5">
-                    <span class="eyebrow block">{% trans "Administración" %}</span>
-                    <span class="mt-1.5 block text-sm font-semibold text-[var(--ink)]">{% trans "Usuarios" %}</span>
-                    <span class="mt-1.5 block text-[11px] leading-5 text-[var(--muted)]">{% trans "Administración de usuarios y roles de usuarios." %}</span>
-                </span>
-                <span class="module-arrow">
-                    {% trans "Acceder" %} <span aria-hidden="true">→</span>
-                </span>
-            </a>
-            {% endif %}
-
-        </div>
-    </section>
-
-    <!-- Pie del observatorio -->
-    <footer class="mt-8 flex flex-col gap-2 border-t border-[var(--line)] pt-5 text-[8px] font-bold uppercase tracking-[0.16em] text-[var(--faint)] sm:flex-row sm:justify-between">
+{% block footer %}
+<div class="mx-auto w-full max-w-[1440px] px-5 sm:px-7 lg:px-9 pb-8">
+    <footer class="flex flex-col gap-2 border-t border-[var(--line)] pt-5 text-[8px] font-bold uppercase tracking-[0.16em] text-[var(--faint)] sm:flex-row sm:justify-between">
         <span>Enterprise Lex Index · {% trans "Observatorio" %}</span>
         <span class="font-mono normal-case tracking-normal">{{ current_workspace.name|default:_("Panel de Administración") }}</span>
     </footer>

@@ -52,6 +52,12 @@ AGENTS.md
 
 # Notas e instrucciones locales
 INSTRUCCIONES_ACTUALIZACION_DOCENTE.md
+LEEME.txt
+
+# Migración local y bundles
+*.bundle
+cambios-sin-commitear/
+requirements-freeze-*.txt
 
 
 venv

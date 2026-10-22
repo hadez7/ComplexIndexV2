@@ -237,6 +237,31 @@ def concealment_detection_view(request):
     if palabra is None:
         palabra = ""
 
+    total_ocurrencias = sum(p["count"] for p in paragraphs if p.get("checked", False))
+    total_descartadas = sum(p["count"] for p in paragraphs if not p.get("checked", False))
+
+    findings_list = []
+    if selected_report:
+        if origen_palabras == "experto" and lista_experto_id:
+            try:
+                lista_obj = expert_lists.get(id=lista_experto_id)
+                exp_words = lista_obj.words or []
+                counts_map = dict(
+                    TotalCountReport.objects
+                    .filter(report=selected_report, word__in=[w.lower().strip() for w in exp_words])
+                    .values_list("word", "quantity")
+                )
+                findings_list = [{"word": w, "quantity": counts_map.get(w.lower().strip(), 0)} for w in exp_words]
+            except (ExpertWord.DoesNotExist, ValueError):
+                findings_list = []
+        else:
+            findings_list = list(
+                TotalCountReport.objects
+                .filter(report=selected_report)
+                .order_by("-quantity", "word")
+                .values("word", "quantity")
+            )
+
     expert_lists_data = []
 
     for lista in expert_lists:
@@ -264,12 +289,15 @@ def concealment_detection_view(request):
             "expert_lists": expert_lists,
             "expert_lists_data": expert_lists_data,
             "report_words": report_words,
+            "findings_list": findings_list,
             "origen_palabras": origen_palabras,
             "lista_experto_id": lista_experto_id,
 
             "selected_report": selected_report,
             "paragraphs": paragraphs,
             "palabra": palabra,
+            "total_ocurrencias": total_ocurrencias,
+            "total_descartadas": total_descartadas,
             "years": years,
             "selected_year": str(selected_year),
             "recent_reviews": recent_reviews,

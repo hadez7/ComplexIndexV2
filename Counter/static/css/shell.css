@@ -117,29 +117,39 @@
     }
 
     /* Transición de barra lateral activa (estilo ELI: gradiente + barra cian) */
-    .sidebar-nav-item {
-        color: rgba(191, 218, 249, 0.56);
+    .sidebar-nav-item,
+    .nav-item {
+        color: rgba(191, 218, 249, 0.65);
+        font-size: 13.5px;
+        font-weight: 600;
+        height: 42px;
     }
-    .sidebar-nav-item svg {
+    .sidebar-nav-item svg,
+    .nav-item svg {
         color: rgba(163, 197, 242, 0.55);
         transition: color 160ms ease;
     }
-    .sidebar-nav-item:hover {
+    .sidebar-nav-item:hover,
+    .nav-item:hover {
         background-color: rgba(255, 255, 255, 0.05);
         color: #FFFFFF;
     }
-    .sidebar-nav-item:hover svg {
+    .sidebar-nav-item:hover svg,
+    .nav-item:hover svg {
         color: rgba(226, 240, 255, 0.9);
     }
-    .sidebar-nav-item.active {
+    .sidebar-nav-item.active,
+    .nav-item.active {
         background: linear-gradient(90deg, rgba(55, 123, 255, 0.22), rgba(55, 123, 255, 0.08));
         color: #FFFFFF;
         font-weight: 700;
     }
-    .sidebar-nav-item.active svg {
+    .sidebar-nav-item.active svg,
+    .nav-item.active svg {
         color: #7DD3FC;
     }
-    .sidebar-nav-item.active::before {
+    .sidebar-nav-item.active::before,
+    .nav-item.active::before {
         position: absolute;
         left: 0;
         width: 2px;
@@ -154,13 +164,64 @@
     /* MECÁNICA DEL COMMAND RAIL CONTRAÍBLE (Ultra-Smooth Animation)             */
     /* ========================================================================= */
     #desktopSidebar {
-        transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-        will-change: width;
+        transition: width 0.28s cubic-bezier(0.4, 0, 0.2, 1), transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+        will-change: width, transform;
     }
     .main-canvas-area {
         background-color: var(--eli-canvas);
         transition: padding-left 0.28s cubic-bezier(0.4, 0, 0.2, 1);
         will-change: padding-left;
+    }
+
+    /* ========================================================================= */
+    /* UNIFICACIÓN DE BARRA LATERAL (Desktop Full-Screen & Split View / Mobile)  */
+    /* ========================================================================= */
+    @media (max-width: 1023.98px) {
+        #desktopSidebar {
+            transform: translateX(-100%);
+            box-shadow: 20px 0 50px rgba(2, 10, 26, 0.5);
+            z-index: 50 !important;
+        }
+
+        html.sidebar-mobile-open #desktopSidebar {
+            transform: translateX(0) !important;
+            pointer-events: auto !important;
+        }
+
+        .main-canvas-area {
+            padding-left: 0 !important;
+        }
+
+        #topbarSidebarOpenBtn {
+            display: inline-flex !important;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        html:not(.sidebar-hidden) #desktopSidebar {
+            transform: translateX(0);
+        }
+
+        html.sidebar-hidden #desktopSidebar {
+            transform: translateX(-100%) !important;
+            pointer-events: none !important;
+        }
+
+        html.sidebar-hidden .main-canvas-area {
+            padding-left: 0 !important;
+        }
+
+        #topbarSidebarOpenBtn {
+            display: none;
+        }
+
+        html.sidebar-hidden #topbarSidebarOpenBtn {
+            display: inline-flex !important;
+        }
+
+        #sidebarBackdrop {
+            display: none !important;
+        }
     }
 
     /* Transición suave de textos y títulos sin saltos bruscos ni text-wrapping */
@@ -460,31 +521,20 @@
     :where(#desktopSidebar) .bg-blue-50\/80 { background-color: rgba(55, 123, 255, 0.22); }
 
     /* Menús desplegable flotantes del nav-rail */
-    :where(#desktopSidebar) #sidebarWorkspaceDropdown,
-    :where(#desktopSidebar) #sidebarLanguageDropdown,
-    :where(#desktopSidebar) #sidebarUserDropdown {
-        background-color: #0a1e3f;
-        border-color: rgba(148, 180, 225, 0.16);
-        box-shadow: 0 18px 45px rgba(2, 10, 26, 0.55);
+    #sidebarWorkspaceDropdown,
+    #sidebarLanguageDropdown,
+    #sidebarUserDropdown {
+        background-color: #081b38 !important;
+        border-color: rgba(116, 188, 255, 0.18) !important;
+        box-shadow: 0 20px 50px rgba(2, 10, 26, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+        color: #F8FAFC !important;
     }
-    :where(#desktopSidebar) #sidebarWorkspaceDropdown > div:first-child,
-    :where(#desktopSidebar) #sidebarLanguageDropdown > div:first-child,
-    :where(#desktopSidebar) #sidebarUserDropdown > div:first-child {
-        background-color: rgba(255, 255, 255, 0.03);
-        border-color: rgba(148, 180, 225, 0.12);
+
+    #sidebarWorkspaceDropdown a.workspace-all-link {
+        color: #38bdf8 !important;
     }
-    :where(#desktopSidebar) #sidebarWorkspaceDropdown a,
-    :where(#desktopSidebar) #sidebarUserDropdown a {
-        color: #cfe1ff;
-    }
-    :where(#desktopSidebar) #sidebarWorkspaceDropdown a:hover,
-    :where(#desktopSidebar) #sidebarUserDropdown a:hover {
-        background-color: rgba(55, 123, 255, 0.18);
-        color: #FFFFFF;
-    }
-    :where(#desktopSidebar) #sidebarWorkspaceDropdown .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
-    :where(#desktopSidebar) #sidebarUserDropdown .border-slate-100 {
-        border-color: rgba(148, 180, 225, 0.12);
+    #sidebarWorkspaceDropdown a.workspace-all-link:hover {
+        color: #7dd3fc !important;
     }
 
     /* Header superior: fondo translúcido basado en el token --header */
@@ -543,8 +593,10 @@
 
     .dark #desktopSidebar,
     .dark #mobileDrawerPanel {
-        background-color: #0E1424;
-        border-color: #1E293B;
+        background:
+            radial-gradient(circle at 20% 0%, rgba(50, 116, 255, 0.24), transparent 32%),
+            linear-gradient(180deg, #071c3b 0%, #06152d 100%) !important;
+        border-right-color: rgba(116, 188, 255, 0.12) !important;
         color: #F8FAFC;
     }
 
@@ -553,41 +605,44 @@
     .dark #desktopSidebar .border-t,
     .dark #desktopSidebar .border-b,
     .dark #desktopSidebar .border-r {
-        border-color: #1E293B;
+        border-color: rgba(255, 255, 255, 0.1);
     }
 
     .dark .sidebar-header-box {
-        border-color: #1E293B;
-        background-color: transparent;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        background-color: transparent !important;
     }
 
-    .dark .sidebar-workspace-box,
-    .dark .bg-slate-50\/60,
-    .dark .bg-slate-50\/70,
-    .dark .bg-slate-50\/80 {
-        background-color: #0E1424;
-        border-color: #1E293B;
+    .dark .sidebar-workspace-box {
+        background-color: transparent !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
     }
 
-    .dark #desktopSidebar > div:last-child {
-        background-color: #0B0F19;
-        border-color: #1E293B;
+    .dark #desktopSidebar > div:last-child,
+    .dark .sidebar-footer-box {
+        background-color: transparent !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
     }
 
     .dark #sidebarWorkspaceBtn {
-        background-color: #111827;
-        border-color: #1E293B;
-        color: #F8FAFC;
+        background-color: rgba(255, 255, 255, 0.055) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: #F8FAFC !important;
     }
 
     .dark #sidebarWorkspaceBtn:hover {
-        border-color: #3B82F6;
-        background-color: #162032;
+        border-color: rgba(116, 188, 255, 0.3) !important;
+        background-color: rgba(255, 255, 255, 0.08) !important;
     }
 
     .dark .sidebar-user-card {
-        background-color: #111827;
-        border-color: #1E293B;
+        background-color: rgba(255, 255, 255, 0.055) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .dark .sidebar-user-card:hover {
+        border-color: rgba(116, 188, 255, 0.3) !important;
+        background-color: rgba(255, 255, 255, 0.08) !important;
     }
 
     .dark .sidebar-user-card .bg-blue-100 {
@@ -601,46 +656,59 @@
         color: #F87171;
     }
 
+    .dark .sidebar-util-btn,
     .dark .sidebar-footer-btn {
-        background-color: #111827;
-        border-color: #1E293B;
-        color: #CBD5E1;
+        background-color: rgba(255, 255, 255, 0.05) !important;
+        border-color: rgba(255, 255, 255, 0.1) !important;
+        color: rgba(191, 218, 249, 0.7) !important;
     }
 
+    .dark .sidebar-util-btn:hover,
     .dark .sidebar-footer-btn:hover {
-        border-color: #3B82F6;
-        color: #60A5FA;
-        background-color: #162032;
+        border-color: rgba(116, 188, 255, 0.3) !important;
+        color: #FFFFFF !important;
+        background-color: rgba(255, 255, 255, 0.08) !important;
     }
 
+    .dark .sidebar-util-btn span,
     .dark .sidebar-footer-btn span {
-        color: #CBD5E1;
+        color: rgba(191, 218, 249, 0.7);
     }
 
+    .dark .sidebar-util-btn:hover span,
     .dark .sidebar-footer-btn:hover span {
-        color: #60A5FA;
+        color: #FFFFFF;
     }
 
+    .dark .sidebar-util-btn svg,
     .dark .sidebar-footer-btn svg {
-        color: #94A3B8;
+        color: rgba(146, 183, 229, 0.6);
     }
 
+    .dark .sidebar-util-btn:hover svg,
     .dark .sidebar-footer-btn:hover svg {
-        color: #60A5FA;
+        color: #FFFFFF;
     }
 
     .dark #desktopSidebar a.bg-white,
     .dark #desktopSidebar .sidebar-text a.bg-white {
-        background-color: #111827;
-        border-color: #1E293B;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.1);
         color: #CBD5E1;
     }
 
     .dark #desktopSidebar a.bg-white:hover,
     .dark #desktopSidebar .sidebar-text a.bg-white:hover {
-        background-color: #162032;
-        border-color: #3B82F6;
+        background-color: rgba(255, 255, 255, 0.08);
+        border-color: rgba(116, 188, 255, 0.3);
         color: #F8FAFC;
+    }
+
+    .dark .bg-slate-50\/60,
+    .dark .bg-slate-50\/70,
+    .dark .bg-slate-50\/80 {
+        background-color: #0E1424;
+        border-color: #1E293B;
     }
 
     .dark .main-canvas-area > header,
@@ -1108,54 +1176,7 @@
         background-color: #2A3B54;
     }
 
-    /* Menús flotantes (Espacio, Idioma & Usuario) */
-    .dark #sidebarLanguageDropdown,
-    .dark #sidebarWorkspaceDropdown,
-    .dark #sidebarUserDropdown {
-        background-color: #0E1424;
-        border-color: #1E293B;
-        color: #F8FAFC;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6);
-    }
-    .dark #sidebarLanguageDropdown > div:first-child,
-    .dark #sidebarLanguageDropdown .border-b,
-    .dark #sidebarWorkspaceDropdown > div:first-child,
-    .dark #sidebarWorkspaceDropdown .border-b,
-    .dark #sidebarWorkspaceDropdown .divide-slate-100 > :not([hidden]) ~ :not([hidden]),
-    .dark #sidebarUserDropdown > div:first-child,
-    .dark #sidebarUserDropdown .border-b,
-    .dark #sidebarUserDropdown .border-t {
-        background-color: #0B0F19;
-        border-color: #1E293B;
-    }
-    .dark #sidebarWorkspaceDropdown a,
-    .dark #sidebarUserDropdown a {
-        color: #CBD5E1;
-    }
-    .dark #sidebarWorkspaceDropdown a:hover,
-    .dark #sidebarUserDropdown a:hover {
-        background-color: rgba(30, 58, 138, 0.25);
-        color: #93C5FD;
-    }
-    .dark #sidebarUserDropdown a:hover svg {
-        color: #60A5FA;
-    }
-    .dark #sidebarUserDropdown button:hover {
-        background-color: rgba(239, 68, 68, 0.15);
-        color: #F87171;
-    }
-    .dark .bg-blue-50\/80,
-    .dark #sidebarWorkspaceDropdown a.bg-blue-50\/80 {
-        background-color: rgba(30, 58, 138, 0.35);
-        color: #93C5FD;
-    }
-    .dark #sidebarLanguageDropdown button {
-        color: #CBD5E1;
-    }
-    .dark #sidebarLanguageDropdown button:hover {
-        background-color: #162032;
-        color: #F8FAFC;
-    }
+
     .dark #mobileDrawerPanel nav a {
         color: #CBD5E1;
     }
@@ -1163,7 +1184,4 @@
         background-color: #162032;
         color: #F8FAFC;
     }
-    .dark #mobileDrawerPanel > div:last-child {
-        background-color: #0B0F19;
-        border-color: #1E293B;
-    }
+

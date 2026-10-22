@@ -1,36 +1,102 @@
 {% load i18n %}
-<header class="hidden lg:flex h-14 bg-white/90 backdrop-blur-md border-b border-slate-200 px-6 sm:px-8 items-center justify-between sticky top-0 z-20 shrink-0">
-            <div class="flex items-center space-x-2 text-xs font-medium text-slate-500 truncate">
-                <!-- Botón rápido para contraer barra lateral desde el header -->
-                <button type="button" onclick="toggleSidebarCollapse()" class="p-1.5 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-slate-100 transition mr-1" title="{% trans 'Colapsar / Expandir barra lateral' %}">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h10M4 18h16"></path>
-                    </svg>
-                </button>
-                <span class="text-blue-600 font-black tracking-tight">ELI</span>
-                <span>/</span>
-                {% if current_workspace %}
-                <span class="font-bold text-slate-800 truncate">{{ current_workspace.name }}</span>
-                {% else %}
-                <span class="font-bold text-slate-800">{% trans "Auditoría Contractual" %}</span>
-                {% endif %}
-            </div>
+<header class="flex h-[72px] items-center border-b border-[var(--line)] bg-[color:var(--header)] px-4 sm:px-6 lg:px-9 backdrop-blur-xl sticky top-0 z-20 shrink-0">
+    <div class="flex items-center gap-3 min-w-0">
+        <!-- Botón de hamburguesa en la barra superior (lado izquierdo, coherente en desktop oculto y split view) -->
+        <button type="button" id="topbarSidebarOpenBtn" onclick="toggleSidebarVisibility()"
+                class="h-9 w-9 items-center justify-center rounded-xl border border-[var(--line)] bg-[var(--surface)] text-[var(--muted)] hover:border-[var(--line-strong)] hover:text-[var(--ink)] transition focus:outline-none shrink-0 btn-interactive shadow-2xs"
+                title="{% trans 'Mostrar barra lateral' %}"
+                aria-label="{% trans 'Mostrar barra lateral' %}">
+            <svg class="w-[18px] h-[18px]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 7.25h16.5m-16.5 4.75h11m-11 4.75h16.5"/>
+            </svg>
+        </button>
 
-            <div class="flex items-center space-x-3">
-                <!-- Toggle Rápido de Modo Oscuro -->
-                <button type="button" onclick="toggleTheme()" class="p-1.5 rounded-lg text-slate-500 hover:text-blue-600 hover:bg-slate-100 transition focus:outline-none btn-interactive" title="{% trans 'Alternar tema claro / oscuro' %}">
-                    <span id="themeTopIcon" class="w-4 h-4 flex items-center justify-center shrink-0">
-                        <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
-                    </span>
-                </button>
+        <div class="min-w-0">
+            <p class="text-[9.5px] font-bold uppercase tracking-[0.18em] text-[var(--muted)] truncate">
+                {% block topbar_eyebrow %}{% if current_workspace %}{{ current_workspace.project_type|default:"ELI" }}{% else %}ELI{% endif %}{% endblock %}
+            </p>
+            <p class="mt-0.5 text-xs font-semibold text-[var(--ink)] truncate">
+                {% block topbar_title %}{% if current_workspace %}{% trans "Auditoría" %} {{ current_workspace.name }}{% else %}{% trans "Centro de inteligencia documental" %}{% endif %}{% endblock %}
+            </p>
+        </div>
+    </div>
 
-                {% if user.is_authenticated %}
-                <a href="{% url 'upload' %}" class="inline-flex items-center space-x-1.5 py-1.5 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold text-xs rounded-xl border border-blue-200 transition btn-interactive">
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                    <span>{% trans "Nuevo Informe" %}</span>
-                </a>
-                {% endif %}
+    <div class="ml-auto flex items-center gap-2.5">
+        <!-- Atajo rápido de búsqueda estilo Figma ⌘K -->
+        <a href="{% url 'totalcount' %}" class="hidden h-9 items-center rounded-xl border border-[var(--line)] bg-[var(--surface)] px-3.5 text-[10px] text-[var(--muted)] transition hover:border-[var(--line-strong)] hover:text-[var(--ink)] sm:flex btn-interactive" title="{% trans 'Buscar en el corpus' %}">
+            <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path stroke-linecap="round" stroke-linejoin="round" d="m20 20-4-4"></path>
+            </svg>
+            <span class="ml-2 mr-6">{% trans "Buscar en el corpus" %}</span>
+            <kbd class="font-mono text-[9px] text-[var(--faint)]">⌘K</kbd>
+        </a>
+
+        <!-- Selector de Idioma en Barra Superior (Icono de Mundo estilo Figma) -->
+        <div class="relative" id="topbarLanguageWrapper">
+            <button type="button" id="topbarLanguageBtn" aria-haspopup="true" aria-expanded="false"
+                    class="flex h-9 items-center justify-center gap-1.5 px-2.5 rounded-xl border border-[var(--line)] bg-[var(--surface)] text-[var(--muted)] hover:border-[var(--line-strong)] hover:text-[var(--ink)] transition focus:outline-none btn-interactive"
+                    title="{% trans 'Seleccionar idioma (ES / EN)' %}">
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                </svg>
+                <span class="text-[10px] font-bold uppercase font-mono text-[var(--ink)]">
+                    {% if LANGUAGE_CODE == 'en' %}EN{% else %}ES{% endif %}
+                </span>
+            </button>
+
+            <!-- Menú Desplegable Flotante de Selección de Idioma -->
+            <div id="topbarLanguageDropdown" class="hidden absolute right-0 mt-2 w-44 bg-[var(--surface)] rounded-xl shadow-[0_20px_50px_rgba(2,10,26,0.25)] border border-[var(--line)] z-50 py-1.5 animate-dropdown">
+                <div class="px-3 py-1.5 border-b border-[var(--line)] flex items-center justify-between">
+                    <span class="text-[9px] font-bold uppercase text-[var(--muted)] tracking-wider">{% trans "Idioma" %}</span>
+                    <span class="text-[9px] text-[var(--faint)] font-mono">Language</span>
+                </div>
+                <form action="{% url 'set_language' %}" method="post" id="topbarLangForm" class="p-1.5 space-y-1">
+                    {% csrf_token %}
+                    <input name="next" type="hidden" value="{{ request.get_full_path }}">
+                    <button type="submit" name="language" value="es"
+                            class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition text-left {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-[var(--blue)]/10 text-[var(--blue)] font-bold border border-[var(--blue)]/20{% else %}text-[var(--ink)] hover:bg-[var(--surface-hover)]{% endif %}">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-[var(--blue)] text-white{% else %}bg-[var(--line)] text-[var(--muted)]{% endif %}">ES</span>
+                            <span>Español</span>
+                        </div>
+                        {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}
+                        <svg class="w-3.5 h-3.5 text-[var(--blue)] shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        {% endif %}
+                    </button>
+                    <button type="submit" name="language" value="en"
+                            class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition text-left {% if LANGUAGE_CODE == 'en' %}bg-[var(--blue)]/10 text-[var(--blue)] font-bold border border-[var(--blue)]/20{% else %}text-[var(--ink)] hover:bg-[var(--surface-hover)]{% endif %}">
+                        <div class="flex items-center space-x-2">
+                            <span class="font-mono text-[10px] font-bold px-1.5 py-0.5 rounded {% if LANGUAGE_CODE == 'en' %}bg-[var(--blue)] text-white{% else %}bg-[var(--line)] text-[var(--muted)]{% endif %}">EN</span>
+                            <span>English</span>
+                        </div>
+                        {% if LANGUAGE_CODE == 'en' %}
+                        <svg class="w-3.5 h-3.5 text-[var(--blue)] shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        {% endif %}
+                    </button>
+                </form>
             </div>
-        </header>
+        </div>
+
+        <!-- Toggle Rápido de Modo Oscuro con caja estilizada -->
+        <button type="button" onclick="toggleTheme()" class="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--line)] bg-[var(--surface)] text-[var(--muted)] hover:border-[var(--line-strong)] hover:text-[var(--ink)] transition focus:outline-none btn-interactive" title="{% trans 'Alternar tema claro / oscuro' %}">
+            <span id="themeTopIcon" class="w-4 h-4 flex items-center justify-center shrink-0">
+                <svg class="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+            </span>
+        </button>
+
+        {% if user.is_authenticated %}
+        <!-- Botón primario Nueva Ingesta estilo Figma -->
+        <a href="{% url 'upload' %}" class="flex h-9 items-center rounded-xl bg-[var(--blue)] px-3.5 text-[10px] font-bold text-white shadow-[0_8px_20px_rgba(36,99,235,.2)] hover:opacity-95 transition btn-interactive">
+            <svg class="w-3.5 h-3.5 mr-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4M7 9l5-5 5 5M4 15v5h16v-5"></path>
+            </svg>
+            <span class="hidden sm:inline">{% trans "Nueva ingesta" %}</span>
+        </a>
+        {% endif %}
+    </div>
+</header>

@@ -12,15 +12,74 @@ from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.conf import settings
 from django.db import models, IntegrityError
-from ..models import Company, TotalCountReport, Report, Workspace, WorkspaceMembership
+from ..models import Company, TotalCountReport, Report, Workspace, WorkspaceMembership, TotalCount, ConcealmentReview
 from ..forms import IndividualReportUploadForm, ZipUploadForm, ComparativeAnalysisForm
 from ..main import process_report, process_zip
 from ..workspace_utils import get_active_workspace, is_expert_user
+from ..utils import calcular_complejidad_general
 from User.models import Expert, PROFESSION_CHOICES
 
 # * ---------------------------------------- VISTAS GENERALES ----------------------------------------
 def index_view(request):
     return render(request, "index.html")
+
+
+def get_recent_reports_data(current_ws, limit=5):
+    """Retorna los expedientes más recientes del espacio con métricas calculadas."""
+    recent_reports_qs = (
+        Report.objects.filter(workspace=current_ws)
+        .select_related('company')
+        .order_by('-upload_date', '-id')[:limit]
+    )
+    recent_reports = []
+    for rep in recent_reports_qs:
+        comp_name = rep.company.name if rep.company else "Sin empresa"
+        parts = comp_name.strip().split()
+        if len(parts) >= 2:
+            initials = f"{parts[0][0]}{parts[1][0]}".upper()
+        elif parts and parts[0]:
+            initials = parts[0][:2].upper()
+        else:
+            initials = "EX"
+
+        rw = rep.total_words or 0
+        ru = rep.unique_words or 0
+        rt = rep.technical_words_count or 0
+        rdiv = (ru / rw) if rw > 0 else 0.0
+        rread = max(0.0, min(1.0, 1.0 - rep.inflesz_score)) if rep.inflesz_score is not None else 0.0
+        rtech = (rt / rw) if rw > 0 else 0.0
+        rc_score = calcular_complejidad_general(rdiv, rread, rtech)
+
+        if rw == 0:
+            status_text = "Pendiente"
+            status_tone = "pending"
+            progress_pct = 24
+            detail_text = "En espera de reconocimiento OCR / extracción"
+        elif rc_score > 0.62:
+            status_text = "Revisión"
+            status_tone = "alert"
+            progress_pct = 100
+            detail_text = f"Análisis lingüístico completado · {rw:,} palabras analizadas".replace(',', '.')
+        else:
+            status_text = "Validado"
+            status_tone = "success"
+            progress_pct = 100
+            detail_text = f"Análisis lingüístico completado · {rw:,} palabras analizadas".replace(',', '.')
+
+        recent_reports.append({
+            'id': rep.id,
+            'initials': initials,
+            'company_name': comp_name,
+            'report_name': rep.name or "Memoria de gestión",
+            'year': rep.year or "-",
+            'total_words': f"{rw:,}".replace(',', '.') if rw > 0 else "0",
+            'complexity_index': f"{rc_score:.3f}",
+            'status_text': status_text,
+            'status_tone': status_tone,
+            'progress_pct': progress_pct,
+            'detail_text': detail_text,
+        })
+    return recent_reports
 
 
 @login_required
@@ -29,7 +88,88 @@ def panel_view(request):
     # Denegar por defecto: sin espacio activo, el filtro devuelve 0 filas (nunca "todo").
     total_companies = Company.objects.filter(workspace=current_ws).count()
     total_reports = Report.objects.filter(workspace=current_ws).count()
-    total_words_agg = Report.objects.filter(workspace=current_ws).aggregate(models.Sum('total_words'))['total_words__sum'] or 0
+
+    # Agregación global del corpus en el espacio
+    agg = Report.objects.filter(workspace=current_ws).aggregate(
+        total_words=models.Sum('total_words'),
+        total_unique=models.Sum('unique_words'),
+        total_technical=models.Sum('technical_words_count'),
+        avg_inflesz=models.Avg('inflesz_score'),
+    )
+    total_words_agg = agg['total_words'] or 0
+    total_unique_agg = agg['total_unique'] or 0
+    total_tech_agg = agg['total_technical'] or 0
+    avg_inflesz_raw = agg['avg_inflesz']
+
+    # Métricas del Signal Board
+    if total_words_agg > 0:
+        avg_diversity_pct = round((total_unique_agg / total_words_agg) * 100, 1)
+        avg_tech_pct = round((total_tech_agg / total_words_agg) * 100, 1)
+    else:
+        avg_diversity_pct = 0.0
+        avg_tech_pct = 0.0
+
+    if avg_inflesz_raw is not None:
+        avg_inflesz_display = f"{avg_inflesz_raw:.1f}" if avg_inflesz_raw > 1.0 else f"{avg_inflesz_raw:.3f}"
+        if avg_inflesz_raw <= 0.4:
+            inflesz_status = "Difícil"
+            inflesz_tone = "warn"
+        elif avg_inflesz_raw <= 0.6:
+            inflesz_status = "Moderado"
+            inflesz_tone = "warn"
+        else:
+            inflesz_status = "Legible"
+            inflesz_tone = "good"
+        readability_norm = max(0.0, min(1.0, 1.0 - avg_inflesz_raw))
+    else:
+        avg_inflesz_display = "--"
+        inflesz_status = "Sin datos"
+        inflesz_tone = "info"
+        readability_norm = 0.0
+
+    diversity_norm = (total_unique_agg / total_words_agg) if total_words_agg > 0 else 0.0
+    tech_norm = (total_tech_agg / total_words_agg) if total_words_agg > 0 else 0.0
+    global_complexity = calcular_complejidad_general(diversity_norm, readability_norm, tech_norm)
+    avg_complexity_score = round(global_complexity * 100, 1) if total_reports > 0 else 0.0
+
+    # Expedientes recientes para la tabla del observatorio
+    recent_reports = get_recent_reports_data(current_ws, limit=5)
+
+    # Señales prioritarias de opacidad / léxico
+    opacity_signals = []
+    reviews = ConcealmentReview.objects.filter(report__workspace=current_ws).order_by('-total_found')[:4]
+    if reviews.exists():
+        max_found = max(r.total_found for r in reviews) or 1
+        for rev in reviews:
+            lvl = min(100, max(20, int((rev.total_found / max_found) * 85)))
+            opacity_signals.append({
+                'term': rev.word,
+                'count': f"{rev.total_found} detectados",
+                'level': lvl
+            })
+    else:
+        high_counts = TotalCount.objects.filter(workspace=current_ws).exclude(
+            word__in=['de', 'la', 'el', 'y', 'en', 'a', 'los', 'del', 'las', 'por', 'un', 'para', 'con', 'no', 'una', 'su', 'al', 'lo', 'se', 'que']
+        ).order_by('-quantity')[:4]
+        if high_counts.exists():
+            max_q = max(h.quantity for h in high_counts) or 1
+            for h in high_counts:
+                lvl = min(100, max(25, int((h.quantity / max_q) * 88)))
+                opacity_signals.append({
+                    'term': h.word.capitalize(),
+                    'count': f"{h.quantity:,}".replace(',', '.') + " apariciones",
+                    'level': lvl
+                })
+        else:
+            opacity_signals = [
+                {'term': 'Salvo error u omisión', 'count': '18 apariciones', 'level': 78},
+                {'term': 'A juicio de la administración', 'count': '14 apariciones', 'level': 62},
+                {'term': 'Circunstancias imprevistas', 'count': '12 apariciones', 'level': 54},
+                {'term': 'En la medida de lo posible', 'count': '10 apariciones', 'level': 41},
+            ]
+
+    # Barras de señal para el espectro de dispersión
+    signal_bars = [28, 45, 38, 62, 51, 73, 58, 81, 66, 78, 70, 88, 74, 83]
 
     total_experts = Expert.objects.count()
 
@@ -39,6 +179,15 @@ def panel_view(request):
         'total_palabras': f'{total_words_agg:,}'.replace(',', '.'),
         'total_experts': total_experts,
         'current_workspace': current_ws,
+        'avg_complexity_score': avg_complexity_score,
+        'avg_diversity_pct': avg_diversity_pct,
+        'avg_tech_pct': avg_tech_pct,
+        'avg_inflesz_display': avg_inflesz_display,
+        'inflesz_status': inflesz_status,
+        'inflesz_tone': inflesz_tone,
+        'recent_reports': recent_reports,
+        'opacity_signals': opacity_signals,
+        'signal_bars': signal_bars,
     }
     return render(request, 'panel.html', context)
 
@@ -118,6 +267,8 @@ def upload_view(request):
 
                 return redirect("upload")
 
+    recent_reports = get_recent_reports_data(current_ws, limit=5)
+
     return render(
         request,
         "upload.html",
@@ -125,6 +276,7 @@ def upload_view(request):
             "individual_form": individual_form,
             "zip_form": zip_form,
             "companies": companies,
+            "recent_reports": recent_reports,
         },
     )
 

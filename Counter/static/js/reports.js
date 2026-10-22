@@ -116,3 +116,31 @@ function submitEditForm(event) {
         }
     });
 }
+
+// ---------------------------------------- DESPLIEGUE DE OPCIONES DE FILA ----------------------------------------
+function toggleReportRow(id) {
+    const detailsRow = document.getElementById(`report-details-${id}`);
+    const chevron = document.getElementById(`chevron-${id}`);
+    const btn = document.getElementById(`expandBtn-${id}`);
+    if (!detailsRow) return;
+
+    const isHidden = detailsRow.classList.contains('hidden');
+    // Cerrar cualquier otra fila abierta para mantener una tabla limpia
+    document.querySelectorAll('[id^="report-details-"]').forEach(row => {
+        if (row !== detailsRow) row.classList.add('hidden');
+    });
+    document.querySelectorAll('[id^="chevron-"]').forEach(chev => {
+        if (chev !== chevron) chev.classList.remove('rotate-90');
+    });
+    document.querySelectorAll('[id^="expandBtn-"]').forEach(b => {
+        if (b !== btn) b.setAttribute('aria-expanded', 'false');
+    });
+
+    detailsRow.classList.toggle('hidden', !isHidden);
+    if (chevron) {
+        chevron.classList.toggle('rotate-90', isHidden);
+    }
+    if (btn) {
+        btn.setAttribute('aria-expanded', isHidden ? 'true' : 'false');
+    }
+}

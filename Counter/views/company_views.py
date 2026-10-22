@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator
-from django.db.models import Q
+from django.db.models import Q, Count
 from django.db.models.functions import Trim
 import json
 from ..models import Company, Province
@@ -22,6 +22,7 @@ def company_view(request):
         .select_related("province")
         # Denegar por defecto: sin espacio activo la lista sale vacía, jamás global.
         .filter(workspace=current_ws)
+        .annotate(num_reports=Count("report"))
     )
 
     companies_qs = (
@@ -40,7 +41,7 @@ def company_view(request):
     if province_filter:
         companies_qs = companies_qs.filter(province_id=province_filter)
 
-    paginator = Paginator(companies_qs, 10)
+    paginator = Paginator(companies_qs, 6)
     page_obj = paginator.get_page(page_number)
 
     provinces = Province.objects.all().order_by("name")

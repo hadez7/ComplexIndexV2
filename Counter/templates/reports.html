@@ -5,7 +5,7 @@
 {% block body_class %}eli-theme{% endblock %}
 
 {% block content %}
-<div class="mx-auto max-w-[1440px] px-5 py-7 sm:px-7 lg:px-9">
+<div class="mx-auto w-full max-w-[1800px] px-5 py-7 sm:px-7 lg:px-9">
 
     <!-- ===================================================================== -->
     <!-- Cabecera: archivo central y acción principal                          -->
@@ -244,9 +244,9 @@
             <table class="report-table min-w-[760px]">
                 <thead>
                     <tr>
-                        <th class="w-32">
+                        <th class="w-28 sm:w-32 text-center">
                             <a href="?page=1&page_size={{ page_size }}&order_by=year&dir={% if order_by == 'year' and order_dir == 'desc' %}asc{% else %}desc{% endif %}{% if query %}&q={{ query|urlencode }}{% endif %}"
-                               class="report-sort {% if order_by == 'year' %}is-active{% endif %}"
+                               class="report-sort inline-flex items-center justify-center {% if order_by == 'year' %}is-active{% endif %}"
                                title="{% trans 'Ordenar por año' %}">
                                 <span>{% trans "Periodo" %}</span>
                                 {% if order_by == 'year' %}
@@ -261,11 +261,11 @@
                             </a>
                         </th>
 
-                        <th>
+                        <th class="min-w-[240px] text-left">
                             <a href="?page=1&page_size={{ page_size }}&order_by=company&dir={% if order_by == 'company' and order_dir == 'asc' %}desc{% else %}asc{% endif %}{% if query %}&q={{ query|urlencode }}{% endif %}"
                                class="report-sort {% if order_by == 'company' %}is-active{% endif %}"
                                title="{% trans 'Ordenar por empresa' %}">
-                                <span>{% trans "Empresa / documento" %}</span>
+                                <span>{% trans "Empresa" %}</span>
                                 {% if order_by == 'company' %}
                                     <svg class="h-3 w-3 transition-transform {% if order_dir == 'desc' %}rotate-180{% endif %}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
@@ -278,14 +278,35 @@
                             </a>
                         </th>
 
-                        <th class="w-44 text-right">{% trans "Acciones" %}</th>
+                        <th class="min-w-[200px] text-center">
+                            <span>{% trans "Documento / Título" %}</span>
+                        </th>
+
+                        <th class="w-36 min-w-[140px] text-center">
+                            <a href="?page=1&page_size={{ page_size }}&order_by=words&dir={% if order_by == 'words' and order_dir == 'desc' %}asc{% else %}desc{% endif %}{% if query %}&q={{ query|urlencode }}{% endif %}"
+                               class="report-sort inline-flex items-center justify-center {% if order_by == 'words' %}is-active{% endif %}"
+                               title="{% trans 'Ordenar por palabras indexadas' %}">
+                                <span>{% trans "Palabras indexadas" %}</span>
+                                {% if order_by == 'words' %}
+                                    <svg class="h-3 w-3 transition-transform {% if order_dir == 'desc' %}rotate-180{% endif %}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/>
+                                    </svg>
+                                {% else %}
+                                    <svg class="h-3 w-3 opacity-60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                    </svg>
+                                {% endif %}
+                            </a>
+                        </th>
+
+                        <th class="w-20 text-center">{% trans "Opciones" %}</th>
                     </tr>
                 </thead>
 
                 <tbody>
                     {% for report in reports %}
-                    <tr id="reporte-{{ report.id }}">
-                        <td class="whitespace-nowrap">
+                    <tr id="reporte-{{ report.id }}" class="hover:bg-[var(--surface-hover)] transition-colors">
+                        <td class="whitespace-nowrap text-center">
                             {% if report.year %}
                                 <span class="report-year">{{ report.year }}</span>
                             {% else %}
@@ -293,74 +314,123 @@
                             {% endif %}
                         </td>
 
-                        <td>
+                        <td class="text-left">
                             <div class="flex items-center gap-3">
-                                <span class="report-avatar">
+                                <span class="report-avatar shrink-0">
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
                                     </svg>
                                 </span>
                                 <div class="min-w-0">
-                                    <p class="truncate text-[11px] font-semibold text-[var(--ink)]">
+                                    <p class="truncate text-[11px] font-semibold text-[var(--ink)]" title="{% if report.company.name %}{{ report.company.name }}{% else %}{% trans 'Empresa no asignada' %}{% endif %}">
                                         {% if report.company.name %}{{ report.company.name }}{% else %}{% trans "Empresa no asignada" %}{% endif %}
                                     </p>
-                                    {% if report.name %}
-                                    <p class="mt-0.5 truncate text-[10px] text-[var(--muted)]">{{ report.name }}</p>
-                                    {% endif %}
                                     {% if report.company.ruc %}
-                                    <p class="mt-1 font-mono text-[9px] text-[var(--faint)]">RUC: {{ report.company.ruc }}</p>
+                                    <p class="mt-0.5 font-mono text-[9px] text-[var(--faint)]">RUC: {{ report.company.ruc }}</p>
                                     {% endif %}
                                 </div>
                             </div>
                         </td>
 
-                        <td class="whitespace-nowrap text-right">
-                            <div class="flex items-center justify-end gap-1.5">
-                                <button type="button"
-                                        onclick="showDetails({{ report.id }})"
-                                        title="{% trans 'Ver detalles del reporte' %}"
-                                        aria-label="{% trans 'Ver detalles del reporte' %}"
-                                        class="row-action brand">
-                                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
-                                    </svg>
-                                </button>
+                        <td class="text-center">
+                            <p class="truncate text-[11px] font-medium text-[var(--ink)]" title="{{ report.name|default:_('Sin título') }}">
+                                {{ report.name|default:_("Sin título") }}
+                            </p>
+                        </td>
 
-                                <a href="{% url 'report_count' report.id %}"
-                                   title="{% trans 'Ver conteo de palabras' %}"
-                                   aria-label="{% trans 'Ver conteo de palabras' %}"
-                                   class="row-action violet">
-                                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                                    </svg>
-                                </a>
+                        <td class="whitespace-nowrap text-center">
+                            <span class="font-mono text-xs font-semibold text-[var(--ink)]">
+                                {{ report.total_words|default:"0" }}
+                            </span>
+                        </td>
 
-                                <button type="button"
-                                        onclick="openEditModal({{ report.id }})"
-                                        title="{% trans 'Editar' %}"
-                                        aria-label="{% trans 'Editar' %}"
-                                        class="row-action amber">
-                                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z"/>
-                                    </svg>
-                                </button>
+                        <td class="whitespace-nowrap text-center">
+                            <button type="button"
+                                    onclick="toggleReportRow({{ report.id }})"
+                                    id="expandBtn-{{ report.id }}"
+                                    class="inline-flex h-8 w-8 items-center justify-center rounded-xl border border-[var(--line)] bg-[var(--surface)] text-[var(--muted)] hover:border-[var(--blue)] hover:text-[var(--blue)] transition shadow-2xs group/btn"
+                                    title="{% trans 'Opciones del documento' %}"
+                                    aria-expanded="false"
+                                    aria-controls="report-details-{{ report.id }}">
+                                <svg class="h-3.5 w-3.5 transition-transform duration-200" id="chevron-{{ report.id }}" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
 
-                                <button type="button"
-                                        onclick="openDeleteModal({{ report.id }})"
-                                        title="{% trans 'Eliminar' %}"
-                                        aria-label="{% trans 'Eliminar' %}"
-                                        class="row-action danger">
-                                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                    </svg>
-                                </button>
+                    <!-- Panel desplegable con las opciones del documento -->
+                    <tr id="report-details-{{ report.id }}" class="hidden bg-[var(--surface-hover)] border-b border-[var(--line)]">
+                        <td colspan="5" class="p-3 sm:px-5 sm:py-3.5">
+                            <div class="rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-3.5 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                                <div class="flex flex-wrap items-center gap-2.5">
+                                    <div class="inline-flex items-center gap-2 rounded-xl border border-[var(--line)] bg-[var(--canvas)] px-3 py-1.5 text-[10px]">
+                                        <svg class="h-3.5 w-3.5 text-[var(--muted)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                        </svg>
+                                        <span class="text-[9px] font-bold uppercase tracking-wider text-[var(--faint)]">{% trans "Fecha de ingesta" %}:</span>
+                                        <span class="font-mono text-[10px] font-semibold text-[var(--ink)]">{{ report.upload_date|date:"d/m/Y H:i" }}</span>
+                                    </div>
+
+                                    {% if report.file %}
+                                    <a href="{{ report.file.url }}" target="_blank" rel="noopener noreferrer"
+                                       class="inline-flex h-8 items-center gap-1.5 rounded-xl border border-[var(--line)] bg-[var(--canvas)] px-3 text-[10px] font-semibold text-[var(--ink)] hover:border-[var(--blue)] hover:text-[var(--blue)] hover:bg-[var(--surface-hover)] active:scale-[0.98] transition shadow-2xs"
+                                       title="{% trans 'Descargar archivo PDF' %}">
+                                        <svg class="h-3.5 w-3.5 text-[var(--blue)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                        </svg>
+                                        <span>{% trans "Descargar archivo" %}</span>
+                                    </a>
+                                    {% endif %}
+                                </div>
+
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <a href="{% url 'report_count' report.id %}"
+                                       class="inline-flex h-8 items-center gap-1.5 rounded-xl bg-[var(--blue)] px-3.5 text-[10px] font-bold text-white shadow-sm hover:bg-[#1d54c9] active:scale-[0.98] transition"
+                                       title="{% trans 'Ver análisis y frecuencias léxicas' %}">
+                                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                                        </svg>
+                                        <span>{% trans "Ver conteo léxico" %}</span>
+                                    </a>
+
+                                    <button type="button"
+                                            onclick="showDetails({{ report.id }})"
+                                            class="inline-flex h-8 items-center gap-1.5 rounded-xl border border-[var(--line)] bg-[var(--canvas)] px-3 text-[10px] font-semibold text-[var(--ink)] hover:border-[var(--blue)] hover:text-[var(--blue)] hover:bg-[var(--surface-hover)] active:scale-[0.98] transition shadow-2xs"
+                                            title="{% trans 'Ver metadatos y ficha pericial' %}">
+                                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                        </svg>
+                                        <span>{% trans "Ficha técnica" %}</span>
+                                    </button>
+
+                                    <button type="button"
+                                            onclick="openEditModal({{ report.id }})"
+                                            class="inline-flex h-8 items-center gap-1.5 rounded-xl border border-[var(--line)] bg-[var(--canvas)] px-3 text-[10px] font-semibold text-[var(--ink)] hover:border-amber-400/60 hover:bg-amber-500/10 hover:text-amber-500 active:scale-[0.98] transition shadow-2xs"
+                                            title="{% trans 'Editar metadatos del reporte' %}">
+                                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z"/>
+                                        </svg>
+                                        <span>{% trans "Editar" %}</span>
+                                    </button>
+
+                                    <button type="button"
+                                            onclick="openDeleteModal({{ report.id }})"
+                                            class="inline-flex h-8 items-center gap-1.5 rounded-xl border border-red-500/25 bg-red-500/5 px-3 text-[10px] font-semibold text-[#b34a2e] dark:text-[#ff9c76] hover:border-red-500/50 hover:bg-red-500/15 active:scale-[0.98] transition shadow-2xs"
+                                            title="{% trans 'Eliminar reporte del corpus' %}">
+                                        <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                        </svg>
+                                        <span>{% trans "Eliminar" %}</span>
+                                    </button>
+                                </div>
                             </div>
                         </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="3" class="!py-14 text-center">
+                        <td colspan="5" class="!py-14 text-center">
                             <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--canvas)] text-[var(--faint)]">
                                 <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -430,5 +500,5 @@
 
 {% block scripts %}
 {% load static %}
-<script src="{% static 'js/reports.js' %}"></script>
+<script src="{% static 'js/reports.js' %}?v=eli-44"></script>
 {% endblock %}

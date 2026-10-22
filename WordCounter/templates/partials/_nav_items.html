@@ -1,138 +1,113 @@
 {% load i18n %}
 {% if is_expert_user %}
-            <!-- Modo Experto: Acceso a Espacios y Detección de Opacidad -->
-            <div>
-                <span class="sidebar-text px-3 text-[10px] font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
-                    {% trans "Navegación" %}
-                </span>
-                <div class="space-y-0.5">
-                    <a href="{% url 'workspaces_list' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'workspaces_list' %}" data-tooltip="{% trans 'Espacios de Trabajo' %}" title="{% trans 'Espacios de Trabajo' %}">
-                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-                        </svg>
-                        <span class="sidebar-text truncate">{% trans "Espacios de Trabajo" %}</span>
-                    </a>
-                </div>
-            </div>
-            <div>
-                <span class="sidebar-text px-3 text-[10px] font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
-                    {% trans "Peritaje Forense" %}
-                </span>
-                <div class="space-y-0.5">
-                    <a href="{% url 'concealment_detection' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'concealment_detection' %}" data-tooltip="{% trans 'Detección de Opacidad' %}" title="{% trans 'Detección Forense de Opacidad Contractual' %}">
-                        <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path>
-                        </svg>
-                        <span class="sidebar-text truncate font-bold text-blue-700">{% trans "Detección de Opacidad" %}</span>
-                    </a>
-                </div>
-            </div>
-            {% else %}
-            <!-- Grupo: Plataforma Central -->
-            <div>
-                <span class="sidebar-text px-3 text-[10px] font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
-                    {% trans "Plataforma" %}
-                </span>
-                <div class="space-y-0.5">
-                    {% if user.is_authenticated %}
-                    <a href="{% url 'panel' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'panel' %}" data-tooltip="{% trans 'Observatorio' %}" title="{% trans 'Observatorio' %}">
-                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
-                        </svg>
-                        <span class="sidebar-text truncate">{% trans "Observatorio" %}</span>
-                    </a>
+    <a href="{% url 'workspaces_list' %}" class="nav-item sidebar-nav-item flex items-center px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition" data-path="{% url 'workspaces_list' %}" data-tooltip="{% trans 'Espacios' %}" title="{% trans 'Espacios de Trabajo' %}">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m12 3-9 5 9 5 9-5-9-5Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="m3 12 9 5 9-5M3 16l9 5 9-5" />
+        </svg>
+        <span class="sidebar-text ml-3 truncate">{% trans "Espacios" %}</span>
+    </a>
 
-                    <a href="{% url 'workspaces_list' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'workspaces_list' %}" data-tooltip="{% trans 'Espacios de Trabajo' %}" title="{% trans 'Espacios de Trabajo y Proyectos' %}">
-                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-                        </svg>
-                        <span class="sidebar-text truncate">{% trans "Espacios de Trabajo" %}</span>
-                    </a>
-                    {% endif %}
-                </div>
-            </div>
+    <a href="{% url 'concealment_detection' %}" class="nav-item sidebar-nav-item flex items-center px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition" data-path="{% url 'concealment_detection' %}" data-tooltip="{% trans 'Opacidad' %}" title="{% trans 'Detección Forense de Opacidad Contractual' %}">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6Z" />
+            <circle cx="12" cy="12" r="2.5" />
+        </svg>
+        <span class="sidebar-text ml-3 truncate">{% trans "Opacidad" %}</span>
+        <span class="sidebar-text ml-auto rounded-full bg-cyan-300/10 px-2.5 py-0.5 font-mono text-[10px] text-cyan-200">12</span>
+    </a>
+{% else %}
+    {% if user.is_authenticated %}
+    <!-- 1. Observatorio -->
+    <a href="{% url 'panel' %}" class="nav-item sidebar-nav-item flex items-center px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition" data-path="{% url 'panel' %}" data-tooltip="{% trans 'Observatorio' %}" title="{% trans 'Observatorio' %}">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7" rx="1.5" />
+            <rect x="14" y="3" width="7" height="7" rx="1.5" />
+            <rect x="3" y="14" width="7" height="7" rx="1.5" />
+            <rect x="14" y="14" width="7" height="7" rx="1.5" />
+        </svg>
+        <span class="sidebar-text ml-3 truncate">{% trans "Observatorio" %}</span>
+    </a>
 
-            {% if user.is_authenticated %}
-            <!-- Grupo: Peritaje & Auditoría Ingesta -->
-            <div>
-                <span class="sidebar-text px-3 text-[10px] font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
-                    {% trans "Auditoría & Expedientes" %}
-                </span>
-                <div class="space-y-0.5">
-                    <a href="{% url 'upload' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'upload' %}" data-tooltip="{% trans 'Subir / Ingesta OCR' %}" title="{% trans 'Subir Reportes e Ingesta OCR' %}">
-                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                        </svg>
-                        <span class="sidebar-text truncate">{% trans "Subir / Ingesta OCR" %}</span>
-                    </a>
+    <!-- 2. Espacios -->
+    <a href="{% url 'workspaces_list' %}" class="nav-item sidebar-nav-item flex items-center px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition" data-path="{% url 'workspaces_list' %}" data-tooltip="{% trans 'Espacios' %}" title="{% trans 'Espacios de Trabajo' %}">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="m12 3-9 5 9 5 9-5-9-5Z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="m3 12 9 5 9-5M3 16l9 5 9-5" />
+        </svg>
+        <span class="sidebar-text ml-3 truncate">{% trans "Espacios" %}</span>
+    </a>
 
-                    <a href="{% url 'reports' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'reports' %}" data-tooltip="{% trans 'Catálogo de Reportes' %}" title="{% trans 'Catálogo de Reportes Contractuales' %}">
-                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        <span class="sidebar-text truncate">{% trans "Catálogo de Reportes" %}</span>
-                    </a>
+    <!-- 3. Ingesta -->
+    <a href="{% url 'upload' %}" class="nav-item sidebar-nav-item flex items-center px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition" data-path="{% url 'upload' %}" data-tooltip="{% trans 'Ingesta' %}" title="{% trans 'Subir Reportes e Ingesta OCR' %}">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 16V4M7 9l5-5 5 5M4 15v5h16v-5" />
+        </svg>
+        <span class="sidebar-text ml-3 truncate">{% trans "Ingesta" %}</span>
+    </a>
 
-                    <a href="{% url 'companies' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'companies' %}" data-tooltip="{% trans 'Empresas Auditadas' %}" title="{% trans 'Directorio de Empresas Auditadas' %}">
-                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                        </svg>
-                        <span class="sidebar-text truncate">{% trans "Empresas Auditadas" %}</span>
-                    </a>
-                </div>
-            </div>
+    <!-- 4. Expedientes -->
+    <a href="{% url 'reports' %}" class="nav-item sidebar-nav-item flex items-center px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition" data-path="{% url 'reports' %}" data-tooltip="{% trans 'Expedientes' %}" title="{% trans 'Catálogo de Reportes Contractuales' %}">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 3h7l4 4v14H7z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M14 3v5h4M10 12h5M10 16h5" />
+        </svg>
+        <span class="sidebar-text ml-3 truncate">{% trans "Expedientes" %}</span>
+    </a>
 
-            <!-- Grupo: Análisis Léxico & Métricas Forenses -->
-            <div>
-                <span class="sidebar-text px-3 text-[10px] font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
-                    {% trans "Métricas & Léxico" %}
-                </span>
-                <div class="space-y-0.5">
-                    <a href="{% url 'totalcount' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'totalcount' %}" data-tooltip="{% trans 'Conteo Consolidado' %}" title="{% trans 'Conteo Consolidado de Palabras e Índices' %}">
-                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                        </svg>
-                        <span class="sidebar-text truncate">{% trans "Conteo Consolidado" %}</span>
-                    </a>
+    <!-- 5. Entidades -->
+    <a href="{% url 'companies' %}" class="nav-item sidebar-nav-item flex items-center px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition" data-path="{% url 'companies' %}" data-tooltip="{% trans 'Entidades' %}" title="{% trans 'Directorio de Empresas Auditadas' %}">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 21V7l8-4 8 4v14M8 10h.01M12 10h.01M16 10h.01M8 14h.01M12 14h.01M16 14h.01M9 21v-3h6v3" />
+        </svg>
+        <span class="sidebar-text ml-3 truncate">{% trans "Entidades" %}</span>
+    </a>
 
-                    <a href="{% url 'concealment_detection' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'concealment_detection' %}" data-tooltip="{% trans 'Detección de Opacidad' %}" title="{% trans 'Detección Forense de Opacidad Contractual' %}">
-                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18"></path>
-                        </svg>
-                        <span class="sidebar-text truncate">{% trans "Detección de Opacidad" %}</span>
-                    </a>
+    <!-- 6. Conteo consolidado -->
+    <a href="{% url 'totalcount' %}" class="nav-item sidebar-nav-item flex items-center px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition" data-path="{% url 'totalcount' %}" data-tooltip="{% trans 'Conteo consolidado' %}" title="{% trans 'Conteo Consolidado de Palabras' %}">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 19V9M10 19V5M16 19v-7M22 19H2" />
+        </svg>
+        <span class="sidebar-text ml-3 truncate">{% trans "Conteo consolidado" %}</span>
+    </a>
 
-                    <a href="{% url 'comparative_analysis' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'comparative_analysis' %}" data-tooltip="{% trans 'Análisis Comparativo' %}" title="{% trans 'Análisis Comparativo entre Entidades' %}">
-                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 18h12l3-18H3zm3 3h12"></path>
-                        </svg>
-                        <span class="sidebar-text truncate">{% trans "Análisis Comparativo" %}</span>
-                    </a>
+    <!-- 7. Opacidad -->
+    <a href="{% url 'concealment_detection' %}" class="nav-item sidebar-nav-item flex items-center px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition" data-path="{% url 'concealment_detection' %}" data-tooltip="{% trans 'Opacidad' %}" title="{% trans 'Detección Forense de Opacidad Contractual' %}">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6Z" />
+            <circle cx="12" cy="12" r="2.5" />
+        </svg>
+        <span class="sidebar-text ml-3 truncate">{% trans "Opacidad" %}</span>
+        <span class="sidebar-text ml-auto rounded-full bg-cyan-300/10 px-2.5 py-0.5 font-mono text-[10px] text-cyan-200">12</span>
+    </a>
 
-                    <a href="{% url 'expert_lists' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'expert_lists' %}" data-tooltip="{% trans 'Listas de Expertos' %}" title="{% trans 'Vocabularios y Listas de Control' %}">
-                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
-                        </svg>
-                        <span class="sidebar-text truncate">{% trans "Listas de Expertos" %}</span>
-                    </a>
-                </div>
-            </div>
+    <!-- 8. Contraste -->
+    <a href="{% url 'comparative_analysis' %}" class="nav-item sidebar-nav-item flex items-center px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition" data-path="{% url 'comparative_analysis' %}" data-tooltip="{% trans 'Contraste' %}" title="{% trans 'Análisis Comparativo entre Entidades' %}">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 3 4 7l4 4M4 7h12a4 4 0 0 1 4 4v1M16 21l4-4-4-4M20 17H8a4 4 0 0 1-4-4v-1" />
+        </svg>
+        <span class="sidebar-text ml-3 truncate">{% trans "Contraste" %}</span>
+    </a>
 
-            {% if user.is_staff %}
-            <!-- Grupo: Administración y Usuarios -->
-            <div>
-                <span class="sidebar-text px-3 text-[10px] font-bold uppercase text-slate-400 tracking-wider block mb-1.5">
-                    {% trans "Administración" %}
-                </span>
-                <div class="space-y-0.5">
-                    <a href="{% url 'users' %}" class="sidebar-nav-item flex items-center space-x-3 px-3 py-2 rounded-xl text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition" data-path="{% url 'users' %}" data-tooltip="{% trans 'Gestión de Usuarios' %}" title="{% trans 'Gestión de Usuarios y Roles' %}">
-                        <svg class="w-4 h-4 text-slate-500 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
-                        <span class="sidebar-text truncate">{% trans "Gestión de Usuarios" %}</span>
-                    </a>
-                </div>
-            </div>
-            {% endif %}
-            {% endif %}
-            {% endif %}
+    <!-- 9. Vocabularios -->
+    <a href="{% url 'expert_lists' %}" class="nav-item sidebar-nav-item flex items-center px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition" data-path="{% url 'expert_lists' %}" data-tooltip="{% trans 'Vocabularios' %}" title="{% trans 'Vocabularios y Listas de Control' %}">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 7.5h16M6 7.5v11h12v-11M3 4h18v3.5H3z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.5 12h5" />
+        </svg>
+        <span class="sidebar-text ml-3 truncate">{% trans "Vocabularios" %}</span>
+    </a>
+
+    {% if user.is_staff %}
+    <!-- 10. Usuarios (Solo Administradores) -->
+    <a href="{% url 'users' %}" class="nav-item sidebar-nav-item flex items-center px-3 py-2.5 rounded-xl text-[13.5px] font-medium transition" data-path="{% url 'users' %}" data-tooltip="{% trans 'Usuarios' %}" title="{% trans 'Gestión de Usuarios y Roles' %}">
+        <svg class="w-[18px] h-[18px] shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+            <circle cx="9" cy="8" r="3" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M3 20v-2a5 5 0 0 1 5-5h2a5 5 0 0 1 5 5v2M16 4.5a3 3 0 0 1 0 5.8M18 13a4 4 0 0 1 3 3.9V20" />
+        </svg>
+        <span class="sidebar-text ml-3 truncate">{% trans "Usuarios" %}</span>
+    </a>
+    {% endif %}
+
+    {% endif %}
+{% endif %}

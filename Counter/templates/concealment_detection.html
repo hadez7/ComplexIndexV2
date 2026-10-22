@@ -1,13 +1,11 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n dict_filters static %}
 
-{% block title %}{% trans "Detección de ocultamiento" %} | ELI{% endblock %}
+{% block title %}{% trans "Detector de Ocultamiento de Información" %} | ELI{% endblock %}
 {% block body_class %}eli-theme{% endblock %}
 
 {% block content %}
-{% load dict_filters i18n %}
-
-<div class="mx-auto max-w-[1440px] px-5 py-7 sm:px-7 lg:px-9">
+<div class="mx-auto w-full max-w-[1800px] px-5 py-7 sm:px-7 lg:px-9">
 
     <!-- ===================================================================== -->
     <!-- Cabecera: auditoría de opacidad lingüística                           -->
@@ -51,9 +49,9 @@
     <!-- ===================================================================== -->
     <!-- Filtros: año, reporte, origen y palabra                               -->
     <!-- ===================================================================== -->
-    <form method="get" class="mt-6 rounded-[14px] border border-[var(--line)] bg-[var(--surface)] p-4">
-        <div class="flex flex-wrap gap-3">
-            <div class="form-field min-w-[170px] flex-1">
+    <form method="get" class="filter-strip mt-6">
+        <div class="flex flex-wrap gap-3 w-full">
+            <div class="form-field min-w-[160px] flex-1">
                 <span>{% trans "Año del reporte" %}</span>
                 <select id="year"
                         name="year"
@@ -69,7 +67,7 @@
                 </select>
             </div>
 
-            <div class="form-field min-w-[170px] flex-1">
+            <div class="form-field min-w-[220px] flex-[1.4]">
                 <span>{% trans "Selecciona una empresa:" %}</span>
                 <select name="report_id"
                         id="report"
@@ -134,7 +132,7 @@
             </div>
         </div>
 
-        <div class="mt-4 flex flex-col-reverse gap-2 border-t border-[var(--line)] pt-4 sm:flex-row sm:justify-end">
+        <div class="mt-4 flex flex-col-reverse gap-2 border-t border-[var(--line)] pt-4 sm:flex-row sm:justify-end w-full">
             <a href="{% url 'concealment_detection' %}" class="dialog-cancel w-full sm:w-auto">
                 {% trans "Limpiar" %}
             </a>
@@ -148,82 +146,186 @@
     </form>
 
     <!-- ===================================================================== -->
-    <!-- Resultados: párrafos detectados                                       -->
+    <!-- Mesa de trabajo: 3 columnas (Figma ELI OpacityScreen)                 -->
     <!-- ===================================================================== -->
-    {% if paragraphs %}
-    <form method="post" class="mt-8">
+    {% if selected_report %}
+    <form method="post" id="review-form" class="mt-6">
         {% csrf_token %}
-
         <input type="hidden" name="report_id" value="{{ selected_report.id }}">
         <input type="hidden" name="palabra" value="{{ palabra }}">
 
-        <div class="flex flex-col gap-4 border-b border-[var(--line)] pb-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-                <p class="eyebrow">{% trans "Resultados de auditoría" %}</p>
-                <h2 class="mt-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--ink)]">
-                    {% trans "Párrafos encontrados para" %}
-                    <span class="text-[var(--blue)]">"{{ palabra }}"</span>
-                </h2>
-                <p class="mt-1 text-[11px] text-[var(--muted)]">
-                    {% trans "en" %}
-                    <strong class="font-semibold text-[var(--ink)]">
-                        {% if selected_report.company %}{% if selected_report.clean_company %}{{ selected_report.clean_company }}{% else %}{{ selected_report.company.name }}{% endif %}{% if selected_report.year %} ({{ selected_report.year }}){% endif %}{% else %}{{ selected_report.name }}{% endif %}
-                    </strong>
-                </p>
-            </div>
+        <section class="grid overflow-hidden rounded-2xl border border-[var(--line)] bg-[var(--surface)] xl:grid-cols-[270px_minmax(0,1fr)_260px]">
 
-            <div class="flex flex-wrap items-center gap-2">
-                <span class="status-pill pending">
-                    {% trans "Total encontrados" %}:
-                    <strong class="font-mono font-bold">{{ paragraphs|length }}</strong>
-                </span>
-                <span class="status-pill success">
-                    {% trans "Ocurrencias válidas" %}:
-                    <strong id="total-ocurrencias" class="font-mono font-bold">{{ total_ocurrencias }}</strong>
-                </span>
-            </div>
-        </div>
+            <!-- Columna 1 (Izquierda): Lista de hallazgos / términos -->
+            <aside class="flex flex-col border-b border-[var(--line)] p-4 xl:border-b-0 xl:border-r">
+                <div class="flex items-center justify-between pb-3 border-b border-[var(--line)]">
+                    <p class="text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--muted)]">
+                        {% trans "Hallazgos" %} · {{ findings_list|length }}
+                    </p>
+                    {% if selected_report.year %}
+                        <span class="period-chip">{{ selected_report.year }}</span>
+                    {% endif %}
+                </div>
 
-        <div class="mt-4 space-y-3">
-            {% for p in paragraphs %}
-            <article class="surface-panel flex flex-col gap-4 p-4 sm:flex-row sm:items-center">
-                <p class="flex-1 text-[11px] leading-6 text-[var(--muted)]">
-                    {{ p.paragraph }}
-                </p>
+                <div class="relative mt-3">
+                    <input type="text"
+                           id="search-findings"
+                           placeholder="{% trans 'Filtrar término...' %}"
+                           class="eli-input !h-8 !py-1 text-[11px] !pl-8">
+                    <svg class="pointer-events-none absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[var(--faint)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                </div>
 
-                <div class="flex shrink-0 items-center justify-between gap-3 border-t border-[var(--line)] pt-3 sm:w-36 sm:flex-col sm:justify-center sm:border-l sm:border-t-0 sm:pl-4 sm:pt-0">
-                    <input type="checkbox"
-                           class="parrafo-check h-4 w-4 cursor-pointer rounded accent-[var(--blue)]"
-                           data-count="{{ p.count }}"
-                           name="parrafos_validos"
-                           value="{{ forloop.counter0 }}"
-                           {% if p.checked %}checked{% endif %}>
-                    <span class="metric-badge high">
-                        {{ p.count }} {% trans "ocurrencias" %}
-                    </span>
+                <div class="mt-3 flex-1 space-y-1 overflow-y-auto max-h-[580px] pr-1">
+                    {% if findings_list %}
+                        {% for item in findings_list %}
+                            <a href="?year={{ selected_year }}&report_id={{ selected_report.id }}&origen_palabras={{ origen_palabras }}&lista_experto={{ lista_experto_id }}&palabra={{ item.word }}"
+                               class="finding-item {% if item.word|lower == palabra|lower %}active{% endif %}"
+                               data-word="{{ item.word|lower }}">
+                                <span>{{ item.word }}</span>
+                                <small>{{ item.quantity }} {% if item.quantity == 1 %}{% trans "aparición" %}{% else %}{% trans "apariciones" %}{% endif %}</small>
+                            </a>
+                        {% endfor %}
+                    {% else %}
+                        <p class="py-8 text-center text-[10px] italic text-[var(--muted)]">
+                            {% trans "No hay términos cuantificados en este reporte." %}
+                        </p>
+                    {% endif %}
+                </div>
+            </aside>
+
+            <!-- Columna 2 (Centro): Lector de documentos con resaltado -->
+            <article class="document-reader flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between border-b border-[var(--line)] pb-3">
+                        <span class="font-mono text-[9px] font-semibold uppercase tracking-wider text-[var(--muted)]">
+                            {% if selected_report.company %}{% if selected_report.clean_company %}{{ selected_report.clean_company }}{% else %}{{ selected_report.company.name }}{% endif %}{% if selected_report.year %} ({{ selected_report.year }}){% endif %}{% else %}{{ selected_report.name }}{% endif %}
+                        </span>
+                        <span class="font-mono text-[9px] text-[var(--faint)]">
+                            {% if paragraphs %}{{ paragraphs|length }} {% trans "párrafos coincidentes" %}{% endif %}
+                        </span>
+                    </div>
+
+                    {% if paragraphs %}
+                        <div class="mt-5 space-y-4 max-h-[580px] overflow-y-auto pr-2">
+                            {% for p in paragraphs %}
+                            <article class="surface-panel !p-4 transition hover:border-[var(--line-strong)]">
+                                <div class="flex items-center justify-between border-b border-[var(--line)] pb-2.5 mb-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="font-mono text-[9px] font-bold text-[var(--muted)] uppercase tracking-wider">
+                                            {% trans "Párrafo" %} {{ forloop.counter }} / {{ paragraphs|length }}
+                                        </span>
+                                        <span class="metric-badge high text-[9px]">
+                                            {{ p.count }} {% if p.count == 1 %}{% trans "aparición" %}{% else %}{% trans "apariciones" %}{% endif %}
+                                        </span>
+                                    </div>
+                                    <label class="inline-flex items-center gap-2 cursor-pointer select-none rounded-lg bg-[var(--surface-hover)] px-2.5 py-1 text-[10px] font-semibold text-[var(--ink)] transition hover:bg-[var(--line)]">
+                                        <input type="checkbox"
+                                               class="parrafo-check h-4 w-4 cursor-pointer rounded accent-[var(--blue)]"
+                                               data-count="{{ p.count }}"
+                                               name="parrafos_validos"
+                                               value="{{ forloop.counter0 }}"
+                                               {% if p.checked %}checked{% endif %}>
+                                        <span>{% trans "Válido" %}</span>
+                                    </label>
+                                </div>
+                                <p class="text-[12px] leading-relaxed text-[var(--ink)]">
+                                    {{ p.paragraph|highlight_word:palabra }}
+                                </p>
+                            </article>
+                            {% endfor %}
+                        </div>
+                    {% elif palabra %}
+                        <div class="py-20 text-center">
+                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--canvas)] text-[var(--faint)]">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+                                </svg>
+                            </div>
+                            <h3 class="mt-3 text-sm font-semibold text-[var(--ink)]">{% trans "No se encontraron párrafos" %}</h3>
+                            <p class="mt-1 text-[11px] text-[var(--muted)]">
+                                {% trans "No hay ocurrencias para el término" %} <strong class="text-[var(--blue)]">"{{ palabra }}"</strong> {% trans "en este documento." %}
+                            </p>
+                        </div>
+                    {% else %}
+                        <div class="py-20 text-center">
+                            <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)]">
+                                <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                </svg>
+                            </div>
+                            <h3 class="mt-3 text-sm font-semibold text-[var(--ink)]">{% trans "Selecciona una palabra para auditar" %}</h3>
+                            <p class="mt-1 text-[11px] text-[var(--muted)]">
+                                {% trans "Haz clic en cualquiera de los hallazgos a la izquierda o búscalo en el filtro superior." %}
+                            </p>
+                        </div>
+                    {% endif %}
                 </div>
             </article>
-            {% endfor %}
-        </div>
 
-        <div class="mt-5 flex justify-end">
-            <button type="submit" class="dialog-confirm gap-2 px-5 py-2.5">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-                </svg>
-                {% trans "Aceptar revisión" %}
-            </button>
-        </div>
+            <!-- Columna 3 (Derecha): Dictamen humano y acciones -->
+            <aside class="flex flex-col justify-between border-t border-[var(--line)] p-5 xl:border-l xl:border-t-0">
+                <div>
+                    <p class="eyebrow">{% trans "Dictamen humano" %}</p>
+                    <h3 class="mt-2 text-sm font-semibold text-[var(--ink)]">
+                        {% if palabra %}“{{ palabra }}”{% else %}<span class="text-[var(--faint)]">{% trans "Sin selección" %}</span>{% endif %}
+                    </h3>
+                    <p class="mt-2 text-[10px] leading-5 text-[var(--muted)]">
+                        {% trans "El término puede condicionar la certeza o diluir la responsabilidad sobre contingencias materiales." %}
+                    </p>
+
+                    <div class="mt-6 space-y-2">
+                        {% if paragraphs %}
+                            <button type="submit" class="review-action approve">
+                                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
+                                </svg>
+                                <span>{% trans "Aceptar revisión" %}</span>
+                            </button>
+                            <button type="button" id="btn-marcar-todos" class="review-action">
+                                {% trans "Marcar todos válidos" %}
+                            </button>
+                            <button type="button" id="btn-desmarcar-todos" class="review-action discard">
+                                {% trans "Descartar todos" %}
+                            </button>
+                        {% else %}
+                            <button type="button" disabled class="review-action opacity-40 cursor-not-allowed">
+                                {% trans "Aceptar revisión" %}
+                            </button>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mt-6 border-t border-[var(--line)] pt-5 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[8px] font-bold uppercase tracking-wider text-[var(--faint)]">{% trans "Párrafos" %}</span>
+                        <span class="font-mono text-sm font-bold text-[var(--ink)]">{{ paragraphs|length }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[8px] font-bold uppercase tracking-wider text-[var(--teal)]">{% trans "Ocurrencias válidas" %}</span>
+                        <span id="total-ocurrencias" class="font-mono text-lg font-bold text-[var(--teal)]">{{ total_ocurrencias }}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-[8px] font-bold uppercase tracking-wider text-[var(--red)]">{% trans "Descartadas" %}</span>
+                        <span id="total-descartadas" class="font-mono text-sm font-bold text-[var(--red)]">{{ total_descartadas }}</span>
+                    </div>
+                </div>
+            </aside>
+
+        </section>
     </form>
-    {% elif palabra %}
-    <div class="surface-panel mt-6 px-6 py-14 text-center">
+    {% else %}
+    <div class="surface-panel mt-6 px-6 py-16 text-center">
         <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--canvas)] text-[var(--faint)]">
-            <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/>
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
             </svg>
         </div>
-        <p class="mt-3 text-[11px] font-semibold text-[var(--ink)]">{% trans "No se encontraron párrafos" %}</p>
-        <p class="mt-1 text-[10px] text-[var(--muted)]">{% trans "Prueba con otra palabra, reporte u origen de palabras." %}</p>
+        <h3 class="mt-3 text-sm font-semibold text-[var(--ink)]">{% trans "Selecciona un reporte corporativo" %}</h3>
+        <p class="mt-1 text-[11px] text-[var(--muted)]">
+            {% trans "Elige un año y una empresa en los filtros de arriba para inicializar la mesa de auditoría de opacidad." %}
+        </p>
     </div>
     {% endif %}
 
@@ -252,12 +354,12 @@
                 <table class="data-table min-w-[760px]">
                     <thead>
                         <tr>
-                            <th>{% trans "Fecha" %}</th>
-                            <th>{% trans "Auditor" %}</th>
-                            <th>{% trans "Palabra" %}</th>
-                            <th class="text-center">{% trans "Detectadas" %}</th>
-                            <th class="text-center">{% trans "Válidas" %}</th>
-                            <th class="text-center">{% trans "Descartadas" %}</th>
+                            <th class="text-[10px] font-bold uppercase tracking-wider">{% trans "Fecha" %}</th>
+                            <th class="text-[10px] font-bold uppercase tracking-wider">{% trans "Auditor" %}</th>
+                            <th class="text-[10px] font-bold uppercase tracking-wider">{% trans "Palabra" %}</th>
+                            <th class="text-center text-[10px] font-bold uppercase tracking-wider">{% trans "Detectadas" %}</th>
+                            <th class="text-center text-[10px] font-bold uppercase tracking-wider">{% trans "Válidas" %}</th>
+                            <th class="text-center text-[10px] font-bold uppercase tracking-wider">{% trans "Descartadas" %}</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -275,13 +377,13 @@
                                     <span class="text-[10px] italic text-[var(--faint)]">{% trans "Sin registrar" %}</span>
                                 {% endif %}
                             </td>
-                            <td class="font-semibold text-[var(--blue)]">"{{ rev.word }}"</td>
-                            <td class="text-center font-mono font-semibold tabular-nums text-[var(--ink)]">{{ rev.total_found }}</td>
+                            <td class="text-[11px] font-semibold text-[var(--blue)]">"{{ rev.word }}"</td>
+                            <td class="text-center font-mono text-[11px] font-semibold tabular-nums text-[var(--ink)]">{{ rev.total_found }}</td>
                             <td class="text-center">
-                                <span class="metric-badge low">{{ rev.total_valid }}</span>
+                                <span class="metric-badge low text-[9px]">{{ rev.total_valid }}</span>
                             </td>
                             <td class="text-center">
-                                <span class="metric-badge high">{{ rev.total_discarded }}</span>
+                                <span class="metric-badge high text-[9px]">{{ rev.total_discarded }}</span>
                             </td>
                         </tr>
                         {% endfor %}
@@ -294,7 +396,6 @@
 </div>
 
 {{ expert_lists_data|json_script:"expert-lists-data" }}
-{% load static %}
-<script src="{% static 'js/concealment_detection.js' %}?v=3.0"></script>
+<script src="{% static 'js/concealment_detection.js' %}?v=3.1"></script>
 
 {% endblock %}

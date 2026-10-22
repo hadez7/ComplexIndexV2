@@ -19,6 +19,23 @@
         if (sLabel) sLabel.textContent = isDark ? 'ON' : 'OFF';
     }
 
+    // Alternar Visibilidad Completa de la Barra Lateral (Unificado para Escritorio y Móvil/Split View)
+    function toggleSidebarVisibility() {
+        if (window.innerWidth < 1024) {
+            // En pantallas pequeñas / vista dividida (< 1024px): alternar como drawer overlay
+            const isMobileOpen = document.documentElement.classList.toggle('sidebar-mobile-open');
+            const backdrop = document.getElementById('sidebarBackdrop');
+            if (backdrop) {
+                backdrop.classList.toggle('hidden', !isMobileOpen);
+            }
+            document.body.style.overflow = isMobileOpen ? 'hidden' : '';
+        } else {
+            // En escritorio: alternar visibilidad persistente
+            const isHidden = document.documentElement.classList.toggle('sidebar-hidden');
+            localStorage.setItem('eli_sidebar_hidden', isHidden ? 'true' : 'false');
+        }
+    }
+
     // Alternar Contracción de Barra Lateral (Persistente en localStorage)
     function toggleSidebarCollapse() {
         const isCollapsed = document.documentElement.classList.toggle('sidebar-collapsed');
@@ -64,155 +81,97 @@
         const isCollapsed = document.documentElement.classList.contains('sidebar-collapsed');
         updateCollapseUI(isCollapsed);
 
-        // Dropdown del Workspace en la barra lateral
-        const wsBtn = document.getElementById('sidebarWorkspaceBtn');
-        const wsDropdown = document.getElementById('sidebarWorkspaceDropdown');
+        // Helper unificado para menús desplegables (Workspace, Idioma Topbar, Usuario Sidebar)
+        function initDropdown(btnId, dropdownId) {
+            const btn = document.getElementById(btnId);
+            const dropdown = document.getElementById(dropdownId);
+            if (!btn || !dropdown) return;
 
-        // Dropdown del Selector de Idioma (Icono de Mundo)
-        const langBtn = document.getElementById('sidebarLanguageBtn');
-        const langDropdown = document.getElementById('sidebarLanguageDropdown');
-
-        // Dropdown del Usuario en la barra lateral
-        const userBtn = document.getElementById('sidebarUserBtn');
-        const userDropdown = document.getElementById('sidebarUserDropdown');
-
-        if (wsBtn && wsDropdown) {
-            wsBtn.addEventListener('click', function (e) {
+            btn.addEventListener('click', function (e) {
                 e.stopPropagation();
-                const isOpen = !wsDropdown.classList.contains('hidden');
-                wsDropdown.classList.toggle('hidden', isOpen);
-                wsBtn.setAttribute('aria-expanded', !isOpen);
-                // Si el selector de idioma o usuario está abierto, cerrarlos
-                if (langDropdown && !langDropdown.classList.contains('hidden')) {
-                    langDropdown.classList.add('hidden');
-                    if (langBtn) langBtn.setAttribute('aria-expanded', 'false');
-                }
-                if (userDropdown && !userDropdown.classList.contains('hidden')) {
-                    userDropdown.classList.add('hidden');
-                    if (userBtn) userBtn.setAttribute('aria-expanded', 'false');
-                }
+                const isOpen = !dropdown.classList.contains('hidden');
+                // Cerrar cualquier otro dropdown abierto
+                document.querySelectorAll('.animate-dropdown').forEach(function (d) {
+                    if (d !== dropdown) d.classList.add('hidden');
+                });
+                document.querySelectorAll('[aria-haspopup="true"]').forEach(function (b) {
+                    if (b !== btn) b.setAttribute('aria-expanded', 'false');
+                });
+                dropdown.classList.toggle('hidden', isOpen);
+                btn.setAttribute('aria-expanded', !isOpen);
             });
 
             document.addEventListener('click', function (e) {
-                if (!wsDropdown.contains(e.target) && !wsBtn.contains(e.target)) {
-                    wsDropdown.classList.add('hidden');
-                    wsBtn.setAttribute('aria-expanded', 'false');
+                if (!dropdown.contains(e.target) && !btn.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                    btn.setAttribute('aria-expanded', 'false');
                 }
             });
         }
 
-        if (langBtn && langDropdown) {
-            langBtn.addEventListener('click', function (e) {
-                e.stopPropagation();
-                const isOpen = !langDropdown.classList.contains('hidden');
-                langDropdown.classList.toggle('hidden', isOpen);
-                langBtn.setAttribute('aria-expanded', !isOpen);
-                // Si el selector de workspace o usuario está abierto, cerrarlos
-                if (wsDropdown && !wsDropdown.classList.contains('hidden')) {
-                    wsDropdown.classList.add('hidden');
-                    if (wsBtn) wsBtn.setAttribute('aria-expanded', 'false');
-                }
-                if (userDropdown && !userDropdown.classList.contains('hidden')) {
-                    userDropdown.classList.add('hidden');
-                    if (userBtn) userBtn.setAttribute('aria-expanded', 'false');
-                }
-            });
+        initDropdown('sidebarWorkspaceBtn', 'sidebarWorkspaceDropdown');
+        initDropdown('topbarLanguageBtn', 'topbarLanguageDropdown');
+        initDropdown('sidebarLanguageBtn', 'sidebarLanguageDropdown');
+        initDropdown('sidebarUserBtn', 'sidebarUserDropdown');
 
-            document.addEventListener('click', function (e) {
-                if (!langDropdown.contains(e.target) && !langBtn.contains(e.target)) {
-                    langDropdown.classList.add('hidden');
-                    langBtn.setAttribute('aria-expanded', 'false');
-                }
-            });
-        }
-
-        if (userBtn && userDropdown) {
-            userBtn.addEventListener('click', function (e) {
-                e.stopPropagation();
-                const isOpen = !userDropdown.classList.contains('hidden');
-                userDropdown.classList.toggle('hidden', isOpen);
-                userBtn.setAttribute('aria-expanded', !isOpen);
-                // Si el selector de workspace o idioma está abierto, cerrarlos
-                if (wsDropdown && !wsDropdown.classList.contains('hidden')) {
-                    wsDropdown.classList.add('hidden');
-                    if (wsBtn) wsBtn.setAttribute('aria-expanded', 'false');
-                }
-                if (langDropdown && !langDropdown.classList.contains('hidden')) {
-                    langDropdown.classList.add('hidden');
-                    if (langBtn) langBtn.setAttribute('aria-expanded', 'false');
-                }
-            });
-
-            document.addEventListener('click', function (e) {
-                if (!userDropdown.contains(e.target) && !userBtn.contains(e.target)) {
-                    userDropdown.classList.add('hidden');
-                    userBtn.setAttribute('aria-expanded', 'false');
-                }
-            });
-        }
-
-        // Control del Drawer Móvil
-        const drawerOpenBtn = document.getElementById('mobileDrawerOpenBtn');
-        const drawerCloseBtn = document.getElementById('mobileDrawerCloseBtn');
-        const drawerOverlay = document.getElementById('mobileDrawerOverlay');
-        const drawerPanel = document.getElementById('mobileDrawerPanel');
-
-        function openDrawer() {
-            if (!drawerOverlay || !drawerPanel) return;
-            drawerOverlay.classList.remove('hidden');
-            setTimeout(() => {
-                drawerPanel.classList.remove('-translate-x-full');
-            }, 10);
-            document.body.style.overflow = 'hidden';
-        }
-
-        function closeDrawer() {
-            if (!drawerOverlay || !drawerPanel) return;
-            drawerPanel.classList.add('-translate-x-full');
-            setTimeout(() => {
-                drawerOverlay.classList.add('hidden');
-            }, 200);
-            document.body.style.overflow = '';
-        }
-
-        if (drawerOpenBtn) drawerOpenBtn.addEventListener('click', openDrawer);
-        if (drawerCloseBtn) drawerCloseBtn.addEventListener('click', closeDrawer);
-        if (drawerOverlay) {
-            drawerOverlay.addEventListener('click', function (e) {
-                if (e.target === drawerOverlay) closeDrawer();
-            });
-        }
+        // Limpieza de estados móviles al cambiar a tamaño de escritorio
+        window.addEventListener('resize', function () {
+            if (window.innerWidth >= 1024) {
+                document.documentElement.classList.remove('sidebar-mobile-open');
+                const backdrop = document.getElementById('sidebarBackdrop');
+                if (backdrop) backdrop.classList.add('hidden');
+                document.body.style.overflow = '';
+            }
+        });
 
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
-                closeDrawer();
-                if (wsDropdown && !wsDropdown.classList.contains('hidden')) {
-                    wsDropdown.classList.add('hidden');
-                    if (wsBtn) wsBtn.setAttribute('aria-expanded', 'false');
+                if (document.documentElement.classList.contains('sidebar-mobile-open')) {
+                    toggleSidebarVisibility();
                 }
-                if (langDropdown && !langDropdown.classList.contains('hidden')) {
-                    langDropdown.classList.add('hidden');
-                    if (langBtn) langBtn.setAttribute('aria-expanded', 'false');
+                document.querySelectorAll('.animate-dropdown').forEach(function (d) {
+                    d.classList.add('hidden');
+                });
+                document.querySelectorAll('[aria-haspopup="true"]').forEach(function (b) {
+                    b.setAttribute('aria-expanded', 'false');
+                });
+            }
+        });
+
+        // Highlighting Activo Inteligente de Rutas en la Barra Lateral (Máximo 1 elemento activo)
+        const currentPath = window.location.pathname.replace(/\/+$/, '') || '/';
+        const navLinks = Array.from(document.querySelectorAll('.sidebar-nav-item'));
+
+        let bestMatch = null;
+        let bestScore = -1;
+
+        navLinks.forEach(function (link) {
+            link.classList.remove('active');
+            const rawPath = link.getAttribute('data-path');
+            if (!rawPath) return;
+
+            const linkPath = rawPath.replace(/\/+$/, '') || '/';
+
+            if (linkPath === currentPath) {
+                // Coincidencia exacta (puntuación máxima)
+                const score = 1000 + linkPath.length;
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMatch = link;
                 }
-                if (userDropdown && !userDropdown.classList.contains('hidden')) {
-                    userDropdown.classList.add('hidden');
-                    if (userBtn) userBtn.setAttribute('aria-expanded', 'false');
+            } else if (linkPath !== '/' && currentPath.startsWith(linkPath + '/')) {
+                // Coincidencia jerárquica de sub-ruta
+                const score = linkPath.length;
+                if (score > bestScore) {
+                    bestScore = score;
+                    bestMatch = link;
                 }
             }
         });
 
-        // Highlighting Activo Inteligente de Rutas en la Barra Lateral
-        const currentPath = window.location.pathname;
-        document.querySelectorAll('.sidebar-nav-item').forEach(function (link) {
-            const linkPath = link.getAttribute('data-path');
-            if (linkPath) {
-                if (linkPath === '/' && currentPath === '/') {
-                    link.classList.add('active');
-                } else if (linkPath !== '/' && currentPath.startsWith(linkPath)) {
-                    link.classList.add('active');
-                }
-            }
-        });
+        if (bestMatch) {
+            bestMatch.classList.add('active');
+        }
 
         // Sincronizador de placeholders en selectores nativos
         function syncSelectPlaceholders() {

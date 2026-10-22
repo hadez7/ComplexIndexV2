@@ -5,7 +5,7 @@
 {% block content %}
 {% load dict_filters i18n %}
 
-<div class="mx-auto max-w-[1440px] px-5 py-7 sm:px-7 lg:px-9">
+<div class="mx-auto w-full max-w-[1800px] px-5 py-7 sm:px-7 lg:px-9">
 
     <!-- ===================================================================== -->
     <!-- Cabecera: lectura consolidada del corpus                              -->
@@ -51,59 +51,65 @@
     <!-- ===================================================================== -->
     <!-- Filtros del servidor: año, empresa y lista de experto                 -->
     <!-- ===================================================================== -->
-    <form method="get" class="mt-6 rounded-[14px] border border-[var(--line)] bg-[var(--surface)] p-4">
-        <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4 xl:items-end">
-            <div class="form-field">
-                <span>{% trans "Año" %}</span>
-                <select name="selected_year" id="years" data-custom-select="true" class="eli-input">
-                    <option value="">{% trans "Todos los años" %}</option>
-                    {% for year in years %}
-                        <option value="{{ year }}" {% if year|stringformat:"s" == selected_year %}selected{% endif %}>
-                            {{ year }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="form-field">
-                <span>{% trans "Empresa" %}</span>
-                <select name="company" id="company" data-custom-select="true" class="eli-input">
-                    <option value="">{% trans "Todas las empresas" %}</option>
-                    {% for company in companies %}
-                        <option value="{{ company.id }}" {% if request.GET.company == company.id|stringformat:"s" %}selected{% endif %}>
-                            {{ company.clean_name|default:company.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <div class="form-field">
-                <span>{% trans "Lista de experto" %}</span>
-                <select name="selected_list" id="expert_lists" data-custom-select="true" class="eli-input">
-                    <option value="">{% trans "Todas las listas" %}</option>
-                    {% for expert_list in expert_lists %}
-                        <option value="{{ expert_list.name }}" {% if expert_list.name == selected_list_name %}selected{% endif %}>
-                            {{ expert_list.name }}
-                        </option>
-                    {% endfor %}
-                </select>
-            </div>
-
-            <button type="submit"
-                    class="inline-flex h-[38px] items-center justify-center gap-2 rounded-[10px] bg-[var(--blue)] px-4 text-[10px] font-semibold text-white shadow-sm transition hover:brightness-105">
-                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
-                </svg>
-                {% trans "Filtrar" %}
-            </button>
+    <form method="get" id="filterForm" class="filter-strip mt-6 items-center">
+        <input type="hidden" name="tab" id="activeTabInput" value="{{ request.GET.tab|default:'conteo' }}">
+        <div class="form-field w-full sm:w-44">
+            <select name="selected_year" id="years" data-custom-select="true" class="eli-input">
+                <option value="">{% trans "Todos los años" %}</option>
+                {% for year in years %}
+                    <option value="{{ year }}" {% if year|stringformat:"s" == selected_year %}selected{% endif %}>
+                        {{ year }}
+                    </option>
+                {% endfor %}
+            </select>
         </div>
+
+        <div class="form-field min-w-[200px] flex-1">
+            <select name="company" id="company" data-custom-select="true" class="eli-input">
+                <option value="">{% trans "Todas las empresas" %}</option>
+                {% for company in companies %}
+                    <option value="{{ company.id }}" {% if request.GET.company == company.id|stringformat:"s" %}selected{% endif %}>
+                        {{ company.clean_name|default:company.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-field w-full sm:w-56">
+            <select name="selected_list" id="expert_lists" data-custom-select="true" class="eli-input">
+                <option value="">{% trans "Todas las listas" %}</option>
+                {% for expert_list in expert_lists %}
+                    <option value="{{ expert_list.name }}" {% if expert_list.name == selected_list_name %}selected{% endif %}>
+                        {{ expert_list.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="h-[38px] w-full sm:w-auto">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+            </svg>
+            {% trans "Filtrar" %}
+        </button>
+
+        {% if selected_year or request.GET.company or selected_list_name %}
+        <a href="{% url 'totalcount' %}{% if request.GET.tab %}?tab={{ request.GET.tab }}{% endif %}"
+           class="inline-flex h-[38px] w-full items-center justify-center gap-1.5 rounded-[9px] border border-[var(--line)] bg-[var(--surface)] px-3 text-[9px] font-semibold text-[var(--muted)] transition hover:border-[var(--blue)] hover:text-[var(--blue)] sm:w-auto"
+           title="{% trans 'Limpiar filtros' %}">
+            <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            {% trans "Limpiar" %}
+        </a>
+        {% endif %}
     </form>
 
     <!-- Pestañas para Conteo Total e Índice de Complejidad -->
     <div class="mt-8">
         <!-- Botones de pestañas -->
-        <div class="mb-6 flex gap-4 overflow-x-auto border-b border-[var(--line)]">
-            <button id="tab-conteo" onclick="showTab('conteo')" class="workspace-tab is-active">
+        <div class="mb-6 flex gap-2 sm:gap-4 overflow-x-auto border-b border-[var(--line)]">
+            <button id="tab-conteo" onclick="showTab('conteo')" class="workspace-tab {% if request.GET.tab != 'complejidad' %}is-active{% endif %}" type="button">
                 <svg class="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                 </svg>
@@ -111,27 +117,25 @@
                 <span id="tabConteoBadge" class="tab-badge">{{ total_words_count|default:0 }}</span>
             </button>
 
-            <button id="tab-complejidad" onclick="showTab('complejidad')" class="workspace-tab">
+            <button id="tab-complejidad" onclick="showTab('complejidad')" class="workspace-tab {% if request.GET.tab == 'complejidad' %}is-active{% endif %}" type="button">
                 <svg class="h-3.5 w-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
                 </svg>
                 <span>{% trans "Índice de complejidad" %}</span>
-                {% if complexity_metrics %}
-                <span class="tab-badge">{{ total_complexity_count|default:0 }}</span>
-                {% endif %}
+                <span id="tabComplejidadBadge" class="tab-badge">{{ total_complexity_count|default:0 }}</span>
             </button>
         </div>
 
         <!-- ================================================================= -->
         <!-- PESTAÑA 1: CONTEO TOTAL DE PALABRAS                               -->
         <!-- ================================================================= -->
-        <div id="contenido-conteo" class="tab-content space-y-4">
+        <div id="contenido-conteo" class="tab-content space-y-4 {% if request.GET.tab == 'complejidad' %}hidden{% endif %}">
 
             <!-- Lectura rápida del corpus filtrado -->
             <div class="grid grid-cols-1 gap-3.5 sm:grid-cols-3">
                 <div class="surface-panel flex items-center justify-between p-4">
                     <div>
-                        <span class="block text-[8px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
+                        <span class="block text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
                             {% trans "Promedio de frecuencia" %}
                         </span>
                         <span class="mt-1 block font-mono text-2xl font-semibold tabular-nums text-[var(--ink)]">{{ average }}</span>
@@ -145,7 +149,7 @@
 
                 <div class="surface-panel flex items-center justify-between p-4">
                     <div>
-                        <span class="block text-[8px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
+                        <span class="block text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
                             {% trans "Términos únicos" %}
                         </span>
                         <span class="mt-1 block font-mono text-2xl font-semibold tabular-nums text-[var(--ink)]" id="totalWordsStat">{{ total_words_count|default:0 }}</span>
@@ -159,10 +163,10 @@
 
                 <div class="surface-panel flex items-center justify-between p-4">
                     <div class="min-w-0">
-                        <span class="block text-[8px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
+                        <span class="block text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
                             {% trans "Filtro activo" %}
                         </span>
-                        <span class="mt-1 block max-w-[190px] truncate text-[11px] font-semibold text-[var(--ink)]">
+                        <span class="mt-1 block max-w-[200px] truncate text-sm font-semibold text-[var(--ink)]">
                             {% if selected_company %}{{ selected_company.name }}{% elif selected_year %}{{ selected_year }}{% else %}{% trans "Consolidado global" %}{% endif %}
                         </span>
                     </div>
@@ -175,14 +179,14 @@
             </div>
 
             <!-- Búsqueda en vivo, rango y tamaño de página -->
-            <div class="flex flex-col gap-3 rounded-[14px] border border-[var(--line)] bg-[var(--surface)] p-3 md:flex-row md:items-center md:justify-between">
+            <div class="filter-strip flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <div class="relative w-full md:max-w-sm">
                     <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--faint)]">
                         <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                         </svg>
                     </span>
-                    <input type="text" id="wordSearchInput" placeholder="{% trans 'Filtrar término en vivo...' %}" class="eli-input !pl-9 !pr-8">
+                    <input type="text" id="wordSearchInput" placeholder="{% trans 'Filtrar término en vivo...' %}" class="eli-input !pl-9 !pr-8 w-full text-[11px]">
                     <button type="button" id="clearWordSearchBtn" class="absolute inset-y-0 right-0 hidden items-center pr-3 text-[var(--muted)] transition hover:text-[var(--ink)]">
                         <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
@@ -215,24 +219,24 @@
                     <table class="data-table min-w-[720px]" id="wordsTable">
                         <thead>
                             <tr>
-                                <th class="cursor-pointer select-none" onclick="sortWordsTable('word')">
-                                    <span class="report-sort">
+                                <th class="cursor-pointer select-none text-left" onclick="sortWordsTable('word')">
+                                    <span class="report-sort justify-start text-[10px] font-bold uppercase tracking-[0.12em]">
                                         <span>{% trans "Palabra" %}</span>
                                         <svg class="sort-icon sort-word h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
                                         </svg>
                                     </span>
                                 </th>
-                                <th class="cursor-pointer select-none text-right" onclick="sortWordsTable('quantity')">
-                                    <span class="report-sort justify-end">
+                                <th class="cursor-pointer select-none text-center" onclick="sortWordsTable('quantity')">
+                                    <span class="report-sort justify-center text-[10px] font-bold uppercase tracking-[0.12em]">
                                         <span>{% trans "Frecuencia (cantidad)" %}</span>
                                         <svg class="sort-icon sort-quantity h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
                                         </svg>
                                     </span>
                                 </th>
-                                <th class="cursor-pointer select-none text-right" onclick="sortWordsTable('weight')">
-                                    <span class="report-sort justify-end">
+                                <th class="cursor-pointer select-none text-center" onclick="sortWordsTable('weight')">
+                                    <span class="report-sort justify-center text-[10px] font-bold uppercase tracking-[0.12em]">
                                         <span>{% trans "Peso relativo (vs promedio)" %}</span>
                                         <svg class="sort-icon sort-weight h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
@@ -247,16 +251,16 @@
                                 data-word="{{ total.word|lower }}"
                                 data-quantity="{{ total.quantity }}"
                                 data-weight="{{ word_average|get_item:total.word|default:0 }}">
-                                <td class="font-semibold text-[var(--ink)]">
+                                <td class="text-left text-[11px] font-semibold text-[var(--ink)]">
                                     <span class="inline-flex items-center gap-2">
                                         <span class="h-1.5 w-1.5 rounded-full bg-[var(--blue)]"></span>
                                         {{ total.word }}
                                     </span>
                                 </td>
-                                <td class="text-right font-mono font-medium tabular-nums text-[var(--muted)]">
+                                <td class="text-center font-mono text-[11px] font-medium tabular-nums text-[var(--muted)]">
                                     {{ total.quantity }}
                                 </td>
-                                <td class="text-right font-mono font-semibold tabular-nums text-[var(--blue)]">
+                                <td class="text-center font-mono text-[11px] font-semibold tabular-nums text-[var(--blue)]">
                                     {{ word_average|get_item:total.word }}
                                 </td>
                             </tr>
@@ -291,11 +295,11 @@
         <!-- ================================================================= -->
         <!-- PESTAÑA 2: ÍNDICE DE COMPLEJIDAD LÉXICA & ASIMETRÍA               -->
         <!-- ================================================================= -->
-        <div id="contenido-complejidad" class="tab-content hidden space-y-4">
+        <div id="contenido-complejidad" class="tab-content space-y-4 {% if request.GET.tab != 'complejidad' %}hidden{% endif %}">
             {% if complexity_metrics %}
 
                 <!-- Búsqueda, tamaño de página y guía de fórmulas -->
-                <div class="flex flex-col gap-3 rounded-[14px] border border-[var(--line)] bg-[var(--surface)] p-3 md:flex-row md:items-center md:justify-between">
+                <div class="filter-strip flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                     <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
                         <div class="relative w-full sm:w-80">
                             <span class="pointer-events-none absolute inset-y-0 left-3 flex items-center text-[var(--faint)]">
@@ -305,7 +309,7 @@
                             </span>
                             <input type="text" id="complexitySearchInput"
                                    placeholder="{% trans 'Filtrar por empresa, RUC o año...' %}"
-                                   class="eli-input !pl-9 !pr-8">
+                                   class="eli-input !pl-9 !pr-8 w-full">
                             <button type="button" id="clearComplexitySearchBtn"
                                     class="absolute inset-y-0 right-0 hidden items-center pr-3 text-[var(--muted)] transition hover:text-[var(--ink)]">
                                 <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -375,26 +379,61 @@
                         <table class="data-table min-w-[980px]" id="complexityTable">
                             <thead>
                                 <tr>
-                                    <th class="cursor-pointer select-none" onclick="sortComplexityTable('ruc')">
-                                        <span class="report-sort"><span>{% trans "RUC" %}</span><span class="text-[var(--faint)]">↕</span></span>
+                                    <th class="cursor-pointer select-none text-center" onclick="sortComplexityTable('ruc')">
+                                        <span class="report-sort justify-center text-[10px] font-bold uppercase tracking-[0.12em]">
+                                            <span>{% trans "RUC" %}</span>
+                                            <svg class="sort-icon sort-comp-ruc h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                            </svg>
+                                        </span>
                                     </th>
-                                    <th class="cursor-pointer select-none" onclick="sortComplexityTable('company')">
-                                        <span class="report-sort"><span>{% trans "Empresa & Reporte" %}</span><span class="text-[var(--faint)]">↕</span></span>
+                                    <th class="cursor-pointer select-none text-left" onclick="sortComplexityTable('company')">
+                                        <span class="report-sort justify-start text-[10px] font-bold uppercase tracking-[0.12em]">
+                                            <span>{% trans "Empresa & Reporte" %}</span>
+                                            <svg class="sort-icon sort-comp-company h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                            </svg>
+                                        </span>
                                     </th>
                                     <th class="cursor-pointer select-none text-center" onclick="sortComplexityTable('year')">
-                                        <span class="report-sort justify-center"><span>{% trans "Año" %}</span><span class="text-[var(--faint)]">↕</span></span>
+                                        <span class="report-sort justify-center text-[10px] font-bold uppercase tracking-[0.12em]">
+                                            <span>{% trans "Año" %}</span>
+                                            <svg class="sort-icon sort-comp-year h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                            </svg>
+                                        </span>
                                     </th>
                                     <th class="cursor-pointer select-none text-center" onclick="sortComplexityTable('complexity')">
-                                        <span class="report-sort justify-center"><span>{% trans "Complejidad General" %}</span><span class="text-[var(--faint)]">↕</span></span>
+                                        <span class="report-sort justify-center text-[10px] font-bold uppercase tracking-[0.12em]">
+                                            <span>{% trans "Complejidad General" %}</span>
+                                            <svg class="sort-icon sort-comp-complexity h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                            </svg>
+                                        </span>
                                     </th>
                                     <th class="cursor-pointer select-none text-center" onclick="sortComplexityTable('diversity')">
-                                        <span class="report-sort justify-center"><span>{% trans "Diversidad" %}</span><span class="text-[var(--faint)]">↕</span></span>
+                                        <span class="report-sort justify-center text-[10px] font-bold uppercase tracking-[0.12em]">
+                                            <span>{% trans "Diversidad" %}</span>
+                                            <svg class="sort-icon sort-comp-diversity h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                            </svg>
+                                        </span>
                                     </th>
                                     <th class="cursor-pointer select-none text-center" onclick="sortComplexityTable('readability')">
-                                        <span class="report-sort justify-center"><span>{% trans "Legibilidad" %}</span><span class="text-[var(--faint)]">↕</span></span>
+                                        <span class="report-sort justify-center text-[10px] font-bold uppercase tracking-[0.12em]">
+                                            <span>{% trans "Legibilidad" %}</span>
+                                            <svg class="sort-icon sort-comp-readability h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                            </svg>
+                                        </span>
                                     </th>
                                     <th class="cursor-pointer select-none text-center" onclick="sortComplexityTable('density')">
-                                        <span class="report-sort justify-center"><span>{% trans "Densidad Técnica" %}</span><span class="text-[var(--faint)]">↕</span></span>
+                                        <span class="report-sort justify-center text-[10px] font-bold uppercase tracking-[0.12em]">
+                                            <span>{% trans "Densidad Técnica" %}</span>
+                                            <svg class="sort-icon sort-comp-density h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"/>
+                                            </svg>
+                                        </span>
                                     </th>
                                 </tr>
                             </thead>
@@ -409,11 +448,11 @@
                                     data-diversity="{{ report.diversity_index }}"
                                     data-readability="{{ report.readability_index }}"
                                     data-density="{{ report.technical_density }}">
-                                    <td class="whitespace-nowrap font-mono font-semibold tabular-nums text-[var(--blue)]">
+                                    <td class="whitespace-nowrap text-center font-mono text-[11px] font-semibold tabular-nums text-[var(--blue)]">
                                         {{ report.ruc }}
                                     </td>
-                                    <td>
-                                        <span class="block font-semibold text-[var(--ink)]">{{ report.company_name }}</span>
+                                    <td class="text-left">
+                                        <span class="block text-[11px] font-semibold text-[var(--ink)]">{{ report.company_name }}</span>
                                         <span class="mt-0.5 block max-w-xs truncate text-[10px] text-[var(--muted)]">{{ report.report_name }}</span>
                                     </td>
                                     <td class="whitespace-nowrap text-center">
@@ -428,13 +467,13 @@
                                             <span class="metric-badge low">{{ report.complexity_general }} ({% trans "Baja" %})</span>
                                         {% endif %}
                                     </td>
-                                    <td class="whitespace-nowrap text-center font-mono font-semibold tabular-nums text-[var(--pink)]">
+                                    <td class="whitespace-nowrap text-center font-mono text-[11px] font-semibold tabular-nums text-[var(--pink)]">
                                         {{ report.diversity_index }}
                                     </td>
-                                    <td class="whitespace-nowrap text-center font-mono font-semibold tabular-nums text-[var(--teal)]">
+                                    <td class="whitespace-nowrap text-center font-mono text-[11px] font-semibold tabular-nums text-[var(--teal)]">
                                         {{ report.readability_index }}
                                     </td>
-                                    <td class="whitespace-nowrap text-center font-mono font-semibold tabular-nums text-[var(--indigo)]">
+                                    <td class="whitespace-nowrap text-center font-mono text-[11px] font-semibold tabular-nums text-[var(--indigo)]">
                                         {{ report.technical_density }}
                                     </td>
                                 </tr>
@@ -482,10 +521,11 @@
 
 <!-- Scripts de Interactividad, Paginación y Filtrado Rápido -->
 <script>
-// Manejo de pestañas
+// Manejo de pestañas con preservación de estado
 function showTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-    document.getElementById('contenido-' + tabName).classList.remove('hidden');
+    const targetContent = document.getElementById('contenido-' + tabName);
+    if (targetContent) targetContent.classList.remove('hidden');
     
     document.querySelectorAll('.workspace-tab').forEach(btn => {
         btn.classList.remove('is-active');
@@ -493,7 +533,31 @@ function showTab(tabName) {
 
     const activeBtn = document.getElementById('tab-' + tabName);
     if (activeBtn) activeBtn.classList.add('is-active');
+
+    // Sincronizar input oculto para que cualquier envío de filtros conserve la pestaña activa
+    const tabInput = document.getElementById('activeTabInput');
+    if (tabInput) tabInput.value = tabName;
+
+    // Actualizar parámetro en la URL sin recargar la página
+    try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('tab', tabName);
+        window.history.replaceState({ tab: tabName }, '', url.toString());
+        sessionStorage.setItem('totalcount_active_tab', tabName);
+    } catch (e) {}
 }
+
+// Restaurar pestaña activa al cargar si se navegó previamente
+document.addEventListener('DOMContentLoaded', () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tabParam = urlParams.get('tab');
+    if (!tabParam) {
+        const storedTab = sessionStorage.getItem('totalcount_active_tab');
+        if (storedTab && (storedTab === 'complejidad' || storedTab === 'conteo')) {
+            showTab(storedTab);
+        }
+    }
+});
 
 function toggleFormulaLegend() {
     const box = document.getElementById('formulaLegendBox');
@@ -565,16 +629,16 @@ function toggleFormulaLegend() {
                     data-word="${item.word.toLowerCase()}"
                     data-quantity="${item.quantity}"
                     data-weight="${item.weight}">
-                    <td class="font-semibold text-[var(--ink)]">
+                    <td class="text-left text-[11px] font-semibold text-[var(--ink)]">
                         <span class="inline-flex items-center gap-2">
                             <span class="h-1.5 w-1.5 rounded-full bg-[var(--blue)]"></span>
                             ${item.word}
                         </span>
                     </td>
-                    <td class="text-right font-mono font-medium tabular-nums text-[var(--muted)]">
+                    <td class="text-center font-mono text-[11px] font-medium tabular-nums text-[var(--muted)]">
                         ${Number(item.quantity).toLocaleString()}
                     </td>
-                    <td class="text-right font-mono font-semibold tabular-nums text-[var(--blue)]">
+                    <td class="text-center font-mono text-[11px] font-semibold tabular-nums text-[var(--blue)]">
                         ${item.weight}
                     </td>
                 </tr>
@@ -759,11 +823,11 @@ function toggleFormulaLegend() {
 
                 return `
                     <tr class="complexity-row transition-colors hover:bg-[var(--surface-hover)]">
-                        <td class="whitespace-nowrap font-mono font-semibold tabular-nums text-[var(--blue)]">
+                        <td class="whitespace-nowrap text-center font-mono text-[11px] font-semibold tabular-nums text-[var(--blue)]">
                             ${report.ruc || 'N/A'}
                         </td>
-                        <td>
-                            <span class="block font-semibold text-[var(--ink)]">${report.company_name}</span>
+                        <td class="text-left">
+                            <span class="block text-[11px] font-semibold text-[var(--ink)]">${report.company_name}</span>
                             <span class="mt-0.5 block max-w-xs truncate text-[10px] text-[var(--muted)]">${report.report_name}</span>
                         </td>
                         <td class="whitespace-nowrap text-center">
@@ -772,13 +836,13 @@ function toggleFormulaLegend() {
                         <td class="whitespace-nowrap text-center">
                             ${badge}
                         </td>
-                        <td class="whitespace-nowrap text-center font-mono font-semibold tabular-nums text-[var(--pink)]">
+                        <td class="whitespace-nowrap text-center font-mono text-[11px] font-semibold tabular-nums text-[var(--pink)]">
                             ${report.diversity_index}
                         </td>
-                        <td class="whitespace-nowrap text-center font-mono font-semibold tabular-nums text-[var(--teal)]">
+                        <td class="whitespace-nowrap text-center font-mono text-[11px] font-semibold tabular-nums text-[var(--teal)]">
                             ${report.readability_index}
                         </td>
-                        <td class="whitespace-nowrap text-center font-mono font-semibold tabular-nums text-[var(--indigo)]">
+                        <td class="whitespace-nowrap text-center font-mono text-[11px] font-semibold tabular-nums text-[var(--indigo)]">
                             ${report.technical_density}
                         </td>
                     </tr>

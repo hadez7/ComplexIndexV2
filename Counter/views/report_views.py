@@ -15,34 +15,45 @@ def report_view(request):
 
     current_ws = get_active_workspace(request)
     query = request.GET.get("q", "").strip()
-    order_by = request.GET.get("order_by", "year").strip()
-    order_dir = request.GET.get("dir", "desc").strip()
-    page_size_param = request.GET.get("page_size", "25").strip()
+    order_by = request.GET.get("order_by", "company").strip()
+    order_dir = request.GET.get("dir", "asc").strip()
+    page_size_param = request.GET.get("page_size", "10").strip()
 
-    # Queryset optimizado con select_related
-    reports_qs = Report.objects.select_related("company").filter(workspace=current_ws)
+    # Queryset optimizado con select_related y normalización de espacios
+    reports_qs = (
+        Report.objects
+        .select_related("company")
+        .filter(workspace=current_ws)
+        .annotate(clean_company=Trim("company__name"))
+    )
 
     if query:
         reports_qs = reports_qs.filter(
             Q(company__name__icontains=query) | Q(year__icontains=query) | Q(name__icontains=query)
         )
 
-    # Ordenamiento por columna solicitada
+    # Ordenamiento por columna solicitada (orden alfabético por defecto ignorando espacios)
     if order_by == "company":
-        sort_field = "-company__name" if order_dir == "desc" else "company__name"
+        sort_field = "-clean_company" if order_dir == "desc" else "clean_company"
     elif order_by == "year":
         sort_field = "-year" if order_dir == "desc" else "year"
+    elif order_by == "name":
+        sort_field = "-name" if order_dir == "desc" else "name"
+    elif order_by == "words":
+        sort_field = "-total_words" if order_dir == "desc" else "total_words"
     else:
-        sort_field = "-year" if order_dir == "desc" else "year"
+        sort_field = "-clean_company" if order_dir == "desc" else "clean_company"
 
-    reports_qs = reports_qs.order_by(sort_field, "-id")
+    reports_qs = reports_qs.order_by(sort_field, "name", "-year", "-id")
     total_count = reports_qs.count()
 
     # Tamaño de página (10, 25, 50, 100)
     try:
         page_size = int(page_size_param)
         if page_size not in [10, 25, 50, 100]:
-            page_size = 25
+            page_size = 10
+    except ValueError:
+        page_size = 10
     except ValueError:
         page_size = 25
 

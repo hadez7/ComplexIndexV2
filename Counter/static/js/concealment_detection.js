@@ -1,34 +1,71 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     // ==========================================
-    // Total de ocurrencias
+    // Total de ocurrencias y dictamen
     // ==========================================
 
     const checks = document.querySelectorAll(".parrafo-check");
     const totalSpan = document.getElementById("total-ocurrencias");
+    const totalDescartadasSpan = document.getElementById("total-descartadas");
+    const btnMarcarTodos = document.getElementById("btn-marcar-todos");
+    const btnDesmarcarTodos = document.getElementById("btn-desmarcar-todos");
+    const searchFindings = document.getElementById("search-findings");
 
     function recalcular() {
-
         if (!totalSpan) {
             return;
         }
 
         let total = 0;
+        let descartadas = 0;
 
         checks.forEach(check => {
-
+            const count = parseInt(check.dataset.count, 10) || 0;
             if (check.checked) {
-                total += parseInt(check.dataset.count);
+                total += count;
+            } else {
+                descartadas += count;
             }
-
         });
 
         totalSpan.textContent = total;
+        if (totalDescartadasSpan) {
+            totalDescartadasSpan.textContent = descartadas;
+        }
     }
 
     checks.forEach(check => {
         check.addEventListener("change", recalcular);
     });
+
+    if (btnMarcarTodos) {
+        btnMarcarTodos.addEventListener("click", function () {
+            checks.forEach(check => {
+                check.checked = true;
+            });
+            recalcular();
+        });
+    }
+
+    if (btnDesmarcarTodos) {
+        btnDesmarcarTodos.addEventListener("click", function () {
+            checks.forEach(check => {
+                check.checked = false;
+            });
+            recalcular();
+        });
+    }
+
+    if (searchFindings) {
+        searchFindings.addEventListener("input", function () {
+            const term = this.value.toLowerCase().trim();
+            const items = document.querySelectorAll(".finding-item");
+            items.forEach(item => {
+                const word = (item.dataset.word || item.querySelector("span")?.textContent || "").toLowerCase();
+                item.style.display = word.includes(term) ? "" : "none";
+            });
+        });
+    }
 
     recalcular();
 

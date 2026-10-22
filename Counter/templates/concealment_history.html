@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% trans "Historial de Auditoría de Ocultamiento" %} | ELI{% endblock %}
 {% block body_class %}eli-theme{% endblock %}
 
 {% block content %}
-<div class="mx-auto max-w-[1440px] px-5 py-7 sm:px-7 lg:px-9">
+<div class="mx-auto w-full max-w-[1800px] px-5 py-7 sm:px-7 lg:px-9">
 
     <!-- ===================================================================== -->
     <!-- Cabecera: trazabilidad de revisiones                                  -->
@@ -49,13 +49,13 @@
     </header>
 
     <!-- ===================================================================== -->
-    <!-- Lectura rápida del historial                                          -->
+    <!-- Lectura rápida del historial (KPI cards)                              -->
     <!-- ===================================================================== -->
     <div class="mt-6 grid gap-3.5 sm:grid-cols-3">
         <div class="surface-panel flex items-center justify-between p-4">
             <div>
-                <span class="block text-[8px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{% trans "Revisiones encontradas" %}</span>
-                <span class="mt-1 block font-mono text-2xl font-semibold tabular-nums text-[var(--ink)]">{{ total_reviews_count }}</span>
+                <span class="block text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{% trans "Revisiones encontradas" %}</span>
+                <span class="mt-1 block font-mono text-2xl font-bold tabular-nums text-[var(--ink)]">{{ total_reviews_count }}</span>
             </div>
             <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)]">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -66,8 +66,8 @@
 
         <div class="surface-panel flex items-center justify-between p-4">
             <div>
-                <span class="block text-[8px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{% trans "Ocurrencias validadas" %}</span>
-                <span class="mt-1 block font-mono text-2xl font-semibold tabular-nums text-[var(--teal)]">{{ total_words_validated }}</span>
+                <span class="block text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{% trans "Ocurrencias validadas" %}</span>
+                <span class="mt-1 block font-mono text-2xl font-bold tabular-nums text-[var(--teal)]">{{ total_words_validated }}</span>
             </div>
             <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--teal-soft)] text-[var(--teal)]">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -78,8 +78,8 @@
 
         <div class="surface-panel flex items-center justify-between p-4">
             <div>
-                <span class="block text-[8px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{% trans "Ocurrencias descartadas" %}</span>
-                <span class="mt-1 block font-mono text-2xl font-semibold tabular-nums text-[var(--red)]">{{ total_words_discarded }}</span>
+                <span class="block text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{% trans "Ocurrencias descartadas" %}</span>
+                <span class="mt-1 block font-mono text-2xl font-bold tabular-nums text-[var(--red)]">{{ total_words_discarded }}</span>
             </div>
             <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--red-soft)] text-[var(--red)]">
                 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -92,9 +92,9 @@
     <!-- ===================================================================== -->
     <!-- Filtros: año, empresa, auditor y palabra                              -->
     <!-- ===================================================================== -->
-    <form id="filterForm" method="get" class="mt-6 rounded-[14px] border border-[var(--line)] bg-[var(--surface)] p-4">
-        <div class="flex flex-wrap gap-3">
-            <div class="form-field min-w-[170px] flex-1">
+    <form id="filterForm" method="get" class="filter-strip mt-6">
+        <div class="flex flex-wrap gap-3 w-full">
+            <div class="form-field min-w-[160px] flex-1">
                 <span>{% trans "Año del reporte" %}</span>
                 <select name="year" id="year" data-custom-select="true" class="eli-input">
                     <option value="">{% trans "Todos los años" %}</option>
@@ -104,7 +104,7 @@
                 </select>
             </div>
 
-            <div class="form-field min-w-[170px] flex-1">
+            <div class="form-field min-w-[200px] flex-[1.3]">
                 <span>{% trans "Empresa" %}</span>
                 <select name="company" id="company" data-custom-select="true" class="eli-input">
                     <option value="">{% trans "Todas las empresas" %}</option>
@@ -116,7 +116,7 @@
                 </select>
             </div>
 
-            <div class="form-field min-w-[170px] flex-1">
+            <div class="form-field min-w-[160px] flex-1">
                 <span>{% trans "Auditor" %}</span>
                 <select name="user" id="user" data-custom-select="true" class="eli-input">
                     <option value="">{% trans "Todos los auditores" %}</option>
@@ -146,7 +146,7 @@
             </div>
         </div>
 
-        <div class="mt-4 flex flex-col-reverse gap-2 border-t border-[var(--line)] pt-4 sm:flex-row sm:items-center sm:justify-end">
+        <div class="mt-4 flex flex-col-reverse gap-2 border-t border-[var(--line)] pt-4 sm:flex-row sm:items-center sm:justify-end w-full">
             {% if year_filter or company_filter or user_filter or word_filter %}
             <a href="{% url 'concealment_history' %}" class="dialog-cancel w-full gap-1.5 sm:w-auto">
                 <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -172,14 +172,14 @@
             <table class="data-table min-w-[1000px]">
                 <thead>
                     <tr>
-                        <th>{% trans "Fecha y hora" %}</th>
-                        <th>{% trans "Auditor" %}</th>
-                        <th>{% trans "Empresa / año" %}</th>
-                        <th>{% trans "Palabra" %}</th>
-                        <th class="text-center">{% trans "Detectadas" %}</th>
-                        <th class="text-center">{% trans "Válidas" %}</th>
-                        <th class="text-center">{% trans "Descartadas" %}</th>
-                        <th class="text-right">{% trans "Detalle" %}</th>
+                        <th class="text-[10px] font-bold uppercase tracking-wider">{% trans "Fecha y hora" %}</th>
+                        <th class="text-[10px] font-bold uppercase tracking-wider">{% trans "Auditor" %}</th>
+                        <th class="text-[10px] font-bold uppercase tracking-wider">{% trans "Empresa / año" %}</th>
+                        <th class="text-[10px] font-bold uppercase tracking-wider">{% trans "Palabra" %}</th>
+                        <th class="text-center text-[10px] font-bold uppercase tracking-wider">{% trans "Detectadas" %}</th>
+                        <th class="text-center text-[10px] font-bold uppercase tracking-wider">{% trans "Válidas" %}</th>
+                        <th class="text-center text-[10px] font-bold uppercase tracking-wider">{% trans "Descartadas" %}</th>
+                        <th class="text-right text-[10px] font-bold uppercase tracking-wider">{% trans "Detalle" %}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -190,7 +190,7 @@
                         </td>
                         <td class="whitespace-nowrap">
                             {% if r.user %}
-                            <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--blue-soft)] px-2.5 py-1 font-mono text-[9px] font-semibold text-[var(--blue)]">
+                            <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--blue-soft)] px-2.5 py-0.5 font-mono text-[9px] font-semibold text-[var(--blue)]">
                                 <svg class="h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
                                     <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
                                 </svg>
@@ -202,22 +202,22 @@
                         </td>
                         <td>
                             {% if r.report and r.report.company %}
-                                <span class="font-semibold text-[var(--ink)]">{{ r.clean_company|default:r.report.company.name }}</span>
+                                <span class="text-[11px] font-semibold text-[var(--ink)]">{{ r.clean_company|default:r.report.company.name }}</span>
                                 {% if r.report.year %}
                                 <span class="period-chip ml-2">{{ r.report.year }}</span>
                                 {% endif %}
                             {% else %}
-                                <span class="font-semibold text-[var(--ink)]">{{ r.report.name|default:"Reporte" }}</span>
+                                <span class="text-[11px] font-semibold text-[var(--ink)]">{{ r.report.name|default:"Reporte" }}</span>
                             {% endif %}
                         </td>
-                        <td class="font-semibold text-[var(--blue)]">"{{ r.word }}"</td>
-                        <td class="text-center font-mono font-semibold tabular-nums text-[var(--ink)]">{{ r.total_found }}</td>
-                        <td class="text-center"><span class="metric-badge low">{{ r.total_valid }}</span></td>
-                        <td class="text-center"><span class="metric-badge high">{{ r.total_discarded }}</span></td>
+                        <td class="text-[11px] font-semibold text-[var(--blue)]">"{{ r.word }}"</td>
+                        <td class="text-center font-mono text-[11px] font-semibold tabular-nums text-[var(--ink)]">{{ r.total_found }}</td>
+                        <td class="text-center"><span class="metric-badge low text-[9px]">{{ r.total_valid }}</span></td>
+                        <td class="text-center"><span class="metric-badge high text-[9px]">{{ r.total_discarded }}</span></td>
                         <td class="text-right">
                             <button type="button"
                                     onclick="abrirModalDetalle({{ r.id }})"
-                                    class="inline-flex items-center gap-1.5 rounded-lg bg-[var(--blue-soft)] px-2.5 py-1.5 text-[9px] font-semibold text-[var(--blue)] transition hover:brightness-105">
+                                    class="inline-flex items-center gap-1.5 rounded-lg bg-[var(--blue-soft)] px-2.5 py-1 text-[9px] font-bold text-[var(--blue)] transition hover:brightness-105">
                                 {% trans "Ver párrafos" %}
                             </button>
                         </td>
@@ -332,8 +332,8 @@ function abrirModalDetalle(reviewId) {
                 const esDescartado = p.discarded;
                 const borderClass = esDescartado ? "border-[var(--red)] bg-[var(--red-soft)]" : "border-[var(--teal)] bg-[var(--teal-soft)]";
                 const badge = esDescartado
-                    ? '<span class="metric-badge high">{{ t_descartado|escapejs }}</span>'
-                    : '<span class="metric-badge low">{{ t_valido|escapejs }}</span>';
+                    ? '<span class="metric-badge high text-[9px]">{{ t_descartado|escapejs }}</span>'
+                    : '<span class="metric-badge low text-[9px]">{{ t_valido|escapejs }}</span>';
 
                 html += `
                     <div class="rounded-xl border p-4 ${borderClass}">

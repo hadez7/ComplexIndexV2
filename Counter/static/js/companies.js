@@ -204,3 +204,55 @@ document.addEventListener('click', function (e) {
         openDeleteModal(e.target.dataset.id);
     }
 });
+
+// ---------------------------------------- ACCIONES EXTRAÍBLES DE ENTIDAD (>) ----------------------------------------
+function toggleCompanyActions(id) {
+    const actions = document.getElementById(`companyActions-${id}`);
+    const chevron = document.getElementById(`companyChevron-${id}`);
+    const toggleBtn = document.getElementById(`companyToggle-${id}`);
+    if (!actions) return;
+
+    const isHidden = actions.classList.contains('hidden');
+
+    // Cerrar cualquier otro extraíble abierto
+    document.querySelectorAll('[id^="companyActions-"]').forEach(el => {
+        if (el !== actions) {
+            el.classList.add('hidden');
+            el.classList.remove('flex');
+        }
+    });
+    document.querySelectorAll('[id^="companyChevron-"]').forEach(chev => {
+        if (chev !== chevron) chev.classList.remove('rotate-180');
+    });
+    document.querySelectorAll('[id^="companyToggle-"]').forEach(btn => {
+        if (btn !== toggleBtn) btn.setAttribute('aria-expanded', 'false');
+    });
+
+    if (isHidden) {
+        actions.classList.remove('hidden');
+        actions.classList.add('flex');
+        if (chevron) chevron.classList.add('rotate-180');
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'true');
+    } else {
+        actions.classList.add('hidden');
+        actions.classList.remove('flex');
+        if (chevron) chevron.classList.remove('rotate-180');
+        if (toggleBtn) toggleBtn.setAttribute('aria-expanded', 'false');
+    }
+}
+
+// Cerrar extraíbles si se hace clic fuera
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('[id^="companyActions-"]') && !e.target.closest('[id^="companyToggle-"]')) {
+        document.querySelectorAll('[id^="companyActions-"]').forEach(el => {
+            el.classList.add('hidden');
+            el.classList.remove('flex');
+        });
+        document.querySelectorAll('[id^="companyChevron-"]').forEach(chev => {
+            chev.classList.remove('rotate-180');
+        });
+        document.querySelectorAll('[id^="companyToggle-"]').forEach(btn => {
+            btn.setAttribute('aria-expanded', 'false');
+        });
+    }
+});

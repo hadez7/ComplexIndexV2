@@ -20,9 +20,9 @@ urlpatterns = [
     path("reports-by-year/", views.reports_by_year, name="reports_by_year"),
     
     # Included URLConfs
+    path("reports/", include("Counter.other.urls_report")),
     path("totalcount/", include("Counter.other.urls_total_count")),
     path("companies/", include("Counter.other.urls_company")),
-    path("reports/", include("Counter.other.urls_report")),
     path("expert_lists/", include("Counter.other.urls_expert_lists")),
     path("concealment_detection/", include("Counter.other.urls_concealment_detection")),
     path("workspaces/", include("Counter.other.urls_workspace")),
