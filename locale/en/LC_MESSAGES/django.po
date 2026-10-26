@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ComplexIndexV2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-26 04:30+0000\n"
+"POT-Creation-Date: 2026-10-26 05:00+0000\n"
 "PO-Revision-Date: 2026-10-01 19:00+0000\n"
 "Last-Translator: ComplexIndexV2 team\n"
 "Language-Team: English\n"
@@ -61,7 +61,7 @@ msgstr "Companies"
 #: Counter/templates/comparative_analysis.html:20
 #: Counter/templates/concealment_detection.html:20
 #: Counter/templates/concealment_history.html:20
-#: Counter/templates/expert_lists.html:20 Counter/templates/index.html:57
+#: Counter/templates/expert_lists.html:21 Counter/templates/index.html:57
 #: Counter/templates/panel.html:4 Counter/templates/panel.html:16
 #: Counter/templates/panel.html:337 Counter/templates/reports.html:20
 #: Counter/templates/totalcount.html:20
@@ -138,8 +138,8 @@ msgstr "New Company"
 #: Counter/templates/companies.html:211 Counter/templates/companies.html:234
 #: Counter/templates/concealment_history.html:246
 #: Counter/templates/concealment_history.html:259
-#: Counter/templates/expert_lists.html:319
-#: Counter/templates/expert_lists.html:384 Counter/templates/reports.html:112
+#: Counter/templates/expert_lists.html:402
+#: Counter/templates/expert_lists.html:476 Counter/templates/reports.html:112
 #: Counter/templates/reports.html:139 Counter/templates/reports.html:158
 #: Counter/templates/totalcountreport.html:197
 #: Counter/templates/upload.html:458 Counter/templates/users.html:326
@@ -163,9 +163,9 @@ msgid "Provincia"
 msgstr "Province"
 
 #: Counter/templates/companies.html:137 Counter/templates/companies.html:190
-#: Counter/templates/companies.html:254 Counter/templates/expert_lists.html:358
-#: Counter/templates/expert_lists.html:415
-#: Counter/templates/expert_lists.html:443 Counter/templates/reports.html:192
+#: Counter/templates/companies.html:254 Counter/templates/expert_lists.html:441
+#: Counter/templates/expert_lists.html:593
+#: Counter/templates/expert_lists.html:621 Counter/templates/reports.html:192
 #: Counter/templates/reports.html:214 Counter/templates/users.html:451
 #: Counter/templates/users.html:554 Counter/templates/workspaces.html:370
 #: Counter/templates/workspaces.html:443
@@ -217,12 +217,13 @@ msgstr ""
 "This action will permanently delete the company and its associated records."
 
 #: Counter/templates/companies.html:255 Counter/templates/companies.html:287
-#: Counter/templates/expert_lists.html:446 Counter/templates/reports.html:215
+#: Counter/templates/expert_lists.html:624 Counter/templates/reports.html:215
 #: Counter/templates/reports.html:425
 msgid "Eliminar"
 msgstr "Delete"
 
-#: Counter/templates/companies.html:278 Counter/templates/reports.html:415
+#: Counter/templates/companies.html:278 Counter/templates/expert_lists.html:248
+#: Counter/templates/reports.html:415
 msgid "Editar"
 msgstr "Edit"
 
@@ -362,7 +363,6 @@ msgid "Selecciona el marco de conocimiento pericial."
 msgstr ""
 
 #: Counter/templates/comparative_analysis.html:110
-#: Counter/templates/expert_lists.html:165
 #, fuzzy
 #| msgid "Nueva Lista"
 msgid "Lista"
@@ -458,7 +458,7 @@ msgstr "Recent reviews in this report"
 #: Counter/templates/comparative_analysis.html:197
 #: Counter/templates/comparative_analysis.html:206
 #: Counter/templates/comparative_analysis.html:549
-#: Counter/templates/expert_lists.html:192
+#: Counter/templates/expert_lists.html:212
 msgid "más"
 msgstr ""
 
@@ -1101,30 +1101,36 @@ msgstr "occurrence"
 msgid "ocurrencias"
 msgstr "occurrences"
 
-#: Counter/templates/expert_lists.html:4
+#: Counter/templates/expert_lists.html:5
 msgid "Vocabularios y Listas de Expertos"
 msgstr "Vocabularies and Expert Lists"
 
-#: Counter/templates/expert_lists.html:23
+#: Counter/templates/expert_lists.html:24
 msgid "Listas de expertos"
 msgstr "Expert Lists"
 
-#: Counter/templates/expert_lists.html:27
+#: Counter/templates/expert_lists.html:28
 msgid "Conocimiento experto"
 msgstr ""
 
-#: Counter/templates/expert_lists.html:29
+#: Counter/templates/expert_lists.html:30
+#, fuzzy
+#| msgid "Usuarios"
+msgid "vocabulario"
+msgstr "Users"
+
+#: Counter/templates/expert_lists.html:33
 #, fuzzy
 #| msgid "Lista de experto"
 msgid "experto"
 msgstr "Expert list"
 
-#: Counter/templates/expert_lists.html:34 Counter/templates/index.html:406
+#: Counter/templates/expert_lists.html:38 Counter/templates/index.html:406
 #: WordCounter/templates/partials/_nav_items.html:93
 msgid "Vocabularios y Listas de Control"
 msgstr "Vocabularies and Control Lists"
 
-#: Counter/templates/expert_lists.html:37
+#: Counter/templates/expert_lists.html:41
 #, fuzzy
 #| msgid ""
 #| "Gestiona los vocabularios controlados, cláusulas de referencia y palabras "
@@ -1136,96 +1142,112 @@ msgstr ""
 "Manage controlled vocabularies, reference clauses, and keywords associated "
 "with each legal specialist for contract auditing."
 
-#: Counter/templates/expert_lists.html:47
+#: Counter/templates/expert_lists.html:52
+#: Counter/templates/expert_lists.html:322
 #, fuzzy
 #| msgid "Asignar Nuevo Experto"
 msgid "Asignar nuevo experto"
 msgstr "Assign New Expert"
 
-#: Counter/templates/expert_lists.html:65
+#: Counter/templates/expert_lists.html:61
+#: Counter/templates/expert_lists.html:263
+#, fuzzy
+#| msgid "Nuevo usuario"
+msgid "Nuevo vocabulario"
+msgstr "New user"
+
+#: Counter/templates/expert_lists.html:79
 msgid "Buscar por especialista, lista o término clave..."
 msgstr ""
 
-#: Counter/templates/expert_lists.html:70 Counter/templates/reports.html:74
+#: Counter/templates/expert_lists.html:84 Counter/templates/reports.html:74
 #, fuzzy
 #| msgid "Filtros de búsqueda"
 msgid "Limpiar búsqueda"
 msgstr "Search Filters"
 
-#: Counter/templates/expert_lists.html:84
+#: Counter/templates/expert_lists.html:96
 #, fuzzy
-#| msgid "No hay expertos registrados"
-msgid "expertos registrados"
-msgstr "No experts registered"
+#| msgid "Ver todos"
+msgid "Todos"
+msgstr "View all"
 
-#: Counter/templates/expert_lists.html:131
+#: Counter/templates/expert_lists.html:118
+#: Counter/templates/expert_lists.html:367
+#, fuzzy
+#| msgid "Usuarios"
+msgid "vocabularios"
+msgstr "Users"
+
+#: Counter/templates/expert_lists.html:153
+msgid "Copiar términos al portapapeles"
+msgstr ""
+
+#: Counter/templates/expert_lists.html:163
+msgid "Eliminar lista"
+msgstr "Delete list"
+
+#: Counter/templates/expert_lists.html:173
+#: Counter/templates/expert_lists.html:360
 #, fuzzy
 #| msgid "Especialista Legal"
 msgid "Especialista legal"
 msgstr "Legal Specialist"
 
-#: Counter/templates/expert_lists.html:143
-msgid "lista"
+#: Counter/templates/expert_lists.html:181
+msgid "Curado por"
 msgstr ""
-
-#: Counter/templates/expert_lists.html:156
-#: Counter/templates/expert_lists.html:258
-#, fuzzy
-#| msgid "Nueva Lista"
-msgid "Nueva lista"
-msgstr "New List"
-
-#: Counter/templates/expert_lists.html:166
-msgid "Términos clave y cláusulas"
-msgstr ""
-
-#: Counter/templates/expert_lists.html:167
-msgid "Total"
-msgstr ""
-
-#: Counter/templates/expert_lists.html:168 Counter/templates/users.html:130
-msgid "Acciones"
-msgstr "Actions"
 
 #: Counter/templates/expert_lists.html:195
+msgid "Criticidad Alta"
+msgstr ""
+
+#: Counter/templates/expert_lists.html:195
+msgid "Criticidad Media"
+msgstr ""
+
+#: Counter/templates/expert_lists.html:195
+msgid "Ponderación estándar"
+msgstr ""
+
+#: Counter/templates/expert_lists.html:204
 msgid "Sin términos asignados."
 msgstr ""
 
-#: Counter/templates/expert_lists.html:208
-msgid "Copiar términos al portapapeles"
+#: Counter/templates/expert_lists.html:211
+#, fuzzy
+#| msgid "Ver todos los espacios"
+msgid "Ver todos los términos"
+msgstr "View all workspaces"
+
+#: Counter/templates/expert_lists.html:235
+#: Counter/templates/expert_lists.html:519
+msgid "términos"
 msgstr ""
 
-#: Counter/templates/expert_lists.html:220
-msgid "Editar lista"
-msgstr "Edit list"
+#: Counter/templates/expert_lists.html:244
+msgid "Editar vocabulario y gestionar ponderación"
+msgstr ""
 
-#: Counter/templates/expert_lists.html:230
-msgid "Eliminar lista"
-msgstr "Delete list"
+#: Counter/templates/expert_lists.html:264
+msgid "Añadir lista y términos"
+msgstr ""
 
-#: Counter/templates/expert_lists.html:249
-msgid "Sin listas de vocabulario asignadas"
-msgstr "No vocabulary lists assigned"
-
-#: Counter/templates/expert_lists.html:250
-msgid "Comienza creando una lista de términos de referencia para este experto."
-msgstr "Start by creating a list of reference terms for this expert."
-
-#: Counter/templates/expert_lists.html:273
+#: Counter/templates/expert_lists.html:275
 #, fuzzy
 #| msgid "No se encontraron espacios de trabajo"
 msgid "No se encontraron coincidencias"
 msgstr "No workspaces found"
 
-#: Counter/templates/expert_lists.html:275
+#: Counter/templates/expert_lists.html:277
 msgid "Ningún experto, lista o término coincide con tu búsqueda actual."
 msgstr ""
 
-#: Counter/templates/expert_lists.html:288
+#: Counter/templates/expert_lists.html:289
 msgid "No hay expertos registrados"
 msgstr "No experts registered"
 
-#: Counter/templates/expert_lists.html:290
+#: Counter/templates/expert_lists.html:291
 msgid ""
 "Para gestionar vocabularios especializados y cláusulas de auditoría, debes "
 "asignar el rol de experto a uno o más usuarios de la plataforma."
@@ -1233,99 +1255,185 @@ msgstr ""
 "To manage specialized vocabularies and audit clauses, you must assign the "
 "expert role to one or more platform users."
 
-#: Counter/templates/expert_lists.html:298
+#: Counter/templates/expert_lists.html:299
 #, fuzzy
 #| msgid "Asignar Primer Experto"
 msgid "Asignar primer experto"
 msgstr "Assign First Expert"
 
-#: Counter/templates/expert_lists.html:317
+#: Counter/templates/expert_lists.html:311
+msgid "Equipo pericial"
+msgstr ""
+
+#: Counter/templates/expert_lists.html:313
+#, fuzzy
+#| msgid "No asignado"
+msgid "Especialistas asignados al espacio"
+msgstr "Not assigned"
+
+#: Counter/templates/expert_lists.html:377
+#, fuzzy
+#| msgid "Nueva Lista"
+msgid "Nueva lista"
+msgstr "New List"
+
+#: Counter/templates/expert_lists.html:400
 #, fuzzy
 #| msgid "Asignar Rol de Experto"
 msgid "Asignar rol de experto"
 msgstr "Assign Expert Role"
 
-#: Counter/templates/expert_lists.html:328
+#: Counter/templates/expert_lists.html:411
 msgid "Usuario del sistema"
 msgstr "System user"
 
-#: Counter/templates/expert_lists.html:337
+#: Counter/templates/expert_lists.html:420
 msgid "No hay usuarios disponibles"
 msgstr "No users available"
 
-#: Counter/templates/expert_lists.html:343
+#: Counter/templates/expert_lists.html:426
 msgid "Todos los usuarios registrados ya tienen asignado un perfil de experto."
 msgstr "All registered users already have an expert profile assigned."
 
-#: Counter/templates/expert_lists.html:349
+#: Counter/templates/expert_lists.html:432
 #, fuzzy
 #| msgid "Especialidad / Profesión"
 msgid "Especialidad / profesión"
 msgstr "Specialty / Profession"
 
-#: Counter/templates/expert_lists.html:352
+#: Counter/templates/expert_lists.html:435
 msgid "Ej. Abogado Laboral, Perito Contable"
 msgstr "e.g. Labor Lawyer, Forensic Accountant"
 
-#: Counter/templates/expert_lists.html:363
+#: Counter/templates/expert_lists.html:446
 #, fuzzy
 #| msgid "Guardar Experto"
 msgid "Guardar experto"
 msgstr "Save Expert"
 
-#: Counter/templates/expert_lists.html:382
+#: Counter/templates/expert_lists.html:469
 #, fuzzy
-#| msgid "Nueva Lista de Expertos"
-msgid "Nueva lista de expertos"
-msgstr "New Expert List"
+#| msgid "Vocabularios y Listas de Expertos"
+msgid "Nuevo vocabulario controlado"
+msgstr "Vocabularies and Expert Lists"
 
-#: Counter/templates/expert_lists.html:396
-msgid "Nombre de la lista"
-msgstr "List name"
+#: Counter/templates/expert_lists.html:472
+msgid "Define los términos, cláusulas y su ponderación de criticidad."
+msgstr ""
 
-#: Counter/templates/expert_lists.html:397
+#: Counter/templates/expert_lists.html:491
+#, fuzzy
+#| msgid "Especialista Legal"
+msgid "Especialista responsable"
+msgstr "Legal Specialist"
+
+#: Counter/templates/expert_lists.html:495
+#, fuzzy
+#| msgid "Especialidad"
+msgid "Especialista"
+msgstr "Specialty"
+
+#: Counter/templates/expert_lists.html:502
+#, fuzzy
+#| msgid "Nombre de usuario"
+msgid "Nombre del vocabulario"
+msgstr "Username"
+
+#: Counter/templates/expert_lists.html:506
 msgid "Ej. Cláusulas de Confidencialidad"
 msgstr "e.g. Confidentiality Clauses"
 
-#: Counter/templates/expert_lists.html:402
-msgid "Palabras y términos clave"
-msgstr ""
-
-#: Counter/templates/expert_lists.html:403
-msgid "términos"
-msgstr ""
-
-#: Counter/templates/expert_lists.html:407
+#: Counter/templates/expert_lists.html:515
 #, fuzzy
-#| msgid "ej: secreto, confidencial, no divulgación, penalidad"
-msgid "ej: secreto, confidencial, no divulgación, penalidad contractual"
-msgstr "e.g. secret, confidential, non-disclosure, penalty"
+#| msgid "Gestión de Usuarios"
+msgid "Gestión interactiva de términos"
+msgstr "User Management"
 
-#: Counter/templates/expert_lists.html:409
+#: Counter/templates/expert_lists.html:523
+msgid "Modo texto masivo"
+msgstr ""
+
+#: Counter/templates/expert_lists.html:535
 #, fuzzy
 #| msgid "Escribe los términos separados por comas."
-msgid "Escribe o pega los términos separados por comas."
+msgid "Escribe un término y pulsa Enter (o separa por comas)..."
 msgstr "Enter terms separated by commas."
 
-#: Counter/templates/expert_lists.html:418
+#: Counter/templates/expert_lists.html:541
 #, fuzzy
-#| msgid "Guardar Lista"
-msgid "Guardar lista"
-msgstr "Save List"
+#| msgid "Cantidad"
+msgid "Criticidad:"
+msgstr "Quantity"
 
-#: Counter/templates/expert_lists.html:435
+#: Counter/templates/expert_lists.html:543
+msgid "Normal (1x)"
+msgstr ""
+
+#: Counter/templates/expert_lists.html:544
+#, fuzzy
+#| msgid "Media"
+msgid "Media (2x)"
+msgstr "Medium"
+
+#: Counter/templates/expert_lists.html:545
+#, fuzzy
+#| msgid "Alta"
+msgid "Alta (3x)"
+msgstr "High"
+
+#: Counter/templates/expert_lists.html:555
+#: Counter/templates/workspaces.html:490
+msgid "Añadir"
+msgstr "Add"
+
+#: Counter/templates/expert_lists.html:565
+msgid "No hay términos en este vocabulario. Escribe uno arriba para comenzar."
+msgstr ""
+
+#: Counter/templates/expert_lists.html:570
+msgid ""
+"Haz clic en la etiqueta de criticidad de una píldora para alternar su peso "
+"(Normal → Media → Alta)."
+msgstr ""
+
+#: Counter/templates/expert_lists.html:572
+#, fuzzy
+#| msgid "Limpiar filtros"
+msgid "Limpiar todos"
+msgstr "Clear filters"
+
+#: Counter/templates/expert_lists.html:583
+#, fuzzy
+#| msgid "ej: secreto, confidencial, no divulgación, penalidad"
+msgid ""
+"ej: secreto, confidencial:alta, no divulgación:media, penalidad contractual"
+msgstr "e.g. secret, confidential, non-disclosure, penalty"
+
+#: Counter/templates/expert_lists.html:585
+msgid ""
+"Pega términos separados por comas. Puedes añadir ponderación con el "
+"sufijo :alta o :media (ej: fraude:alta)."
+msgstr ""
+
+#: Counter/templates/expert_lists.html:596
+#, fuzzy
+#| msgid "Guardar Usuario"
+msgid "Guardar vocabulario"
+msgstr "Save User"
+
+#: Counter/templates/expert_lists.html:613
 #, fuzzy
 #| msgid "Sin listas de vocabulario asignadas"
 msgid "¿Eliminar lista de vocabulario?"
 msgstr "No vocabulary lists assigned"
 
-#: Counter/templates/expert_lists.html:437
+#: Counter/templates/expert_lists.html:615
 #, fuzzy
 #| msgid "¿Estás seguro de eliminar este reporte del sistema?"
 msgid "¿Estás seguro de que deseas eliminar la lista"
 msgstr "Are you sure you want to delete this report from the system?"
 
-#: Counter/templates/expert_lists.html:439
+#: Counter/templates/expert_lists.html:617
 #, fuzzy
 #| msgid ""
 #| "Esta acción eliminará la empresa y sus registros asociados de forma "
@@ -2971,6 +3079,10 @@ msgstr "Not assigned"
 msgid "Último acceso"
 msgstr "Last Login"
 
+#: Counter/templates/users.html:130
+msgid "Acciones"
+msgstr "Actions"
+
 #: Counter/templates/users.html:147
 msgid "tu cuenta"
 msgstr "your account"
@@ -3495,10 +3607,6 @@ msgstr "No one else has access to this workspace yet."
 #: Counter/templates/workspaces.html:484
 msgid "Dar acceso a un usuario"
 msgstr "Grant access to a user"
-
-#: Counter/templates/workspaces.html:490
-msgid "Añadir"
-msgstr "Add"
 
 #: Counter/templates/workspaces.html:494
 msgid "No hay usuarios disponibles: todo el mundo ya tiene acceso."
@@ -4649,6 +4757,34 @@ msgid "Divergencia Severa"
 msgstr ""
 
 #, fuzzy
+#~| msgid "No hay expertos registrados"
+#~ msgid "expertos registrados"
+#~ msgstr "No experts registered"
+
+#~ msgid "Editar lista"
+#~ msgstr "Edit list"
+
+#~ msgid "Sin listas de vocabulario asignadas"
+#~ msgstr "No vocabulary lists assigned"
+
+#~ msgid ""
+#~ "Comienza creando una lista de términos de referencia para este experto."
+#~ msgstr "Start by creating a list of reference terms for this expert."
+
+#, fuzzy
+#~| msgid "Nueva Lista de Expertos"
+#~ msgid "Nueva lista de expertos"
+#~ msgstr "New Expert List"
+
+#~ msgid "Nombre de la lista"
+#~ msgstr "List name"
+
+#, fuzzy
+#~| msgid "Guardar Lista"
+#~ msgid "Guardar lista"
+#~ msgstr "Save List"
+
+#, fuzzy
 #~| msgid "Sin listas de vocabulario asignadas"
 #~ msgid "Venn de vocabularios"
 #~ msgstr "No vocabulary lists assigned"
@@ -5112,9 +5248,6 @@ msgstr ""
 
 #~ msgid "No hay espacios disponibles"
 #~ msgstr "No workspaces available"
-
-#~ msgid "Ver todos los espacios"
-#~ msgstr "View all workspaces"
 
 #~ msgid "Sesión iniciada como"
 #~ msgstr "Signed in as"

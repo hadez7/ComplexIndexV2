@@ -135,6 +135,77 @@ class ExpertWord(models.Model):
     def __str__(self):
         return f"{self.name} ({self.expert.user.username})"
 
+    @property
+    def monogram(self):
+        """Genera el monograma de 2 letras mayúsculas para la insignia circular estilo Figma."""
+        if not self.name:
+            return "VC"
+        stop_words = {"de", "del", "la", "las", "el", "los", "y", "en", "a", "por", "para", "con"}
+        clean_parts = [w for w in self.name.split() if w.lower() not in stop_words and w]
+        if len(clean_parts) >= 2:
+            return (clean_parts[0][0] + clean_parts[1][0]).upper()
+        elif len(clean_parts) == 1 and len(clean_parts[0]) >= 2:
+            return clean_parts[0][:2].upper()
+        elif len(clean_parts) == 1:
+            return (clean_parts[0][0] + "L").upper()
+        return "VC"
+
+    @property
+    def color_theme(self):
+        """Asigna una paleta semántica armónica de tokens ELI para la insignia circular."""
+        themes = [
+            {"badge": "border-[rgba(99,161,255,0.3)] bg-[var(--blue-soft)] text-[var(--blue)]", "pill": "text-[var(--blue)]"},
+            {"badge": "border-[rgba(75,212,232,0.3)] bg-[var(--teal-soft)] text-[var(--teal)]", "pill": "text-[var(--teal)]"},
+            {"badge": "border-[rgba(129,140,248,0.3)] bg-[var(--indigo-soft)] text-[var(--indigo)]", "pill": "text-[var(--indigo)]"},
+            {"badge": "border-[rgba(245,158,11,0.3)] bg-[rgba(245,158,11,0.12)] text-[var(--amber)]", "pill": "text-[var(--amber)]"},
+            {"badge": "border-[rgba(52,211,153,0.3)] bg-[rgba(52,211,153,0.12)] text-[var(--green)]", "pill": "text-[var(--green)]"},
+        ]
+        return themes[(self.id or 0) % len(themes)]
+
+    @property
+    def parsed_words(self):
+        """
+        Devuelve una lista de dicts [{'term': '...', 'weight': 'alta'|'media'|'normal', 'raw': '...'}]
+        compatible con strings simples, dicts o formato 'termino:peso'.
+        """
+        result = []
+        if not self.words:
+            return result
+        for item in self.words:
+            if isinstance(item, dict):
+                term = str(item.get("term", "")).strip()
+                weight = str(item.get("weight", "normal")).lower()
+            elif isinstance(item, str):
+                if ":" in item:
+                    parts = item.split(":", 1)
+                    term = parts[0].strip()
+                    weight = parts[1].strip().lower()
+                else:
+                    term = item.strip()
+                    weight = "normal"
+            else:
+                term = str(item).strip()
+                weight = "normal"
+            if term:
+                if weight not in ("alta", "media", "normal", "baja"):
+                    weight = "normal"
+                result.append({
+                    "term": term,
+                    "weight": weight,
+                    "raw": f"{term}:{weight}" if weight != "normal" else term,
+                })
+        return result
+
+    @property
+    def raw_terms_string(self):
+        """Devuelve los términos separados por coma para copiar o editar en texto plano."""
+        return ", ".join(item["term"] for item in self.parsed_words)
+
+    @property
+    def clean_words(self):
+        """Lista plana con los nombres canónicos de los términos."""
+        return [item["term"] for item in self.parsed_words]
+
 
 class ConcealmentReview(models.Model):
     report = models.ForeignKey(Report, on_delete=models.CASCADE)

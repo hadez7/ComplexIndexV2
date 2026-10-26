@@ -2,26 +2,48 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ==========================================================================
      Variables y Referencias DOM
      ========================================================================== */
-  const modal            = document.getElementById('expertModal');
-  const modalTitle       = document.getElementById('modalTitle');
-  const listForm         = document.getElementById('list-form');
-  const listIdInput      = document.getElementById('list-id');
-  const listNameInp      = document.getElementById('list-name');
-  const listWordsInp     = document.getElementById('list-words');
-  const wordsCountBadge  = document.getElementById('wordsCountBadge');
+  const modal                 = document.getElementById('expertModal');
+  const modalTitle            = document.getElementById('modalTitle');
+  const listForm              = document.getElementById('list-form');
+  const listIdInput           = document.getElementById('list-id');
+  const listNameInp           = document.getElementById('list-name');
+  const modalExpertSelect     = document.getElementById('modal-expert-select');
+  const expertSelectContainer = document.getElementById('expertSelectContainer');
 
-  // Búsqueda en tiempo real
-  const searchInput      = document.getElementById('expertSearchInput');
-  const searchClearBtn   = document.getElementById('expertSearchClear');
-  const searchMatchCount = document.getElementById('searchMatchCount');
-  const noSearchResults = document.getElementById('noSearchResults');
-  const expertCards      = document.querySelectorAll('.expert-card');
+  // Modo píldoras vs texto masivo
+  const toggleInputModeBtn    = document.getElementById('toggleInputModeBtn');
+  const pillsModeContainer    = document.getElementById('pillsModeContainer');
+  const rawTextModeContainer  = document.getElementById('rawTextModeContainer');
+  const listWordsInp          = document.getElementById('list-words');
+  const wordsCountBadge       = document.getElementById('wordsCountBadge');
+
+  // Gestor interactivo de términos
+  const termQuickInput        = document.getElementById('termQuickInput');
+  const termWeightSelect      = document.getElementById('termWeightSelect');
+  const addTermBtn            = document.getElementById('addTermBtn');
+  const termsChipsContainer   = document.getElementById('termsChipsContainer');
+  const termsEmptyNotice      = document.getElementById('termsEmptyNotice');
+  const clearAllTermsBtn      = document.getElementById('clearAllTermsBtn');
+
+  // Búsqueda y Filtros
+  const searchInput           = document.getElementById('expertSearchInput');
+  const searchClearBtn        = document.getElementById('expertSearchClear');
+  const searchMatchCount      = document.getElementById('searchMatchCount');
+  const noSearchResults      = document.getElementById('noSearchResults');
+  const vocabGrid             = document.getElementById('vocabGrid');
+  const vocabCards            = document.querySelectorAll('.vocab-card');
+  const expertFilterBtns      = document.querySelectorAll('.expert-filter-btn');
+
+  // Estado en memoria de los términos del modal
+  let termsList = []; // [{ term: string, weight: 'alta'|'media'|'normal' }]
+  let activeExpertFilter = 'all';
 
   // Endpoints API
   const routes = {
-    create: '/expert_lists/create/',
-    update: id => `/expert_lists/${id}/update/`,
-    del   : id => `/expert_lists/${id}/delete/`,
+    create : '/expert_lists/create/',
+    json   : id => `/expert_lists/${id}/json/`,
+    update : id => `/expert_lists/${id}/update/`,
+    del    : id => `/expert_lists/${id}/delete/`,
   };
 
   const getCSRF = () => {
@@ -30,49 +52,295 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* ==========================================================================
-     Contador Dinámico de Términos en el Textarea
+     Parser y Renderizador de Píldoras Interactivas (Tag Studio)
      ========================================================================== */
-  const updateWordsCount = () => {
-    if (!listWordsInp || !wordsCountBadge) return;
-    const raw = listWordsInp.value.trim();
-    if (!raw) {
-      wordsCountBadge.textContent = '0 términos';
-      return;
+
+  /**
+   * Normaliza una cadena cruda o array de términos a estructura [{term, weight}]
+   */
+  const parseRawToTerms = (raw) => {
+    if (!raw) return [];
+    if (Array.isArray(raw)) {
+      return raw.map(item => {
+        if (typeof item === 'object' && item !== null) {
+          return {
+            term: (item.term || '').trim(),
+            weight: (item.weight || 'normal').toLowerCase()
+          };
+        }
+        const str = String(item).trim();
+        if (str.includes(':')) {
+          const parts = str.split(':');
+          return { term: parts[0].trim(), weight: (parts[1] || 'normal').trim().toLowerCase() };
+        }
+        return { term: str, weight: 'normal' };
+      }).filter(t => t.term.length > 0);
     }
-    const count = raw.split(/[,;\n]+/).map(w => w.trim()).filter(Boolean).length;
-    wordsCountBadge.textContent = `${count} término${count !== 1 ? 's' : ''}`;
+
+    const tokens = String(raw).split(/[,;\n]+/).map(t => t.trim()).filter(Boolean);
+    return tokens.map(token => {
+      if (token.includes(':')) {
+        const [t, w] = token.split(':');
+        const weightNorm = (w || 'normal').trim().toLowerCase();
+        return {
+          term: t.trim(),
+          weight: ['alta', 'media', 'normal'].includes(weightNorm) ? weightNorm : 'normal'
+        };
+      }
+      return { term: token, weight: 'normal' };
+    });
   };
 
-  listWordsInp?.addEventListener('input', updateWordsCount);
+  /**
+   * Serializa el estado de termsList al textarea #list-words
+   */
+  const syncTermsToTextarea = () => {
+    if (!listWordsInp) return;
+    const serialized = termsList.map(t => {
+      return t.weight !== 'normal' ? `${t.term}:${t.weight}` : t.term;
+    }).join(', ');
+    listWordsInp.value = serialized;
+  };
+
+  /**
+   * Actualiza los contadores de términos
+   */
+  const updateWordsCount = () => {
+    const total = termsList.length;
+    if (wordsCountBadge) {
+      const altos = termsList.filter(t => t.weight === 'alta').length;
+      if (altos > 0) {
+        wordsCountBadge.textContent = `${total} término${total !== 1 ? 's' : ''} (${altos} críticos)`;
+      } else {
+        wordsCountBadge.textContent = `${total} término${total !== 1 ? 's' : ''}`;
+      }
+    }
+
+    if (clearAllTermsBtn) {
+      if (total > 0) {
+        clearAllTermsBtn.classList.remove('hidden');
+      } else {
+        clearAllTermsBtn.classList.add('hidden');
+      }
+    }
+  };
+
+  /**
+   * Dibuja las píldoras interactivas en el contenedor del modal
+   */
+  const renderModalPills = () => {
+    if (!termsChipsContainer) return;
+    termsChipsContainer.innerHTML = '';
+
+    if (termsList.length === 0) {
+      if (termsEmptyNotice) termsEmptyNotice.classList.remove('hidden');
+      updateWordsCount();
+      syncTermsToTextarea();
+      return;
+    }
+
+    if (termsEmptyNotice) termsEmptyNotice.classList.add('hidden');
+
+    termsList.forEach((item, index) => {
+      const chip = document.createElement('span');
+      chip.className = `term-pill weight-${item.weight}`;
+      chip.dataset.index = index;
+
+      // Etiqueta de peso
+      let weightLabel = 'Normal';
+      if (item.weight === 'alta') weightLabel = 'Alta (3x)';
+      else if (item.weight === 'media') weightLabel = 'Media (2x)';
+
+      chip.innerHTML = `
+        <span class="term-name font-mono">${escapeHtml(item.term)}</span>
+        <button type="button"
+                class="pill-weight-badge"
+                title="Clic para alternar criticidad (Normal → Media → Alta)">
+          ${weightLabel}
+        </button>
+        <button type="button"
+                class="pill-del-btn"
+                title="Eliminar término">
+          <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      `;
+
+      // Evento para alternar criticidad (ciclo: normal -> media -> alta -> normal)
+      const weightBtn = chip.querySelector('.pill-weight-badge');
+      weightBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (item.weight === 'normal') item.weight = 'media';
+        else if (item.weight === 'media') item.weight = 'alta';
+        else item.weight = 'normal';
+
+        renderModalPills();
+      });
+
+      // Evento para eliminar píldora
+      const delBtn = chip.querySelector('.pill-del-btn');
+      delBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        termsList.splice(index, 1);
+        renderModalPills();
+      });
+
+      termsChipsContainer.appendChild(chip);
+    });
+
+    updateWordsCount();
+    syncTermsToTextarea();
+  };
+
+  /**
+   * Agrega uno o varios términos desde el input rápido
+   */
+  const handleAddTerm = () => {
+    if (!termQuickInput) return;
+    const rawVal = termQuickInput.value.trim();
+    if (!rawVal) return;
+
+    const selectedWeight = termWeightSelect?.value || 'normal';
+    const tokens = rawVal.split(/[,;\n]+/).map(t => t.trim()).filter(Boolean);
+
+    tokens.forEach(tok => {
+      let term = tok;
+      let weight = selectedWeight;
+      if (tok.includes(':')) {
+        const parts = tok.split(':');
+        term = parts[0].trim();
+        weight = (parts[1] || selectedWeight).trim().toLowerCase();
+      }
+
+      // Evitar duplicados exactos: si ya existe, actualiza el peso
+      const existing = termsList.find(t => t.term.toLowerCase() === term.toLowerCase());
+      if (existing) {
+        existing.weight = weight;
+      } else {
+        termsList.push({ term, weight });
+      }
+    });
+
+    termQuickInput.value = '';
+    renderModalPills();
+    termQuickInput.focus();
+  };
+
+  addTermBtn?.addEventListener('click', handleAddTerm);
+  termQuickInput?.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleAddTerm();
+    }
+  });
+
+  clearAllTermsBtn?.addEventListener('click', () => {
+    if (termsList.length === 0) return;
+    termsList = [];
+    renderModalPills();
+  });
 
   /* ==========================================================================
-     Control del Modal de Lista (Crear / Editar)
+     Alternar entre Modo Píldoras y Modo Texto Masivo
+     ========================================================================== */
+  toggleInputModeBtn?.addEventListener('click', () => {
+    const isRawActive = !rawTextModeContainer.classList.contains('hidden');
+
+    if (isRawActive) {
+      // Regresar al modo píldoras: sincronizar lo que el usuario haya escrito en textarea
+      termsList = parseRawToTerms(listWordsInp.value);
+      renderModalPills();
+      rawTextModeContainer.classList.add('hidden');
+      pillsModeContainer.classList.remove('hidden');
+      toggleInputModeBtn.textContent = 'Modo texto masivo';
+    } else {
+      // Ir a modo texto libre
+      syncTermsToTextarea();
+      pillsModeContainer.classList.add('hidden');
+      rawTextModeContainer.classList.remove('hidden');
+      toggleInputModeBtn.textContent = 'Modo interactivo (píldoras)';
+      listWordsInp?.focus();
+    }
+  });
+
+  listWordsInp?.addEventListener('input', () => {
+    const raw = listWordsInp.value.trim();
+    const count = raw ? raw.split(/[,;\n]+/).map(w => w.trim()).filter(Boolean).length : 0;
+    if (wordsCountBadge) {
+      wordsCountBadge.textContent = `${count} término${count !== 1 ? 's' : ''}`;
+    }
+  });
+
+  /* ==========================================================================
+     Control del Modal de Vocabulario (Crear / Editar)
      ========================================================================== */
   const openModal   = () => modal?.classList.remove('hidden');
   window.closeModal = () => modal?.classList.add('hidden');
 
   window.openNewListModal = (btn) => {
     if (!listForm) return;
-    listForm.dataset.expertId = btn.dataset.expertId;
+
+    const expertId = btn?.dataset?.expertId || (modalExpertSelect?.value || '');
+    listForm.dataset.expertId = expertId;
+
     if (listIdInput) listIdInput.value = '';
     if (listNameInp) listNameInp.value = '';
-    if (listWordsInp) listWordsInp.value = '';
-    updateWordsCount();
-    if (modalTitle) modalTitle.textContent = 'Nueva Lista de Expertos';
+    if (modalExpertSelect && expertId) modalExpertSelect.value = expertId;
+    if (expertSelectContainer) expertSelectContainer.classList.remove('hidden');
+
+    termsList = [];
+    renderModalPills();
+
+    // Asegurar modo píldoras activo por defecto
+    pillsModeContainer?.classList.remove('hidden');
+    rawTextModeContainer?.classList.add('hidden');
+    if (toggleInputModeBtn) toggleInputModeBtn.textContent = 'Modo texto masivo';
+
+    if (modalTitle) modalTitle.textContent = 'Nuevo vocabulario controlado';
     openModal();
-    setTimeout(() => listNameInp?.focus(), 50);
+    setTimeout(() => listNameInp?.focus(), 60);
   };
 
   window.openEditListModal = (btn) => {
     if (!listForm) return;
-    listForm.dataset.expertId = btn.dataset.expertId;
-    if (listIdInput) listIdInput.value = btn.dataset.id;
-    if (listNameInp) listNameInp.value = btn.dataset.name;
-    if (listWordsInp) listWordsInp.value = btn.dataset.words || '';
-    updateWordsCount();
-    if (modalTitle) modalTitle.textContent = 'Editar Lista';
+
+    const listId   = btn.dataset.id;
+    const expertId = btn.dataset.expertId;
+    const name     = btn.dataset.name;
+    const rawWords = btn.dataset.words || '';
+
+    listForm.dataset.expertId = expertId;
+    if (listIdInput) listIdInput.value = listId;
+    if (listNameInp) listNameInp.value = name;
+    if (modalExpertSelect && expertId) modalExpertSelect.value = expertId;
+
+    // Cargar datos detallados vía endpoint JSON para obtener pesos precisos
+    fetch(routes.json(listId))
+      .then(r => r.json())
+      .then(data => {
+        if (data.parsed_words && data.parsed_words.length > 0) {
+          termsList = data.parsed_words.map(w => ({ term: w.term, weight: w.weight || 'normal' }));
+        } else {
+          termsList = parseRawToTerms(data.words || rawWords);
+        }
+        renderModalPills();
+      })
+      .catch(() => {
+        termsList = parseRawToTerms(rawWords);
+        renderModalPills();
+      });
+
+    // Asegurar modo píldoras activo
+    pillsModeContainer?.classList.remove('hidden');
+    rawTextModeContainer?.classList.add('hidden');
+    if (toggleInputModeBtn) toggleInputModeBtn.textContent = 'Modo texto masivo';
+
+    if (modalTitle) modalTitle.textContent = 'Editar vocabulario';
     openModal();
-    setTimeout(() => listNameInp?.focus(), 50);
+    setTimeout(() => listNameInp?.focus(), 60);
   };
 
   document.querySelectorAll('.edit-list-btn').forEach(btn =>
@@ -84,17 +352,26 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
 
     const listId   = listIdInput?.value;
-    const expertId = listForm.dataset.expertId;
-    const rawWords = listWordsInp?.value || '';
+    const expertId = modalExpertSelect?.value || listForm.dataset.expertId;
+
+    // Si estaba en modo texto libre, sincronizar
+    if (!rawTextModeContainer?.classList.contains('hidden')) {
+      termsList = parseRawToTerms(listWordsInp.value);
+    }
+
+    // Serializar términos conservando pesos si son diferentes a normal
+    const wordsPayload = termsList.map(t => {
+      return t.weight !== 'normal' ? `${t.term}:${t.weight}` : t.term;
+    });
 
     const body = {
       name: listNameInp.value.trim(),
-      words: rawWords
-        ? rawWords.split(/[,;\n]+/).map(w => w.trim()).filter(Boolean)
-        : []
+      words: wordsPayload,
     };
 
-    if (!listId) body.expert_id = expertId;
+    if (!listId) {
+      body.expert_id = expertId;
+    }
 
     fetch(listId ? routes.update(listId) : routes.create, {
       method : 'POST',
@@ -109,12 +386,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (r.ok && data.success) {
         location.reload();
       } else {
-        alert(data.error || 'Error al guardar la lista');
+        alert(data.error || 'Error al guardar el vocabulario');
       }
     })
     .catch(err => {
       console.error(err);
-      alert('Error de conexión al procesar la lista.');
+      alert('Error de conexión al procesar el vocabulario.');
     });
   });
 
@@ -159,7 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ==========================================================================
-     Eliminación de Listas con Modal de Confirmación
+     Eliminación de Vocabularios con Modal de Confirmación
      ========================================================================== */
   const deleteModal = document.getElementById('deleteListModal');
   const confirmDeleteBtn = document.getElementById('confirmDeleteListBtn');
@@ -182,7 +459,8 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   document.querySelectorAll('.delete-list-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
       openDeleteListModal(btn.dataset.id, btn.dataset.name);
     });
   });
@@ -199,12 +477,15 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(data => {
       closeDeleteListModal();
       if (data.success) {
-        const row = document.getElementById(`list-row-${currentId}`);
-        if (row) {
-          row.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
-          row.style.opacity = '0';
-          row.style.transform = 'scale(0.98)';
-          setTimeout(() => row.remove(), 200);
+        const card = document.getElementById(`list-row-${currentId}`);
+        if (card) {
+          card.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+          card.style.opacity = '0';
+          card.style.transform = 'scale(0.95)';
+          setTimeout(() => {
+            card.remove();
+            applySearchAndFilter();
+          }, 250);
         }
       } else {
         alert(data.error || 'No se pudo eliminar la lista.');
@@ -218,22 +499,25 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ==========================================================================
-     Despliegue Inline de Términos (+X más)
+     Expandir / Contraer Términos en la Tarjeta (+X más)
      ========================================================================== */
-  document.querySelectorAll('.toggle-terms-btn').forEach(btn => {
+  document.querySelectorAll('.card-expand-terms-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
+      e.preventDefault();
       e.stopPropagation();
-      const parent = btn.closest('.terms-wrapper');
-      const hiddenSpan = parent?.querySelector('.hidden-terms-span');
-      if (!hiddenSpan) return;
+      const parent = btn.closest('.vocab-terms-container');
+      const hiddenBox = parent?.querySelector('.hidden-card-terms-box');
+      if (!hiddenBox) return;
 
-      const isHidden = hiddenSpan.classList.contains('hidden');
-      if (isHidden) {
-        hiddenSpan.classList.remove('hidden');
+      const isExpanded = btn.dataset.expanded === 'true';
+      if (!isExpanded) {
+        hiddenBox.classList.remove('hidden');
+        btn.dataset.expanded = 'true';
         btn.dataset.origText = btn.textContent;
         btn.textContent = 'ver menos';
       } else {
-        hiddenSpan.classList.add('hidden');
+        hiddenBox.classList.add('hidden');
+        btn.dataset.expanded = 'false';
         btn.textContent = btn.dataset.origText || '+ más';
       }
     });
@@ -243,14 +527,16 @@ document.addEventListener('DOMContentLoaded', () => {
      Copiar Términos al Portapapeles (Glosario Rápido)
      ========================================================================== */
   document.querySelectorAll('.copy-list-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
       const words = btn.dataset.words || '';
       if (!words) return;
 
       navigator.clipboard.writeText(words).then(() => {
         const origHtml = btn.innerHTML;
         btn.innerHTML = `
-          <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <svg class="w-3.5 h-3.5 text-green-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
           </svg>
         `;
@@ -264,79 +550,95 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   /* ==========================================================================
-     Búsqueda y Filtro en Tiempo Real
+     Filtro por Especialista y Búsqueda en Tiempo Real
      ========================================================================== */
-  if (searchInput) {
-    const handleSearch = () => {
-      const query = searchInput.value.trim().toLowerCase();
+  const applySearchAndFilter = () => {
+    const query = (searchInput?.value || '').trim().toLowerCase();
 
-      if (query.length > 0) {
-        searchClearBtn?.classList.remove('hidden');
+    if (query.length > 0) {
+      searchClearBtn?.classList.remove('hidden');
+    } else {
+      searchClearBtn?.classList.add('hidden');
+    }
+
+    let visibleCount = 0;
+
+    vocabCards.forEach(card => {
+      const expertId   = card.dataset.expertId || '';
+      const listName   = (card.dataset.listName || '').toLowerCase();
+      const listWords  = (card.dataset.listWords || '').toLowerCase();
+      const expertName = (card.dataset.expertName || '').toLowerCase();
+      const expertUser = (card.dataset.expertUser || '').toLowerCase();
+      const profession = (card.dataset.expertProfession || '').toLowerCase();
+
+      // Coincidencia con el filtro de especialista
+      const expertMatches = (activeExpertFilter === 'all' || expertId === activeExpertFilter);
+
+      // Coincidencia con la consulta de texto
+      const textMatches = !query ||
+        listName.includes(query) ||
+        listWords.includes(query) ||
+        expertName.includes(query) ||
+        expertUser.includes(query) ||
+        profession.includes(query);
+
+      if (expertMatches && textMatches) {
+        card.classList.remove('hidden');
+        visibleCount++;
       } else {
-        searchClearBtn?.classList.add('hidden');
+        card.classList.add('hidden');
       }
+    });
 
-      let totalVisibleExperts = 0;
-      let totalVisibleLists = 0;
-
-      expertCards.forEach(card => {
-        const expName = (card.dataset.expertName || '').toLowerCase();
-        const expUser = (card.dataset.expertUser || '').toLowerCase();
-        const expProf = (card.dataset.expertProfession || '').toLowerCase();
-        const expertMatches = expName.includes(query) || expUser.includes(query) || expProf.includes(query);
-
-        const listRows = card.querySelectorAll('.list-row');
-        let visibleListsInCard = 0;
-
-        listRows.forEach(row => {
-          const listName  = (row.dataset.listName || '').toLowerCase();
-          const listWords = (row.dataset.listWords || '').toLowerCase();
-          const listMatches = listName.includes(query) || listWords.includes(query);
-
-          if (!query || expertMatches || listMatches) {
-            row.classList.remove('hidden');
-            visibleListsInCard++;
-            totalVisibleLists++;
-          } else {
-            row.classList.add('hidden');
-          }
-        });
-
-        // La tarjeta de experto se muestra si el experto coincide o si alguna de sus listas coincide
-        if (!query || expertMatches || visibleListsInCard > 0) {
-          card.classList.remove('hidden');
-          totalVisibleExperts++;
-        } else {
-          card.classList.add('hidden');
-        }
-      });
-
-      // Estado de resultados
-      if (searchMatchCount) {
-        if (!query) {
-          searchMatchCount.textContent = '';
-        } else {
-          searchMatchCount.textContent = `${totalVisibleExperts} experto${totalVisibleExperts !== 1 ? 's' : ''} (${totalVisibleLists} lista${totalVisibleLists !== 1 ? 's' : ''})`;
-        }
+    // Actualizar contadores
+    if (searchMatchCount) {
+      if (query || activeExpertFilter !== 'all') {
+        searchMatchCount.textContent = `${visibleCount} visible${visibleCount !== 1 ? 's' : ''}`;
+      } else {
+        searchMatchCount.textContent = '';
       }
+    }
 
-      // Empty State cuando nada coincide
-      if (noSearchResults) {
-        if (totalVisibleExperts === 0 && query.length > 0) {
-          noSearchResults.classList.remove('hidden');
-        } else {
-          noSearchResults.classList.add('hidden');
-        }
+    // Empty state
+    if (noSearchResults) {
+      if (visibleCount === 0 && (query.length > 0 || activeExpertFilter !== 'all')) {
+        noSearchResults.classList.remove('hidden');
+      } else {
+        noSearchResults.classList.add('hidden');
       }
-    };
+    }
+  };
 
-    searchInput.addEventListener('input', handleSearch);
-
+  // Listeners de búsqueda
+  if (searchInput) {
+    searchInput.addEventListener('input', applySearchAndFilter);
     searchClearBtn?.addEventListener('click', () => {
       searchInput.value = '';
-      handleSearch();
+      applySearchAndFilter();
       searchInput.focus();
     });
   }
 
+  // Listeners de filtros de especialista
+  expertFilterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      expertFilterBtns.forEach(b => {
+        b.classList.remove('active', 'border-[var(--blue)]', 'bg-[var(--blue-soft)]', 'text-[var(--blue)]');
+        b.classList.add('border-[var(--line)]', 'bg-[var(--surface-hover)]', 'text-[var(--muted)]');
+      });
+
+      btn.classList.add('active', 'border-[var(--blue)]', 'bg-[var(--blue-soft)]', 'text-[var(--blue)]');
+      btn.classList.remove('border-[var(--line)]', 'bg-[var(--surface-hover)]', 'text-[var(--muted)]');
+
+      activeExpertFilter = btn.dataset.filterExpert || 'all';
+      applySearchAndFilter();
+    });
+  });
+
+  // Utilidad de escape seguro
+  function escapeHtml(string) {
+    const div = document.createElement('div');
+    div.textContent = string;
+    return div.innerHTML;
+  }
 });

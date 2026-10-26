@@ -347,7 +347,13 @@ def contar_palabras_tecnicas(texto: str, year: int = None, workspace=None) -> in
     for lista in listas_expertos:
         if lista.words:
             for palabra_tecnica in lista.words:
-                pt_lower = str(palabra_tecnica).lower().strip()
+                if isinstance(palabra_tecnica, dict):
+                    pt_raw = str(palabra_tecnica.get("term", ""))
+                else:
+                    pt_raw = str(palabra_tecnica)
+                if ":" in pt_raw:
+                    pt_raw = pt_raw.split(":", 1)[0]
+                pt_lower = pt_raw.lower().strip()
                 pt_norm = quitar_tildes(pt_lower)
                 # Coincidencia directa o insensible a tildes
                 if pt_lower in palabras_texto or pt_norm in palabras_texto_norm:

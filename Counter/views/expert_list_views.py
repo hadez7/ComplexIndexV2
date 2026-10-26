@@ -67,11 +67,19 @@ def get_list_json(request, list_id):
     if error:
         return error
 
-    lista = get_object_or_404(ExpertWord, id=list_id, workspace=ws)
+    lista = get_object_or_404(
+        ExpertWord.objects.select_related("expert", "expert__user"),
+        id=list_id,
+        workspace=ws
+    )
     return JsonResponse({
         "id": lista.id,
         "name": lista.name,
-        "words": lista.words
+        "expert_id": lista.expert_id,
+        "expert_name": lista.expert.user.get_full_name() or lista.expert.user.username,
+        "words": lista.words,
+        "parsed_words": lista.parsed_words,
+        "raw_terms_string": lista.raw_terms_string,
     })
 
 
@@ -163,7 +171,9 @@ def expert_list_view(request):
 
     # Las listas de palabras son estrictamente por espacio de trabajo: si no hay
     # espacio activo, la plantilla verá listas vacías en lugar de las de otros espacios.
-    listas_ws = ExpertWord.objects.filter(workspace=ws)
+    listas_ws = ExpertWord.objects.filter(workspace=ws).select_related(
+        "expert", "expert__user", "expert__user__profile"
+    ).order_by("name")
 
     experts = Expert.objects.prefetch_related(
         Prefetch("word_lists", queryset=listas_ws)
@@ -183,6 +193,7 @@ def expert_list_view(request):
         "expert_lists.html",
         {
             "experts": experts,
+            "vocabularies": listas_ws,
             "available_users": available_users,
             "current_workspace": ws,
         }

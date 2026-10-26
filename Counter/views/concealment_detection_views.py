@@ -265,11 +265,15 @@ def concealment_detection_view(request):
     expert_lists_data = []
 
     for lista in expert_lists:
-
+        clean_words_list = [
+            str(w.get("term", "") if isinstance(w, dict) else str(w)).split(":", 1)[0].strip()
+            for w in (lista.words or [])
+            if w
+        ]
         expert_lists_data.append({
             "id": lista.id,
             "name": lista.name,
-            "words": lista.words or []
+            "words": clean_words_list,
         })
 
     recent_reviews = []
