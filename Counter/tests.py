@@ -726,33 +726,26 @@ class ExpertListWorkspaceIsolationTests(TestCase):
         self.assertIn('FiltroWs1', content)
         self.assertNotIn('FiltroWs2', content)
 
-    def test_vocab_monogram_and_parsed_words(self):
-        """Verifica el cálculo de monogramas circulares y parsing de términos con ponderación."""
+    def test_vocab_monogram_and_clean_words(self):
+        """Verifica el cálculo de monogramas circulares y lista limpia de términos."""
         lista = ExpertWord(
             name="Terminología legal corporativa",
-            words=["fraude:alta", "confidencial:media", "riesgo", {"term": "soborno", "weight": "alta"}]
+            words=["fraude", "confidencial", "riesgo", "soborno"]
         )
         self.assertEqual(lista.monogram, "TL")
-        parsed = lista.parsed_words
-        self.assertEqual(len(parsed), 4)
-        self.assertEqual(parsed[0], {"term": "fraude", "weight": "alta", "raw": "fraude:alta"})
-        self.assertEqual(parsed[1], {"term": "confidencial", "weight": "media", "raw": "confidencial:media"})
-        self.assertEqual(parsed[2], {"term": "riesgo", "weight": "normal", "raw": "riesgo"})
-        self.assertEqual(parsed[3], {"term": "soborno", "weight": "alta", "raw": "soborno:alta"})
         self.assertEqual(lista.clean_words, ["fraude", "confidencial", "riesgo", "soborno"])
         self.assertEqual(lista.raw_terms_string, "fraude, confidencial, riesgo, soborno")
 
-    def test_get_list_json_returns_parsed_and_raw_terms(self):
+    def test_get_list_json_returns_clean_terms(self):
         self._seleccionar(self.ws1)
-        res = self._crear('Vocabulario Legal', palabras=['secreto:alta', 'contrato'])
+        res = self._crear('Vocabulario Legal', palabras=['secreto', 'contrato'])
         lista_id = res.json()['id']
         resp = self.client.get(reverse('get_list_json', args=[lista_id]))
         self.assertEqual(resp.status_code, 200)
         data = resp.json()
         self.assertEqual(data['name'], 'Vocabulario Legal')
-        self.assertEqual(len(data['parsed_words']), 2)
-        self.assertEqual(data['parsed_words'][0]['weight'], 'alta')
-        self.assertEqual(data['parsed_words'][1]['weight'], 'normal')
+        self.assertEqual(data['words'], ['secreto', 'contrato'])
+        self.assertEqual(data['raw_terms_string'], 'secreto, contrato')
 
 
 class WorkspaceDeletionSafetyTests(TestCase):

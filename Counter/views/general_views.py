@@ -498,17 +498,11 @@ def comparative_analysis_view(request):
     modo = request.POST.get("modo") or request.GET.get("modo") or "experto"
 
     def normalize_words(word_list):
-        result = set()
-        for w in word_list:
-            if not w:
-                continue
-            if isinstance(w, dict):
-                term = str(w.get("term", "")).strip().lower()
-            else:
-                term = str(w).split(":", 1)[0].strip().lower()
-            if term:
-                result.add(term)
-        return result
+        return set(
+            str(w).strip().lower()
+            for w in word_list
+            if w
+        )
 
     # Empresas con reportes en el espacio activo (para la pestaña interanual)
     companies = (

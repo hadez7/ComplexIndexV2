@@ -2742,73 +2742,29 @@
   text-transform: uppercase;
 }
 
-/* Chips en el modal de edición estructurado */
-.term-studio-chip {
+/* Píldoras de términos en el modal de edición */
+.term-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
   border-radius: 8px;
-  padding: 4px 9px;
+  border: 1px solid var(--line);
+  background: var(--surface-hover);
+  padding: 4px 10px;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
-  border: 1px solid var(--line);
-  background: var(--surface);
   color: var(--ink);
   transition: all 140ms ease;
   user-select: none;
 }
 
-.term-studio-chip:hover {
+.term-pill:hover {
   border-color: var(--line-strong);
-}
-
-.term-studio-chip.alta {
-  border-color: rgba(239, 68, 68, 0.35);
-  background: rgba(239, 68, 68, 0.06);
-  color: #ef4444;
-}
-
-.term-studio-chip.media {
-  border-color: rgba(245, 158, 11, 0.35);
-  background: rgba(245, 158, 11, 0.06);
-  color: #f59e0b;
-}
-
-.term-studio-chip.normal {
-  border-color: var(--line);
   background: var(--surface);
-  color: var(--ink);
 }
 
-.term-studio-chip .cycle-weight-btn {
-  font-size: 8px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  padding: 1px 5px;
-  border-radius: 4px;
-  cursor: pointer;
-  border: none;
-}
-
-.term-studio-chip.alta .cycle-weight-btn {
-  background: rgba(239, 68, 68, 0.18);
-  color: #ef4444;
-}
-
-.term-studio-chip.media .cycle-weight-btn {
-  background: rgba(245, 158, 11, 0.18);
-  color: #d97706;
-}
-
-.term-studio-chip.normal .cycle-weight-btn {
-  background: var(--surface-hover);
-  color: var(--muted);
-  border: 1px solid var(--line);
-}
-
-.term-studio-chip .del-chip-btn {
+.term-pill .pill-del-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2823,8 +2779,8 @@
   transition: all 120ms ease;
 }
 
-.term-studio-chip .del-chip-btn:hover {
-  color: #ef4444;
-  background: rgba(239, 68, 68, 0.15);
+.term-pill .pill-del-btn:hover {
+  color: var(--red);
+  background: var(--red-soft);
 }
 

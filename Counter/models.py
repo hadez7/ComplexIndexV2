@@ -163,48 +163,16 @@ class ExpertWord(models.Model):
         return themes[(self.id or 0) % len(themes)]
 
     @property
-    def parsed_words(self):
-        """
-        Devuelve una lista de dicts [{'term': '...', 'weight': 'alta'|'media'|'normal', 'raw': '...'}]
-        compatible con strings simples, dicts o formato 'termino:peso'.
-        """
-        result = []
+    def clean_words(self):
+        """Lista plana con los nombres de los términos."""
         if not self.words:
-            return result
-        for item in self.words:
-            if isinstance(item, dict):
-                term = str(item.get("term", "")).strip()
-                weight = str(item.get("weight", "normal")).lower()
-            elif isinstance(item, str):
-                if ":" in item:
-                    parts = item.split(":", 1)
-                    term = parts[0].strip()
-                    weight = parts[1].strip().lower()
-                else:
-                    term = item.strip()
-                    weight = "normal"
-            else:
-                term = str(item).strip()
-                weight = "normal"
-            if term:
-                if weight not in ("alta", "media", "normal", "baja"):
-                    weight = "normal"
-                result.append({
-                    "term": term,
-                    "weight": weight,
-                    "raw": f"{term}:{weight}" if weight != "normal" else term,
-                })
-        return result
+            return []
+        return [str(w).strip() for w in self.words if str(w).strip()]
 
     @property
     def raw_terms_string(self):
         """Devuelve los términos separados por coma para copiar o editar en texto plano."""
-        return ", ".join(item["term"] for item in self.parsed_words)
-
-    @property
-    def clean_words(self):
-        """Lista plana con los nombres canónicos de los términos."""
-        return [item["term"] for item in self.parsed_words]
+        return ", ".join(self.clean_words)
 
 
 class ConcealmentReview(models.Model):

@@ -37,10 +37,7 @@ def get_filtered_total_counts(request):
                 workspace=current_ws, name=selected_list_name
             ).first()
             if expert_word_obj and expert_word_obj.words:
-                expert_words = [
-                    (w.get("term", "") if isinstance(w, dict) else str(w).split(":", 1)[0]).strip().lower()
-                    for w in expert_word_obj.words
-                ]
+                expert_words = [str(w).strip().lower() for w in expert_word_obj.words if w]
                 queryset = queryset.filter(word__in=expert_words)
             else:
                 return []  # Lista vacía si no hay palabras

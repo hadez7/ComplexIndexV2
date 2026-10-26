@@ -493,12 +493,12 @@
         </div>
       </div>
 
-      <!-- Fila 2: Gestor Estructurado de Términos (Tag Studio) -->
+      <!-- Fila 2: Gestor Limpio de Términos (Píldoras) -->
       <div class="flex-1 flex flex-col min-h-0 space-y-2.5">
         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--line)] pb-2">
           <div class="flex items-center gap-2">
             <span class="text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
-              {% trans "Estudio de Términos y Ponderación" %}
+              {% trans "Palabras y términos clave" %}
             </span>
             <span id="wordsCountBadge" class="tab-badge">0 {% trans "términos" %}</span>
           </div>
@@ -510,25 +510,15 @@
           </button>
         </div>
 
-        <!-- Modo Paneles Estructurados por Criticidad -->
+        <!-- Modo Píldoras Interactivas -->
         <div id="pillsModeContainer" class="flex flex-col flex-1 min-h-0 space-y-3">
           <!-- Barra de añadir término rápido -->
-          <div class="flex flex-wrap sm:flex-nowrap gap-2 items-center bg-[var(--surface-hover)] p-2.5 rounded-xl border border-[var(--line)]">
-            <div class="relative flex-1 min-w-[200px]">
+          <div class="flex gap-2 items-center bg-[var(--surface-hover)] p-2 rounded-xl border border-[var(--line)]">
+            <div class="relative flex-1">
               <input type="text"
                      id="termQuickInput"
-                     placeholder="{% trans 'Añadir término (o varios separados por comas)...' %}"
+                     placeholder="{% trans 'Escribe un término y pulsa Enter (o separa varios por comas)...' %}"
                      class="eli-input !h-9 !text-xs !bg-[var(--surface)]">
-            </div>
-
-            <!-- Selector de ponderación -->
-            <div class="flex items-center gap-1 shrink-0">
-              <span class="text-[9px] font-medium text-[var(--muted)] hidden sm:inline">{% trans "Criticidad:" %}</span>
-              <select id="termWeightSelect" class="eli-input !h-9 !py-1 !text-xs !w-auto !bg-[var(--surface)] font-medium">
-                <option value="normal">{% trans "Normal (1x)" %}</option>
-                <option value="media">{% trans "Media (2x)" %}</option>
-                <option value="alta">{% trans "Alta (3x)" %}</option>
-              </select>
             </div>
 
             <button type="button"
@@ -545,7 +535,7 @@
           <div class="relative">
             <input type="text"
                    id="modalTermFilterInput"
-                   placeholder="{% trans 'Filtrar términos cargados en este vocabulario...' %}"
+                   placeholder="{% trans 'Filtrar términos cargados...' %}"
                    class="eli-input !h-8 !text-xs !pl-8">
             <span class="pointer-events-none absolute inset-y-0 left-2.5 flex items-center text-[var(--faint)]">
               <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -554,66 +544,20 @@
             </span>
           </div>
 
-          <!-- Área scrollable con los 3 Paneles de Criticidad -->
-          <div class="flex-1 overflow-y-auto space-y-3 max-h-[300px] pr-1">
-
-            <!-- Panel 1: Criticidad Alta (Factor 3x) -->
-            <div class="rounded-xl border border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.03)] p-3">
-              <div class="flex items-center justify-between border-b border-[rgba(239,68,68,0.15)] pb-2 mb-2.5">
-                <div class="flex items-center gap-1.5">
-                  <span class="h-2 w-2 rounded-full bg-[var(--red)]"></span>
-                  <span class="font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--red)]">
-                    {% trans "Criticidad Alta (Factor 3x · Ofuscación Crítica)" %}
-                  </span>
-                </div>
-                <span id="altaCountBadge" class="tab-badge !bg-[rgba(239,68,68,0.15)] !text-[var(--red)]">0</span>
-              </div>
-              <div id="chipsAltaContainer" class="flex flex-wrap gap-1.5 items-start"></div>
-              <p id="emptyAltaNotice" class="text-[10px] italic text-[var(--faint)] py-2">
-                {% trans "Sin términos de criticidad alta asignados." %}
-              </p>
+          <!-- Tablero de píldoras / chips interactivos -->
+          <div class="flex-1 overflow-y-auto max-h-[260px] rounded-xl border border-[var(--line)] bg-[var(--surface)] p-3">
+            <div id="termsChipsContainer" class="flex flex-wrap gap-2 items-start">
+              <!-- Se puebla dinámicamente con píldoras limpias -->
             </div>
-
-            <!-- Panel 2: Criticidad Media (Factor 2x) -->
-            <div class="rounded-xl border border-[rgba(245,158,11,0.25)] bg-[rgba(245,158,11,0.03)] p-3">
-              <div class="flex items-center justify-between border-b border-[rgba(245,158,11,0.15)] pb-2 mb-2.5">
-                <div class="flex items-center gap-1.5">
-                  <span class="h-2 w-2 rounded-full bg-[var(--amber)]"></span>
-                  <span class="font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--amber)]">
-                    {% trans "Criticidad Media (Factor 2x · Relevancia Sectorial)" %}
-                  </span>
-                </div>
-                <span id="mediaCountBadge" class="tab-badge !bg-[rgba(245,158,11,0.15)] !text-[var(--amber)]">0</span>
-              </div>
-              <div id="chipsMediaContainer" class="flex flex-wrap gap-1.5 items-start"></div>
-              <p id="emptyMediaNotice" class="text-[10px] italic text-[var(--faint)] py-2">
-                {% trans "Sin términos de criticidad media asignados." %}
-              </p>
+            <div id="termsEmptyNotice" class="text-center py-8 text-[11px] text-[var(--faint)]">
+              {% trans "No hay términos asignados a este vocabulario. Escribe uno arriba para comenzar." %}
             </div>
-
-            <!-- Panel 3: Ponderación Estándar (Factor 1x) -->
-            <div class="rounded-xl border border-[var(--line)] bg-[var(--surface-hover)] p-3">
-              <div class="flex items-center justify-between border-b border-[var(--line)] pb-2 mb-2.5">
-                <div class="flex items-center gap-1.5">
-                  <span class="h-2 w-2 rounded-full bg-[var(--muted)]"></span>
-                  <span class="font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--muted)]">
-                    {% trans "Ponderación Estándar (Factor 1x · Vocabulario Base)" %}
-                  </span>
-                </div>
-                <span id="normalCountBadge" class="tab-badge">0</span>
-              </div>
-              <div id="chipsNormalContainer" class="flex flex-wrap gap-1.5 items-start"></div>
-              <p id="emptyNormalNotice" class="text-[10px] italic text-[var(--faint)] py-2">
-                {% trans "Sin términos de ponderación estándar asignados." %}
-              </p>
-            </div>
-
           </div>
 
           <div class="flex items-center justify-between text-[9px] text-[var(--muted)] pt-1">
-            <span>{% trans "Pulsa sobre la etiqueta de un término para alternar su nivel de criticidad." %}</span>
+            <span>{% trans "Escribe o pega términos separados por comas." %}</span>
             <button type="button" id="clearAllTermsBtn" class="text-[var(--red)] hover:underline hidden">
-              {% trans "Limpiar todos los términos" %}
+              {% trans "Limpiar todos" %}
             </button>
           </div>
         </div>
@@ -624,9 +568,9 @@
                     name="words"
                     rows="8"
                     class="eli-input !font-mono !leading-6 flex-1 !text-xs"
-                    placeholder="{% trans 'ej: secreto, confidencial:alta, no divulgación:media, penalidad contractual' %}"></textarea>
+                    placeholder="{% trans 'ej: secreto, confidencial, no divulgación, penalidad contractual' %}"></textarea>
           <p class="text-[9px] text-[var(--muted)]">
-            {% trans "Pega términos separados por comas. Puedes añadir ponderación con el sufijo :alta o :media (ej: fraude:alta)." %}
+            {% trans "Pega los términos separados por comas." %}
           </p>
         </div>
       </div>

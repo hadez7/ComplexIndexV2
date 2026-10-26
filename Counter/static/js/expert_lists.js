@@ -17,23 +17,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const listWordsInp          = document.getElementById('list-words');
   const wordsCountBadge       = document.getElementById('wordsCountBadge');
 
-  // Gestor estructurado de términos por criticidad
+  // Gestor limpio de términos
   const termQuickInput        = document.getElementById('termQuickInput');
-  const termWeightSelect      = document.getElementById('termWeightSelect');
   const addTermBtn            = document.getElementById('addTermBtn');
   const modalTermFilterInput  = document.getElementById('modalTermFilterInput');
+  const termsChipsContainer   = document.getElementById('termsChipsContainer');
+  const termsEmptyNotice      = document.getElementById('termsEmptyNotice');
   const clearAllTermsBtn      = document.getElementById('clearAllTermsBtn');
-
-  // Paneles de criticidad
-  const chipsAltaContainer    = document.getElementById('chipsAltaContainer');
-  const chipsMediaContainer   = document.getElementById('chipsMediaContainer');
-  const chipsNormalContainer  = document.getElementById('chipsNormalContainer');
-  const altaCountBadge        = document.getElementById('altaCountBadge');
-  const mediaCountBadge       = document.getElementById('mediaCountBadge');
-  const normalCountBadge      = document.getElementById('normalCountBadge');
-  const emptyAltaNotice       = document.getElementById('emptyAltaNotice');
-  const emptyMediaNotice      = document.getElementById('emptyMediaNotice');
-  const emptyNormalNotice     = document.getElementById('emptyNormalNotice');
 
   // Búsqueda y Filtros de tarjetas
   const searchInput           = document.getElementById('expertSearchInput');
@@ -43,8 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const vocabCards            = document.querySelectorAll('.vocab-card');
   const expertFilterBtns      = document.querySelectorAll('.expert-filter-btn');
 
-  // Estado en memoria
-  let termsList = []; // [{ term: string, weight: 'alta'|'media'|'normal' }]
+  // Estado en memoria de los términos (lista limpia de strings)
+  let termsList = [];
   let activeExpertFilter = 'all';
 
   // Endpoints API
@@ -61,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
   };
 
   /* ==========================================================================
-     Parser y Serializador de Términos
+     Parser y Renderizador Limpio de Píldoras
      ========================================================================== */
 
   const parseRawToTerms = (raw) => {
@@ -69,104 +59,66 @@ document.addEventListener('DOMContentLoaded', () => {
     if (Array.isArray(raw)) {
       return raw.map(item => {
         if (typeof item === 'object' && item !== null) {
-          return {
-            term: (item.term || '').trim(),
-            weight: (item.weight || 'normal').toLowerCase()
-          };
+          return String(item.term || '').trim();
         }
-        const str = String(item).trim();
-        if (str.includes(':')) {
-          const parts = str.split(':');
-          return { term: parts[0].trim(), weight: (parts[1] || 'normal').trim().toLowerCase() };
-        }
-        return { term: str, weight: 'normal' };
-      }).filter(t => t.term.length > 0);
+        return String(item).trim();
+      }).filter(Boolean);
     }
 
-    const tokens = String(raw).split(/[,;\n]+/).map(t => t.trim()).filter(Boolean);
-    return tokens.map(token => {
-      if (token.includes(':')) {
-        const [t, w] = token.split(':');
-        const weightNorm = (w || 'normal').trim().toLowerCase();
-        return {
-          term: t.trim(),
-          weight: ['alta', 'media', 'normal'].includes(weightNorm) ? weightNorm : 'normal'
-        };
-      }
-      return { term: token, weight: 'normal' };
-    });
+    return String(raw)
+      .split(/[,;\n]+/)
+      .map(t => t.trim())
+      .filter(Boolean);
   };
 
   const syncTermsToTextarea = () => {
     if (!listWordsInp) return;
-    const serialized = termsList.map(t => {
-      return t.weight !== 'normal' ? `${t.term}:${t.weight}` : t.term;
-    }).join(', ');
-    listWordsInp.value = serialized;
+    listWordsInp.value = termsList.join(', ');
   };
 
-  /* ==========================================================================
-     Renderizado Estructurado por Paneles de Criticidad en el Modal
-     ========================================================================== */
-
-  const renderModalTermsStudio = () => {
-    if (!chipsAltaContainer || !chipsMediaContainer || !chipsNormalContainer) return;
-
-    chipsAltaContainer.innerHTML = '';
-    chipsMediaContainer.innerHTML = '';
-    chipsNormalContainer.innerHTML = '';
+  const renderModalPills = () => {
+    if (!termsChipsContainer) return;
+    termsChipsContainer.innerHTML = '';
 
     const filterQuery = (modalTermFilterInput?.value || '').trim().toLowerCase();
+    const visibleTerms = termsList.filter(t => !filterQuery || t.toLowerCase().includes(filterQuery));
 
-    let countAlta = 0;
-    let countMedia = 0;
-    let countNormal = 0;
+    if (termsEmptyNotice) {
+      termsEmptyNotice.classList.toggle('hidden', visibleTerms.length > 0);
+    }
 
-    termsList.forEach((item, index) => {
-      const matchesFilter = !filterQuery || item.term.toLowerCase().includes(filterQuery);
+    visibleTerms.forEach((term) => {
+      const chip = document.createElement('span');
+      chip.className = 'term-pill';
 
-      if (item.weight === 'alta') {
-        countAlta++;
-        if (matchesFilter) {
-          chipsAltaContainer.appendChild(createStudioChip(item, index));
+      chip.innerHTML = `
+        <span class="font-mono">${escapeHtml(term)}</span>
+        <button type="button"
+                class="pill-del-btn"
+                title="Eliminar término">
+          <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      `;
+
+      const delBtn = chip.querySelector('.pill-del-btn');
+      delBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const idx = termsList.indexOf(term);
+        if (idx !== -1) {
+          termsList.splice(idx, 1);
         }
-      } else if (item.weight === 'media') {
-        countMedia++;
-        if (matchesFilter) {
-          chipsMediaContainer.appendChild(createStudioChip(item, index));
-        }
-      } else {
-        countNormal++;
-        if (matchesFilter) {
-          chipsNormalContainer.appendChild(createStudioChip(item, index));
-        }
-      }
+        renderModalPills();
+      });
+
+      termsChipsContainer.appendChild(chip);
     });
 
-    // Actualizar badges de conteo
-    if (altaCountBadge) altaCountBadge.textContent = countAlta;
-    if (mediaCountBadge) mediaCountBadge.textContent = countMedia;
-    if (normalCountBadge) normalCountBadge.textContent = countNormal;
-
-    // Mostrar/ocultar avisos de vacío
-    if (emptyAltaNotice) {
-      emptyAltaNotice.classList.toggle('hidden', chipsAltaContainer.children.length > 0);
-    }
-    if (emptyMediaNotice) {
-      emptyMediaNotice.classList.toggle('hidden', chipsMediaContainer.children.length > 0);
-    }
-    if (emptyNormalNotice) {
-      emptyNormalNotice.classList.toggle('hidden', chipsNormalContainer.children.length > 0);
-    }
-
-    // Actualizar badge global del modal
     const total = termsList.length;
     if (wordsCountBadge) {
-      if (countAlta > 0) {
-        wordsCountBadge.textContent = `${total} términos (${countAlta} alta)`;
-      } else {
-        wordsCountBadge.textContent = `${total} término${total !== 1 ? 's' : ''}`;
-      }
+      wordsCountBadge.textContent = `${total} término${total !== 1 ? 's' : ''}`;
     }
 
     if (clearAllTermsBtn) {
@@ -176,88 +128,23 @@ document.addEventListener('DOMContentLoaded', () => {
     syncTermsToTextarea();
   };
 
-  /**
-   * Crea un chip estructurado con alternancia de peso y botón de borrado
-   */
-  const createStudioChip = (item, index) => {
-    const chip = document.createElement('span');
-    chip.className = `term-studio-chip ${item.weight}`;
-
-    let weightText = 'Normal';
-    if (item.weight === 'alta') weightText = 'Alta';
-    else if (item.weight === 'media') weightText = 'Media';
-
-    chip.innerHTML = `
-      <span class="font-mono">${escapeHtml(item.term)}</span>
-      <button type="button"
-              class="cycle-weight-btn"
-              title="Cambiar criticidad (Normal → Media → Alta)">
-        ${weightText}
-      </button>
-      <button type="button"
-              class="del-chip-btn"
-              title="Eliminar término">
-        <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-        </svg>
-      </button>
-    `;
-
-    // Alternar peso cíclico: normal -> media -> alta -> normal
-    const cycleBtn = chip.querySelector('.cycle-weight-btn');
-    cycleBtn?.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (item.weight === 'normal') item.weight = 'media';
-      else if (item.weight === 'media') item.weight = 'alta';
-      else item.weight = 'normal';
-
-      renderModalTermsStudio();
-    });
-
-    // Eliminar término
-    const delBtn = chip.querySelector('.del-chip-btn');
-    delBtn?.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      termsList.splice(index, 1);
-      renderModalTermsStudio();
-    });
-
-    return chip;
-  };
-
-  /**
-   * Añade uno o más términos ingresados por el usuario
-   */
   const handleAddTerm = () => {
     if (!termQuickInput) return;
     const rawVal = termQuickInput.value.trim();
     if (!rawVal) return;
 
-    const selectedWeight = termWeightSelect?.value || 'normal';
     const tokens = rawVal.split(/[,;\n]+/).map(t => t.trim()).filter(Boolean);
 
     tokens.forEach(tok => {
-      let term = tok;
-      let weight = selectedWeight;
-      if (tok.includes(':')) {
-        const parts = tok.split(':');
-        term = parts[0].trim();
-        weight = (parts[1] || selectedWeight).trim().toLowerCase();
-      }
-
-      // Evitar duplicados exactos: si ya existe, actualiza el peso
-      const existing = termsList.find(t => t.term.toLowerCase() === term.toLowerCase());
-      if (existing) {
-        existing.weight = weight;
-      } else {
-        termsList.push({ term, weight });
+      // Evitar duplicados insensibles a mayúsculas
+      const exists = termsList.some(t => t.toLowerCase() === tok.toLowerCase());
+      if (!exists) {
+        termsList.push(tok);
       }
     });
 
     termQuickInput.value = '';
-    renderModalTermsStudio();
+    renderModalPills();
     termQuickInput.focus();
   };
 
@@ -269,34 +156,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Filtro en vivo dentro del modal
-  modalTermFilterInput?.addEventListener('input', renderModalTermsStudio);
+  modalTermFilterInput?.addEventListener('input', renderModalPills);
 
   clearAllTermsBtn?.addEventListener('click', () => {
     if (termsList.length === 0) return;
     termsList = [];
-    renderModalTermsStudio();
+    renderModalPills();
   });
 
   /* ==========================================================================
-     Alternar entre Modo Paneles y Modo Texto Masivo
+     Alternar entre Modo Píldoras y Modo Texto Masivo
      ========================================================================== */
   toggleInputModeBtn?.addEventListener('click', () => {
     const isRawActive = !rawTextModeContainer.classList.contains('hidden');
 
     if (isRawActive) {
-      // Regresar al modo estructurado: sincronizar lo que el usuario haya escrito en textarea
       termsList = parseRawToTerms(listWordsInp.value);
-      renderModalTermsStudio();
+      renderModalPills();
       rawTextModeContainer.classList.add('hidden');
       pillsModeContainer.classList.remove('hidden');
       toggleInputModeBtn.textContent = 'Modo texto masivo';
     } else {
-      // Ir a modo texto masivo
       syncTermsToTextarea();
       pillsModeContainer.classList.add('hidden');
       rawTextModeContainer.classList.remove('hidden');
-      toggleInputModeBtn.textContent = 'Modo estructurado (paneles)';
+      toggleInputModeBtn.textContent = 'Modo interactivo (píldoras)';
       listWordsInp?.focus();
     }
   });
@@ -320,7 +204,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const menu = btn.nextElementSibling;
       const isOpen = !menu?.classList.contains('hidden');
 
-      // Cerrar otros menús abiertos
       document.querySelectorAll('.vocab-options-menu').forEach(m => m.classList.add('hidden'));
       document.querySelectorAll('.vocab-arrow-btn').forEach(b => b.classList.remove('is-active'));
 
@@ -331,7 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Cerrar menús al hacer clic fuera
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.vocab-options-menu') && !e.target.closest('.vocab-arrow-btn')) {
       document.querySelectorAll('.vocab-options-menu').forEach(m => m.classList.add('hidden'));
@@ -358,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modalTermFilterInput) modalTermFilterInput.value = '';
 
     termsList = [];
-    renderModalTermsStudio();
+    renderModalPills();
 
     pillsModeContainer?.classList.remove('hidden');
     rawTextModeContainer?.classList.add('hidden');
@@ -383,20 +265,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (modalExpertSelect && expertId) modalExpertSelect.value = expertId;
     if (modalTermFilterInput) modalTermFilterInput.value = '';
 
-    // Cargar datos detallados vía endpoint JSON para obtener pesos precisos
     fetch(routes.json(listId))
       .then(r => r.json())
       .then(data => {
-        if (data.parsed_words && data.parsed_words.length > 0) {
-          termsList = data.parsed_words.map(w => ({ term: w.term, weight: w.weight || 'normal' }));
-        } else {
-          termsList = parseRawToTerms(data.words || rawWords);
-        }
-        renderModalTermsStudio();
+        termsList = parseRawToTerms(data.words || rawWords);
+        renderModalPills();
       })
       .catch(() => {
         termsList = parseRawToTerms(rawWords);
-        renderModalTermsStudio();
+        renderModalPills();
       });
 
     pillsModeContainer?.classList.remove('hidden');
@@ -411,7 +288,6 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.edit-list-btn').forEach(btn =>
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
-      // Cerrar menú si se activó desde allí
       document.querySelectorAll('.vocab-options-menu').forEach(m => m.classList.add('hidden'));
       document.querySelectorAll('.vocab-arrow-btn').forEach(b => b.classList.remove('is-active'));
       openEditListModal(btn);
@@ -429,13 +305,9 @@ document.addEventListener('DOMContentLoaded', () => {
       termsList = parseRawToTerms(listWordsInp.value);
     }
 
-    const wordsPayload = termsList.map(t => {
-      return t.weight !== 'normal' ? `${t.term}:${t.weight}` : t.term;
-    });
-
     const body = {
       name: listNameInp.value.trim(),
-      words: wordsPayload,
+      words: termsList,
     };
 
     if (!listId) {

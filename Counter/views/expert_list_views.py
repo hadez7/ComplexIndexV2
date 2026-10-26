@@ -77,8 +77,7 @@ def get_list_json(request, list_id):
         "name": lista.name,
         "expert_id": lista.expert_id,
         "expert_name": lista.expert.user.get_full_name() or lista.expert.user.username,
-        "words": lista.words,
-        "parsed_words": lista.parsed_words,
+        "words": lista.clean_words,
         "raw_terms_string": lista.raw_terms_string,
     })
 
