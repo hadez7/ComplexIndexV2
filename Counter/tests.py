@@ -577,10 +577,11 @@ class WorkspaceIsolationTests(TestCase):
         self.assertIn('workspace-overview', content)
         self.assertIn('workspace-current', content)
         self.assertIn('workspace-stat-grid', content)
-        self.assertIn('Gobernanza', content)
         self.assertIn('total_workspaces', resp.context)
         self.assertEqual(resp.context['total_workspaces'], 2)
         self.assertIsNotNone(resp.context['active_workspace_data'])
+        self.assertEqual(resp.context['active_workspace_data']['reports_count'], 1)
+        self.assertEqual(resp.context['active_workspace_data']['companies_count'], 1)
 
     def test_workspace_monogram_and_color_tone(self):
         ws_audit = Workspace.objects.create(name="Auditoría Regional 2026", color="purple")

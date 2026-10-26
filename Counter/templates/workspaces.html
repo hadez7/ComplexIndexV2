@@ -88,21 +88,25 @@
 
             <div class="workspace-current-stats">
                 <div>
-                    <strong>{{ active_ws_data.reports_count|default:0|intcomma }}</strong>
+                    <strong>{{ active_workspace_data.reports_count|default:0|intcomma }}</strong>
                     <span>{% trans "expedientes" %}</span>
                 </div>
                 <div>
-                    <strong>{{ active_ws_data.members_count|default:1 }}</strong>
+                    <strong>{{ active_workspace_data.companies_count|default:0|intcomma }}</strong>
+                    <span>{% trans "empresas" %}</span>
+                </div>
+                <div>
+                    <strong>{{ active_workspace_data.members_count|default:1 }}</strong>
                     <span>{% trans "miembros" %}</span>
                 </div>
                 <div>
                     <strong>
-                        {% if active_ws_data.total_words >= 1000000 %}
-                            {{ active_ws_data.total_words|compact_number }}
-                        {% elif active_ws_data.total_words >= 1000 %}
-                            {{ active_ws_data.total_words|intcomma }}
+                        {% if active_workspace_data.total_words >= 1000000 %}
+                            {{ active_workspace_data.total_words|compact_number }}
+                        {% elif active_workspace_data.total_words >= 1000 %}
+                            {{ active_workspace_data.total_words|intcomma }}
                         {% else %}
-                            {{ active_ws_data.total_words|default:0 }}
+                            {{ active_workspace_data.total_words|default:0 }}
                         {% endif %}
                     </strong>
                     <span>{% trans "palabras" %}</span>
@@ -119,7 +123,7 @@
                     </svg>
                 </span>
                 <div>
-                    <strong>{{ total_workspaces|stringformat:"02d" }}</strong>
+                    <strong>{% if total_workspaces < 10 %}0{{ total_workspaces }}{% else %}{{ total_workspaces }}{% endif %}</strong>
                     <p>{% trans "Espacios accesibles" %}</p>
                 </div>
             </div>
@@ -131,7 +135,7 @@
                     </svg>
                 </span>
                 <div>
-                    <strong>{{ total_collaborators|stringformat:"02d" }}</strong>
+                    <strong>{% if total_collaborators < 10 %}0{{ total_collaborators }}{% else %}{{ total_collaborators }}{% endif %}</strong>
                     <p>{% trans "Colaboradores únicos" %}</p>
                 </div>
             </div>
@@ -143,7 +147,7 @@
                     </svg>
                 </span>
                 <div>
-                    <strong>{{ total_reports_all|stringformat:"02d" }}</strong>
+                    <strong>{{ total_reports_all|intcomma }}</strong>
                     <p>{% trans "Expedientes totales" %}</p>
                 </div>
             </div>
@@ -155,7 +159,7 @@
                     </svg>
                 </span>
                 <div>
-                    <strong>{{ total_companies_all|stringformat:"02d" }}</strong>
+                    <strong>{{ total_companies_all|intcomma }}</strong>
                     <p>{% trans "Empresas vinculadas" %}</p>
                 </div>
             </div>
@@ -164,10 +168,10 @@
     {% endif %}
 
     <!-- ===================================================================== -->
-    <!-- Sección Principal Dividida: Directorio + Gobernanza                   -->
+    <!-- Sección Principal: Directorio de Todos los Espacios                   -->
     <!-- ===================================================================== -->
-    <section class="mt-6 grid gap-6 xl:grid-cols-[minmax(0,1fr)_300px]">
-        <!-- Columna Izquierda: Directorio de Todos los Espacios -->
+    <section class="mt-6">
+        <!-- Directorio de Todos los Espacios -->
         <div class="surface-panel overflow-visible">
             <div class="workspace-toolbar">
                 <div>
@@ -339,83 +343,6 @@
                 {% endfor %}
             </div>
         </div>
-
-        <!-- Columna Derecha: Gobernanza y Capacidad -->
-        <aside class="surface-panel workspace-governance">
-            <div class="panel-heading border-b border-[var(--line)] p-5">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <p class="eyebrow">{% trans "Control" %}</p>
-                        <h2 class="text-sm font-semibold tracking-tight text-[var(--ink)]">{% trans "Gobernanza" %}</h2>
-                    </div>
-                    <span class="governance-icon">
-                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                        </svg>
-                    </span>
-                </div>
-            </div>
-
-            <div class="p-5">
-                <div class="governance-item">
-                    <div>
-                        <span>{% trans "RETENCIÓN DOCUMENTAL" %}</span>
-                        <strong>{% trans "7 años" %}</strong>
-                    </div>
-                    <small>{% trans "Política institucional de auditoría" %}</small>
-                </div>
-
-                <div class="governance-item">
-                    <div>
-                        <span>{% trans "ACCESO EXTERNO" %}</span>
-                        <strong>{% trans "Restringido" %}</strong>
-                    </div>
-                    <small>{% trans "Solo analistas y dominios autorizados" %}</small>
-                </div>
-
-                <div class="governance-item">
-                    <div>
-                        <span>{% trans "REGIÓN DE DATOS" %}</span>
-                        <strong>{% trans "Sudamérica" %}</strong>
-                    </div>
-                    <small>{% trans "Nodo seguro AG–04 (TLS 1.3)" %}</small>
-                </div>
-
-                <div class="governance-item">
-                    <div>
-                        <span>{% trans "AUDITORÍA DE ACCESOS" %}</span>
-                        <strong>{% trans "Activa" %}</strong>
-                    </div>
-                    <small>{% trans "Registro inmutable HMAC-SHA256" %}</small>
-                </div>
-
-                <button type="button" class="governance-button">
-                    <span>{% trans "Políticas institucionales" %}</span>
-                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </button>
-            </div>
-
-            <div class="workspace-plan mt-auto">
-                <div class="flex items-center justify-between">
-                    <span>{% trans "PLAN ENTERPRISE" %}</span>
-                    <strong>
-                        {% if total_words_all >= 1000000 %}
-                            {{ total_words_all|compact_number }}
-                        {% elif total_words_all >= 1000 %}
-                            {{ total_words_all|intcomma }}
-                        {% else %}
-                            {{ total_words_all|default:0 }}
-                        {% endif %} {% trans "palabras" %}
-                    </strong>
-                </div>
-                <div>
-                    <i style="width: 72%;"></i>
-                </div>
-                <p>{% trans "Capacidad corporativa y observatorio activo" %}</p>
-            </div>
-        </aside>
     </section>
 </div>
 

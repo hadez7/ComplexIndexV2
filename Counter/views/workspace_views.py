@@ -181,6 +181,7 @@ def workspace_list_view(request):
         "workspaces_data": workspaces_data,
         "active_workspace": active_ws,
         "active_workspace_data": active_ws_data,
+        "active_ws_data": active_ws_data,
         "search": search,
         "total_workspaces": len(workspaces_data),
         "total_collaborators": len(unique_users),

@@ -2540,15 +2540,29 @@
 
 .workspace-current-stats {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   margin-top: 24px;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
   padding-top: 18px;
 }
 
+@media (max-width: 640px) {
+  .workspace-current-stats {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+}
+
 .workspace-current-stats > div + div {
   border-left: 1px solid rgba(255, 255, 255, 0.12);
-  padding-left: 16px;
+  padding-left: 14px;
+}
+
+@media (max-width: 640px) {
+  .workspace-current-stats > div + div {
+    border-left: 0;
+    padding-left: 0;
+  }
 }
 
 .workspace-current-stats strong,
