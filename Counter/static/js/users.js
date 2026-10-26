@@ -413,4 +413,114 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('.open-audit-btn').forEach(btn => {
     btn.addEventListener('click', () => window.openAuditModal(btn.dataset.userId || null));
   });
+
+  /* ------------------------------------------------------------------ */
+  /* Cierre accesible de modales (Backdrop y tecla Escape)             */
+  /* ------------------------------------------------------------------ */
+  [createModal, editModal, auditModal].forEach((modal) => {
+    if (!modal) return;
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.add('hidden');
+      }
+    });
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      if (createModal && !createModal.classList.contains('hidden')) window.closeCreateModal();
+      if (editModal && !editModal.classList.contains('hidden')) window.closeEditModal();
+      if (auditModal && !auditModal.classList.contains('hidden')) window.closeAuditModal();
+    }
+  });
+
+  /* ------------------------------------------------------------------ */
+  /* Búsqueda en tiempo real y Filtros por Rol                          */
+  /* ------------------------------------------------------------------ */
+  const userSearchInput = document.getElementById('userTableSearch');
+  const clearUserSearch = document.getElementById('clearUserSearch');
+  const filterPills = document.querySelectorAll('.user-filter-pill');
+  const statCards = document.querySelectorAll('.user-stat-card');
+  const userRows = document.querySelectorAll('tr[data-user-row]');
+  const emptyFilterState = document.getElementById('usersFilterEmpty');
+
+  let activeRoleFilter = 'all';
+
+  function applyUserFilters() {
+    const query = userSearchInput ? userSearchInput.value.trim().toLowerCase() : '';
+    if (clearUserSearch) {
+      clearUserSearch.classList.toggle('hidden', query.length === 0);
+    }
+
+    let visibleCount = 0;
+
+    userRows.forEach((row) => {
+      const username = row.dataset.username || '';
+      const email = row.dataset.email || '';
+      const role = row.dataset.role || '';
+      const isDeleted = row.dataset.deleted === '1';
+
+      // Chequeo de coincidencia de rol / baja lógica
+      let matchesRole = true;
+      if (activeRoleFilter === 'admin') matchesRole = (role === 'admin' && !isDeleted);
+      else if (activeRoleFilter === 'auditor') matchesRole = (role === 'auditor' && !isDeleted);
+      else if (activeRoleFilter === 'expert') matchesRole = (role === 'expert' && !isDeleted);
+      else if (activeRoleFilter === 'deleted') matchesRole = isDeleted;
+
+      // Chequeo de coincidencia de texto
+      let matchesQuery = true;
+      if (query) {
+        matchesQuery = username.includes(query) || email.includes(query);
+      }
+
+      if (matchesRole && matchesQuery) {
+        row.style.display = '';
+        visibleCount++;
+      } else {
+        row.style.display = 'none';
+      }
+    });
+
+    if (emptyFilterState) {
+      emptyFilterState.classList.toggle('hidden', visibleCount > 0);
+    }
+  }
+
+  if (userSearchInput) {
+    userSearchInput.addEventListener('input', applyUserFilters);
+  }
+
+  if (clearUserSearch) {
+    clearUserSearch.addEventListener('click', () => {
+      if (userSearchInput) {
+        userSearchInput.value = '';
+        userSearchInput.focus();
+        applyUserFilters();
+      }
+    });
+  }
+
+  function setRoleFilter(roleKey) {
+    activeRoleFilter = roleKey;
+    filterPills.forEach((p) => {
+      p.classList.toggle('active', p.dataset.roleFilter === roleKey);
+    });
+    statCards.forEach((c) => {
+      c.classList.toggle('is-active', c.dataset.filterRole === roleKey);
+    });
+    applyUserFilters();
+  }
+
+  filterPills.forEach((pill) => {
+    pill.addEventListener('click', () => {
+      setRoleFilter(pill.dataset.roleFilter || 'all');
+    });
+  });
+
+  statCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      const targetRole = card.dataset.filterRole || 'all';
+      setRoleFilter(targetRole);
+    });
+  });
 });

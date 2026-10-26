@@ -23,9 +23,9 @@
         <span class="text-[var(--ink)]">{% trans "Usuarios" %}</span>
       </div>
 
-      <div class="mt-5 flex flex-wrap items-center gap-3">
+      <div class="mt-4 flex flex-wrap items-center gap-3">
         <p class="eyebrow">{% trans "Administración" %}</p>
-        <span class="inline-flex items-center rounded-full border border-[var(--line)] bg-[var(--blue-soft)] px-2.5 py-1 font-mono text-[9px] font-semibold text-[var(--blue)]">
+        <span class="inline-flex items-center rounded-full border border-[var(--line)] bg-[var(--blue-soft)] px-2.5 py-0.5 font-mono text-[9px] font-semibold text-[var(--blue)]">
           {% blocktrans count counter=total_users %}{{ counter }} usuario{% plural %}{{ counter }} usuarios{% endblocktrans %}
         </span>
       </div>
@@ -33,78 +33,78 @@
       <h1 class="mt-2 text-3xl font-semibold tracking-[-0.045em] text-[var(--ink)] sm:text-4xl">
         {% trans "Gestión de Usuarios" %}
       </h1>
-      <p class="mt-3 max-w-2xl text-xs leading-6 text-[var(--muted)]">
+      <p class="mt-2.5 max-w-2xl text-xs leading-6 text-[var(--muted)]">
         {% trans "Administra cuentas, roles de auditor, asignación de expertos y trazabilidad de eventos." %}
       </p>
     </div>
 
-    <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+    <div class="flex flex-col gap-2.5 sm:flex-row sm:items-center">
       <button type="button"
-              class="open-audit-btn secondary-action inline-flex items-center justify-center gap-2 px-4 py-2.5">
+              class="open-audit-btn secondary-action inline-flex items-center justify-center gap-2 px-4 py-2.5 text-xs font-medium">
         <svg class="h-3.5 w-3.5 text-[var(--blue)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
         </svg>
-        {% trans "Registro de auditoría" %}
+        <span>{% trans "Registro de auditoría" %}</span>
       </button>
 
       <button type="button" onclick="openCreateModal()"
-              class="dialog-confirm inline-flex items-center justify-center gap-2 px-5 py-2.5">
+              class="dialog-confirm inline-flex items-center justify-center gap-2 px-5 py-2.5 text-xs font-semibold">
         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
         </svg>
-        {% trans "Nuevo usuario" %}
+        <span>{% trans "Nuevo usuario" %}</span>
       </button>
     </div>
   </header>
 
   <!-- ===================================================================== -->
-  <!-- Métricas resumen                                                      -->
+  <!-- Métricas resumen interactivas                                         -->
   <!-- ===================================================================== -->
   <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-    <div class="surface-panel flex items-center justify-between p-4">
+    <div class="user-stat-card is-active" data-filter-role="all" title="{% trans 'Ver todos los usuarios' %}">
       <div>
-        <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]">{% trans "Total cuentas" %}</p>
-        <p class="mt-1 font-mono text-xl font-semibold tabular-nums text-[var(--ink)]">{{ total_users }}</p>
+        <p class="text-[8.5px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{% trans "Total cuentas" %}</p>
+        <p class="mt-1 font-mono text-2xl font-semibold tabular-nums text-[var(--ink)]">{{ total_users }}</p>
       </div>
-      <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)]">
+      <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--surface-hover)] text-[var(--ink)]">
         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
       </span>
     </div>
 
-    <div class="surface-panel flex items-center justify-between p-4">
+    <div class="user-stat-card" data-filter-role="admin" title="{% trans 'Filtrar administradores' %}">
       <div>
-        <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--blue)]">{% trans "Administradores" %}</p>
-        <p class="mt-1 font-mono text-xl font-semibold tabular-nums text-[var(--ink)]">{{ admin_users }}</p>
+        <p class="text-[8.5px] font-bold uppercase tracking-[0.14em] text-[var(--blue)]">{% trans "Administradores" %}</p>
+        <p class="mt-1 font-mono text-2xl font-semibold tabular-nums text-[var(--ink)]">{{ admin_users }}</p>
       </div>
       <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)]">
         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
       </span>
     </div>
 
-    <div class="surface-panel flex items-center justify-between p-4">
+    <div class="user-stat-card" data-filter-role="auditor" title="{% trans 'Filtrar auditores' %}">
       <div>
-        <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--indigo)]">{% trans "Auditores" %}</p>
-        <p class="mt-1 font-mono text-xl font-semibold tabular-nums text-[var(--ink)]">{{ auditor_users }}</p>
+        <p class="text-[8.5px] font-bold uppercase tracking-[0.14em] text-[var(--indigo)]">{% trans "Auditores" %}</p>
+        <p class="mt-1 font-mono text-2xl font-semibold tabular-nums text-[var(--ink)]">{{ auditor_users }}</p>
       </div>
       <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--indigo-soft)] text-[var(--indigo)]">
         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
       </span>
     </div>
 
-    <div class="surface-panel flex items-center justify-between p-4">
+    <div class="user-stat-card" data-filter-role="expert" title="{% trans 'Filtrar expertos' %}">
       <div>
-        <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--violet)]">{% trans "Expertos" %}</p>
-        <p class="mt-1 font-mono text-xl font-semibold tabular-nums text-[var(--ink)]">{{ expert_users }}</p>
+        <p class="text-[8.5px] font-bold uppercase tracking-[0.14em] text-[var(--violet)]">{% trans "Expertos" %}</p>
+        <p class="mt-1 font-mono text-2xl font-semibold tabular-nums text-[var(--ink)]">{{ expert_users }}</p>
       </div>
       <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--violet-soft)] text-[var(--violet)]">
         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5"/></svg>
       </span>
     </div>
 
-    <div class="surface-panel flex items-center justify-between p-4">
+    <div class="user-stat-card" data-filter-role="deleted" title="{% trans 'Filtrar cuentas dadas de baja' %}">
       <div>
-        <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]">{% trans "Baja lógica" %}</p>
-        <p class="mt-1 font-mono text-xl font-semibold tabular-nums text-[var(--ink)]">{{ deleted_users }}</p>
+        <p class="text-[8.5px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{% trans "Baja lógica" %}</p>
+        <p class="mt-1 font-mono text-2xl font-semibold tabular-nums text-[var(--ink)]">{{ deleted_users }}</p>
       </div>
       <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--surface-hover)] text-[var(--muted)]">
         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
@@ -113,12 +113,53 @@
   </div>
 
   <!-- ===================================================================== -->
-  <!-- Tabla de usuarios                                                     -->
+  <!-- Directorio de usuarios y tabla                                        -->
   <!-- ===================================================================== -->
   {% if users %}
-  <section class="surface-panel mt-5 overflow-hidden">
+  <section class="surface-panel mt-6 overflow-hidden">
+    <!-- Barra de herramientas: Búsqueda y Píldoras de Filtro -->
+    <div class="workspace-toolbar border-b border-[var(--line)]">
+      <div>
+        <p class="eyebrow">{% trans "Directorio" %}</p>
+        <h2>{% trans "Todos los usuarios" %}</h2>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Selector rápido de rol -->
+        <div class="hidden sm:inline-flex items-center gap-1 rounded-xl border border-[var(--line)] bg-[var(--canvas)] p-1">
+          <button type="button" class="user-filter-pill active" data-role-filter="all">
+            {% trans "Todos" %} <span class="font-mono text-[9px] opacity-70">({{ total_users }})</span>
+          </button>
+          <button type="button" class="user-filter-pill" data-role-filter="admin">
+            {% trans "Admin" %} <span class="font-mono text-[9px] opacity-70">({{ admin_users }})</span>
+          </button>
+          <button type="button" class="user-filter-pill" data-role-filter="auditor">
+            {% trans "Auditores" %} <span class="font-mono text-[9px] opacity-70">({{ auditor_users }})</span>
+          </button>
+          <button type="button" class="user-filter-pill" data-role-filter="expert">
+            {% trans "Expertos" %} <span class="font-mono text-[9px] opacity-70">({{ expert_users }})</span>
+          </button>
+          <button type="button" class="user-filter-pill" data-role-filter="deleted">
+            {% trans "Baja" %} <span class="font-mono text-[9px] opacity-70">({{ deleted_users }})</span>
+          </button>
+        </div>
+
+        <!-- Barra de búsqueda instantánea -->
+        <div class="workspace-search">
+          <svg class="h-3.5 w-3.5 shrink-0 text-[var(--faint)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          </svg>
+          <input type="text" id="userTableSearch" placeholder="{% trans 'Buscar usuario o correo…' %}" autocomplete="off">
+          <button type="button" id="clearUserSearch" class="hidden ml-1 text-[9px] font-bold text-[var(--muted)] hover:text-[var(--blue)]">
+            ✕
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabla de datos -->
     <div class="overflow-x-auto">
-      <table class="data-table users-table min-w-[1000px]">
+      <table class="data-table users-table w-full min-w-[1020px]">
         <thead>
           <tr>
             <th>{% trans "Usuario" %}</th>
@@ -130,49 +171,67 @@
             <th class="text-right">{% trans "Acciones" %}</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="userTableBody">
           {% for u in users %}
-          <tr class="{% if u.is_deleted %}opacity-60{% endif %}">
+          <tr data-user-row
+              data-username="{{ u.username|lower }}"
+              data-email="{{ u.email|lower }}"
+              data-role="{{ u.role }}"
+              data-deleted="{% if u.is_deleted %}1{% else %}0{% endif %}"
+              class="{% if u.is_deleted %}opacity-60 bg-[var(--canvas)]/40{% endif %}">
+            
+            <!-- Usuario / Monograma -->
             <td>
-              <div class="flex items-center gap-2.5">
-                <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border text-[11px] font-bold
+              <div class="flex items-center gap-3">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border text-[11px] font-bold shadow-sm
                   {% if u.is_deleted %}border-[var(--line)] bg-[var(--surface-hover)] text-[var(--faint)]
-                  {% elif u.role == 'admin' %}border-[var(--blue)] bg-[var(--blue-soft)] text-[var(--blue)]
-                  {% elif u.role == 'expert' %}border-[var(--violet)] bg-[var(--violet-soft)] text-[var(--violet)]
-                  {% else %}border-[var(--indigo)] bg-[var(--indigo-soft)] text-[var(--indigo)]{% endif %}">
+                  {% elif u.role == 'admin' %}border-[var(--blue)]/40 bg-[var(--blue-soft)] text-[var(--blue)]
+                  {% elif u.role == 'expert' %}border-[var(--violet)]/40 bg-[var(--violet-soft)] text-[var(--violet)]
+                  {% else %}border-[var(--indigo)]/40 bg-[var(--indigo-soft)] text-[var(--indigo)]{% endif %}">
                   {{ u.username|slice:":1"|upper }}
                 </span>
                 <div class="min-w-0">
-                  <span class="block truncate text-[11px] font-semibold text-[var(--ink)]">
-                    {{ u.username }}{% if u.id == request.user.id %} <span class="text-[9px] font-semibold text-[var(--blue)]">({% trans "tu cuenta" %})</span>{% endif %}
+                  <div class="flex items-center gap-1.5">
+                    <span class="block truncate text-xs font-semibold text-[var(--ink)]">
+                      {{ u.username }}
+                    </span>
+                    {% if u.id == request.user.id %}
+                    <span class="inline-flex items-center rounded-full bg-[var(--blue-soft)] px-1.5 py-0.2 text-[8px] font-bold text-[var(--blue)]">
+                      {% trans "tu cuenta" %}
+                    </span>
+                    {% endif %}
+                  </div>
+                  <span class="block max-w-[220px] truncate font-mono text-[9.5px] text-[var(--muted)]" title="{{ u.email }}">
+                    {{ u.email }}
                   </span>
-                  <span class="block max-w-[210px] truncate text-[9px] text-[var(--muted)]" title="{{ u.email }}">{{ u.email }}</span>
                 </div>
               </div>
             </td>
 
+            <!-- Rol -->
             <td>
               {% if u.role == 'admin' %}
-              <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--blue-soft)] px-2 py-0.5 text-[9px] font-semibold text-[var(--blue)]">
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--blue)]/30 bg-[var(--blue-soft)] px-2.5 py-0.5 text-[9px] font-semibold text-[var(--blue)]">
                 <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
-                {% trans "Administrador" %}
+                <span>{% trans "Administrador" %}</span>
               </span>
               {% elif u.role == 'expert' %}
-              <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--violet-soft)] px-2 py-0.5 text-[9px] font-semibold text-[var(--violet)]">
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--violet)]/30 bg-[var(--violet-soft)] px-2.5 py-0.5 text-[9px] font-semibold text-[var(--violet)]">
                 <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14zm-4 6v-7.5"/></svg>
-                {% trans "Experto" %}
+                <span>{% trans "Experto" %}</span>
               </span>
               {% else %}
-              <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--indigo-soft)] px-2 py-0.5 text-[9px] font-semibold text-[var(--indigo)]">
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--indigo)]/30 bg-[var(--indigo-soft)] px-2.5 py-0.5 text-[9px] font-semibold text-[var(--indigo)]">
                 <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                {% trans "Auditor" %}
+                <span>{% trans "Auditor" %}</span>
               </span>
               {% endif %}
             </td>
 
+            <!-- Especialidad -->
             <td>
               {% if u.role == 'expert' and u.profession %}
-              <span class="inline-flex max-w-[180px] truncate rounded-full border border-[var(--line)] bg-[var(--indigo-soft)] px-2 py-0.5 text-[9px] font-semibold text-[var(--indigo)]" title="{{ u.profession }}">
+              <span class="inline-flex max-w-[190px] truncate rounded-full border border-[var(--violet)]/30 bg-[var(--violet-soft)] px-2.5 py-0.5 text-[9px] font-semibold text-[var(--violet)]" title="{{ u.profession }}">
                 {{ u.profession }}
               </span>
               {% else %}
@@ -180,62 +239,70 @@
               {% endif %}
             </td>
 
+            <!-- Espacios asignados -->
             <td>
               {% if u.workspaces %}
-              <div class="flex max-w-[220px] flex-wrap gap-1">
+              <div class="flex max-w-[240px] flex-wrap gap-1">
                 {% for ws_name in u.workspaces %}
-                <span class="inline-flex max-w-full truncate rounded-full border border-[var(--line)] bg-[var(--blue-soft)] px-2 py-0.5 text-[9px] font-medium text-[var(--blue)]" title="{{ ws_name }}">
+                <span class="inline-flex max-w-full truncate rounded-md border border-[var(--line)] bg-[var(--surface-hover)] px-2 py-0.5 text-[9px] font-medium text-[var(--ink)]" title="{{ ws_name }}">
                   {{ ws_name }}
                 </span>
                 {% endfor %}
               </div>
               {% else %}
-              <span class="inline-flex items-center rounded-full border border-[var(--line)] bg-[var(--amber-soft)] px-2 py-0.5 text-[9px] font-semibold text-[var(--amber)]"
+              <span class="inline-flex items-center rounded-full border border-[var(--amber)]/30 bg-[var(--amber-soft)] px-2 py-0.5 text-[8.5px] font-semibold text-[var(--amber)]"
                     title="{% trans 'El usuario no tiene ningún espacio asignado' %}">
                 {% trans "Sin espacio" %}
               </span>
               {% endif %}
             </td>
 
+            <!-- Estado -->
             <td>
               {% if u.is_deleted %}
-              <span class="inline-flex items-center gap-1 rounded-full border border-[var(--line)] bg-[var(--red-soft)] px-2 py-0.5 text-[8px] font-semibold text-[var(--red)]"
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--red)]/30 bg-[var(--red-soft)] px-2 py-0.5 text-[8.5px] font-semibold text-[var(--red)]"
                     title="{% blocktrans with fecha=u.deleted_at|date:'d/m/Y H:i' %}Baja lógica aplicada el {{ fecha }}{% endblocktrans %}">
                 <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                {% trans "Baja lógica" %}
+                <span>{% trans "Baja lógica" %}</span>
               </span>
               {% elif u.is_active %}
-              <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--teal-soft)] px-2 py-0.5 text-[8px] font-semibold text-[var(--teal)]">
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--teal)]/30 bg-[var(--teal-soft)] px-2.5 py-0.5 text-[8.5px] font-semibold text-[var(--teal)]">
                 <span class="workspace-dot" data-color="green"></span>
-                {% trans "Activo" %}
+                <span>{% trans "Activo" %}</span>
               </span>
               {% else %}
-              <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--line)] bg-[var(--amber-soft)] px-2 py-0.5 text-[8px] font-semibold text-[var(--amber)]">
+              <span class="inline-flex items-center gap-1.5 rounded-full border border-[var(--amber)]/30 bg-[var(--amber-soft)] px-2.5 py-0.5 text-[8.5px] font-semibold text-[var(--amber)]">
                 <span class="workspace-dot" data-color="amber"></span>
-                {% trans "Suspendido" %}
+                <span>{% trans "Suspendido" %}</span>
               </span>
               {% endif %}
             </td>
 
+            <!-- Último acceso -->
             <td>
               {% if u.last_login %}
-              <span class="font-mono text-[10px] tabular-nums text-[var(--muted)]">{{ u.last_login|date:"d/m/Y H:i" }}</span>
+              <span class="font-mono text-[9.5px] tabular-nums text-[var(--muted)]">{{ u.last_login|date:"d M Y, H:i" }}</span>
               {% else %}
               <span class="text-[10px] text-[var(--faint)]">{% trans "Nunca" %}</span>
               {% endif %}
             </td>
 
+            <!-- Acciones -->
             <td class="text-right">
-              <div class="flex items-center justify-end gap-1">
+              <div class="user-action-group">
+                <!-- Auditoría -->
                 <button type="button"
-                        class="open-audit-btn inline-flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--line)] text-[var(--blue)] transition hover:border-[var(--blue)] hover:bg-[var(--blue-soft)]"
+                        class="open-audit-btn user-action-btn btn-audit"
                         title="{% trans 'Historial de auditoría y trazabilidad' %}"
                         data-user-id="{{ u.id }}">
-                  <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                  <svg class="h-3.5 w-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
                 </button>
 
+                <!-- Editar -->
                 <button type="button"
-                        class="edit-user-btn inline-flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--line)] text-[var(--amber)] transition hover:border-[var(--amber)] hover:bg-[var(--amber-soft)]"
+                        class="edit-user-btn user-action-btn btn-edit"
                         title="{% trans 'Editar usuario' %}"
                         data-id="{{ u.id }}"
                         data-username="{{ u.username }}"
@@ -245,48 +312,60 @@
                         data-is-active="{{ u.is_active|yesno:'1,0' }}"
                         data-profession="{{ u.profession }}"
                         data-workspace-id="{{ u.primary_workspace_id|default:'' }}">
-                  <svg class="h-3.5 w-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z"/></svg>
+                  <svg class="h-3.5 w-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z"/>
+                  </svg>
                 </button>
 
+                <!-- Suspender / Reactivar (si no está dado de baja) -->
                 {% if not u.is_deleted %}
                   {% if u.is_active %}
                   <button type="button"
-                          class="toggle-user-btn inline-flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--line)] text-[var(--amber)] transition hover:border-[var(--amber)] hover:bg-[var(--amber-soft)]"
+                          class="toggle-user-btn user-action-btn btn-toggle-active"
                           title="{% trans 'Suspender acceso temporalmente' %}"
                           data-id="{{ u.id }}"
                           data-username="{{ u.username }}"
                           data-active="1">
-                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    <svg class="h-3.5 w-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                    </svg>
                   </button>
                   {% else %}
                   <button type="button"
-                          class="toggle-user-btn inline-flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--line)] text-[var(--teal)] transition hover:border-[var(--teal)] hover:bg-[var(--teal-soft)]"
+                          class="toggle-user-btn user-action-btn btn-toggle-reactivate"
                           title="{% trans 'Reactivar acceso al usuario' %}"
                           data-id="{{ u.id }}"
                           data-username="{{ u.username }}"
                           data-active="0">
-                    <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+                    <svg class="h-3.5 w-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"/>
+                    </svg>
                   </button>
                   {% endif %}
                 {% endif %}
 
+                <!-- Baja lógica / Restaurar -->
                 {% if u.is_deleted %}
                 <button type="button"
-                        class="delete-user-btn inline-flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--line)] text-[var(--teal)] transition hover:border-[var(--teal)] hover:bg-[var(--teal-soft)]"
+                        class="delete-user-btn user-action-btn btn-restore"
                         title="{% trans 'Restaurar cuenta dada de baja' %}"
                         data-id="{{ u.id }}"
                         data-username="{{ u.username }}"
                         data-is-deleted="1">
-                  <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                  <svg class="h-3.5 w-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                  </svg>
                 </button>
                 {% else %}
                 <button type="button"
-                        class="delete-user-btn inline-flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--line)] text-[var(--red)] transition hover:border-[var(--red)] hover:bg-[var(--red-soft)]"
+                        class="delete-user-btn user-action-btn btn-delete"
                         title="{% trans 'Eliminar usuario (Baja lógica)' %}"
                         data-id="{{ u.id }}"
                         data-username="{{ u.username }}"
                         data-is-deleted="0">
-                  <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  <svg class="h-3.5 w-3.5 pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                  </svg>
                 </button>
                 {% endif %}
               </div>
@@ -296,9 +375,21 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Estado vacío de búsqueda o filtro -->
+    <div id="usersFilterEmpty" class="hidden py-14 px-6 text-center">
+      <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--surface-hover)] text-[var(--muted)]">
+        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+        </svg>
+      </div>
+      <h3 class="mt-3 text-sm font-semibold text-[var(--ink)]">{% trans "Sin resultados" %}</h3>
+      <p class="mt-1 text-[11px] text-[var(--muted)]">{% trans "No se encontraron usuarios que coincidan con la búsqueda o filtro seleccionado." %}</p>
+    </div>
   </section>
   {% else %}
-  <div class="surface-panel mt-5 px-6 py-14 text-center">
+  <!-- Estado inicial cuando no hay ningún usuario registrado -->
+  <div class="surface-panel mt-6 px-6 py-14 text-center">
     <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--blue-soft)] text-[var(--blue)]">
       <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
     </div>
@@ -309,29 +400,33 @@
 </div>
 
 <!-- ===================================================================== -->
-<!-- Modal: Registro de auditoría                                          -->
+<!-- Modal: Registro de auditoría y trazabilidad                           -->
 <!-- ===================================================================== -->
-<div id="auditLogsModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-[rgba(3,10,22,0.72)] p-4 backdrop-blur-sm">
-  <div class="flex max-h-[85vh] w-full max-w-2xl flex-col rounded-[18px] border border-[var(--line)] bg-[var(--surface)] shadow-2xl">
-    <div class="flex items-start justify-between border-b border-[var(--line)] bg-[var(--surface-hover)] p-5">
-      <div class="flex items-center gap-2.5">
-        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)]">
-          <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+<div id="auditLogsModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-[rgba(3,10,22,0.72)] p-4 backdrop-blur-md">
+  <div class="flex max-h-[85vh] w-full max-w-2xl flex-col rounded-[20px] border border-[var(--line)] bg-[var(--surface)] shadow-2xl overflow-hidden">
+    <!-- Header Modal -->
+    <div class="flex items-start justify-between border-b border-[var(--line)] bg-[var(--surface-hover)]/60 p-5">
+      <div class="flex items-center gap-3">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)]">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
         </span>
         <div>
           <h3 class="text-sm font-semibold tracking-tight text-[var(--ink)]">{% trans "Registro de auditoría y trazabilidad" %}</h3>
-          <p class="mt-0.5 text-[9px] text-[var(--muted)]">{% trans "Historial de accesos, creación, ediciones y bajas lógicas en el sistema." %}</p>
+          <p class="mt-0.5 text-[9.5px] text-[var(--muted)]">{% trans "Historial de accesos, creación, ediciones y bajas lógicas en el sistema." %}</p>
         </div>
       </div>
-      <button type="button" onclick="closeAuditModal()" class="modal-close" aria-label="{% trans 'Cerrar' %}">
+      <button type="button" onclick="closeAuditModal()" class="modal-close rounded-xl border border-[var(--line)] p-2 hover:bg-[var(--surface-hover)] hover:text-[var(--ink)]" aria-label="{% trans 'Cerrar' %}">
         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
-    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] px-5 py-3">
-      <span class="text-[9px] font-semibold text-[var(--muted)]">{% trans "Filtrar por evento:" %}</span>
+    <!-- Barra de Filtros del Modal -->
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--line)] bg-[var(--surface)] px-5 py-3">
+      <span class="text-[9.5px] font-semibold text-[var(--muted)]">{% trans "Filtrar por evento:" %}</span>
       <div class="form-field w-56">
-        <select id="auditFilterAction" data-custom-select="true">
+        <select id="auditFilterAction" class="eli-input text-xs py-1.5" data-custom-select="true">
           <option value="">{% trans "Todos los eventos" %}</option>
           <option value="CREATE">{% trans "Creación de usuario" %}</option>
           <option value="UPDATE">{% trans "Edición de datos" %}</option>
@@ -343,10 +438,12 @@
       </div>
     </div>
 
-    <div id="auditLogsList" class="min-h-[300px] flex-1 overflow-y-auto"></div>
+    <!-- Contenedor dinámico de registros -->
+    <div id="auditLogsList" class="min-h-[320px] flex-1 overflow-y-auto"></div>
 
-    <div class="flex justify-end border-t border-[var(--line)] bg-[var(--surface-hover)] p-4">
-      <button type="button" onclick="closeAuditModal()" class="dialog-cancel">{% trans "Cerrar" %}</button>
+    <!-- Footer Modal -->
+    <div class="flex justify-end border-t border-[var(--line)] bg-[var(--surface-hover)]/60 px-5 py-3.5">
+      <button type="button" onclick="closeAuditModal()" class="dialog-cancel text-xs px-4 py-2">{% trans "Cerrar" %}</button>
     </div>
   </div>
 </div>
@@ -354,23 +451,27 @@
 <!-- ===================================================================== -->
 <!-- Modal: Crear usuario                                                  -->
 <!-- ===================================================================== -->
-<div id="createUserModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-[rgba(3,10,22,0.72)] p-4 backdrop-blur-sm">
-  <div class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-[18px] border border-[var(--line)] bg-[var(--surface)] shadow-2xl">
-    <div class="flex items-start justify-between border-b border-[var(--line)] bg-[var(--surface-hover)] p-5">
-      <div class="flex items-center gap-2.5">
-        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)]">
-          <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/></svg>
+<div id="createUserModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-[rgba(3,10,22,0.72)] p-4 backdrop-blur-md">
+  <div class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-[20px] border border-[var(--line)] bg-[var(--surface)] shadow-2xl">
+    <!-- Header -->
+    <div class="flex items-start justify-between border-b border-[var(--line)] bg-[var(--surface-hover)]/60 p-5">
+      <div class="flex items-center gap-3">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--blue-soft)] text-[var(--blue)]">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+          </svg>
         </span>
         <div>
           <h3 class="text-sm font-semibold tracking-tight text-[var(--ink)]">{% trans "Nuevo usuario" %}</h3>
-          <p class="mt-0.5 text-[9px] text-[var(--muted)]">{% trans "Crea una nueva cuenta y define su rol en el sistema." %}</p>
+          <p class="mt-0.5 text-[9.5px] text-[var(--muted)]">{% trans "Crea una nueva cuenta y define su rol en el sistema." %}</p>
         </div>
       </div>
-      <button type="button" onclick="closeCreateModal()" class="modal-close" aria-label="{% trans 'Cerrar' %}">
+      <button type="button" onclick="closeCreateModal()" class="modal-close rounded-xl border border-[var(--line)] p-2 hover:bg-[var(--surface-hover)] hover:text-[var(--ink)]" aria-label="{% trans 'Cerrar' %}">
         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
+    <!-- Formulario Crear -->
     <form id="create-user-form" class="space-y-4 p-5">
       {% csrf_token %}
 
@@ -391,7 +492,7 @@
       </div>
 
       <div>
-        <p class="mb-2 text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]">{% trans "Rol en el sistema" %} <span class="text-[var(--red)]">*</span></p>
+        <p class="mb-2 text-[8.5px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{% trans "Rol en el sistema" %} <span class="text-[var(--red)]">*</span></p>
         <div class="grid grid-cols-3 gap-2">
           <label class="role-card is-selected flex flex-col items-center p-3 text-center" data-role="auditor" onclick="setRoleRadio('create', 'auditor')">
             <input type="radio" name="cu-role" value="auditor" checked class="sr-only" onchange="toggleRoleFields('create')">
@@ -416,7 +517,8 @@
         </div>
       </div>
 
-      <div id="cu-expert-fields" class="hidden rounded-[12px] border border-[var(--line)] bg-[var(--violet-soft)] p-3.5">
+      <!-- Especialidad para expertos -->
+      <div id="cu-expert-fields" class="hidden rounded-[14px] border border-[var(--violet)]/30 bg-[var(--violet-soft)] p-3.5">
         <div class="form-field">
           <span class="!text-[var(--violet)]">{% trans "Especialidad pericial oficial" %} <em class="not-italic text-[var(--red)]">*</em></span>
           <select id="cu-profession" class="eli-input">
@@ -429,6 +531,7 @@
         <p class="mt-1.5 text-[9px] leading-5 text-[var(--violet)]">{% trans "El perito operará de forma restringida con su criterio profesional en el Detector de Opacidad." %}</p>
       </div>
 
+      <!-- Espacio asignado -->
       <div class="form-field">
         <span>{% trans "Espacio de trabajo asignado" %}</span>
         <select id="cu-workspace" class="eli-input">
@@ -447,9 +550,10 @@
         <span>{% trans "Cuenta activa para inicio de sesión" %}</span>
       </label>
 
+      <!-- Botones de Acción -->
       <div class="flex justify-end gap-2 border-t border-[var(--line)] pt-4">
-        <button type="button" onclick="closeCreateModal()" class="dialog-cancel">{% trans "Cancelar" %}</button>
-        <button type="submit" class="dialog-confirm">{% trans "Guardar usuario" %}</button>
+        <button type="button" onclick="closeCreateModal()" class="dialog-cancel text-xs px-4 py-2">{% trans "Cancelar" %}</button>
+        <button type="submit" class="dialog-confirm text-xs px-5 py-2">{% trans "Guardar usuario" %}</button>
       </div>
     </form>
     <p id="create-error" class="hidden px-5 pb-5 text-[10px] font-medium text-[var(--red)]"></p>
@@ -459,23 +563,27 @@
 <!-- ===================================================================== -->
 <!-- Modal: Editar usuario                                                 -->
 <!-- ===================================================================== -->
-<div id="editUserModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-[rgba(3,10,22,0.72)] p-4 backdrop-blur-sm">
-  <div class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-[18px] border border-[var(--line)] bg-[var(--surface)] shadow-2xl">
-    <div class="flex items-start justify-between border-b border-[var(--line)] bg-[var(--surface-hover)] p-5">
-      <div class="flex items-center gap-2.5">
-        <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--amber-soft)] text-[var(--amber)]">
-          <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z"/></svg>
+<div id="editUserModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-[rgba(3,10,22,0.72)] p-4 backdrop-blur-md">
+  <div class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-[20px] border border-[var(--line)] bg-[var(--surface)] shadow-2xl">
+    <!-- Header -->
+    <div class="flex items-start justify-between border-b border-[var(--line)] bg-[var(--surface-hover)]/60 p-5">
+      <div class="flex items-center gap-3">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--amber-soft)] text-[var(--amber)]">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536M9 13l6-6 3.536 3.536-6 6H9v-3.536z"/>
+          </svg>
         </span>
         <div>
           <h3 class="text-sm font-semibold tracking-tight text-[var(--ink)]">{% trans "Editar usuario" %}</h3>
-          <p class="mt-0.5 text-[9px] text-[var(--muted)]">{% trans "Modifica roles, especialidad, contraseña y espacio de trabajo." %}</p>
+          <p class="mt-0.5 text-[9.5px] text-[var(--muted)]">{% trans "Modifica roles, especialidad, contraseña y espacio de trabajo." %}</p>
         </div>
       </div>
-      <button type="button" onclick="closeEditModal()" class="modal-close" aria-label="{% trans 'Cerrar' %}">
+      <button type="button" onclick="closeEditModal()" class="modal-close rounded-xl border border-[var(--line)] p-2 hover:bg-[var(--surface-hover)] hover:text-[var(--ink)]" aria-label="{% trans 'Cerrar' %}">
         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
       </button>
     </div>
 
+    <!-- Formulario Editar -->
     <form id="edit-user-form" class="space-y-4 p-5">
       {% csrf_token %}
       <input type="hidden" id="eu-user-id">
@@ -497,7 +605,7 @@
       </div>
 
       <div>
-        <p class="mb-2 text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]">{% trans "Rol en el sistema" %} <span class="text-[var(--red)]">*</span></p>
+        <p class="mb-2 text-[8.5px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">{% trans "Rol en el sistema" %} <span class="text-[var(--red)]">*</span></p>
         <div class="grid grid-cols-3 gap-2">
           <label class="role-card flex flex-col items-center p-3 text-center" data-role="auditor" onclick="setRoleRadio('edit', 'auditor')">
             <input type="radio" name="eu-role" value="auditor" class="sr-only" onchange="toggleRoleFields('edit')">
@@ -522,7 +630,8 @@
         </div>
       </div>
 
-      <div id="eu-expert-fields" class="hidden rounded-[12px] border border-[var(--line)] bg-[var(--violet-soft)] p-3.5">
+      <!-- Especialidad para expertos -->
+      <div id="eu-expert-fields" class="hidden rounded-[14px] border border-[var(--violet)]/30 bg-[var(--violet-soft)] p-3.5">
         <div class="form-field">
           <span class="!text-[var(--violet)]">{% trans "Especialidad pericial oficial" %} <em class="not-italic text-[var(--red)]">*</em></span>
           <select id="eu-profession" class="eli-input">
@@ -534,6 +643,7 @@
         </div>
       </div>
 
+      <!-- Espacio asignado -->
       <div class="form-field">
         <span>{% trans "Asignar / cambiar espacio de trabajo" %}</span>
         <select id="eu-workspace" class="eli-input">
@@ -550,9 +660,10 @@
         <span>{% trans "Cuenta activa para inicio de sesión" %}</span>
       </label>
 
+      <!-- Botones de Acción -->
       <div class="flex justify-end gap-2 border-t border-[var(--line)] pt-4">
-        <button type="button" onclick="closeEditModal()" class="dialog-cancel">{% trans "Cancelar" %}</button>
-        <button type="submit" class="dialog-confirm">{% trans "Guardar cambios" %}</button>
+        <button type="button" onclick="closeEditModal()" class="dialog-cancel text-xs px-4 py-2">{% trans "Cancelar" %}</button>
+        <button type="submit" class="dialog-confirm text-xs px-5 py-2">{% trans "Guardar cambios" %}</button>
       </div>
     </form>
     <p id="edit-error" class="hidden px-5 pb-5 text-[10px] font-medium text-[var(--red)]"></p>
@@ -562,5 +673,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{% static 'js/users.js' %}?v=eli-16"></script>
+<script src="{% static 'js/users.js' %}?v=eli-34"></script>
 {% endblock %}
