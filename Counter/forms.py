@@ -203,7 +203,7 @@ class ReportModelChoiceField(forms.ModelChoiceField):
 
 
 class ComparativeAnalysisForm(forms.Form):
-    SELECT_CLASSES = "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition"
+    SELECT_CLASSES = "eli-input"
 
     year = forms.ChoiceField(
         label="Año",
@@ -211,7 +211,7 @@ class ComparativeAnalysisForm(forms.Form):
         choices=[],
         widget=forms.Select(
             attrs={
-                "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition",
+                "class": "eli-input",
                 "data-custom-select": "true"
             }
         )
@@ -223,7 +223,7 @@ class ComparativeAnalysisForm(forms.Form):
         empty_label=_("Seleccione un reporte"),
         widget=forms.Select(
             attrs={
-                "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition",
+                "class": "eli-input",
                 "data-custom-select": "true"
             }
         )
@@ -235,7 +235,7 @@ class ComparativeAnalysisForm(forms.Form):
         empty_label=_("Seleccione una lista"),
         widget=forms.Select(
             attrs={
-                "class": "w-full border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3.5 py-2.5 text-sm text-gray-800 bg-white transition",
+                "class": "eli-input",
                 "data-custom-select": "true"
             }
         )

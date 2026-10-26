@@ -1,11 +1,11 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n static %}
 
 {% block title %}{% trans "Análisis comparativo" %} | ELI{% endblock %}
 {% block body_class %}eli-theme{% endblock %}
 
 {% block content %}
-<div class="mx-auto max-w-[1440px] px-5 py-7 sm:px-7 lg:px-9">
+<div class="mx-auto w-full max-w-[1800px] px-5 py-7 sm:px-7 lg:px-9">
 
     <!-- ===================================================================== -->
     <!-- Cabecera: contraste de vocabularios                                   -->
@@ -26,7 +26,7 @@
             <div class="mt-5 flex flex-wrap items-center gap-3">
                 <p class="eyebrow">{% trans "Análisis comparativo" %}</p>
                 <span class="inline-flex items-center rounded-full border border-[var(--line)] bg-[var(--blue-soft)] px-2.5 py-1 font-mono text-[9px] font-semibold text-[var(--blue)]">
-                    {% trans "Venn de vocabularios" %}
+                    {% trans "Contraste léxico" %}
                 </span>
             </div>
 
@@ -47,312 +47,670 @@
     </header>
 
     <!-- ===================================================================== -->
-    <!-- Selectores A/B: reporte contra lista de experto                       -->
+    <!-- Barra de Pestañas: Experto vs. Interanual                            -->
     <!-- ===================================================================== -->
-    <form method="post" id="compareForm" class="mt-6">
-        {% csrf_token %}
+    <nav class="mt-6 flex border-b border-[var(--line)]">
+        <a href="?modo=experto"
+           id="tabBtnExperto"
+           class="inline-flex items-center gap-2 border-b-2 px-5 py-3 text-xs font-semibold transition {% if modo != 'interanual' %}border-[var(--blue)] text-[var(--blue)]{% else %}border-transparent text-[var(--muted)] hover:border-[var(--line-strong)] hover:text-[var(--ink)]{% endif %}">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            <span>{% trans "Reporte vs. Lista Experta" %}</span>
+        </a>
 
-        <div class="grid gap-4 lg:grid-cols-2">
-            <div class="compare-select">
-                <span class="compare-letter">A</span>
-                <div class="min-w-0">
-                    <small>{% trans "VOCABULARIO BASE" %}</small>
-                    <strong>{% trans "Reporte corporativo" %}</strong>
-                    <em>{% trans "Selecciona el informe que actuará como base." %}</em>
+        <a href="?modo=interanual"
+           id="tabBtnInteranual"
+           class="inline-flex items-center gap-2 border-b-2 px-5 py-3 text-xs font-semibold transition {% if modo == 'interanual' %}border-[var(--blue)] text-[var(--blue)]{% else %}border-transparent text-[var(--muted)] hover:border-[var(--line-strong)] hover:text-[var(--ink)]{% endif %}">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            <span>{% trans "Evolución Interanual (Misma Empresa)" %}</span>
+        </a>
+    </nav>
 
-                    <div class="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-[118px_minmax(0,1fr)]">
-                        <div class="form-field">
-                            <span>{% trans "Año" %}</span>
-                            {{ form.year }}
+    <!-- ===================================================================== -->
+    <!-- CONTENIDO PESTAÑA 1: Reporte vs. Lista Experta                       -->
+    <!-- ===================================================================== -->
+    <div id="tabContentExperto" class="{% if modo == 'interanual' %}hidden{% endif %}">
+        <!-- Formulario A/B: reporte contra lista de experto -->
+        <form method="post" id="compareForm" class="mt-6">
+            {% csrf_token %}
+            <input type="hidden" name="modo" value="experto">
+
+            <div class="grid gap-4 lg:grid-cols-2">
+                <div class="compare-select">
+                    <span class="compare-letter">A</span>
+                    <div class="min-w-0 flex-1">
+                        <small>{% trans "VOCABULARIO BASE" %}</small>
+                        <strong>{% trans "Reporte corporativo" %}</strong>
+                        <em>{% trans "Selecciona el informe que actuará como base." %}</em>
+
+                        <div class="mt-3 grid grid-cols-1 gap-2.5 sm:grid-cols-[130px_minmax(0,1fr)]">
+                            <div class="form-field">
+                                <span>{% trans "Año" %}</span>
+                                {{ form.year }}
+                            </div>
+                            <div class="form-field">
+                                <span>{% trans "Reporte" %}</span>
+                                {{ form.report }}
+                            </div>
                         </div>
-                        <div class="form-field">
-                            <span>{% trans "Reporte" %}</span>
-                            {{ form.report }}
+                    </div>
+                </div>
+
+                <div class="compare-select second">
+                    <span class="compare-letter">B</span>
+                    <div class="min-w-0 flex-1">
+                        <small>{% trans "VOCABULARIO DE CONTRASTE" %}</small>
+                        <strong>{% trans "Lista de experto" %}</strong>
+                        <em>{% trans "Selecciona el marco de conocimiento pericial." %}</em>
+
+                        <div class="mt-3 form-field">
+                            <span>{% trans "Lista" %}</span>
+                            {{ form.expert_list }}
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="compare-select second">
-                <span class="compare-letter">B</span>
-                <div class="min-w-0">
-                    <small>{% trans "VOCABULARIO DE CONTRASTE" %}</small>
-                    <strong>{% trans "Lista de experto" %}</strong>
-                    <em>{% trans "Selecciona el marco de conocimiento pericial." %}</em>
-
-                    <div class="mt-3 form-field">
-                        <span>{% trans "Lista" %}</span>
-                        {{ form.expert_list }}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p class="text-[9px] leading-5 text-[var(--muted)]">
-                {% trans "El vocabulario base se cruza contra la lista de experto para obtener coincidencias y términos exclusivos." %}
-            </p>
-            <button type="submit" class="dialog-confirm w-full gap-2 px-5 py-2.5 sm:w-auto">
-                <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                </svg>
-                {% trans "Comparar reporte con lista de experto" %}
-            </button>
-        </div>
-    </form>
-
-    {% if resultado %}
-
-    <!-- ===================================================================== -->
-    <!-- Resultado: diagrama de Venn                                           -->
-    <!-- ===================================================================== -->
-    <section class="surface-panel mt-8 overflow-hidden">
-        <div class="panel-heading">
-            <div>
-                <p class="eyebrow">{% trans "Intersección detectada" %}</p>
-                <h2>{{ resultado.comunes|length }} {% trans "términos compartidos" %}</h2>
-                <p class="mt-1 text-[10px] text-[var(--muted)]">
-                    {% trans "Base" %}:
-                    <strong class="font-semibold text-[var(--ink)]">
-                        {% if resultado.report_label %}{{ resultado.report_label }}{% elif resultado.report.company %}{{ resultado.report.company.name }}{% else %}{{ resultado.report.name }}{% endif %}
-                    </strong>
-                    <span class="mx-1 text-[var(--faint)]">·</span>
-                    {% trans "Contraste" %}:
-                    <strong class="font-semibold text-[var(--ink)]">{{ resultado.expert_list.name }}</strong>
+            <div class="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <p class="text-[10px] leading-5 text-[var(--muted)]">
+                    {% trans "El vocabulario base se cruza contra la lista de experto para obtener coincidencias y términos exclusivos." %}
                 </p>
+                <button type="submit" class="dialog-confirm w-full gap-2 px-5 py-2.5 sm:w-auto">
+                    <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+                    </svg>
+                    {% trans "Comparar reporte con lista de experto" %}
+                </button>
+            </div>
+        </form>
+
+        {% if resultado and modo != 'interanual' %}
+        <!-- Resultados Reporte vs. Lista Experta -->
+        <section class="surface-panel mt-8 overflow-hidden">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">{% trans "Intersección detectada" %}</p>
+                    <h2>{{ resultado.comunes|length }} {% trans "términos compartidos" %}</h2>
+                    <p class="mt-1 text-[10px] text-[var(--muted)]">
+                        {% trans "Base" %}:
+                        <strong class="font-semibold text-[var(--ink)]">
+                            {% if resultado.report_label %}{{ resultado.report_label }}{% elif resultado.report.company %}{{ resultado.report.company.name }}{% else %}{{ resultado.report.name }}{% endif %}
+                        </strong>
+                        <span class="mx-1 text-[var(--faint)]">·</span>
+                        {% trans "Contraste" %}:
+                        <strong class="font-semibold text-[var(--ink)]">{{ resultado.expert_list.name }}</strong>
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="text-right">
+                        <span class="block text-[8px] font-bold uppercase tracking-wider text-[var(--faint)]">{% trans "Intersección" %}</span>
+                        <span class="font-mono text-2xl font-bold tabular-nums text-[var(--blue)]">{{ resultado.porcentaje_interseccion }}%</span>
+                    </div>
+                    <span class="metric-badge low shrink-0 text-[9px]">
+                        {{ resultado.comunes|length }} {% trans "coincidencias" %}
+                    </span>
+                </div>
             </div>
 
-            <span class="metric-badge low shrink-0">
-                {{ resultado.comunes|length }} {% trans "coincidencias" %}
-            </span>
-        </div>
-
-        <div class="grid gap-6 p-5 sm:p-7 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,.9fr)] lg:items-center">
-            <div class="venn-stage">
-                <svg viewBox="0 0 480 300" role="img" aria-labelledby="venn-title venn-desc">
-                    <title id="venn-title">{% trans "Diagrama de Venn de vocabularios" %}</title>
-                    <desc id="venn-desc">
-                        {% trans "Círculo A: términos exclusivos del reporte. Zona central: coincidencias. Círculo B: términos exclusivos de la lista de experto." %}
-                    </desc>
-
-                    <defs>
-                        <clipPath id="venn-clip-base">
-                            <circle cx="170" cy="150" r="110"/>
-                        </clipPath>
-                    </defs>
-
-                    <g class="venn-region" data-compare-region="documento" tabindex="0" role="button"
-                       aria-label="{% trans 'Enfocar términos solo en el reporte' %}">
-                        <title>{% trans "Solo en el reporte" %}</title>
-                        <circle cx="170" cy="150" r="110"
-                                style="fill: var(--blue-soft); stroke: var(--blue);"
-                                stroke-width="1.5"/>
-                    </g>
-
-                    <g class="venn-region" data-compare-region="lista" tabindex="0" role="button"
-                       aria-label="{% trans 'Enfocar términos solo en la lista de experto' %}">
-                        <title>{% trans "Solo en la lista de experto" %}</title>
-                        <circle cx="310" cy="150" r="110"
-                                style="fill: var(--indigo-soft); stroke: var(--indigo);"
-                                stroke-width="1.5"/>
-                    </g>
-
-                    <g class="venn-region" data-compare-region="comunes" tabindex="0" role="button"
-                       aria-label="{% trans 'Enfocar términos compartidos' %}">
-                        <title>{% trans "Términos compartidos" %}</title>
-                        <circle cx="310" cy="150" r="110"
-                                clip-path="url(#venn-clip-base)"
-                                style="fill: var(--teal-soft); stroke: none;"/>
-                    </g>
-
-                    <g pointer-events="none">
-                        <text x="112" y="138" text-anchor="middle" class="venn-count" style="fill: var(--blue);">
-                            {{ resultado.solo_documento|length }}
-                        </text>
-                        <text x="112" y="158" text-anchor="middle" class="venn-label" style="fill: var(--blue);">
-                            {% trans "Solo en reporte" %}
-                        </text>
-
-                        <text x="240" y="138" text-anchor="middle" class="venn-count" style="fill: var(--teal);">
-                            {{ resultado.comunes|length }}
-                        </text>
-                        <text x="240" y="158" text-anchor="middle" class="venn-label" style="fill: var(--teal);">
-                            {% trans "En ambos" %}
-                        </text>
-
-                        <text x="368" y="138" text-anchor="middle" class="venn-count" style="fill: var(--indigo);">
-                            {{ resultado.solo_lista|length }}
-                        </text>
-                        <text x="368" y="158" text-anchor="middle" class="venn-label" style="fill: var(--indigo);">
-                            {% trans "Solo en lista" %}
-                        </text>
-                    </g>
-
-                    <text x="96" y="54" text-anchor="middle" class="venn-label" style="fill: var(--faint);">A</text>
-                    <text x="384" y="54" text-anchor="middle" class="venn-label" style="fill: var(--faint);">B</text>
-                </svg>
-            </div>
-
-            <div>
-                <div class="grid grid-cols-3 gap-2">
-                    <button type="button" class="compare-stat a" data-compare-region="documento" aria-pressed="false">
+            <div class="p-5 sm:p-7">
+                <!-- Los 3 cuadros de métricas (Figma ELI CompareScreen) -->
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <button type="button" class="compare-stat a cursor-pointer" data-compare-region="documento" aria-pressed="false">
                         <strong>{{ resultado.solo_documento|length }}</strong>
                         <span>{% trans "Solo en reporte" %}</span>
                     </button>
-                    <button type="button" class="compare-stat overlap" data-compare-region="comunes" aria-pressed="false">
+                    <button type="button" class="compare-stat overlap cursor-pointer" data-compare-region="comunes" aria-pressed="false">
                         <strong>{{ resultado.comunes|length }}</strong>
                         <span>{% trans "Coincidencias" %}</span>
                     </button>
-                    <button type="button" class="compare-stat b" data-compare-region="lista" aria-pressed="false">
+                    <button type="button" class="compare-stat b cursor-pointer" data-compare-region="lista" aria-pressed="false">
                         <strong>{{ resultado.solo_lista|length }}</strong>
                         <span>{% trans "Solo en lista" %}</span>
                     </button>
                 </div>
 
-                <p class="mt-3 text-center text-[9px] leading-5 text-[var(--muted)]">
-                    {% trans "Haz clic en una región del diagrama para enfocar su listado." %}
+                <p class="mt-4 text-center text-[10px] leading-5 text-[var(--muted)]">
+                    {% trans "Haz clic en cualquiera de las 3 tarjetas para enfocar su listado de términos abajo." %}
                 </p>
             </div>
-        </div>
 
-        <div class="flex flex-col gap-2 border-t border-[var(--line)] bg-[var(--surface-hover)] px-5 py-4 sm:flex-row sm:items-center">
-            <span class="shrink-0 text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]">
-                {% trans "Términos compartidos" %}
-            </span>
+            <div class="flex flex-col gap-2 border-t border-[var(--line)] bg-[var(--surface-hover)] px-5 py-4 sm:flex-row sm:items-center">
+                <span class="shrink-0 text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]">
+                    {% trans "Términos compartidos" %}
+                </span>
 
-            <div class="flex flex-wrap gap-1.5">
-                {% for word in resultado.comunes|slice:":18" %}
-                    <span class="term-chip strong">{{ word }}</span>
-                {% empty %}
-                    <span class="text-[10px] italic text-[var(--faint)]">{% trans "Sin coincidencias." %}</span>
-                {% endfor %}
-
-                {% if resultado.comunes|length > 18 %}
-                    <span class="term-chip">+{{ resultado.comunes|length|add:"-18" }} {% trans "más" %}</span>
-                {% endif %}
-            </div>
-        </div>
-    </section>
-
-    <!-- ===================================================================== -->
-    <!-- Desglose por región                                                   -->
-    <!-- ===================================================================== -->
-    <section class="mt-6" id="compareDetails">
-        <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-                <p class="eyebrow">{% trans "Desglose" %}</p>
-                <h2 class="mt-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--ink)]">
-                    {% trans "Términos por región" %}
-                </h2>
-            </div>
-
-            <button type="button" id="clearVennFocus" class="text-link hidden">
-                {% trans "Mostrar todo" %}
-            </button>
-        </div>
-
-        <div class="grid gap-4 lg:grid-cols-3">
-            <article class="surface-panel compare-detail" data-region="documento">
-                <div class="flex items-center justify-between border-b border-[var(--line)] p-4">
-                    <div>
-                        <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--blue)]">
-                            {% trans "Región A · Vocabulario base" %}
-                        </p>
-                        <h3 class="mt-1 text-sm font-semibold text-[var(--ink)]">{% trans "Solo en reporte" %}</h3>
-                    </div>
-                    <span class="tab-badge">{{ resultado.solo_documento|length }}</span>
-                </div>
-
-                <div class="max-h-80 overflow-y-auto p-4">
-                    <div class="flex flex-wrap gap-1.5">
-                        {% for word in resultado.solo_documento %}
-                            <span class="term-chip">{{ word }}</span>
-                        {% empty %}
-                            <p class="text-[10px] italic text-[var(--faint)]">{% trans "Sin términos exclusivos en el reporte." %}</p>
+                <div class="flex flex-wrap gap-1.5">
+                    {% if resultado.comunes_con_conteo %}
+                        {% for item in resultado.comunes_con_conteo|slice:":24" %}
+                            <span class="term-chip strong" title="{{ item.count }} {% trans 'apariciones en el reporte' %}">
+                                <span>{{ item.word }}</span>
+                                {% if item.count > 0 %}
+                                    <span class="chip-count">{{ item.count }}</span>
+                                {% endif %}
+                            </span>
                         {% endfor %}
-                    </div>
-                </div>
-            </article>
-
-            <article class="surface-panel compare-detail" data-region="comunes">
-                <div class="flex items-center justify-between border-b border-[var(--line)] p-4">
-                    <div>
-                        <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--teal)]">
-                            {% trans "Intersección A ∩ B" %}
-                        </p>
-                        <h3 class="mt-1 text-sm font-semibold text-[var(--ink)]">{% trans "Coincidencias" %}</h3>
-                    </div>
-                    <span class="tab-badge">{{ resultado.comunes|length }}</span>
-                </div>
-
-                <div class="max-h-80 overflow-y-auto p-4">
-                    <div class="flex flex-wrap gap-1.5">
-                        {% for word in resultado.comunes %}
+                        {% if resultado.comunes|length > 24 %}
+                            <span class="term-chip font-mono text-[9px]">+{{ resultado.comunes|length|add:"-24" }} {% trans "más" %}</span>
+                        {% endif %}
+                    {% else %}
+                        {% for word in resultado.comunes|slice:":24" %}
                             <span class="term-chip strong">{{ word }}</span>
                         {% empty %}
-                            <p class="text-[10px] italic text-[var(--faint)]">{% trans "Sin coincidencias entre ambos vocabularios." %}</p>
+                            <span class="text-[10px] italic text-[var(--faint)]">{% trans "Sin coincidencias." %}</span>
                         {% endfor %}
-                    </div>
+                        {% if resultado.comunes|length > 24 %}
+                            <span class="term-chip font-mono text-[9px]">+{{ resultado.comunes|length|add:"-24" }} {% trans "más" %}</span>
+                        {% endif %}
+                    {% endif %}
                 </div>
-            </article>
+            </div>
+        </section>
 
-            <article class="surface-panel compare-detail" data-region="lista">
-                <div class="flex items-center justify-between border-b border-[var(--line)] p-4">
-                    <div>
-                        <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--indigo)]">
-                            {% trans "Región B · Vocabulario de contraste" %}
-                        </p>
-                        <h3 class="mt-1 text-sm font-semibold text-[var(--ink)]">{% trans "Solo en lista" %}</h3>
-                    </div>
-                    <span class="tab-badge">{{ resultado.solo_lista|length }}</span>
+        <!-- Desglose por región (3 Columnas de Desglose) -->
+        <section class="mt-6" id="compareDetails">
+            <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p class="eyebrow">{% trans "Desglose" %}</p>
+                    <h2 class="mt-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--ink)]">
+                        {% trans "Términos por región" %}
+                    </h2>
                 </div>
 
-                <div class="max-h-80 overflow-y-auto p-4">
-                    <div class="flex flex-wrap gap-1.5">
-                        {% for word in resultado.solo_lista %}
-                            <span class="term-chip">{{ word }}</span>
-                        {% empty %}
-                            <p class="text-[10px] italic text-[var(--faint)]">{% trans "Sin términos exclusivos en la lista de experto." %}</p>
-                        {% endfor %}
+                <button type="button" id="clearVennFocus" class="text-link hidden text-[11px]">
+                    {% trans "Mostrar todo" %}
+                </button>
+            </div>
+
+            <div class="grid gap-4 lg:grid-cols-3">
+                <!-- Columna A: Solo en reporte -->
+                <article class="surface-panel compare-detail flex flex-col" data-region="documento">
+                    <div class="flex items-center justify-between border-b border-[var(--line)] p-4">
+                        <div>
+                            <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--blue)]">
+                                {% trans "Región A · Vocabulario base" %}
+                            </p>
+                            <h3 class="mt-1 text-sm font-semibold text-[var(--ink)]">{% trans "Solo en reporte" %}</h3>
+                        </div>
+                        <span class="tab-badge font-mono text-[9px]">{{ resultado.solo_documento|length }}</span>
                     </div>
-                </div>
-            </article>
-        </div>
-    </section>
 
-    {% else %}
+                    <div class="relative border-b border-[var(--line)] px-3 py-2">
+                        <input type="text"
+                               class="eli-input !h-7 !py-0.5 text-[10px] !pl-7 search-region-terms"
+                               placeholder="{% trans 'Filtrar...' %}"
+                               data-target-region="documento">
+                        <svg class="pointer-events-none absolute left-5 top-4 h-3 w-3 text-[var(--faint)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
 
-    <!-- ===================================================================== -->
-    <!-- Estado inicial: esperando ambos vocabularios                          -->
-    <!-- ===================================================================== -->
-    <section class="surface-panel mt-8 overflow-hidden">
-        <div class="grid gap-6 p-6 sm:p-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,.8fr)] lg:items-center">
-            <div class="venn-stage opacity-70">
-                <svg viewBox="0 0 480 300" role="img" aria-label="{% trans 'Diagrama de Venn pendiente de comparación' %}">
-                    <circle cx="170" cy="150" r="110" fill="none" stroke="var(--line-strong)" stroke-width="1.5" stroke-dasharray="7 6"/>
-                    <circle cx="310" cy="150" r="110" fill="none" stroke="var(--line-strong)" stroke-width="1.5" stroke-dasharray="7 6"/>
-                    <text x="112" y="154" text-anchor="middle" class="venn-label" style="fill: var(--faint);">A</text>
-                    <text x="368" y="154" text-anchor="middle" class="venn-label" style="fill: var(--faint);">B</text>
-                    <text x="240" y="154" text-anchor="middle" class="venn-label" style="fill: var(--faint);">A ∩ B</text>
+                    <div class="max-h-80 flex-1 overflow-y-auto p-4">
+                        <div class="terms-container flex flex-wrap gap-1.5">
+                            {% if resultado.solo_documento_con_conteo %}
+                                {% for item in resultado.solo_documento_con_conteo %}
+                                    <span class="term-chip" data-word="{{ item.word|lower }}" title="{{ item.count }} {% trans 'apariciones' %}">
+                                        <span>{{ item.word }}</span>
+                                        {% if item.count > 0 %}
+                                            <span class="chip-count">{{ item.count }}</span>
+                                        {% endif %}
+                                    </span>
+                                {% empty %}
+                                    <p class="text-[10px] italic text-[var(--faint)]">{% trans "Sin términos exclusivos en el reporte." %}</p>
+                                {% endfor %}
+                            {% else %}
+                                {% for word in resultado.solo_documento %}
+                                    <span class="term-chip" data-word="{{ word|lower }}">{{ word }}</span>
+                                {% empty %}
+                                    <p class="text-[10px] italic text-[var(--faint)]">{% trans "Sin términos exclusivos en el reporte." %}</p>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Columna Intersección: Coincidencias -->
+                <article class="surface-panel compare-detail flex flex-col" data-region="comunes">
+                    <div class="flex items-center justify-between border-b border-[var(--line)] p-4">
+                        <div>
+                            <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--teal)]">
+                                {% trans "Intersección A ∩ B" %}
+                            </p>
+                            <h3 class="mt-1 text-sm font-semibold text-[var(--ink)]">{% trans "Coincidencias" %}</h3>
+                        </div>
+                        <span class="tab-badge font-mono text-[9px]">{{ resultado.comunes|length }}</span>
+                    </div>
+
+                    <div class="relative border-b border-[var(--line)] px-3 py-2">
+                        <input type="text"
+                               class="eli-input !h-7 !py-0.5 text-[10px] !pl-7 search-region-terms"
+                               placeholder="{% trans 'Filtrar...' %}"
+                               data-target-region="comunes">
+                        <svg class="pointer-events-none absolute left-5 top-4 h-3 w-3 text-[var(--faint)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+
+                    <div class="max-h-80 flex-1 overflow-y-auto p-4">
+                        <div class="terms-container flex flex-wrap gap-1.5">
+                            {% if resultado.comunes_con_conteo %}
+                                {% for item in resultado.comunes_con_conteo %}
+                                    <span class="term-chip strong" data-word="{{ item.word|lower }}" title="{{ item.count }} {% trans 'apariciones en el reporte' %}">
+                                        <span>{{ item.word }}</span>
+                                        {% if item.count > 0 %}
+                                            <span class="chip-count">{{ item.count }}</span>
+                                        {% endif %}
+                                    </span>
+                                {% empty %}
+                                    <p class="text-[10px] italic text-[var(--faint)]">{% trans "Sin coincidencias entre ambos vocabularios." %}</p>
+                                {% endfor %}
+                            {% else %}
+                                {% for word in resultado.comunes %}
+                                    <span class="term-chip strong" data-word="{{ word|lower }}">{{ word }}</span>
+                                {% empty %}
+                                    <p class="text-[10px] italic text-[var(--faint)]">{% trans "Sin coincidencias entre ambos vocabularios." %}</p>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Columna B: Solo en lista -->
+                <article class="surface-panel compare-detail flex flex-col" data-region="lista">
+                    <div class="flex items-center justify-between border-b border-[var(--line)] p-4">
+                        <div>
+                            <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--indigo)]">
+                                {% trans "Región B · Vocabulario de contraste" %}
+                            </p>
+                            <h3 class="mt-1 text-sm font-semibold text-[var(--ink)]">{% trans "Solo en lista" %}</h3>
+                        </div>
+                        <span class="tab-badge font-mono text-[9px]">{{ resultado.solo_lista|length }}</span>
+                    </div>
+
+                    <div class="relative border-b border-[var(--line)] px-3 py-2">
+                        <input type="text"
+                               class="eli-input !h-7 !py-0.5 text-[10px] !pl-7 search-region-terms"
+                               placeholder="{% trans 'Filtrar...' %}"
+                               data-target-region="lista">
+                        <svg class="pointer-events-none absolute left-5 top-4 h-3 w-3 text-[var(--faint)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+
+                    <div class="max-h-80 flex-1 overflow-y-auto p-4">
+                        <div class="terms-container flex flex-wrap gap-1.5">
+                            {% for word in resultado.solo_lista %}
+                                <span class="term-chip" data-word="{{ word|lower }}">{{ word }}</span>
+                            {% empty %}
+                                <p class="text-[10px] italic text-[var(--faint)]">{% trans "Sin términos exclusivos en la lista de experto." %}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        {% else %}
+        <!-- Estado inicial: esperando comparación -->
+        <section class="surface-panel mt-8 p-10 text-center">
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--blue-soft)] text-[var(--blue)]">
+                <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                 </svg>
             </div>
+            <p class="eyebrow mt-4">{% trans "Esperando comparación" %}</p>
+            <h2 class="mt-1 text-xl font-semibold tracking-[-0.03em] text-[var(--ink)]">
+                {% trans "Selecciona los dos vocabularios" %}
+            </h2>
+            <p class="mx-auto mt-2 max-w-xl text-[11px] leading-6 text-[var(--muted)]">
+                {% trans "El vocabulario base es el reporte corporativo. El vocabulario de contraste es la lista de experto. Al comparar, obtendrás los términos exclusivos de cada lado y la intersección compartida." %}
+            </p>
+        </section>
+        {% endif %}
+    </div>
 
-            <div>
-                <p class="eyebrow">{% trans "Esperando comparación" %}</p>
-                <h2 class="mt-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--ink)]">
-                    {% trans "Selecciona los dos vocabularios" %}
-                </h2>
-                <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
-                    {% trans "El vocabulario base es el reporte corporativo. El vocabulario de contraste es la lista de experto. Al comparar, el diagrama mostrará los términos exclusivos de cada lado y la intersección." %}
+    <!-- ===================================================================== -->
+    <!-- CONTENIDO PESTAÑA 2: Evolución Interanual (Misma Empresa)             -->
+    <!-- ===================================================================== -->
+    <div id="tabContentInteranual" class="{% if modo != 'interanual' %}hidden{% endif %}">
+        {% if error_interanual %}
+        <div class="mt-6 flex items-center gap-3 rounded-xl border border-[var(--red)] bg-[var(--red-soft)] p-4 text-[11px] text-[var(--red)]">
+            <svg class="h-5 w-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+            <span>{{ error_interanual }}</span>
+        </div>
+        {% endif %}
+
+        <!-- Formulario Interanual -->
+        <form method="post" id="compareInteranualForm" class="mt-6">
+            {% csrf_token %}
+            <input type="hidden" name="modo" value="interanual">
+
+            <div class="rounded-2xl border border-[var(--line)] bg-[var(--surface)] p-5">
+                <!-- Selector superior: Empresa -->
+                <div class="flex flex-col gap-2 border-b border-[var(--line)] pb-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <label class="text-[10px] font-bold uppercase tracking-wider text-[var(--faint)]">
+                            {% trans "Selecciona la empresa a auditar" %}
+                        </label>
+                        <p class="text-[10px] text-[var(--muted)]">{% trans "Filtra los reportes disponibles de una misma entidad corporativa." %}</p>
+                    </div>
+
+                    <div class="w-full sm:w-80">
+                        <select name="company_id" id="interanual_company" class="eli-input w-full" data-custom-select="true" required>
+                            <option value="">{% trans "Seleccione una empresa..." %}</option>
+                            {% for comp in companies %}
+                                <option value="{{ comp.id }}" {% if selected_company_id == comp.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ comp.clean_name|default:comp.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Tarjetas A y B -->
+                <div class="mt-4 grid gap-4 lg:grid-cols-2">
+                    <!-- Tarjeta A: Ejercicio Base -->
+                    <div class="compare-select">
+                        <span class="compare-letter">A</span>
+                        <div class="min-w-0 flex-1">
+                            <small>{% trans "EJERCICIO BASE" %}</small>
+                            <strong>{% trans "Reporte Anterior" %}</strong>
+                            <em>{% trans "Selecciona el año inicial para la comparación." %}</em>
+
+                            <div class="mt-3 form-field">
+                                <span>{% trans "Año / Reporte A" %}</span>
+                                <select name="report_a_id" id="interanual_report_a" class="eli-input w-full" required>
+                                    <option value="">{% trans "Seleccione un reporte..." %}</option>
+                                    {% for r in company_reports %}
+                                        <option value="{{ r.id }}" {% if selected_report_a_id == r.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ r.year|default:r.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta B: Ejercicio de Contraste -->
+                    <div class="compare-select second">
+                        <span class="compare-letter">B</span>
+                        <div class="min-w-0 flex-1">
+                            <small>{% trans "EJERCICIO DE CONTRASTE" %}</small>
+                            <strong>{% trans "Reporte Reciente" %}</strong>
+                            <em>{% trans "Selecciona el año posterior a evaluar." %}</em>
+
+                            <div class="mt-3 form-field">
+                                <span>{% trans "Año / Reporte B" %}</span>
+                                <select name="report_b_id" id="interanual_report_b" class="eli-input w-full" required>
+                                    <option value="">{% trans "Seleccione un reporte..." %}</option>
+                                    {% for r in company_reports %}
+                                        <option value="{{ r.id }}" {% if selected_report_b_id == r.id|stringformat:"s" %}selected{% endif %}>
+                                            {{ r.year|default:r.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 flex flex-col-reverse gap-3 border-t border-[var(--line)] pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <p class="text-[10px] leading-5 text-[var(--muted)]">
+                        {% trans "Compara la evolución del discurso corporativo entre dos ejercicios para detectar términos omitidos, persistentes y emergentes." %}
+                    </p>
+                    <button type="submit" class="dialog-confirm w-full gap-2 px-5 py-2.5 sm:w-auto">
+                        <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        {% trans "Comparar evolución interanual" %}
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        {% if resultado_interanual and modo == 'interanual' %}
+        <!-- Resultados Interanuales (Exactamente como en la captura del usuario) -->
+        <section class="surface-panel mt-8 overflow-hidden">
+            <div class="panel-heading">
+                <div>
+                    <p class="eyebrow">{% trans "Evolución interanual detectada" %}</p>
+                    <h2>{{ resultado_interanual.comunes|length }} {% trans "términos compartidos" %}</h2>
+                    <p class="mt-1 text-[10px] text-[var(--muted)]">
+                        {% trans "Empresa" %}:
+                        <strong class="font-semibold text-[var(--ink)]">{{ resultado_interanual.company.name }}</strong>
+                        <span class="mx-1 text-[var(--faint)]">·</span>
+                        {% trans "Base" %}:
+                        <strong class="font-semibold text-[var(--ink)]">{{ resultado_interanual.report_a.year }}</strong>
+                        <span class="mx-1 text-[var(--faint)]">·</span>
+                        {% trans "Contraste" %}:
+                        <strong class="font-semibold text-[var(--ink)]">{{ resultado_interanual.report_b.year }}</strong>
+                    </p>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="text-right">
+                        <span class="block text-[8px] font-bold uppercase tracking-wider text-[var(--faint)]">{% trans "Similitud léxica" %}</span>
+                        <span class="font-mono text-2xl font-bold tabular-nums text-[var(--blue)]">{{ resultado_interanual.porcentaje_similitud }}%</span>
+                    </div>
+                    <span class="metric-badge low shrink-0 text-[9px]">
+                        {{ resultado_interanual.comunes|length }} {% trans "persistentes" %}
+                    </span>
+                </div>
+            </div>
+
+            <!-- Los 3 cuadros de métricas (Figma ELI CompareScreen / Captura de Usuario) -->
+            <div class="p-5 sm:p-7">
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <button type="button" class="compare-stat a cursor-pointer" data-compare-region="omitidos" aria-pressed="false">
+                        <strong>{{ resultado_interanual.solo_a|length }}</strong>
+                        <span>{% trans "Solo en" %} {{ resultado_interanual.report_a.year }} ({% trans "Omitidos en" %} {{ resultado_interanual.report_b.year }})</span>
+                    </button>
+                    <button type="button" class="compare-stat overlap cursor-pointer" data-compare-region="persistentes" aria-pressed="false">
+                        <strong>{{ resultado_interanual.comunes|length }}</strong>
+                        <span>{% trans "Persistentes en ambos" %} ({{ resultado_interanual.report_a.year }} & {{ resultado_interanual.report_b.year }})</span>
+                    </button>
+                    <button type="button" class="compare-stat b cursor-pointer" data-compare-region="emergentes" aria-pressed="false">
+                        <strong>{{ resultado_interanual.solo_b|length }}</strong>
+                        <span>{% trans "Solo en" %} {{ resultado_interanual.report_b.year }} ({% trans "Nuevos / Emergentes" %})</span>
+                    </button>
+                </div>
+
+                <p class="mt-4 text-center text-[10px] leading-5 text-[var(--muted)]">
+                    {% trans "Haz clic en cualquiera de las 3 tarjetas para enfocar su listado de términos abajo." %}
                 </p>
             </div>
-        </div>
-    </section>
 
-    {% endif %}
+            <!-- Barra de términos destacados con variación -->
+            <div class="flex flex-col gap-2 border-t border-[var(--line)] bg-[var(--surface-hover)] px-5 py-4 sm:flex-row sm:items-center">
+                <span class="shrink-0 text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--muted)]">
+                    {% trans "Términos persistentes destacados" %}
+                </span>
+
+                <div class="flex flex-wrap gap-1.5">
+                    {% for item in resultado_interanual.comunes_con_variacion|slice:":24" %}
+                        <span class="term-chip strong" title="{{ resultado_interanual.report_a.year }}: {{ item.count_a }} | {{ resultado_interanual.report_b.year }}: {{ item.count_b }}">
+                            <span>{{ item.word }}</span>
+                            <span class="chip-count">
+                                {{ item.count_a }} &rarr; {{ item.count_b }}
+                                {% if item.trend == 'sube' %}
+                                    <span class="text-[var(--teal)] font-bold ml-0.5">&uarr;</span>
+                                {% elif item.trend == 'baja' %}
+                                    <span class="text-[var(--red)] font-bold ml-0.5">&darr;</span>
+                                {% endif %}
+                            </span>
+                        </span>
+                    {% endfor %}
+                    {% if resultado_interanual.comunes|length > 24 %}
+                        <span class="term-chip font-mono text-[9px]">+{{ resultado_interanual.comunes|length|add:"-24" }} {% trans "más" %}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        <!-- Desglose en 3 Columnas con Buscador en Vivo -->
+        <section class="mt-6" id="compareInteranualDetails">
+            <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p class="eyebrow">{% trans "Desglose interanual" %}</p>
+                    <h2 class="mt-1.5 text-xl font-semibold tracking-[-0.03em] text-[var(--ink)]">
+                        {% trans "Términos por categoría temporal" %}
+                    </h2>
+                </div>
+
+                <button type="button" id="clearInteranualFocus" class="text-link hidden text-[11px]">
+                    {% trans "Mostrar todo" %}
+                </button>
+            </div>
+
+            <div class="grid gap-4 lg:grid-cols-3">
+                <!-- Columna 1: Omitidos en Año B -->
+                <article class="surface-panel compare-detail flex flex-col" data-region="omitidos">
+                    <div class="flex items-center justify-between border-b border-[var(--line)] p-4">
+                        <div>
+                            <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--blue)]">
+                                {% trans "Descontinuados / Omitidos" %}
+                            </p>
+                            <h3 class="mt-1 text-sm font-semibold text-[var(--ink)]">{% trans "Solo en" %} {{ resultado_interanual.report_a.year }}</h3>
+                        </div>
+                        <span class="tab-badge font-mono text-[9px]">{{ resultado_interanual.solo_a|length }}</span>
+                    </div>
+
+                    <div class="relative border-b border-[var(--line)] px-3 py-2">
+                        <input type="text"
+                               class="eli-input !h-7 !py-0.5 text-[10px] !pl-7 search-region-terms"
+                               placeholder="{% trans 'Filtrar...' %}"
+                               data-target-region="omitidos">
+                        <svg class="pointer-events-none absolute left-5 top-4 h-3 w-3 text-[var(--faint)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+
+                    <div class="max-h-80 flex-1 overflow-y-auto p-4">
+                        <div class="terms-container flex flex-wrap gap-1.5">
+                            {% for item in resultado_interanual.solo_a_con_conteo %}
+                                <span class="term-chip" data-word="{{ item.word|lower }}" title="{{ item.count }} {% trans 'apariciones en' %} {{ resultado_interanual.report_a.year }}">
+                                    <span>{{ item.word }}</span>
+                                    {% if item.count > 0 %}
+                                        <span class="chip-count">{{ item.count }}</span>
+                                    {% endif %}
+                                </span>
+                            {% empty %}
+                                <p class="text-[10px] italic text-[var(--faint)]">{% trans "No hubo términos descontinuados." %}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Columna 2: Persistentes en ambos -->
+                <article class="surface-panel compare-detail flex flex-col" data-region="persistentes">
+                    <div class="flex items-center justify-between border-b border-[var(--line)] p-4">
+                        <div>
+                            <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--teal)]">
+                                {% trans "Vocabulario Persistente" %}
+                            </p>
+                            <h3 class="mt-1 text-sm font-semibold text-[var(--ink)]">{{ resultado_interanual.report_a.year }} & {{ resultado_interanual.report_b.year }}</h3>
+                        </div>
+                        <span class="tab-badge font-mono text-[9px]">{{ resultado_interanual.comunes|length }}</span>
+                    </div>
+
+                    <div class="relative border-b border-[var(--line)] px-3 py-2">
+                        <input type="text"
+                               class="eli-input !h-7 !py-0.5 text-[10px] !pl-7 search-region-terms"
+                               placeholder="{% trans 'Filtrar...' %}"
+                               data-target-region="persistentes">
+                        <svg class="pointer-events-none absolute left-5 top-4 h-3 w-3 text-[var(--faint)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+
+                    <div class="max-h-80 flex-1 overflow-y-auto p-4">
+                        <div class="terms-container flex flex-wrap gap-1.5">
+                            {% for item in resultado_interanual.comunes_con_variacion %}
+                                <span class="term-chip strong" data-word="{{ item.word|lower }}" title="{{ resultado_interanual.report_a.year }}: {{ item.count_a }} &rarr; {{ resultado_interanual.report_b.year }}: {{ item.count_b }} ({% if item.diff > 0 %}+{{ item.diff }}{% else %}{{ item.diff }}{% endif %})">
+                                    <span>{{ item.word }}</span>
+                                    <span class="chip-count">
+                                        {{ item.count_a }} &rarr; {{ item.count_b }}
+                                        {% if item.trend == 'sube' %}
+                                            <span class="text-[var(--teal)] font-bold">&uarr;</span>
+                                        {% elif item.trend == 'baja' %}
+                                            <span class="text-[var(--red)] font-bold">&darr;</span>
+                                        {% endif %}
+                                    </span>
+                                </span>
+                            {% empty %}
+                                <p class="text-[10px] italic text-[var(--faint)]">{% trans "Sin términos compartidos entre ambos ejercicios." %}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Columna 3: Emergentes / Nuevos en Año B -->
+                <article class="surface-panel compare-detail flex flex-col" data-region="emergentes">
+                    <div class="flex items-center justify-between border-b border-[var(--line)] p-4">
+                        <div>
+                            <p class="text-[8px] font-bold uppercase tracking-[0.13em] text-[var(--indigo)]">
+                                {% trans "Nuevos / Emergentes" %}
+                            </p>
+                            <h3 class="mt-1 text-sm font-semibold text-[var(--ink)]">{% trans "Solo en" %} {{ resultado_interanual.report_b.year }}</h3>
+                        </div>
+                        <span class="tab-badge font-mono text-[9px]">{{ resultado_interanual.solo_b|length }}</span>
+                    </div>
+
+                    <div class="relative border-b border-[var(--line)] px-3 py-2">
+                        <input type="text"
+                               class="eli-input !h-7 !py-0.5 text-[10px] !pl-7 search-region-terms"
+                               placeholder="{% trans 'Filtrar...' %}"
+                               data-target-region="emergentes">
+                        <svg class="pointer-events-none absolute left-5 top-4 h-3 w-3 text-[var(--faint)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                    </div>
+
+                    <div class="max-h-80 flex-1 overflow-y-auto p-4">
+                        <div class="terms-container flex flex-wrap gap-1.5">
+                            {% for item in resultado_interanual.solo_b_con_conteo %}
+                                <span class="term-chip" data-word="{{ item.word|lower }}" title="{{ item.count }} {% trans 'apariciones en' %} {{ resultado_interanual.report_b.year }}">
+                                    <span>{{ item.word }}</span>
+                                    {% if item.count > 0 %}
+                                        <span class="chip-count">{{ item.count }}</span>
+                                    {% endif %}
+                                </span>
+                            {% empty %}
+                                <p class="text-[10px] italic text-[var(--faint)]">{% trans "No se registraron términos emergentes." %}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        {% else %}
+        <!-- Estado inicial Pestaña Interanual -->
+        <section class="surface-panel mt-8 p-10 text-center">
+            <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--blue-soft)] text-[var(--blue)]">
+                <svg class="h-7 w-7" fill="none" stroke="currentColor" stroke-width="1.75" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                </svg>
+            </div>
+            <p class="eyebrow mt-4">{% trans "Esperando comparación interanual" %}</p>
+            <h2 class="mt-1 text-xl font-semibold tracking-[-0.03em] text-[var(--ink)]">
+                {% trans "Selecciona una empresa y dos años distintos" %}
+            </h2>
+            <p class="mx-auto mt-2 max-w-xl text-[11px] leading-6 text-[var(--muted)]">
+                {% trans "Podrás analizar en paralelo qué términos omitió la compañía respecto al año previo, cuáles mantuvo y qué nuevas expresiones incorporó a su narrativa corporativa." %}
+            </p>
+        </section>
+        {% endif %}
+    </div>
+
 </div>
+{% endblock %}
 
-{% load static %}
-<script src="{% static 'js/comparative_analysis.js' %}?v=2.0"></script>
-
+{% block scripts %}
+<script src="{% static 'js/comparative_analysis.js' %}?v=2.4"></script>
 {% endblock %}

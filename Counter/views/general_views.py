@@ -492,6 +492,10 @@ def finish_zip_batch_view(request):
 def comparative_analysis_view(request):
     current_ws = get_active_workspace(request)
     resultado = None
+    resultado_interanual = None
+    error_interanual = None
+
+    modo = request.POST.get("modo") or request.GET.get("modo") or "experto"
 
     def normalize_words(word_list):
         return set(
@@ -500,7 +504,28 @@ def comparative_analysis_view(request):
             if w
         )
 
-    if request.method == "POST":
+    # Empresas con reportes en el espacio activo (para la pestaña interanual)
+    companies = (
+        Company.objects
+        .filter(workspace=current_ws, report__isnull=False)
+        .distinct()
+        .order_by("name")
+    )
+
+    selected_company_id = request.POST.get("company_id") or request.GET.get("company_id") or ""
+    selected_report_a_id = request.POST.get("report_a_id") or request.GET.get("report_a_id") or ""
+    selected_report_b_id = request.POST.get("report_b_id") or request.GET.get("report_b_id") or ""
+
+    company_reports = Report.objects.none()
+    if selected_company_id:
+        company_reports = (
+            Report.objects
+            .filter(company_id=selected_company_id, workspace=current_ws)
+            .order_by("-year", "name")
+        )
+
+    # 1. Pestaña Experto (POST)
+    if request.method == "POST" and modo == "experto":
         form = ComparativeAnalysisForm(request.POST, workspace=current_ws)
 
         if form.is_valid():
@@ -528,26 +553,126 @@ def comparative_analysis_view(request):
             if report.company and report.name and report.name != str(report.year) and report.name.lower() != "reporte":
                 report_label = f"{report.company.name.strip()} - {report.name}"
 
+            comunes_words = sorted(report_words & expert_words)
+            solo_doc_words = sorted(report_words - expert_words)
+            solo_list_words = sorted(expert_words - report_words)
+
+            total_union = len(report_words | expert_words)
+            porcentaje_interseccion = round((len(comunes_words) / total_union * 100), 1) if total_union else 0.0
+            porcentaje_cobertura_experto = round((len(comunes_words) / len(expert_words) * 100), 1) if expert_words else 0.0
+
+            # Obtener frecuencias en el reporte para los términos comunes y del documento
+            comunes_counts_dict = dict(
+                TotalCountReport.objects.filter(
+                    report=report,
+                    word__in=comunes_words
+                ).values_list("word", "quantity")
+            )
+            comunes_con_conteo = [
+                {"word": w, "count": comunes_counts_dict.get(w, 0)}
+                for w in sorted(comunes_words, key=lambda w: (-comunes_counts_dict.get(w, 0), w))
+            ]
+
+            solo_doc_counts_dict = dict(
+                TotalCountReport.objects.filter(
+                    report=report,
+                    word__in=solo_doc_words
+                ).values_list("word", "quantity")
+            )
+            solo_doc_con_conteo = [
+                {"word": w, "count": solo_doc_counts_dict.get(w, 0)}
+                for w in sorted(solo_doc_words, key=lambda w: (-solo_doc_counts_dict.get(w, 0), w))
+            ]
+
             resultado = {
                 "report": report,
                 "report_label": report_label,
                 "expert_list": expert_list,
 
-                "comunes": sorted(
-                    report_words & expert_words
-                ),
+                "comunes": comunes_words,
+                "comunes_con_conteo": comunes_con_conteo,
+                "porcentaje_interseccion": porcentaje_interseccion,
+                "porcentaje_cobertura_experto": porcentaje_cobertura_experto,
 
-                "solo_documento": sorted(
-                    report_words - expert_words
-                ),
+                "solo_documento": solo_doc_words,
+                "solo_documento_con_conteo": solo_doc_con_conteo,
 
-                "solo_lista": sorted(
-                    expert_words - report_words
-                ),
+                "solo_lista": solo_list_words,
             }
-
     else:
         form = ComparativeAnalysisForm(workspace=current_ws)
+
+    # 2. Pestaña Interanual (POST o GET con parámetros)
+    if (request.method == "POST" and modo == "interanual") or (modo == "interanual" and selected_report_a_id and selected_report_b_id):
+        if selected_report_a_id and selected_report_b_id:
+            if selected_report_a_id == selected_report_b_id:
+                error_interanual = "Por favor selecciona dos años o reportes distintos para comparar la evolución."
+            else:
+                try:
+                    report_a = Report.objects.select_related("company").get(
+                        id=selected_report_a_id,
+                        workspace=current_ws
+                    )
+                    report_b = Report.objects.select_related("company").get(
+                        id=selected_report_b_id,
+                        workspace=current_ws
+                    )
+
+                    w1_map = dict(TotalCountReport.objects.filter(report=report_a).values_list("word", "quantity"))
+                    w2_map = dict(TotalCountReport.objects.filter(report=report_b).values_list("word", "quantity"))
+
+                    w1_set = set(w1_map.keys())
+                    w2_set = set(w2_map.keys())
+
+                    comunes = sorted(w1_set & w2_set)
+                    solo_a = sorted(w1_set - w2_set)
+                    solo_b = sorted(w2_set - w1_set)
+
+                    total_union = len(w1_set | w2_set)
+                    porcentaje_similitud = round((len(comunes) / total_union * 100), 1) if total_union else 0.0
+                    tasa_renovacion = round((len(solo_b) / len(w2_set) * 100), 1) if w2_set else 0.0
+
+                    comunes_con_variacion = []
+                    for w in sorted(comunes, key=lambda w: (-max(w1_map.get(w, 0), w2_map.get(w, 0)), w)):
+                        c1 = w1_map.get(w, 0)
+                        c2 = w2_map.get(w, 0)
+                        diff = c2 - c1
+                        trend = 'sube' if diff > 0 else ('baja' if diff < 0 else 'igual')
+                        comunes_con_variacion.append({
+                            'word': w,
+                            'count_a': c1,
+                            'count_b': c2,
+                            'diff': diff,
+                            'diff_abs': abs(diff),
+                            'trend': trend,
+                        })
+
+                    solo_a_con_conteo = [
+                        {'word': w, 'count': w1_map.get(w, 0)}
+                        for w in sorted(solo_a, key=lambda w: (-w1_map.get(w, 0), w))
+                    ]
+
+                    solo_b_con_conteo = [
+                        {'word': w, 'count': w2_map.get(w, 0)}
+                        for w in sorted(solo_b, key=lambda w: (-w2_map.get(w, 0), w))
+                    ]
+
+                    resultado_interanual = {
+                        'company': report_a.company or report_b.company,
+                        'report_a': report_a,
+                        'report_b': report_b,
+                        'comunes': comunes,
+                        'comunes_con_variacion': comunes_con_variacion,
+                        'solo_a': solo_a,
+                        'solo_a_con_conteo': solo_a_con_conteo,
+                        'solo_b': solo_b,
+                        'solo_b_con_conteo': solo_b_con_conteo,
+                        'porcentaje_similitud': porcentaje_similitud,
+                        'tasa_renovacion': tasa_renovacion,
+                        'total_union': total_union,
+                    }
+                except Report.DoesNotExist:
+                    error_interanual = "Uno de los reportes seleccionados no existe en el espacio de trabajo activo."
 
     return render(
         request,
@@ -555,8 +680,41 @@ def comparative_analysis_view(request):
         {
             "form": form,
             "resultado": resultado,
+            "resultado_interanual": resultado_interanual,
+            "error_interanual": error_interanual,
+            "modo": modo,
+            "companies": companies,
+            "selected_company_id": str(selected_company_id),
+            "selected_report_a_id": str(selected_report_a_id),
+            "selected_report_b_id": str(selected_report_b_id),
+            "company_reports": company_reports,
         }
     )
+
+@login_required
+def reports_by_company(request):
+    company_id = request.GET.get("company_id")
+    if not company_id:
+        return JsonResponse([], safe=False)
+
+    current_ws = get_active_workspace(request)
+    reports = (
+        Report.objects
+        .filter(company_id=company_id, workspace=current_ws)
+        .order_by("-year", "name")
+    )
+    data = []
+    for report in reports:
+        label = f"{report.year}" if report.year else (report.name or f"Reporte {report.id}")
+        if report.name and str(report.year) not in report.name and report.name.lower() != "reporte":
+            label = f"{report.year} - {report.name}" if report.year else report.name
+
+        data.append({
+            "id": report.id,
+            "year": report.year,
+            "name": label,
+        })
+    return JsonResponse(data, safe=False)
 
 @login_required
 def reports_by_year(request):

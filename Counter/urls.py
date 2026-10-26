@@ -18,6 +18,7 @@ urlpatterns = [
     path("users/<int:user_id>/delete/", views.delete_user, name="users_delete"),
     path("users/audit-logs/", views.user_audit_logs, name="users_audit_logs"),
     path("reports-by-year/", views.reports_by_year, name="reports_by_year"),
+    path("reports-by-company/", views.reports_by_company, name="reports_by_company"),
     
     # Included URLConfs
     path("reports/", include("Counter.other.urls_report")),

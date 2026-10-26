@@ -234,6 +234,48 @@ class ComparativeAnalysisTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Análisis comparativo')
         self.assertContains(response, 'Comparar reporte con lista de experto')
+        self.assertContains(response, 'Evolución Interanual')
+
+    def test_reports_by_company_endpoint(self):
+        url = reverse('reports_by_company') + f'?company_id={self.company.id}'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(len(data), 1)
+        self.assertEqual(data[0]['id'], self.report.id)
+        self.assertEqual(data[0]['year'], 2024)
+
+    def test_interannual_comparison_flow(self):
+        report_2023 = Report.objects.create(
+            workspace=self.ws,
+            company=self.company,
+            name='2023',
+            year=2023
+        )
+        # 2023 words: 'ingresos' (5), 'antiguo' (2)
+        TotalCountReport.objects.create(report=report_2023, word='ingresos', quantity=5)
+        TotalCountReport.objects.create(report=report_2023, word='antiguo', quantity=2)
+
+        # 2024 words: 'ingresos' (8), 'nuevo' (4)
+        TotalCountReport.objects.create(report=self.report, word='ingresos', quantity=8)
+        TotalCountReport.objects.create(report=self.report, word='nuevo', quantity=4)
+
+        url = reverse('comparative_analysis')
+        post_data = {
+            'modo': 'interanual',
+            'company_id': self.company.id,
+            'report_a_id': report_2023.id,
+            'report_b_id': self.report.id,
+        }
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertIn('resultado_interanual', response.context)
+        res = response.context['resultado_interanual']
+        self.assertIsNotNone(res)
+        self.assertEqual(res['comunes'], ['ingresos'])
+        self.assertEqual(res['solo_a'], ['antiguo']) # Omitido en 2024
+        self.assertEqual(res['solo_b'], ['nuevo'])   # Nuevo en 2024
+        self.assertContains(response, 'Evolución interanual detectada')
 
 
 class ReportSearchTests(TestCase):

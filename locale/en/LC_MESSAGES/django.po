@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: ComplexIndexV2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-21 05:02+0000\n"
+"POT-Creation-Date: 2026-10-26 04:30+0000\n"
 "PO-Revision-Date: 2026-10-01 19:00+0000\n"
 "Last-Translator: ComplexIndexV2 team\n"
 "Language-Team: English\n"
@@ -21,14 +21,16 @@ msgid "Detección automática desde el documento"
 msgstr "Automatic detection from document"
 
 #: Counter/forms.py:223
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1070
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1077
 msgid "Seleccione un reporte"
 msgstr "Select a report"
 
-#: Counter/forms.py:235 Counter/templates/concealment_detection.html:111
+#: Counter/forms.py:235 Counter/templates/concealment_detection.html:109
 msgid "Seleccione una lista"
 msgstr "Select a list"
 
-#: Counter/forms.py:263 Counter/templates/concealment_detection.html:63
+#: Counter/forms.py:263 Counter/templates/concealment_detection.html:61
 msgid "Seleccione un año"
 msgstr "Select a year"
 
@@ -51,26 +53,28 @@ msgstr ""
 "youto one."
 
 #: Counter/templates/companies.html:4 Counter/templates/companies.html:23
-#: Counter/templates/panel.html:226 Counter/templates/workspaces.html:172
+#: Counter/templates/panel.html:220 Counter/templates/workspaces.html:172
 msgid "Empresas"
 msgstr "Companies"
 
 #: Counter/templates/companies.html:20
 #: Counter/templates/comparative_analysis.html:20
-#: Counter/templates/concealment_detection.html:22
+#: Counter/templates/concealment_detection.html:20
 #: Counter/templates/concealment_history.html:20
 #: Counter/templates/expert_lists.html:20 Counter/templates/index.html:57
-#: Counter/templates/panel.html:4 Counter/templates/panel.html:17
-#: Counter/templates/panel.html:354 Counter/templates/reports.html:20
+#: Counter/templates/panel.html:4 Counter/templates/panel.html:16
+#: Counter/templates/panel.html:337 Counter/templates/reports.html:20
 #: Counter/templates/totalcount.html:20
 #: Counter/templates/totalcountreport.html:20 Counter/templates/users.html:20
 #: Counter/templates/workspaces.html:28 User/templates/profile.html:20
-#: WordCounter/templates/partials/_nav_items.html:38
-#: WordCounter/templates/partials/_nav_items.html:42
+#: WordCounter/templates/partials/_nav_items.html:22
+#: WordCounter/templates/partials/_nav_items.html:29
 msgid "Observatorio"
 msgstr "Dashboard"
 
-#: Counter/templates/companies.html:27 Counter/templates/panel.html:225
+#: Counter/templates/companies.html:27
+#: WordCounter/templates/partials/_nav_items.html:59
+#: WordCounter/templates/partials/_nav_items.html:63
 #, fuzzy
 #| msgid "Cantidad"
 msgid "Entidades"
@@ -113,13 +117,14 @@ msgstr "All provinces"
 
 #: Counter/templates/companies.html:75
 #: Counter/templates/concealment_history.html:162
-#: Counter/templates/totalcount.html:97
+#: Counter/templates/totalcount.html:93
 msgid "Filtrar"
 msgstr "Filter"
 
 #: Counter/templates/companies.html:83
-#: Counter/templates/concealment_detection.html:139
-#: Counter/templates/reports.html:78 Counter/templates/workspaces.html:80
+#: Counter/templates/concealment_detection.html:137
+#: Counter/templates/reports.html:78 Counter/templates/totalcount.html:103
+#: Counter/templates/workspaces.html:80
 msgid "Limpiar"
 msgstr "Clear"
 
@@ -136,7 +141,8 @@ msgstr "New Company"
 #: Counter/templates/expert_lists.html:319
 #: Counter/templates/expert_lists.html:384 Counter/templates/reports.html:112
 #: Counter/templates/reports.html:139 Counter/templates/reports.html:158
-#: Counter/templates/totalcountreport.html:197 Counter/templates/users.html:326
+#: Counter/templates/totalcountreport.html:197
+#: Counter/templates/upload.html:458 Counter/templates/users.html:326
 #: Counter/templates/users.html:349 Counter/templates/users.html:369
 #: Counter/templates/users.html:474 Counter/templates/workspaces.html:305
 #: Counter/templates/workspaces.html:392 Counter/templates/workspaces.html:467
@@ -152,7 +158,7 @@ msgid "Razón social / nombre"
 msgstr "Company Name / Legal Name"
 
 #: Counter/templates/companies.html:127 Counter/templates/companies.html:181
-#: Counter/templates/companies.html:228 Counter/templates/companies.html:301
+#: Counter/templates/companies.html:228 Counter/templates/companies.html:318
 msgid "Provincia"
 msgstr "Province"
 
@@ -172,7 +178,7 @@ msgstr "Cancel"
 msgid "Guardar empresa"
 msgstr "Save Company"
 
-#: Counter/templates/companies.html:156
+#: Counter/templates/companies.html:156 Counter/templates/companies.html:277
 #, fuzzy
 #| msgid "Editar Empresa"
 msgid "Editar empresa"
@@ -210,49 +216,65 @@ msgid ""
 msgstr ""
 "This action will permanently delete the company and its associated records."
 
-#: Counter/templates/companies.html:255 Counter/templates/companies.html:284
-#: Counter/templates/companies.html:285 Counter/templates/expert_lists.html:446
-#: Counter/templates/reports.html:215 Counter/templates/reports.html:351
-#: Counter/templates/reports.html:352
+#: Counter/templates/companies.html:255 Counter/templates/companies.html:287
+#: Counter/templates/expert_lists.html:446 Counter/templates/reports.html:215
+#: Counter/templates/reports.html:425
 msgid "Eliminar"
 msgstr "Delete"
 
-#: Counter/templates/companies.html:275 Counter/templates/companies.html:276
-#: Counter/templates/reports.html:341 Counter/templates/reports.html:342
+#: Counter/templates/companies.html:278 Counter/templates/reports.html:415
 msgid "Editar"
 msgstr "Edit"
 
-#: Counter/templates/companies.html:305
+#: Counter/templates/companies.html:286
+#, fuzzy
+#| msgid "¿Eliminar Empresa?"
+msgid "Eliminar empresa"
+msgstr "Delete Company?"
+
+#: Counter/templates/companies.html:300 Counter/templates/reports.html:302
+#, fuzzy
+#| msgid "Acciones"
+msgid "Opciones"
+msgstr "Actions"
+
+#: Counter/templates/companies.html:329
+#, fuzzy
+#| msgid "Documento"
+msgid "Documentos"
+msgstr "Document"
+
+#: Counter/templates/companies.html:341
 msgid "Ver ficha"
 msgstr ""
 
-#: Counter/templates/companies.html:322
+#: Counter/templates/companies.html:359
 msgid "No se encontraron empresas que coincidan con los filtros."
 msgstr "No companies found matching the filters."
 
-#: Counter/templates/companies.html:333
+#: Counter/templates/companies.html:370
 #, fuzzy, python-format
 #| msgid "Mostrando %(start)s a %(end)s de %(counter)s empresa"
 #| msgid_plural "Mostrando %(start)s a %(end)s de %(counter)s empresas"
 msgid "Mostrando %(start)s–%(end)s de %(total)s empresas"
 msgstr "Showing %(start)s to %(end)s of %(counter)s company"
 
-#: Counter/templates/companies.html:335
+#: Counter/templates/companies.html:372
 #, fuzzy
 #| msgid "Empresas"
 msgid "0 empresas"
 msgstr "Companies"
 
-#: Counter/templates/companies.html:340
+#: Counter/templates/companies.html:377
 msgid "Paginación"
 msgstr ""
 
-#: Counter/templates/companies.html:343 Counter/templates/reports.html:398
+#: Counter/templates/companies.html:380 Counter/templates/reports.html:468
 #: Counter/templates/totalcountreport.html:347
 msgid "Página anterior"
 msgstr ""
 
-#: Counter/templates/companies.html:364 Counter/templates/reports.html:420
+#: Counter/templates/companies.html:401 Counter/templates/reports.html:490
 #: Counter/templates/totalcountreport.html:376
 msgid "Página siguiente"
 msgstr ""
@@ -260,18 +282,20 @@ msgstr ""
 #: Counter/templates/comparative_analysis.html:4
 #: Counter/templates/comparative_analysis.html:23
 #: Counter/templates/comparative_analysis.html:27
-#: Counter/templates/panel.html:323
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:4
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:20
 msgid "Análisis comparativo"
 msgstr "Comparative Analysis"
 
 #: Counter/templates/comparative_analysis.html:29
 #, fuzzy
-#| msgid "Sin listas de vocabulario asignadas"
-msgid "Venn de vocabularios"
-msgstr "No vocabulary lists assigned"
+#| msgid "Contraseña"
+msgid "Contraste léxico"
+msgstr "Password"
 
 #: Counter/templates/comparative_analysis.html:34
 #: Counter/templates/index.html:391
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:24
 msgid "Análisis Comparativo de Vocabulario"
 msgstr "Comparative Vocabulary Analysis"
 
@@ -288,249 +312,436 @@ msgid "Ver listas de expertos"
 msgstr "View Expert Lists"
 
 #: Counter/templates/comparative_analysis.html:59
+#, fuzzy
+#| msgid "Reporte / Empresa"
+msgid "Reporte vs. Lista Experta"
+msgstr "Report / Company"
+
+#: Counter/templates/comparative_analysis.html:68
+msgid "Evolución Interanual (Misma Empresa)"
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:85
 msgid "VOCABULARIO BASE"
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:60
+#: Counter/templates/comparative_analysis.html:86
 #, fuzzy
 #| msgid "Azul Corporativo"
 msgid "Reporte corporativo"
 msgstr "Corporate Blue"
 
-#: Counter/templates/comparative_analysis.html:61
+#: Counter/templates/comparative_analysis.html:87
 msgid "Selecciona el informe que actuará como base."
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:65
-#: Counter/templates/reports.html:129 Counter/templates/reports.html:177
-#: Counter/templates/totalcount.html:57 Counter/templates/totalcount.html:385
+#: Counter/templates/comparative_analysis.html:91
+#: Counter/templates/panel.html:131 Counter/templates/reports.html:129
+#: Counter/templates/reports.html:177 Counter/templates/totalcount.html:400
 #: Counter/templates/totalcountreport.html:80
 msgid "Año"
 msgstr "Year"
 
-#: Counter/templates/comparative_analysis.html:69
+#: Counter/templates/comparative_analysis.html:95
 msgid "Reporte"
 msgstr "Report"
 
-#: Counter/templates/comparative_analysis.html:79
+#: Counter/templates/comparative_analysis.html:105
 msgid "VOCABULARIO DE CONTRASTE"
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:80
-#: Counter/templates/concealment_detection.html:98
-#: Counter/templates/concealment_detection.html:106
-#: Counter/templates/totalcount.html:81
+#: Counter/templates/comparative_analysis.html:106
+#: Counter/templates/concealment_detection.html:96
+#: Counter/templates/concealment_detection.html:104
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:982
 msgid "Lista de experto"
 msgstr "Expert list"
 
-#: Counter/templates/comparative_analysis.html:81
+#: Counter/templates/comparative_analysis.html:107
 msgid "Selecciona el marco de conocimiento pericial."
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:84
+#: Counter/templates/comparative_analysis.html:110
 #: Counter/templates/expert_lists.html:165
 #, fuzzy
 #| msgid "Nueva Lista"
 msgid "Lista"
 msgstr "New List"
 
-#: Counter/templates/comparative_analysis.html:93
+#: Counter/templates/comparative_analysis.html:119
 msgid ""
 "El vocabulario base se cruza contra la lista de experto para obtener "
 "coincidencias y términos exclusivos."
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:99
+#: Counter/templates/comparative_analysis.html:125
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:959
 msgid "Comparar reporte con lista de experto"
 msgstr "Compare report with expert list"
 
-#: Counter/templates/comparative_analysis.html:112
+#: Counter/templates/comparative_analysis.html:135
 #, fuzzy
 #| msgid "Sin descripción especificada."
 msgid "Intersección detectada"
 msgstr "No description provided."
 
-#: Counter/templates/comparative_analysis.html:113
+#: Counter/templates/comparative_analysis.html:136
+#: Counter/templates/comparative_analysis.html:482
 #, fuzzy
 #| msgid "Análisis comparativo"
 msgid "términos compartidos"
 msgstr "Comparative Analysis"
 
-#: Counter/templates/comparative_analysis.html:115
+#: Counter/templates/comparative_analysis.html:138
+#: Counter/templates/comparative_analysis.html:487
 msgid "Base"
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:120
-#: Counter/templates/panel.html:322
+#: Counter/templates/comparative_analysis.html:143
+#: Counter/templates/comparative_analysis.html:490
+#: WordCounter/templates/partials/_nav_items.html:85
+#: WordCounter/templates/partials/_nav_items.html:89
 #, fuzzy
 #| msgid "Contraseña"
 msgid "Contraste"
 msgstr "Password"
 
-#: Counter/templates/comparative_analysis.html:126
+#: Counter/templates/comparative_analysis.html:150
+#, fuzzy
+#| msgid "Sin descripción especificada."
+msgid "Intersección"
+msgstr "No description provided."
+
+#: Counter/templates/comparative_analysis.html:154
 #, fuzzy
 #| msgid "ocurrencias"
 msgid "coincidencias"
 msgstr "occurrences"
 
-#: Counter/templates/comparative_analysis.html:133
-msgid "Diagrama de Venn de vocabularios"
-msgstr ""
-
-#: Counter/templates/comparative_analysis.html:135
-msgid ""
-"Círculo A: términos exclusivos del reporte. Zona central: coincidencias. "
-"Círculo B: términos exclusivos de la lista de experto."
-msgstr ""
-
-#: Counter/templates/comparative_analysis.html:145
-msgid "Enfocar términos solo en el reporte"
-msgstr ""
-
-#: Counter/templates/comparative_analysis.html:146
-#, fuzzy
-#| msgid "Solo en reporte"
-msgid "Solo en el reporte"
-msgstr "Only in report"
-
-#: Counter/templates/comparative_analysis.html:153
-#, fuzzy
-#| msgid "Comparar reporte con lista de experto"
-msgid "Enfocar términos solo en la lista de experto"
-msgstr "Compare report with expert list"
-
-#: Counter/templates/comparative_analysis.html:154
-#, fuzzy
-#| msgid "Lista de experto"
-msgid "Solo en la lista de experto"
-msgstr "Expert list"
-
-#: Counter/templates/comparative_analysis.html:161
-msgid "Enfocar términos compartidos"
-msgstr ""
-
-#: Counter/templates/comparative_analysis.html:162
-#: Counter/templates/comparative_analysis.html:220
-#, fuzzy
-#| msgid "Análisis comparativo"
-msgid "Términos compartidos"
-msgstr "Comparative Analysis"
-
-#: Counter/templates/comparative_analysis.html:173
-#: Counter/templates/comparative_analysis.html:200
-#: Counter/templates/comparative_analysis.html:261
+#: Counter/templates/comparative_analysis.html:164
+#: Counter/templates/comparative_analysis.html:236
 msgid "Solo en reporte"
 msgstr "Only in report"
 
-#: Counter/templates/comparative_analysis.html:180
-msgid "En ambos"
-msgstr ""
-
-#: Counter/templates/comparative_analysis.html:187
-#: Counter/templates/comparative_analysis.html:208
-#: Counter/templates/comparative_analysis.html:305
-msgid "Solo en lista"
-msgstr "Only in list"
-
-#: Counter/templates/comparative_analysis.html:204
-#: Counter/templates/comparative_analysis.html:283
+#: Counter/templates/comparative_analysis.html:168
+#: Counter/templates/comparative_analysis.html:282
 #, fuzzy
 #| msgid "ocurrencias"
 msgid "Coincidencias"
 msgstr "occurrences"
 
-#: Counter/templates/comparative_analysis.html:213
-msgid "Haz clic en una región del diagrama para enfocar su listado."
+#: Counter/templates/comparative_analysis.html:172
+#: Counter/templates/comparative_analysis.html:328
+msgid "Solo en lista"
+msgstr "Only in list"
+
+#: Counter/templates/comparative_analysis.html:177
+#: Counter/templates/comparative_analysis.html:524
+msgid ""
+"Haz clic en cualquiera de las 3 tarjetas para enfocar su listado de términos "
+"abajo."
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:227
-msgid "Sin coincidencias."
-msgstr ""
+#: Counter/templates/comparative_analysis.html:183
+#, fuzzy
+#| msgid "Análisis comparativo"
+msgid "Términos compartidos"
+msgstr "Comparative Analysis"
 
-#: Counter/templates/comparative_analysis.html:231
+#: Counter/templates/comparative_analysis.html:189
+#: Counter/templates/comparative_analysis.html:301
+#, fuzzy
+#| msgid "Últimas revisiones en este reporte"
+msgid "apariciones en el reporte"
+msgstr "Recent reviews in this report"
+
+#: Counter/templates/comparative_analysis.html:197
+#: Counter/templates/comparative_analysis.html:206
+#: Counter/templates/comparative_analysis.html:549
 #: Counter/templates/expert_lists.html:192
 msgid "más"
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:243
+#: Counter/templates/comparative_analysis.html:203
+msgid "Sin coincidencias."
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:217
 msgid "Desglose"
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:245
+#: Counter/templates/comparative_analysis.html:219
 msgid "Términos por región"
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:250
+#: Counter/templates/comparative_analysis.html:224
+#: Counter/templates/comparative_analysis.html:566
 msgid "Mostrar todo"
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:259
+#: Counter/templates/comparative_analysis.html:234
 msgid "Región A · Vocabulario base"
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:271
+#: Counter/templates/comparative_analysis.html:244
+#: Counter/templates/comparative_analysis.html:290
+#: Counter/templates/comparative_analysis.html:336
+#: Counter/templates/comparative_analysis.html:586
+#: Counter/templates/comparative_analysis.html:624
+#: Counter/templates/comparative_analysis.html:667
+#, fuzzy
+#| msgid "Filtrar"
+msgid "Filtrar..."
+msgstr "Filter"
+
+#: Counter/templates/comparative_analysis.html:255
+#: Counter/templates/concealment_detection.html:187
+#: Counter/templates/concealment_detection.html:220
+#, fuzzy
+#| msgid "Acciones"
+msgid "apariciones"
+msgstr "Actions"
+
+#: Counter/templates/comparative_analysis.html:262
+#: Counter/templates/comparative_analysis.html:268
 msgid "Sin términos exclusivos en el reporte."
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:281
+#: Counter/templates/comparative_analysis.html:280
 msgid "Intersección A ∩ B"
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:293
+#: Counter/templates/comparative_analysis.html:308
+#: Counter/templates/comparative_analysis.html:314
 msgid "Sin coincidencias entre ambos vocabularios."
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:303
+#: Counter/templates/comparative_analysis.html:326
 msgid "Región B · Vocabulario de contraste"
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:315
+#: Counter/templates/comparative_analysis.html:348
 msgid "Sin términos exclusivos en la lista de experto."
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:331
-msgid "Diagrama de Venn pendiente de comparación"
-msgstr ""
-
-#: Counter/templates/comparative_analysis.html:341
+#: Counter/templates/comparative_analysis.html:364
 msgid "Esperando comparación"
 msgstr ""
 
-#: Counter/templates/comparative_analysis.html:343
+#: Counter/templates/comparative_analysis.html:366
 #, fuzzy
 #| msgid "Selecciona un usuario"
 msgid "Selecciona los dos vocabularios"
 msgstr "Select a user"
 
-#: Counter/templates/comparative_analysis.html:346
+#: Counter/templates/comparative_analysis.html:369
 msgid ""
 "El vocabulario base es el reporte corporativo. El vocabulario de contraste "
-"es la lista de experto. Al comparar, el diagrama mostrará los términos "
-"exclusivos de cada lado y la intersección."
+"es la lista de experto. Al comparar, obtendrás los términos exclusivos de "
+"cada lado y la intersección compartida."
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:398
+#, fuzzy
+#| msgid "Selecciona una empresa:"
+msgid "Selecciona la empresa a auditar"
+msgstr "Select a company:"
+
+#: Counter/templates/comparative_analysis.html:400
+#, fuzzy
+#| msgid "No hay reportes disponibles en este momento."
+msgid "Filtra los reportes disponibles de una misma entidad corporativa."
+msgstr "No reports available at this moment."
+
+#: Counter/templates/comparative_analysis.html:405
+#, fuzzy
+#| msgid "Selecciona una empresa:"
+msgid "Seleccione una empresa..."
+msgstr "Select a company:"
+
+#: Counter/templates/comparative_analysis.html:421
+msgid "EJERCICIO BASE"
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:422
+#, fuzzy
+#| msgid "Azul Corporativo"
+msgid "Reporte Anterior"
+msgstr "Corporate Blue"
+
+#: Counter/templates/comparative_analysis.html:423
+msgid "Selecciona el año inicial para la comparación."
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:426
+#, fuzzy
+#| msgid "Año del reporte"
+msgid "Año / Reporte A"
+msgstr "Report year"
+
+#: Counter/templates/comparative_analysis.html:428
+#: Counter/templates/comparative_analysis.html:450
+#, fuzzy
+#| msgid "Seleccione un reporte"
+msgid "Seleccione un reporte..."
+msgstr "Select a report"
+
+#: Counter/templates/comparative_analysis.html:443
+msgid "EJERCICIO DE CONTRASTE"
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:444
+#, fuzzy
+#| msgid "Reporte"
+msgid "Reporte Reciente"
+msgstr "Report"
+
+#: Counter/templates/comparative_analysis.html:445
+#, fuzzy
+#| msgid "Selecciona un usuario"
+msgid "Selecciona el año posterior a evaluar."
+msgstr "Select a user"
+
+#: Counter/templates/comparative_analysis.html:448
+#, fuzzy
+#| msgid "Año del reporte"
+msgid "Año / Reporte B"
+msgstr "Report year"
+
+#: Counter/templates/comparative_analysis.html:464
+msgid ""
+"Compara la evolución del discurso corporativo entre dos ejercicios para "
+"detectar términos omitidos, persistentes y emergentes."
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:470
+msgid "Comparar evolución interanual"
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:481
+msgid "Evolución interanual detectada"
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:484
+#: Counter/templates/concealment_history.html:108
+#: Counter/templates/reports.html:133 Counter/templates/reports.html:183
+#: Counter/templates/reports.html:268
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:811
+msgid "Empresa"
+msgstr "Company"
+
+#: Counter/templates/comparative_analysis.html:497
+#, fuzzy
+#| msgid "Complejidad léxica"
+msgid "Similitud léxica"
+msgstr "Lexical complexity"
+
+#: Counter/templates/comparative_analysis.html:501
+msgid "persistentes"
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:511
+#: Counter/templates/comparative_analysis.html:519
+#: Counter/templates/comparative_analysis.html:578
+#: Counter/templates/comparative_analysis.html:659
+#, fuzzy
+#| msgid "Solo en lista"
+msgid "Solo en"
+msgstr "Only in list"
+
+#: Counter/templates/comparative_analysis.html:511
+msgid "Omitidos en"
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:515
+#, fuzzy
+#| msgid "Palabras encontradas en ambos"
+msgid "Persistentes en ambos"
+msgstr "Words found in both"
+
+#: Counter/templates/comparative_analysis.html:519
+#: Counter/templates/comparative_analysis.html:657
+msgid "Nuevos / Emergentes"
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:531
+msgid "Términos persistentes destacados"
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:559
+msgid "Desglose interanual"
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:561
+msgid "Términos por categoría temporal"
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:576
+msgid "Descontinuados / Omitidos"
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:596
+#: Counter/templates/comparative_analysis.html:677
+msgid "apariciones en"
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:603
+#, fuzzy
+#| msgid "Análisis comparativo"
+msgid "No hubo términos descontinuados."
+msgstr "Comparative Analysis"
+
+#: Counter/templates/comparative_analysis.html:614
+#, fuzzy
+#| msgid "Vocabularios y Listas de Expertos"
+msgid "Vocabulario Persistente"
+msgstr "Vocabularies and Expert Lists"
+
+#: Counter/templates/comparative_analysis.html:646
+#, fuzzy
+#| msgid "Análisis comparativo"
+msgid "Sin términos compartidos entre ambos ejercicios."
+msgstr "Comparative Analysis"
+
+#: Counter/templates/comparative_analysis.html:684
+msgid "No se registraron términos emergentes."
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:700
+msgid "Esperando comparación interanual"
+msgstr ""
+
+#: Counter/templates/comparative_analysis.html:702
+#, fuzzy
+#| msgid "Selecciona una empresa:"
+msgid "Selecciona una empresa y dos años distintos"
+msgstr "Select a company:"
+
+#: Counter/templates/comparative_analysis.html:705
+msgid ""
+"Podrás analizar en paralelo qué términos omitió la compañía respecto al año "
+"previo, cuáles mantuvo y qué nuevas expresiones incorporó a su narrativa "
+"corporativa."
 msgstr ""
 
 #: Counter/templates/concealment_detection.html:4
-#: Counter/templates/concealment_history.html:23
-msgid "Detección de ocultamiento"
-msgstr "Concealment Detection"
-
-#: Counter/templates/concealment_detection.html:25
-#: Counter/templates/concealment_detection.html:36
+#: Counter/templates/concealment_detection.html:23
+#: Counter/templates/concealment_detection.html:34
 #: Counter/templates/index.html:376
 msgid "Detector de Ocultamiento de Información"
 msgstr "Information Concealment Detector"
 
-#: Counter/templates/concealment_detection.html:29
+#: Counter/templates/concealment_detection.html:27
 #, fuzzy
 #| msgid "Quitar del espacio"
 msgid "Auditoría de opacidad"
 msgstr "Remove from workspace"
 
-#: Counter/templates/concealment_detection.html:31
+#: Counter/templates/concealment_detection.html:29
 msgid "Patrones lingüísticos"
 msgstr ""
 
-#: Counter/templates/concealment_detection.html:39
+#: Counter/templates/concealment_detection.html:37
 msgid ""
 "Identifica fragmentos y párrafos en reportes corporativos con potenciales "
 "patrones de opacidad o lenguaje ambiguo."
@@ -538,134 +749,206 @@ msgstr ""
 "Identify excerpts and paragraphs in corporate reports with potential "
 "patterns of opacity or ambiguous language."
 
-#: Counter/templates/concealment_detection.html:47
+#: Counter/templates/concealment_detection.html:45
 #, fuzzy
 #| msgid "Historial de Auditoría"
 msgid "Historial de auditoría"
 msgstr "Audit History"
 
-#: Counter/templates/concealment_detection.html:57
+#: Counter/templates/concealment_detection.html:55
 #: Counter/templates/concealment_history.html:98
-#: Counter/templates/upload.html:197
+#: Counter/templates/upload.html:254
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:968
 msgid "Año del reporte"
 msgstr "Report year"
 
-#: Counter/templates/concealment_detection.html:73
+#: Counter/templates/concealment_detection.html:71
 msgid "Selecciona una empresa:"
 msgstr "Select a company:"
 
-#: Counter/templates/concealment_detection.html:89
+#: Counter/templates/concealment_detection.html:87
 msgid "Origen de palabras"
 msgstr "Word source"
 
-#: Counter/templates/concealment_detection.html:95
+#: Counter/templates/concealment_detection.html:93
 msgid "Palabras del reporte"
 msgstr "Report words"
 
-#: Counter/templates/concealment_detection.html:121
+#: Counter/templates/concealment_detection.html:119
 msgid "Palabra a auditar"
 msgstr "Word to audit"
 
-#: Counter/templates/concealment_detection.html:145
+#: Counter/templates/concealment_detection.html:143
 #: Counter/templates/reports.html:68
 msgid "Buscar"
 msgstr "Search"
 
-#: Counter/templates/concealment_detection.html:162
+#: Counter/templates/concealment_detection.html:163
+msgid "Hallazgos"
+msgstr ""
+
+#: Counter/templates/concealment_detection.html:173
+msgid "Filtrar término..."
+msgstr ""
+
+#: Counter/templates/concealment_detection.html:187
+#: Counter/templates/concealment_detection.html:220
 #, fuzzy
-#| msgid "Registro de Auditoría"
-msgid "Resultados de auditoría"
-msgstr "Audit Log"
+#| msgid "Descripción"
+msgid "aparición"
+msgstr "Description"
 
-#: Counter/templates/concealment_detection.html:164
-#, fuzzy
-#| msgid "Párrafos encontrados para:"
-msgid "Párrafos encontrados para"
-msgstr "Paragraphs found for:"
+#: Counter/templates/concealment_detection.html:192
+msgid "No hay términos cuantificados en este reporte."
+msgstr ""
 
-#: Counter/templates/concealment_detection.html:168
-msgid "en"
-msgstr "in"
+#: Counter/templates/concealment_detection.html:206
+msgid "párrafos coincidentes"
+msgstr ""
 
-#: Counter/templates/concealment_detection.html:177
-msgid "Total encontrados"
-msgstr "Total found"
+#: Counter/templates/concealment_detection.html:217
+#: Counter/templates/concealment_history.html:273
+msgid "Párrafo"
+msgstr "Paragraph"
 
-#: Counter/templates/concealment_detection.html:181
-#, fuzzy
-#| msgid "Ocurrencias validadas"
-msgid "Ocurrencias válidas"
-msgstr "Validated occurrences"
+#: Counter/templates/concealment_detection.html:230
+#: Counter/templates/concealment_history.html:272
+msgid "Válido"
+msgstr "Valid"
 
-#: Counter/templates/concealment_detection.html:202
-#: Counter/templates/concealment_history.html:275
-msgid "ocurrencias"
-msgstr "occurrences"
-
-#: Counter/templates/concealment_detection.html:214
-msgid "Aceptar revisión"
-msgstr "Accept review"
-
-#: Counter/templates/concealment_detection.html:225
+#: Counter/templates/concealment_detection.html:246
 #, fuzzy
 #| msgid "No se encontraron espacios de trabajo"
 msgid "No se encontraron párrafos"
 msgstr "No workspaces found"
 
-#: Counter/templates/concealment_detection.html:226
-msgid "Prueba con otra palabra, reporte u origen de palabras."
+#: Counter/templates/concealment_detection.html:248
+msgid "No hay ocurrencias para el término"
 msgstr ""
 
-#: Counter/templates/concealment_detection.html:237
+#: Counter/templates/concealment_detection.html:248
+#, fuzzy
+#| msgid "Ingesta documental"
+msgid "en este documento."
+msgstr "Document ingestion"
+
+#: Counter/templates/concealment_detection.html:258
+#, fuzzy
+#| msgid "Seleccione una lista"
+msgid "Selecciona una palabra para auditar"
+msgstr "Select a list"
+
+#: Counter/templates/concealment_detection.html:260
+msgid ""
+"Haz clic en cualquiera de los hallazgos a la izquierda o búscalo en el "
+"filtro superior."
+msgstr ""
+
+#: Counter/templates/concealment_detection.html:270
+msgid "Dictamen humano"
+msgstr ""
+
+#: Counter/templates/concealment_detection.html:272
+#, fuzzy
+#| msgid "Volver a Detección"
+msgid "Sin selección"
+msgstr "Back to Detection"
+
+#: Counter/templates/concealment_detection.html:275
+msgid ""
+"El término puede condicionar la certeza o diluir la responsabilidad sobre "
+"contingencias materiales."
+msgstr ""
+
+#: Counter/templates/concealment_detection.html:284
+#: Counter/templates/concealment_detection.html:294
+msgid "Aceptar revisión"
+msgstr "Accept review"
+
+#: Counter/templates/concealment_detection.html:287
+msgid "Marcar todos válidos"
+msgstr ""
+
+#: Counter/templates/concealment_detection.html:290
+#, fuzzy
+#| msgid "Descartado"
+msgid "Descartar todos"
+msgstr "Discarded"
+
+#: Counter/templates/concealment_detection.html:302
+#, fuzzy
+#| msgid "Párrafo"
+msgid "Párrafos"
+msgstr "Paragraph"
+
+#: Counter/templates/concealment_detection.html:306
+#, fuzzy
+#| msgid "Ocurrencias validadas"
+msgid "Ocurrencias válidas"
+msgstr "Validated occurrences"
+
+#: Counter/templates/concealment_detection.html:310
+#: Counter/templates/concealment_detection.html:362
+#: Counter/templates/concealment_history.html:181
+msgid "Descartadas"
+msgstr "Discarded"
+
+#: Counter/templates/concealment_detection.html:325
+#, fuzzy
+#| msgid "Seleccione un reporte"
+msgid "Selecciona un reporte corporativo"
+msgstr "Select a report"
+
+#: Counter/templates/concealment_detection.html:327
+msgid ""
+"Elige un año y una empresa en los filtros de arriba para inicializar la mesa "
+"de auditoría de opacidad."
+msgstr ""
+
+#: Counter/templates/concealment_detection.html:339
 #: Counter/templates/concealment_history.html:25
 msgid "Historial"
 msgstr "History"
 
-#: Counter/templates/concealment_detection.html:242
+#: Counter/templates/concealment_detection.html:344
 msgid "Últimas revisiones en este reporte"
 msgstr "Recent reviews in this report"
 
-#: Counter/templates/concealment_detection.html:246
+#: Counter/templates/concealment_detection.html:348
 msgid "Ver historial completo"
 msgstr "View full history"
 
-#: Counter/templates/concealment_detection.html:255
+#: Counter/templates/concealment_detection.html:357
 msgid "Fecha"
 msgstr "Date"
 
-#: Counter/templates/concealment_detection.html:256
+#: Counter/templates/concealment_detection.html:358
 #: Counter/templates/concealment_history.html:120
 #: Counter/templates/concealment_history.html:176
 #: Counter/templates/users.html:168 Counter/templates/users.html:399
 #: Counter/templates/users.html:505 User/templates/profile.html:93
-#: WordCounter/templates/partials/_sidebar.html:219
 msgid "Auditor"
 msgstr "Auditor"
 
-#: Counter/templates/concealment_detection.html:257
+#: Counter/templates/concealment_detection.html:359
 #: Counter/templates/concealment_history.html:178
-#: Counter/templates/totalcount.html:220
+#: Counter/templates/totalcount.html:224
 #: Counter/templates/totalcountreport.html:127
 #: Counter/templates/totalcountreport.html:129
 msgid "Palabra"
 msgstr "Word"
 
-#: Counter/templates/concealment_detection.html:258
+#: Counter/templates/concealment_detection.html:360
 #: Counter/templates/concealment_history.html:179
 msgid "Detectadas"
 msgstr "Detected"
 
-#: Counter/templates/concealment_detection.html:259
+#: Counter/templates/concealment_detection.html:361
 #: Counter/templates/concealment_history.html:180
 msgid "Válidas"
 msgstr "Valid"
 
-#: Counter/templates/concealment_detection.html:260
-#: Counter/templates/concealment_history.html:181
-msgid "Descartadas"
-msgstr "Discarded"
-
-#: Counter/templates/concealment_detection.html:275
+#: Counter/templates/concealment_detection.html:377
 #: Counter/templates/concealment_history.html:200
 msgid "Sin registrar"
 msgstr "Unregistered"
@@ -676,13 +959,18 @@ msgstr "Unregistered"
 msgid "Historial de Auditoría de Ocultamiento"
 msgstr "Concealment Audit History"
 
+#: Counter/templates/concealment_history.html:23
+msgid "Detección de ocultamiento"
+msgstr "Concealment Detection"
+
 #: Counter/templates/concealment_history.html:29
 #: Counter/templates/index.html:155 Counter/templates/index.html:212
 msgid "Trazabilidad"
 msgstr "Traceability"
 
 #: Counter/templates/concealment_history.html:31
-#: Counter/templates/panel.html:192
+#: Counter/templates/panel.html:316
+#: WordCounter/templates/partials/_topbar.html:19
 #, fuzzy
 #| msgid "Auditor"
 msgid "Auditoría"
@@ -715,18 +1003,12 @@ msgid "Ocurrencias descartadas"
 msgstr "Discarded occurrences"
 
 #: Counter/templates/concealment_history.html:100
-#: Counter/templates/totalcount.html:59
+#: Counter/templates/totalcount.html:58
 msgid "Todos los años"
 msgstr "All years"
 
-#: Counter/templates/concealment_history.html:108
-#: Counter/templates/reports.html:133 Counter/templates/reports.html:183
-#: Counter/templates/totalcount.html:69 Counter/templates/upload.html:189
-msgid "Empresa"
-msgstr "Company"
-
 #: Counter/templates/concealment_history.html:110
-#: Counter/templates/totalcount.html:71
+#: Counter/templates/totalcount.html:69
 msgid "Todas las empresas"
 msgstr "All companies"
 
@@ -743,6 +1025,7 @@ msgid "Buscar palabra..."
 msgstr "Search word..."
 
 #: Counter/templates/concealment_history.html:155
+#: Counter/templates/totalcount.html:99
 msgid "Limpiar filtros"
 msgstr "Clear filters"
 
@@ -810,23 +1093,19 @@ msgstr "Error loading the review details."
 msgid "Descartado"
 msgstr "Discarded"
 
-#: Counter/templates/concealment_history.html:272
-msgid "Válido"
-msgstr "Valid"
-
-#: Counter/templates/concealment_history.html:273
-msgid "Párrafo"
-msgstr "Paragraph"
-
 #: Counter/templates/concealment_history.html:274
 msgid "ocurrencia"
 msgstr "occurrence"
+
+#: Counter/templates/concealment_history.html:275
+msgid "ocurrencias"
+msgstr "occurrences"
 
 #: Counter/templates/expert_lists.html:4
 msgid "Vocabularios y Listas de Expertos"
 msgstr "Vocabularies and Expert Lists"
 
-#: Counter/templates/expert_lists.html:23 Counter/templates/panel.html:290
+#: Counter/templates/expert_lists.html:23
 msgid "Listas de expertos"
 msgstr "Expert Lists"
 
@@ -841,7 +1120,7 @@ msgid "experto"
 msgstr "Expert list"
 
 #: Counter/templates/expert_lists.html:34 Counter/templates/index.html:406
-#: WordCounter/templates/partials/_nav_items.html:112
+#: WordCounter/templates/partials/_nav_items.html:93
 msgid "Vocabularios y Listas de Control"
 msgstr "Vocabularies and Control Lists"
 
@@ -904,8 +1183,7 @@ msgstr ""
 msgid "Total"
 msgstr ""
 
-#: Counter/templates/expert_lists.html:168 Counter/templates/reports.html:281
-#: Counter/templates/users.html:130
+#: Counter/templates/expert_lists.html:168 Counter/templates/users.html:130
 msgid "Acciones"
 msgstr "Actions"
 
@@ -1061,7 +1339,6 @@ msgid "Inicio"
 msgstr "Home"
 
 #: Counter/templates/index.html:21
-#: WordCounter/templates/partials/_topbar.html:15
 msgid "Auditoría Contractual"
 msgstr "Contract Auditing"
 
@@ -1076,7 +1353,6 @@ msgid "Cómo funciona"
 msgstr "How It Works"
 
 #: Counter/templates/index.html:28 Counter/templates/index.html:553
-#: Counter/templates/panel.html:212
 msgid "Módulos"
 msgstr "Modules"
 
@@ -1086,23 +1362,16 @@ msgid "Para quién"
 msgstr "Who It's For"
 
 #: Counter/templates/index.html:44
-#: WordCounter/templates/partials/_sidebar.html:183
-#: WordCounter/templates/partials/_topbar.html:21
+#: WordCounter/templates/partials/_topbar.html:86
 msgid "Alternar tema claro / oscuro"
 msgstr ""
 
 #: Counter/templates/index.html:53
-#: WordCounter/templates/partials/_nav_items.html:22
-#: WordCounter/templates/partials/_nav_items.html:26
-#: WordCounter/templates/partials/_nav_items.html:98
-#: WordCounter/templates/partials/_nav_items.html:102
 msgid "Detección de Opacidad"
 msgstr "Concealment Detection"
 
 #: Counter/templates/index.html:62 Counter/templates/index.html:123
 #: Counter/templates/index.html:528
-#: WordCounter/templates/partials/_sidebar.html:299
-#: WordCounter/templates/partials/_sidebar.html:300
 msgid "Iniciar Sesión"
 msgstr "Sign In"
 
@@ -1114,7 +1383,7 @@ msgstr "Create Account"
 msgid "Plataforma Integral de Auditoría & Complejidad Contractual"
 msgstr "Comprehensive Audit & Contract Complexity Platform"
 
-#: Counter/templates/index.html:91
+#: Counter/templates/index.html:91 Counter/templates/panel.html:20
 msgid "Claridad para decisiones que no admiten ambigüedad."
 msgstr "Clarity for decisions that cannot afford ambiguity."
 
@@ -1221,7 +1490,7 @@ msgid "Control de expertos"
 msgstr "Expert review"
 
 #: Counter/templates/index.html:227 Counter/templates/upload.html:5
-#: Counter/templates/upload.html:117
+#: Counter/templates/upload.html:125
 msgid "Ingesta documental"
 msgstr "Document ingestion"
 
@@ -1275,7 +1544,9 @@ msgstr ""
 "The whole workflow runs inside the workspace and records every "
 "transformation."
 
-#: Counter/templates/index.html:305 Counter/templates/panel.html:273
+#: Counter/templates/index.html:305
+#: WordCounter/templates/partials/_nav_items.html:42
+#: WordCounter/templates/partials/_nav_items.html:46
 msgid "Ingesta"
 msgstr "Ingestion"
 
@@ -1364,8 +1635,6 @@ msgstr ""
 "filters by year and entity."
 
 #: Counter/templates/index.html:436
-#: WordCounter/templates/partials/_nav_items.html:69
-#: WordCounter/templates/partials/_nav_items.html:73
 msgid "Catálogo de Reportes"
 msgstr "Report Catalog"
 
@@ -1434,320 +1703,259 @@ msgid "Comenzar Ahora — Crear Cuenta"
 msgstr "Start Now — Create Account"
 
 #: Counter/templates/index.html:558
-#: WordCounter/templates/partials/_footer.html:3
 msgid "Todos los derechos reservados."
 msgstr "All rights reserved."
 
-#: Counter/templates/panel.html:17
+#: Counter/templates/panel.html:16
 #, fuzzy
 #| msgid "Rol de %s actualizado."
 msgid "Sistema actualizado"
 msgstr "%s's role updated."
 
-#: Counter/templates/panel.html:21
-msgid "Claridad para decisiones"
-msgstr ""
-
-#: Counter/templates/panel.html:21
-msgid "que no admiten ambigüedad."
-msgstr ""
-
-#: Counter/templates/panel.html:25
+#: Counter/templates/panel.html:24
 msgid "Lectura ejecutiva del riesgo lingüístico y contractual de"
 msgstr ""
 
-#: Counter/templates/panel.html:26
+#: Counter/templates/panel.html:25
 #, fuzzy
 #| msgid "Espacios de trabajo"
 msgid "tu espacio de trabajo"
 msgstr "Workspaces"
 
-#: Counter/templates/panel.html:32
+#: Counter/templates/panel.html:36
 #, fuzzy
-#| msgid "Espacio activo:"
-msgid "Espacio activo"
-msgstr "Active workspace:"
+#| msgid "Índice de Complejidad"
+msgid "Índice compuesto de complejidad"
+msgstr "Complexity Index"
 
-#: Counter/templates/panel.html:37 Counter/templates/panel.html:355
-msgid "Panel de Administración"
-msgstr "Admin Panel"
-
-#: Counter/templates/panel.html:40
-msgid ""
-"Auditoría documental, análisis de complejidad léxica y métricas de "
-"legibilidad."
+#: Counter/templates/panel.html:37
+msgid "Promedio ponderado del corpus validado"
 msgstr ""
-"Document auditing, lexical complexity analysis and readability metrics."
 
-#: Counter/templates/panel.html:44
-msgid "Cambiar espacio"
-msgstr "Switch workspace"
-
-#: Counter/templates/panel.html:59
-msgid "Panorama del corpus"
+#: Counter/templates/panel.html:48
+msgid "de 100"
 msgstr ""
+
+#: Counter/templates/panel.html:59 Counter/templates/totalcount.html:355
+#: Counter/templates/totalcount.html:467 Counter/templates/totalcount.html:821
+msgid "Baja"
+msgstr "Low"
 
 #: Counter/templates/panel.html:60
-msgid "Volumen documental indexado en el espacio activo"
+msgid "Moderada"
 msgstr ""
 
-#: Counter/templates/panel.html:71
-#, fuzzy
-#| msgid "Palabra auditada"
-msgid "palabras indexadas"
-msgstr "Audited word"
+#: Counter/templates/panel.html:61 Counter/templates/totalcount.html:357
+#: Counter/templates/totalcount.html:463 Counter/templates/totalcount.html:817
+msgid "Alta"
+msgstr "High"
 
-#: Counter/templates/panel.html:77
-msgid "El corpus reúne"
+#: Counter/templates/panel.html:62
+msgid "Crítica"
 msgstr ""
 
-#: Counter/templates/panel.html:78
-#, fuzzy
-#| msgid "Cantidad"
-msgid "entidades"
-msgstr "Quantity"
+#: Counter/templates/panel.html:65
+msgid ""
+"Métrica multidimensional que combina diversidad léxica, densidad técnica y "
+"legibilidad sintáctica del corpus analizado en este espacio."
+msgstr ""
 
 #: Counter/templates/panel.html:79
-msgid "y"
-msgstr ""
-
-#: Counter/templates/panel.html:80
-msgid "expedientes procesados"
-msgstr ""
-
-#: Counter/templates/panel.html:81
-msgid ""
-"Cada documento se analiza con métricas de diversidad léxica, legibilidad y "
-"densidad técnica para detectar riesgo contractual."
-msgstr ""
-
-#: Counter/templates/panel.html:85
 #, fuzzy
 #| msgid "Diversidad Léxica (0-1)"
 msgid "Diversidad léxica"
 msgstr "Lexical Diversity (0-1)"
 
-#: Counter/templates/panel.html:86 Counter/templates/totalcount.html:366
-#: Counter/templates/totalcount.html:394
+#: Counter/templates/panel.html:80
+#, fuzzy
+#| msgid "Usuarios"
+msgid "Vocabulario único"
+msgstr "Users"
+
+#: Counter/templates/panel.html:91
 #, fuzzy
 #| msgid "Legibilidad (0-1)"
-msgid "Legibilidad"
+msgid "Legibilidad Inflesz"
 msgstr "Readability (0-1)"
 
-#: Counter/templates/panel.html:87
+#: Counter/templates/panel.html:102
 #, fuzzy
 #| msgid "Densidad Técnica (0-1)"
 msgid "Densidad técnica"
 msgstr "Technical Density (0-1)"
 
-#: Counter/templates/panel.html:101
-msgid "Entidades auditadas"
-msgstr ""
-
 #: Counter/templates/panel.html:103
 #, fuzzy
-#| msgid "Ver detalles"
-msgid "Ver entidades"
-msgstr "View details"
-
-#: Counter/templates/panel.html:114
-msgid "Expedientes procesados"
-msgstr ""
+#| msgid "Análisis comparativo"
+msgid "Términos normativos"
+msgstr "Comparative Analysis"
 
 #: Counter/templates/panel.html:116
 #, fuzzy
-#| msgid "Ver detalles"
-msgid "Ver expedientes"
-msgstr "View details"
+#| msgid "Ingesta documental"
+msgid "Actividad documental"
+msgstr "Document ingestion"
 
-#: Counter/templates/panel.html:127
+#: Counter/templates/panel.html:117
+msgid "Expedientes recientes"
+msgstr ""
+
+#: Counter/templates/panel.html:120
 #, fuzzy
-#| msgid "No hay expertos registrados"
-msgid "Analistas registrados"
-msgstr "No experts registered"
+#| msgid "Volver a Reportes"
+msgid "Ver catálogo"
+msgstr "Back to Reports"
 
 #: Counter/templates/panel.html:130
 #, fuzzy
-#| msgid "Gestionar Espacios"
-msgid "Gestionar equipo"
-msgstr "Manage Workspaces"
+#| msgid "Empresa / Edificio"
+msgid "Entidad / documento"
+msgstr "Company / Building"
 
-#: Counter/templates/panel.html:144
-msgid "Espacio recién configurado"
+#: Counter/templates/panel.html:132
+msgid "Índice"
 msgstr ""
 
-#: Counter/templates/panel.html:145
-msgid "Empieza por aquí: ingesta y configuración inicial"
-msgstr ""
+#: Counter/templates/panel.html:133 Counter/templates/users.html:128
+msgid "Estado"
+msgstr "Status"
 
-#: Counter/templates/panel.html:147
+#: Counter/templates/panel.html:159
+#, fuzzy
+#| msgid "%s ahora tiene acceso a este espacio."
+msgid "Aún no hay expedientes procesados en este espacio."
+msgstr "%s now has access to this workspace."
+
+#: Counter/templates/panel.html:170
+#, fuzzy
+#| msgid "Quitar del espacio"
+msgid "Radar de opacidad"
+msgstr "Remove from workspace"
+
+#: Counter/templates/panel.html:171
+#, fuzzy
+#| msgid "Señales de opacidad"
+msgid "Señales prioritarias"
+msgstr "Opacity signals"
+
+#: Counter/templates/panel.html:183
+#, fuzzy
+#| msgid "Análisis comparativo"
+msgid "Términos críticos"
+msgstr "Comparative Analysis"
+
+#: Counter/templates/panel.html:183
 msgid ""
-"Tu espacio de trabajo está listo pero aún no contiene datos. Sigue estos "
-"pasos recomendados para procesar tus primeros informes periciales."
-msgstr ""
-
-#: Counter/templates/panel.html:154
-#, fuzzy
-#| msgid "Subir Reporte"
-msgid "Subir primer informe"
-msgstr "Upload Report"
-
-#: Counter/templates/panel.html:162
-msgid "Ruta directa"
-msgstr ""
-
-#: Counter/templates/panel.html:164
-msgid "Carga de memorias o ZIP"
-msgstr ""
-
-#: Counter/templates/panel.html:166
-msgid ""
-"Sube tus PDFs. El algoritmo extraerá automáticamente la razón social de la "
-"empresa, el año y las métricas lingüísticas."
-msgstr ""
-
-#: Counter/templates/panel.html:169
-#, fuzzy
-#| msgid "Palabras del reporte"
-msgid "Ir a cargar reportes"
-msgstr "Report words"
-
-#: Counter/templates/panel.html:177
-#, fuzzy
-#| msgid "opcional"
-msgid "Opcional"
-msgstr "optional"
-
-#: Counter/templates/panel.html:179
-msgid "Registrar empresa manualmente"
-msgstr ""
-
-#: Counter/templates/panel.html:181
-msgid ""
-"Si prefieres pre-registrar las empresas con su RUC y provincia antes de "
-"subir documentos."
-msgstr ""
-
-#: Counter/templates/panel.html:184
-#, fuzzy
-#| msgid "Registrarse"
-msgid "Registrar empresa"
-msgstr "Register"
-
-#: Counter/templates/panel.html:194
-#, fuzzy
-#| msgid "Vocabularios y Listas de Expertos"
-msgid "Vocabulario de peritaje"
-msgstr "Vocabularies and Expert Lists"
-
-#: Counter/templates/panel.html:196
-msgid ""
-"Define listas de palabras de expertos para comparar términos normativos y "
-"evaluar opacidad."
+"que reducen el grado de certeza y condicionan la responsabilidad contractual."
 msgstr ""
 
 #: Counter/templates/panel.html:199
 #, fuzzy
-#| msgid "Lista de experto"
-msgid "Crear lista de experto"
-msgstr "Expert list"
+#| msgid "Aceptar revisión"
+msgid "Abrir centro de revisión"
+msgstr "Accept review"
 
-#: Counter/templates/panel.html:213
-#, fuzzy
-#| msgid "No tienes acceso a este espacio de trabajo."
-msgid "Accesos del espacio de trabajo"
-msgstr "You do not have access to this workspace."
-
-#: Counter/templates/panel.html:227
-msgid "Revisa y gestiona las empresas registradas."
-msgstr "Review and manage registered companies."
-
-#: Counter/templates/panel.html:230 Counter/templates/panel.html:246
-#: Counter/templates/panel.html:262 Counter/templates/panel.html:278
-#: Counter/templates/panel.html:294 Counter/templates/panel.html:311
-#: Counter/templates/panel.html:327 Counter/templates/panel.html:344
-#: WordCounter/templates/partials/_sidebar.html:290
-msgid "Acceder"
-msgstr "Access"
-
-#: Counter/templates/panel.html:241
-#, fuzzy
-#| msgid "Documento"
-msgid "Documentos"
-msgstr "Document"
-
-#: Counter/templates/panel.html:242 Counter/templates/reports.html:4
+#: Counter/templates/panel.html:232 Counter/templates/reports.html:4
 #: Counter/templates/reports.html:23 Counter/templates/totalcountreport.html:23
 #: Counter/templates/workspaces.html:168
 msgid "Reportes"
 msgstr "Reports"
 
-#: Counter/templates/panel.html:243
-msgid "Revisa y gestiona los reportes subidos."
-msgstr "Review and manage uploaded reports."
+#: Counter/templates/panel.html:244 Counter/templates/reports.html:289
+#, fuzzy
+#| msgid "Palabra auditada"
+msgid "Palabras indexadas"
+msgstr "Audited word"
 
-#: Counter/templates/panel.html:257
-msgid "Métricas"
+#: Counter/templates/panel.html:256
+#, fuzzy
+#| msgid "Analistas corporativos"
+msgid "Analistas activos"
+msgstr "Corporate analysts"
+
+#: Counter/templates/panel.html:268
+msgid "Espacio recién configurado"
 msgstr ""
 
-#: Counter/templates/panel.html:258 Counter/templates/totalcount.html:23
-msgid "Total de palabras"
-msgstr "Total words"
+#: Counter/templates/panel.html:269
+msgid "Empieza por aquí: ingesta y configuración inicial"
+msgstr ""
 
-#: Counter/templates/panel.html:259
-msgid "Revisa el acumulado total de palabras."
-msgstr "Review the consolidated word total."
+#: Counter/templates/panel.html:271
+msgid ""
+"Tu espacio de trabajo está listo pero aún no contiene datos. Sigue estos "
+"pasos recomendados para procesar tus primeros informes periciales."
+msgstr ""
 
-#: Counter/templates/panel.html:274
-msgid "Subida y análisis"
-msgstr "Upload & Analysis"
-
-#: Counter/templates/panel.html:275
-msgid "Carga un reporte al sistema para procesarlo."
-msgstr "Upload a report to the system for processing."
-
-#: Counter/templates/panel.html:289
+#: Counter/templates/panel.html:278
 #, fuzzy
-#| msgid "Usuarios"
-msgid "Vocabularios"
-msgstr "Users"
+#| msgid "Subir Reporte"
+msgid "Subir primer informe"
+msgstr "Upload Report"
 
-#: Counter/templates/panel.html:291
-msgid "Crea una lista de palabras específicamente para el análisis."
-msgstr "Create a list of words specifically for analysis."
+#: Counter/templates/panel.html:286
+msgid "Ruta directa"
+msgstr ""
 
-#: Counter/templates/panel.html:306
+#: Counter/templates/panel.html:288
+msgid "Carga de memorias o ZIP"
+msgstr ""
+
+#: Counter/templates/panel.html:290
+msgid ""
+"Sube tus PDFs. El algoritmo extraerá automáticamente la razón social de la "
+"empresa, el año y las métricas lingüísticas."
+msgstr ""
+
+#: Counter/templates/panel.html:293
 #, fuzzy
-#| msgid "Cantidad"
-msgid "Opacidad"
-msgstr "Quantity"
+#| msgid "Palabras del reporte"
+msgid "Ir a cargar reportes"
+msgstr "Report words"
 
-#: Counter/templates/panel.html:307
-msgid "Detector de ocultamiento"
-msgstr "Concealment Detector"
+#: Counter/templates/panel.html:301
+#, fuzzy
+#| msgid "opcional"
+msgid "Opcional"
+msgstr "optional"
+
+#: Counter/templates/panel.html:303
+msgid "Registrar empresa manualmente"
+msgstr ""
+
+#: Counter/templates/panel.html:305
+msgid ""
+"Si prefieres pre-registrar las empresas con su RUC y provincia antes de "
+"subir documentos."
+msgstr ""
 
 #: Counter/templates/panel.html:308
-msgid "Revisa párrafos para ver si existe información oculta."
-msgstr "Review paragraphs to detect concealed information."
-
-#: Counter/templates/panel.html:324
-msgid "Compara listas de expertos para identificar palabras comunes."
-msgstr "Compare expert lists to identify common words."
-
-#: Counter/templates/panel.html:339 Counter/templates/users.html:27
-#: WordCounter/templates/partials/_nav_items.html:125
 #, fuzzy
-#| msgid "Panel de Administración"
-msgid "Administración"
+#| msgid "Registrarse"
+msgid "Registrar empresa"
+msgstr "Register"
+
+#: Counter/templates/panel.html:318
+#, fuzzy
+#| msgid "Vocabularios y Listas de Expertos"
+msgid "Vocabulario de peritaje"
+msgstr "Vocabularies and Expert Lists"
+
+#: Counter/templates/panel.html:320
+msgid ""
+"Define listas de palabras de expertos para comparar términos normativos y "
+"evaluar opacidad."
+msgstr ""
+
+#: Counter/templates/panel.html:323
+#, fuzzy
+#| msgid "Lista de experto"
+msgid "Crear lista de experto"
+msgstr "Expert list"
+
+#: Counter/templates/panel.html:338
+msgid "Panel de Administración"
 msgstr "Admin Panel"
-
-#: Counter/templates/panel.html:340 Counter/templates/users.html:23
-msgid "Usuarios"
-msgstr "Users"
-
-#: Counter/templates/panel.html:341
-msgid "Administración de usuarios y roles de usuarios."
-msgstr "User administration and role management."
 
 #: Counter/templates/reports.html:27
 #, fuzzy
@@ -1791,8 +1999,8 @@ msgstr "Count by report"
 msgid "Buscar por empresa o año..."
 msgstr "Search by report or company..."
 
-#: Counter/templates/reports.html:84 Counter/templates/totalcount.html:202
-#: Counter/templates/totalcount.html:319
+#: Counter/templates/reports.html:84 Counter/templates/totalcount.html:206
+#: Counter/templates/totalcount.html:323
 msgid "Mostrar"
 msgstr ""
 
@@ -1866,48 +2074,104 @@ msgstr ""
 msgid "Ordenar por empresa"
 msgstr "Create Company"
 
-#: Counter/templates/reports.html:268
+#: Counter/templates/reports.html:282
 #, fuzzy
-#| msgid "Empresa / Edificio"
-msgid "Empresa / documento"
-msgstr "Company / Building"
+#| msgid "Documento"
+msgid "Documento / Título"
+msgstr "Document"
 
-#: Counter/templates/reports.html:292
+#: Counter/templates/reports.html:288
+#, fuzzy
+#| msgid "Palabra auditada"
+msgid "Ordenar por palabras indexadas"
+msgstr "Audited word"
+
+#: Counter/templates/reports.html:313
 msgid "No asignado"
 msgstr "Not assigned"
 
-#: Counter/templates/reports.html:305
+#: Counter/templates/reports.html:325 Counter/templates/reports.html:326
 msgid "Empresa no asignada"
 msgstr "Company not assigned"
 
-#: Counter/templates/reports.html:321 Counter/templates/reports.html:322
-#, fuzzy
-#| msgid "Detalles del Reporte"
-msgid "Ver detalles del reporte"
-msgstr "Report Details"
+#: Counter/templates/reports.html:336 Counter/templates/reports.html:337
+msgid "Sin título"
+msgstr ""
 
-#: Counter/templates/reports.html:331 Counter/templates/reports.html:332
-msgid "Ver conteo de palabras"
-msgstr "View word count"
+#: Counter/templates/reports.html:352
+#, fuzzy
+#| msgid "Nombre de usuario"
+msgid "Opciones del documento"
+msgstr "Username"
 
 #: Counter/templates/reports.html:371
+#, fuzzy
+#| msgid "OCR e ingesta"
+msgid "Fecha de ingesta"
+msgstr "OCR & ingestion"
+
+#: Counter/templates/reports.html:378
+#, fuzzy
+#| msgid "Archivo PDF"
+msgid "Descargar archivo PDF"
+msgstr "PDF File"
+
+#: Counter/templates/reports.html:382
+#, fuzzy
+#| msgid "Cambiar archivo"
+msgid "Descargar archivo"
+msgstr "Change file"
+
+#: Counter/templates/reports.html:390
+msgid "Ver análisis y frecuencias léxicas"
+msgstr ""
+
+#: Counter/templates/reports.html:394
+#, fuzzy
+#| msgid "Riesgo léxico"
+msgid "Ver conteo léxico"
+msgstr "Lexical risk"
+
+#: Counter/templates/reports.html:400
+msgid "Ver metadatos y ficha pericial"
+msgstr ""
+
+#: Counter/templates/reports.html:405
+#, fuzzy
+#| msgid "Densidad Técnica (0-1)"
+msgid "Ficha técnica"
+msgstr "Technical Density (0-1)"
+
+#: Counter/templates/reports.html:411
+#, fuzzy
+#| msgid "Detalles del Reporte"
+msgid "Editar metadatos del reporte"
+msgstr "Report Details"
+
+#: Counter/templates/reports.html:421
+#, fuzzy
+#| msgid "¿Eliminar Reporte?"
+msgid "Eliminar reporte del corpus"
+msgstr "Delete Report?"
+
+#: Counter/templates/reports.html:441
 #, fuzzy, python-format
 #| msgid "No se encontraron empresas que coincidan con los filtros."
 msgid "No se encontraron reportes que coincidan con \"%(query)s\"."
 msgstr "No companies found matching the filters."
 
-#: Counter/templates/reports.html:373
+#: Counter/templates/reports.html:443
 msgid "No hay reportes disponibles en este momento."
 msgstr "No reports available at this moment."
 
-#: Counter/templates/reports.html:387
+#: Counter/templates/reports.html:457
 #, fuzzy, python-format
 #| msgid "Mostrando %(start)s a %(end)s de %(counter)s empresa"
 #| msgid_plural "Mostrando %(start)s a %(end)s de %(counter)s empresas"
 msgid "Mostrando %(start)s–%(end)s de %(total)s expedientes"
 msgstr "Showing %(start)s to %(end)s of %(counter)s company"
 
-#: Counter/templates/reports.html:389
+#: Counter/templates/reports.html:459
 #, fuzzy
 #| msgid "Reportes"
 msgid "0 reportes"
@@ -1916,6 +2180,10 @@ msgstr "Reports"
 #: Counter/templates/totalcount.html:3
 msgid "Conteo Total"
 msgstr "Total Count"
+
+#: Counter/templates/totalcount.html:23
+msgid "Total de palabras"
+msgstr "Total words"
 
 #: Counter/templates/totalcount.html:27
 #, fuzzy
@@ -1943,176 +2211,172 @@ msgstr "Export to Excel"
 msgid "Exportar Excel"
 msgstr "Export to Excel"
 
-#: Counter/templates/totalcount.html:83
+#: Counter/templates/totalcount.html:80
 msgid "Todas las listas"
 msgstr "All lists"
 
-#: Counter/templates/totalcount.html:110
+#: Counter/templates/totalcount.html:116
 #, fuzzy
 #| msgid "Conteo Total"
 msgid "Conteo total"
 msgstr "Total Count"
 
-#: Counter/templates/totalcount.html:118
+#: Counter/templates/totalcount.html:124
 #, fuzzy
 #| msgid "Índice de Complejidad"
 msgid "Índice de complejidad"
 msgstr "Complexity Index"
 
-#: Counter/templates/totalcount.html:135
+#: Counter/templates/totalcount.html:139
 msgid "Promedio de frecuencia"
 msgstr ""
 
-#: Counter/templates/totalcount.html:149
+#: Counter/templates/totalcount.html:153
 msgid "Términos únicos"
 msgstr ""
 
-#: Counter/templates/totalcount.html:163
+#: Counter/templates/totalcount.html:167
 #, fuzzy
 #| msgid "Espacio activo:"
 msgid "Filtro activo"
 msgstr "Active workspace:"
 
-#: Counter/templates/totalcount.html:166
+#: Counter/templates/totalcount.html:170
 msgid "Consolidado global"
 msgstr ""
 
-#: Counter/templates/totalcount.html:185
+#: Counter/templates/totalcount.html:189
 msgid "Filtrar término en vivo..."
 msgstr ""
 
-#: Counter/templates/totalcount.html:194
+#: Counter/templates/totalcount.html:198
 msgid "Rango"
 msgstr ""
 
-#: Counter/templates/totalcount.html:195 Counter/templates/totalcount.html:207
-#: Counter/templates/totalcount.html:325
+#: Counter/templates/totalcount.html:199 Counter/templates/totalcount.html:211
+#: Counter/templates/totalcount.html:329
 #: Counter/templates/totalcountreport.html:110
 msgid "Todas"
 msgstr ""
 
-#: Counter/templates/totalcount.html:228
+#: Counter/templates/totalcount.html:232
 #, fuzzy
 #| msgid "Frecuencia"
 msgid "Frecuencia (cantidad)"
 msgstr "Frequency"
 
-#: Counter/templates/totalcount.html:236
+#: Counter/templates/totalcount.html:240
 msgid "Peso relativo (vs promedio)"
 msgstr ""
 
-#: Counter/templates/totalcount.html:266 Counter/templates/totalcount.html:444
+#: Counter/templates/totalcount.html:270 Counter/templates/totalcount.html:483
 msgid "No se ha procesado ningún informe con estos filtros."
 msgstr "No reports processed with these filters."
 
-#: Counter/templates/totalcount.html:272
+#: Counter/templates/totalcount.html:276
 #, fuzzy
 #| msgid "No se encontraron empresas que coincidan con los filtros."
 msgid "No se encontraron términos que coincidan con la búsqueda."
 msgstr "No companies found matching the filters."
 
-#: Counter/templates/totalcount.html:281
+#: Counter/templates/totalcount.html:285
 #, fuzzy
 #| msgid "Cargando párrafos..."
 msgid "Cargando paginación..."
 msgstr "Loading paragraphs..."
 
-#: Counter/templates/totalcount.html:307
+#: Counter/templates/totalcount.html:311
 msgid "Filtrar por empresa, RUC o año..."
 msgstr ""
 
-#: Counter/templates/totalcount.html:334 Counter/templates/totalcount.html:505
+#: Counter/templates/totalcount.html:338 Counter/templates/totalcount.html:569
 msgid "Ver Guía de Fórmulas y Escalas"
 msgstr ""
 
-#: Counter/templates/totalcount.html:345
+#: Counter/templates/totalcount.html:349
 msgid "Complejidad General (Fórmula Compuesta)"
 msgstr "General Complexity (Composite Formula)"
 
-#: Counter/templates/totalcount.html:348
+#: Counter/templates/totalcount.html:352
 #, fuzzy
 #| msgid "(Diversidad + (1-Legibilidad) + Densidad Técnica) / 3"
 msgid "Diversidad + (1 - Legibilidad) + Densidad Técnica"
 msgstr "(Diversity + (1-Readability) + Technical Density) / 3"
 
-#: Counter/templates/totalcount.html:351 Counter/templates/totalcount.html:428
-#: Counter/templates/totalcount.html:757
-msgid "Baja"
-msgstr "Low"
-
-#: Counter/templates/totalcount.html:352 Counter/templates/totalcount.html:426
-#: Counter/templates/totalcount.html:755
+#: Counter/templates/totalcount.html:356 Counter/templates/totalcount.html:465
+#: Counter/templates/totalcount.html:819
 msgid "Media"
 msgstr "Medium"
 
-#: Counter/templates/totalcount.html:353 Counter/templates/totalcount.html:424
-#: Counter/templates/totalcount.html:753
-msgid "Alta"
-msgstr "High"
-
-#: Counter/templates/totalcount.html:362
+#: Counter/templates/totalcount.html:366
 msgid "Interpretación de Ejes Léxicos (0 a 1)"
 msgstr ""
 
-#: Counter/templates/totalcount.html:365 Counter/templates/totalcount.html:391
+#: Counter/templates/totalcount.html:369 Counter/templates/totalcount.html:416
 msgid "Diversidad"
 msgstr ""
 
-#: Counter/templates/totalcount.html:365
+#: Counter/templates/totalcount.html:369
 msgid "Mayor a 0.7 indica vocabulario muy amplio y especializado."
 msgstr ""
 
-#: Counter/templates/totalcount.html:366
+#: Counter/templates/totalcount.html:370 Counter/templates/totalcount.html:424
+#, fuzzy
+#| msgid "Legibilidad (0-1)"
+msgid "Legibilidad"
+msgstr "Readability (0-1)"
+
+#: Counter/templates/totalcount.html:370
 msgid ""
 "Mayor a 0.7 indica texto fluido y claro; menor a 0.3 indica alta opacidad."
 msgstr ""
 
-#: Counter/templates/totalcount.html:367 Counter/templates/totalcount.html:397
+#: Counter/templates/totalcount.html:371 Counter/templates/totalcount.html:432
 #, fuzzy
 #| msgid "Densidad Técnica (0-1)"
 msgid "Densidad Técnica"
 msgstr "Technical Density (0-1)"
 
-#: Counter/templates/totalcount.html:367
+#: Counter/templates/totalcount.html:371
 msgid "Frecuencia de términos jurídicos o corporativos."
 msgstr ""
 
-#: Counter/templates/totalcount.html:379
+#: Counter/templates/totalcount.html:384
 msgid "RUC"
 msgstr "Tax ID / RUC"
 
-#: Counter/templates/totalcount.html:382
+#: Counter/templates/totalcount.html:392
 #, fuzzy
 #| msgid "Nombre del Reporte"
 msgid "Empresa & Reporte"
 msgstr "Report Name"
 
-#: Counter/templates/totalcount.html:388
+#: Counter/templates/totalcount.html:408
 #, fuzzy
 #| msgid "Complejidad General (0-1)"
 msgid "Complejidad General"
 msgstr "General Complexity (0-1)"
 
-#: Counter/templates/totalcount.html:450
+#: Counter/templates/totalcount.html:489
 #, fuzzy
 #| msgid "No se encontraron empresas que coincidan con los filtros."
 msgid "No hay registros de complejidad que coincidan con la búsqueda."
 msgstr "No companies found matching the filters."
 
-#: Counter/templates/totalcount.html:474
+#: Counter/templates/totalcount.html:513
 msgid "No hay datos de complejidad"
 msgstr "No complexity data"
 
-#: Counter/templates/totalcount.html:475
+#: Counter/templates/totalcount.html:514
 msgid "No se ha procesado ningún informe con los filtros seleccionados."
 msgstr "No reports processed with the selected filters."
 
-#: Counter/templates/totalcount.html:505
+#: Counter/templates/totalcount.html:569
 msgid "Ocultar Guía de Fórmulas"
 msgstr ""
 
-#: Counter/templates/totalcount.html:555 Counter/templates/totalcount.html:697
-#: Counter/templates/totalcount.html:743
+#: Counter/templates/totalcount.html:619 Counter/templates/totalcount.html:761
+#: Counter/templates/totalcount.html:807
 #, fuzzy
 #| msgid "Sin registrar"
 msgid "Sin resultados"
@@ -2201,6 +2465,7 @@ msgid "No hay términos que coincidan con la búsqueda."
 msgstr "No workspaces match your search. Try different terms."
 
 #: Counter/templates/totalcountreport.html:181
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1067
 #, fuzzy
 #| msgid "Cargando detalle..."
 msgid "Cargando..."
@@ -2228,11 +2493,11 @@ msgstr ""
 msgid "Página"
 msgstr ""
 
-#: Counter/templates/upload.html:21
+#: Counter/templates/upload.html:24
 msgid "Procesando documento..."
 msgstr "Processing document..."
 
-#: Counter/templates/upload.html:24
+#: Counter/templates/upload.html:27
 #, fuzzy
 #| msgid ""
 #| "Extrayendo texto digital, oraciones, palabras únicas y calculando índices "
@@ -2243,248 +2508,195 @@ msgstr ""
 "Extracting digital text, sentences, unique words, and calculating complexity "
 "and readability indexes."
 
-#: Counter/templates/upload.html:30
+#: Counter/templates/upload.html:38
 msgid "Lectura y extracción OCR"
 msgstr ""
 
-#: Counter/templates/upload.html:34
+#: Counter/templates/upload.html:42
 #, fuzzy
 #| msgid "Creación de usuario"
 msgid "Normalización de vocabulario"
 msgstr "User creation"
 
-#: Counter/templates/upload.html:38
+#: Counter/templates/upload.html:46
 msgid "Cálculo de asimetría y guardado"
 msgstr ""
 
-#: Counter/templates/upload.html:43
+#: Counter/templates/upload.html:51
 #, fuzzy
 #| msgid "Por favor, no recargues la página"
 msgid "Por favor, no cierres ni recargues la página"
 msgstr "Please do not refresh the page"
 
-#: Counter/templates/upload.html:63
+#: Counter/templates/upload.html:73
 #, fuzzy
 #| msgid "Subida y Procesamiento de Reportes"
-msgid "Procesando Lote de Reportes"
+msgid "Procesando Lote de Reportes..."
 msgstr "Report Upload & Processing"
 
-#: Counter/templates/upload.html:66
-msgid "Extrayendo y analizando archivos PDF en secuencia..."
+#: Counter/templates/upload.html:76
+msgid "Extrayendo y analizando documentos secuencialmente."
 msgstr ""
 
-#: Counter/templates/upload.html:74
-msgid "Progreso general del lote"
-msgstr ""
+#: Counter/templates/upload.html:83
+#, fuzzy
+#| msgid "Nombre del reporte"
+msgid "Progreso del lote"
+msgstr "Report name"
 
-#: Counter/templates/upload.html:82
+#: Counter/templates/upload.html:90
 msgid "Iniciando lote..."
 msgstr ""
 
-#: Counter/templates/upload.html:89
+#: Counter/templates/upload.html:97
 #, fuzzy
 #| msgid "Documento"
 msgid "Documentos analizados"
 msgstr "Document"
 
-#: Counter/templates/upload.html:98
+#: Counter/templates/upload.html:106
 #, fuzzy
 #| msgid "Subir Reporte"
 msgid "Subir otro lote"
 msgstr "Upload Report"
 
-#: Counter/templates/upload.html:101
+#: Counter/templates/upload.html:109
 #, fuzzy
 #| msgid "Volver a Reportes"
 msgid "Ver Catálogo de Reportes"
 msgstr "Back to Reports"
 
-#: Counter/templates/upload.html:107
+#: Counter/templates/upload.html:115
 msgid "Por favor, no cierres esta pestaña hasta completar el lote"
 msgstr ""
 
-#: Counter/templates/upload.html:121
+#: Counter/templates/upload.html:129
 msgid "Subida y Procesamiento de Reportes"
 msgstr "Report Upload & Processing"
 
-#: Counter/templates/upload.html:128
-#, fuzzy
-#| msgid "Año del reporte"
-msgid "Catálogo de reportes"
-msgstr "Report year"
-
-#: Counter/templates/upload.html:133
+#: Counter/templates/upload.html:134
 msgid ""
 "Añade documentos al corpus. ELI identificará la entidad, el periodo y el "
 "método de extracción más adecuado para cada archivo."
 msgstr ""
 
-#: Counter/templates/upload.html:141
-msgid "Modo de carga"
-msgstr ""
-
-#: Counter/templates/upload.html:149
+#: Counter/templates/upload.html:146
 #, fuzzy
-#| msgid "Subir Reporte Individual (PDF)"
-msgid "Reporte individual"
+#| msgid "Documento"
+msgid "Subir documento individual en PDF"
+msgstr "Document"
+
+#: Counter/templates/upload.html:154
+msgid "Subir Reporte Individual (PDF)"
 msgstr "Upload Individual Report (PDF)"
 
-#: Counter/templates/upload.html:150
-#, fuzzy
-#| msgid "Color temático"
-msgid "OCR automático"
-msgstr "Theme color"
+#: Counter/templates/upload.html:156
+msgid "Arrastra un PDF o selecciónalo desde tu equipo"
+msgstr ""
 
-#: Counter/templates/upload.html:160
-msgid "Lote masivo"
+#: Counter/templates/upload.html:159
+msgid "SELECCIONAR PDF"
 msgstr ""
 
 #: Counter/templates/upload.html:161
 #, fuzzy
-#| msgid "Procesando documento..."
-msgid "varios documentos"
-msgstr "Processing document..."
+#| msgid "Color temático"
+msgid "Máximo 100 MB · OCR automático"
+msgstr "Theme color"
 
-#: Counter/templates/upload.html:172
-#, fuzzy
-#| msgid "Documento"
-msgid "Documento individual"
-msgstr "Document"
-
-#: Counter/templates/upload.html:173
-msgid "Subir Reporte Individual (PDF)"
-msgstr "Upload Individual Report (PDF)"
-
-#: Counter/templates/upload.html:175
-msgid "máx. 100 MB"
-msgstr ""
-
-#: Counter/templates/upload.html:189 Counter/templates/upload.html:197
-msgid "opcional si está en el texto"
-msgstr "optional if present in text"
-
-#: Counter/templates/upload.html:206
-#, fuzzy
-#| msgid "Título o Nombre del Reporte"
-msgid "Título o nombre del reporte"
-msgstr "Report Title or Name"
-
-#: Counter/templates/upload.html:206 Counter/templates/upload.html:316
-msgid "opcional"
-msgstr "optional"
-
-#: Counter/templates/upload.html:216
-msgid "Archivo PDF"
-msgstr "PDF File"
-
-#: Counter/templates/upload.html:229
-msgid "Arrastra tu documento PDF aquí, o"
-msgstr "Drag your PDF document here, or"
-
-#: Counter/templates/upload.html:229 Counter/templates/upload.html:342
-msgid "haz clic para examinar"
-msgstr "click to browse"
-
-#: Counter/templates/upload.html:231
-msgid "Solo formato .PDF digital (máx. 100 MB)"
-msgstr ""
-
-#: Counter/templates/upload.html:233
-msgid "SELECCIONAR PDF"
-msgstr ""
-
-#: Counter/templates/upload.html:245 Counter/templates/upload.html:358
+#: Counter/templates/upload.html:172 Counter/templates/upload.html:207
 msgid "Cambiar archivo"
 msgstr "Change file"
 
-#: Counter/templates/upload.html:262
-msgid "Sobrescribir si ya existe un reporte para la misma empresa y año"
-msgstr "Overwrite if a report already exists for the same company and year"
-
-#: Counter/templates/upload.html:265
+#: Counter/templates/upload.html:181
 #, fuzzy
-#| msgid ""
-#| "Si ya está registrado, reemplazará el archivo y recalculará las palabras "
-#| "clave sin duplicar las estadísticas globales."
-msgid ""
-"Si ya está registrado, reemplazará el archivo y recalculará las estadísticas "
-"sin duplicar datos."
+#| msgid "No se ha procesado el archivo."
+msgid "Subir lote masivo de reportes en archivo ZIP"
+msgstr "File has not been processed."
+
+#: Counter/templates/upload.html:189
+msgid "Subir Múltiples Reportes (Lote ZIP)"
+msgstr "Upload Multiple Reports (ZIP Batch)"
+
+#: Counter/templates/upload.html:191
+msgid "Carga un ZIP con varios reportes financieros"
 msgstr ""
-"If already registered, it will replace the file and recalculate keywords "
-"without duplicating global statistics."
+
+#: Counter/templates/upload.html:194
+msgid "SELECCIONAR ZIP"
+msgstr ""
+
+#: Counter/templates/upload.html:196
+msgid "Máximo 300 MB · Múltiples PDFs"
+msgstr ""
+
+#: Counter/templates/upload.html:222
+#, fuzzy
+#| msgid "Mitigación de Riesgos"
+msgid "Configuración de análisis"
+msgstr "Risk Mitigation"
+
+#: Counter/templates/upload.html:224
+msgid "Protocolo de extracción"
+msgstr ""
+
+#: Counter/templates/upload.html:245
+msgid "Entidad relacionada"
+msgstr ""
+
+#: Counter/templates/upload.html:262
+#, fuzzy
+#| msgid "opcional"
+msgid "Título (opcional)"
+msgstr "optional"
+
+#: Counter/templates/upload.html:275 Counter/templates/upload.html:339
+#, fuzzy
+#| msgid "Sobrescribir reportes con el mismo nombre si ya existen"
+msgid "Sobrescribir si ya existe"
+msgstr "Overwrite reports with the same name if they already exist"
 
 #: Counter/templates/upload.html:278
-#, fuzzy
-#| msgid "No tienes acceso a este espacio de trabajo."
-msgid "Reporte ya registrado en este espacio de trabajo"
-msgstr "You do not have access to this workspace."
-
-#: Counter/templates/upload.html:280
 msgid ""
-"Ya existe un reporte registrado para esta empresa y año. Si deseas "
-"reemplazarlo, activa la casilla 'Sobrescribir si ya existe'."
+"Reemplaza el documento y recalcula las estadísticas si ya existe para la "
+"misma empresa y año."
 msgstr ""
 
-#: Counter/templates/upload.html:289
+#: Counter/templates/upload.html:291
+#, fuzzy
+#| msgid "No hay expertos registrados"
+msgid "Reporte ya registrado"
+msgstr "No experts registered"
+
+#: Counter/templates/upload.html:293
+msgid ""
+"Ya existe un reporte registrado para esta empresa y año. Activa la casilla "
+"de sobrescritura para reemplazarlo."
+msgstr ""
+
+#: Counter/templates/upload.html:307
 #, fuzzy
 #| msgid "Subir y Procesar PDF"
 msgid "Subir y procesar PDF"
 msgstr "Upload & Process PDF"
 
-#: Counter/templates/upload.html:300
+#: Counter/templates/upload.html:324
 #, fuzzy
-#| msgid "Subida y Procesamiento de Reportes"
-msgid "Procesamiento por lote"
-msgstr "Report Upload & Processing"
-
-#: Counter/templates/upload.html:301
-msgid "Subir Múltiples Reportes (Lote ZIP)"
-msgstr "Upload Multiple Reports (ZIP Batch)"
-
-#: Counter/templates/upload.html:303
-msgid "máx. 300 MB"
-msgstr ""
-
-#: Counter/templates/upload.html:316
-msgid "Asignar una sola empresa a todo el lote"
+#| msgid "Asignar una sola empresa a todo el lote"
+msgid "Asignar empresa a todo el lote"
 msgstr "Assign a single company to the whole batch"
 
-#: Counter/templates/upload.html:318
-#, fuzzy
-#| msgid ""
-#| "Si todos los PDFs del ZIP pertenecen a la misma empresa, selecciónala "
-#| "aquí. Si el ZIP incluye documentos de varias empresas distintas, déjalo "
-#| "vacío para que el sistema las identifique automáticamente por el "
-#| "contenido del PDF."
-msgid ""
-"Si todos los PDFs del ZIP pertenecen a la misma entidad, selecciónala aquí. "
-"Si incluye varias empresas, déjalo vacío para autodetección por OCR."
-msgstr ""
-"If every PDF in the ZIP belongs to the same company, select it here. If the "
-"ZIP contains documents from several different companies, leave this empty so "
-"the system identifies them automatically from the content of each PDF."
+#: Counter/templates/upload.html:324
+msgid "opcional"
+msgstr "optional"
 
-#: Counter/templates/upload.html:329
-msgid "Archivo ZIP comprimido"
-msgstr "Compressed ZIP file"
+#: Counter/templates/upload.html:327
+msgid ""
+"Si lo dejas en detección automática, el OCR inferirá la empresa de cada "
+"documento."
+msgstr ""
 
 #: Counter/templates/upload.html:342
-msgid "Arrastra tu archivo comprimido .ZIP aquí, o"
-msgstr "Drag your compressed .ZIP file here, or"
-
-#: Counter/templates/upload.html:344
-msgid "Solo formato .ZIP (máx. 300 MB)"
-msgstr ""
-
-#: Counter/templates/upload.html:346
-msgid "SELECCIONAR ZIP"
-msgstr ""
-
-#: Counter/templates/upload.html:375
-msgid "Sobrescribir reportes con el mismo nombre si ya existen"
-msgstr "Overwrite reports with the same name if they already exist"
-
-#: Counter/templates/upload.html:378
 msgid ""
 "Si está desmarcado, los archivos ya registrados serán omitidos sin "
 "duplicarse."
@@ -2492,230 +2704,194 @@ msgstr ""
 "If unchecked, files that are already registered will be skipped without "
 "being duplicated."
 
-#: Counter/templates/upload.html:387
+#: Counter/templates/upload.html:356
 #, fuzzy
 #| msgid "Subir y Procesar Lote ZIP"
 msgid "Subir y procesar lote ZIP"
 msgstr "Upload & Process ZIP Batch"
 
-#: Counter/templates/upload.html:396
+#: Counter/templates/upload.html:367
 #, fuzzy
-#| msgid "Mitigación de Riesgos"
-msgid "Configuración de análisis"
-msgstr "Risk Mitigation"
+#| msgid "Detector de ocultamiento"
+msgid "Cola de procesamiento"
+msgstr "Concealment Detector"
 
-#: Counter/templates/upload.html:397
-msgid "Protocolo de extracción"
-msgstr ""
-
-#: Counter/templates/upload.html:407
+#: Counter/templates/upload.html:368
 #, fuzzy
-#| msgid "Detección de ocultamiento"
-msgid "Detección de entidad"
-msgstr "Concealment Detection"
+#| msgid "Quitar del espacio"
+msgid "Actividad reciente del espacio"
+msgstr "Remove from workspace"
 
-#: Counter/templates/upload.html:408
-msgid ""
-"Si no indicas empresa y año, ELI los infiere del encabezado y del cuerpo del "
-"documento."
-msgstr ""
+#: Counter/templates/upload.html:371
+#, python-format
+msgid "%(counter)s REPORTE RECIENTE"
+msgid_plural "%(counter)s REPORTES RECIENTES"
+msgstr[0] ""
+msgstr[1] ""
 
-#: Counter/templates/upload.html:419
-msgid "Extracción OCR"
-msgstr ""
-
-#: Counter/templates/upload.html:420
-msgid ""
-"El texto digital se lee directamente; las páginas sin capa de texto pasan "
-"por reconocimiento óptico."
-msgstr ""
-
-#: Counter/templates/upload.html:431
+#: Counter/templates/upload.html:423
 #, fuzzy
-#| msgid "Alta complejidad"
-msgid "Conteo y complejidad"
-msgstr "High complexity"
+#| msgid "No tienes acceso a este espacio de trabajo."
+msgid "Aún no hay reportes en este espacio de trabajo"
+msgstr "You do not have access to this workspace."
 
-#: Counter/templates/upload.html:432
+#: Counter/templates/upload.html:424
 msgid ""
-"Cada reporte se normaliza y se somete al conteo léxico y a los índices de "
-"complejidad del espacio."
+"Sube un archivo PDF o un archivo comprimido ZIP arriba para iniciar la "
+"auditoría."
 msgstr ""
 
-#: Counter/templates/upload.html:438
-#, fuzzy
-#| msgid "Espacios de trabajo"
-msgid "Espacio de trabajo"
-msgstr "Workspaces"
-
-#: Counter/templates/upload.html:440
-#, fuzzy, python-format
-#| msgid "%(counter)s Reporte"
-#| msgid_plural "%(counter)s Reportes"
-msgid "%(counter)s entidad disponible"
-msgid_plural "%(counter)s entidades disponibles"
-msgstr[0] "%(counter)s Report"
-msgstr[1] "%(counter)s Reports"
-
-#: Counter/templates/upload.html:443
-msgid ""
-"Los selectores de empresa muestran únicamente las entidades del espacio "
-"activo."
-msgstr ""
-
-#: Counter/templates/upload.html:449
-msgid "Antes de cargar"
-msgstr ""
-
-#: Counter/templates/upload.html:453
-msgid "Verifica que el PDF tenga capa de texto o buena calidad de escaneo."
-msgstr ""
-
-#: Counter/templates/upload.html:457
-msgid "Indicar empresa y año mejora la trazabilidad y evita duplicados."
-msgstr ""
-
-#: Counter/templates/upload.html:461
-msgid ""
-"En lotes ZIP incluye un PDF por reporte y evita archivos ya registrados."
-msgstr ""
-
-#: Counter/templates/upload.html:510
+#: Counter/templates/upload.html:538
 msgid "Por favor, selecciona un archivo en formato .PDF válido."
 msgstr ""
 
-#: Counter/templates/upload.html:515
+#: Counter/templates/upload.html:543
 msgid "El archivo supera el límite máximo de 100 MB."
 msgstr ""
 
-#: Counter/templates/upload.html:582
+#: Counter/templates/upload.html:615
 msgid "Por favor, selecciona un archivo comprimido en formato .ZIP."
 msgstr ""
 
-#: Counter/templates/upload.html:587
+#: Counter/templates/upload.html:620
 msgid "El archivo ZIP supera el límite máximo de 300 MB."
 msgstr ""
 
-#: Counter/templates/upload.html:664
+#: Counter/templates/upload.html:702
 #, fuzzy
 #| msgid "¿Ya tienes una cuenta registrada?"
 msgid "Ya existe un reporte registrado para"
 msgstr "Already have an account?"
 
-#: Counter/templates/upload.html:664
+#: Counter/templates/upload.html:702
 msgid "en el año"
 msgstr ""
 
-#: Counter/templates/upload.html:664
+#: Counter/templates/upload.html:702
 msgid "Para reemplazarlo y recalcular los conteos, debes activar la casilla"
 msgstr ""
 
-#: Counter/templates/upload.html:664
+#: Counter/templates/upload.html:702
 #, fuzzy
 #| msgid "Sobrescribir reportes con el mismo nombre si ya existen"
-msgid "Sobrescribir si ya existe"
+msgid "Sobrescribir si ya existe este reporte"
 msgstr "Overwrite reports with the same name if they already exist"
 
-#: Counter/templates/upload.html:704
+#: Counter/templates/upload.html:742
 msgid ""
-"Atención: Ya existe un reporte registrado para esta empresa y año en este "
-"espacio. Debes marcar la casilla \\\"Sobrescribir si ya existe\\\" para "
-"poder procesarlo."
+"Ya existe un reporte para esta empresa y año. Activa la casilla de "
+"sobrescritura para reemplazarlo."
 msgstr ""
 
-#: Counter/templates/upload.html:727
+#: Counter/templates/upload.html:750
 #, fuzzy
 #| msgid "Arrastra tu archivo comprimido .ZIP aquí, o"
-msgid "Por favor, selecciona un archivo comprimido .ZIP"
+msgid "Por favor, selecciona o arrastra un archivo PDF para continuar."
 msgstr "Drag your compressed .ZIP file here, or"
 
-#: Counter/templates/upload.html:748
+#: Counter/templates/upload.html:778
+#, fuzzy
+#| msgid "Arrastra tu archivo comprimido .ZIP aquí, o"
+msgid "Por favor, selecciona o arrastra un archivo comprimido .ZIP"
+msgstr "Drag your compressed .ZIP file here, or"
+
+#: Counter/templates/upload.html:809
 msgid "Descomprimiendo y preparando lote..."
 msgstr ""
 
-#: Counter/templates/upload.html:749
+#: Counter/templates/upload.html:810
 msgid "Extrayendo archivos y detectando documentos PDF"
 msgstr ""
 
-#: Counter/templates/upload.html:752
+#: Counter/templates/upload.html:813
 #, fuzzy
 #| msgid "Archivo ZIP comprimido"
 msgid "Subiendo archivo comprimido..."
 msgstr "Compressed ZIP file"
 
-#: Counter/templates/upload.html:772
+#: Counter/templates/upload.html:833
 #, fuzzy
 #| msgid "No se ha procesado el archivo."
 msgid "Error al preparar el archivo ZIP"
 msgstr "File has not been processed."
 
-#: Counter/templates/upload.html:781
+#: Counter/templates/upload.html:842
 #, fuzzy
 #| msgid "Procesando documento..."
 msgid "Procesando Documentos del Lote"
 msgstr "Processing document..."
 
-#: Counter/templates/upload.html:782
+#: Counter/templates/upload.html:843
 msgid "documento(s) detectado(s)"
 msgstr ""
 
-#: Counter/templates/upload.html:795
+#: Counter/templates/upload.html:856
 msgid "Analizando"
 msgstr ""
 
-#: Counter/templates/upload.html:825
-msgid "Omitido (Existe)"
+#: Counter/templates/upload.html:886
+msgid "Omitido"
 msgstr ""
 
-#: Counter/templates/upload.html:832 Counter/templates/workspaces.html:178
+#: Counter/templates/upload.html:893 Counter/templates/workspaces.html:178
 #, fuzzy
 #| msgid "Palabras"
 msgid "palabras"
 msgstr "Words"
 
-#: Counter/templates/upload.html:838
+#: Counter/templates/upload.html:899
 msgid "Error"
 msgstr ""
 
-#: Counter/templates/upload.html:851
+#: Counter/templates/upload.html:912
 #, fuzzy
 #| msgid "Error de conexión."
 msgid "Error de red"
 msgstr "Connection error."
 
-#: Counter/templates/upload.html:871
+#: Counter/templates/upload.html:932
 msgid "¡Lote Procesado con Éxito!"
 msgstr ""
 
-#: Counter/templates/upload.html:872
+#: Counter/templates/upload.html:933
 msgid "importados"
 msgstr ""
 
-#: Counter/templates/upload.html:872
+#: Counter/templates/upload.html:933
 msgid "omitidos"
 msgstr ""
 
-#: Counter/templates/upload.html:872
+#: Counter/templates/upload.html:933
 msgid "errores"
 msgstr ""
 
-#: Counter/templates/upload.html:873
+#: Counter/templates/upload.html:934
 #, fuzzy
 #| msgid "Análisis comparativo"
 msgid "Análisis completado para todos los archivos."
 msgstr "Comparative Analysis"
 
-#: Counter/templates/upload.html:879
+#: Counter/templates/upload.html:940
 #, fuzzy
 #| msgid "No se ha procesado el archivo."
 msgid "Ocurrió un error inesperado al procesar el archivo ZIP."
 msgstr "File has not been processed."
 
 #: Counter/templates/users.html:4 Counter/templates/users.html:34
-#: WordCounter/templates/partials/_nav_items.html:128
-#: WordCounter/templates/partials/_nav_items.html:132
 msgid "Gestión de Usuarios"
 msgstr "User Management"
+
+#: Counter/templates/users.html:23
+#: WordCounter/templates/partials/_nav_items.html:103
+#: WordCounter/templates/partials/_nav_items.html:108
+msgid "Usuarios"
+msgstr "Users"
+
+#: Counter/templates/users.html:27
+#, fuzzy
+#| msgid "Panel de Administración"
+msgid "Administración"
+msgstr "Admin Panel"
 
 #: Counter/templates/users.html:29
 #, fuzzy, python-format
@@ -2789,10 +2965,6 @@ msgstr "Specialty"
 msgid "Espacios asignados"
 msgstr "Not assigned"
 
-#: Counter/templates/users.html:128
-msgid "Estado"
-msgstr "Status"
-
 #: Counter/templates/users.html:129
 #, fuzzy
 #| msgid "Último Acceso"
@@ -2805,7 +2977,6 @@ msgstr "your account"
 
 #: Counter/templates/users.html:158 Counter/templates/workspaces.html:528
 #: User/templates/profile.html:89
-#: WordCounter/templates/partials/_sidebar.html:219
 msgid "Administrador"
 msgstr "Administrator"
 
@@ -3032,11 +3203,8 @@ msgid "Añade al usuario como miembro activo de este espacio."
 msgstr "That user is not a member of this workspace."
 
 #: Counter/templates/workspaces.html:4
-#: WordCounter/templates/partials/_nav_items.html:9
-#: WordCounter/templates/partials/_nav_items.html:13
-#: WordCounter/templates/partials/_nav_items.html:45
-#: WordCounter/templates/partials/_nav_items.html:49
-#: WordCounter/templates/partials/_sidebar.html:267
+#: WordCounter/templates/partials/_nav_items.html:3
+#: WordCounter/templates/partials/_nav_items.html:33
 msgid "Espacios de Trabajo"
 msgstr "Workspaces"
 
@@ -3732,7 +3900,7 @@ msgid "Solicitar acceso"
 msgstr ""
 
 #: User/templates/profile.html:4 User/templates/profile.html:23
-#: WordCounter/templates/partials/_sidebar.html:258
+#: WordCounter/templates/partials/_sidebar.html:182
 msgid "Mi Perfil"
 msgstr "My Profile"
 
@@ -3876,218 +4044,829 @@ msgstr "Spanish"
 msgid "English"
 msgstr "English"
 
-#: WordCounter/templates/partials/_mobile_shell.html:13
+#: WordCounter/templates/partials/_footer.html:4
+msgid "Plataforma de Inteligencia Forense"
+msgstr ""
+
+#: WordCounter/templates/partials/_mobile_shell.html:16
 msgid "Tema"
 msgstr ""
 
-#: WordCounter/templates/partials/_mobile_shell.html:25
+#: WordCounter/templates/partials/_mobile_shell.html:28
 #, fuzzy
 #| msgid "Abrir menú de navegación"
 msgid "Abrir navegación"
 msgstr "Open navigation menu"
 
-#: WordCounter/templates/partials/_mobile_shell.html:39
+#: WordCounter/templates/partials/_mobile_shell.html:46
 #, fuzzy
 #| msgid "Abrir menú de navegación"
-msgid "Menú de Navegación"
+msgid "Cerrar navegación"
 msgstr "Open navigation menu"
 
-#: WordCounter/templates/partials/_mobile_shell.html:50
-#: WordCounter/templates/partials/_sidebar.html:24
-#: WordCounter/templates/partials/_sidebar.html:35
-#: WordCounter/templates/partials/_sidebar.html:36
+#: WordCounter/templates/partials/_mobile_shell.html:56
+#: WordCounter/templates/partials/_sidebar.html:41
+#: WordCounter/templates/partials/_sidebar.html:42
+#: WordCounter/templates/partials/_sidebar.html:45
 #, fuzzy
 #| msgid "Espacio activo:"
 msgid "Espacio Activo"
 msgstr "Active workspace:"
 
-#: WordCounter/templates/partials/_mobile_shell.html:69
-#: WordCounter/templates/partials/_sidebar.html:129
-#: WordCounter/templates/partials/_sidebar.html:145
+#: WordCounter/templates/partials/_mobile_shell.html:75
+#: WordCounter/templates/partials/_topbar.html:51
 msgid "Idioma"
 msgstr "Language"
 
-#: WordCounter/templates/partials/_mobile_shell.html:81
-#: WordCounter/templates/partials/_sidebar.html:280
+#: WordCounter/templates/partials/_mobile_shell.html:87
+#: WordCounter/templates/partials/_sidebar.html:194
 #, fuzzy
 #| msgid "Cerrar sesión"
 msgid "Cerrar Sesión"
 msgstr "Log Out"
 
-#: WordCounter/templates/partials/_nav_items.html:6
-msgid "Navegación"
-msgstr ""
+#: WordCounter/templates/partials/_nav_items.html:3
+#: WordCounter/templates/partials/_nav_items.html:8
+#: WordCounter/templates/partials/_nav_items.html:33
+#: WordCounter/templates/partials/_nav_items.html:38
+msgid "Espacios"
+msgstr "Workspaces"
 
-#: WordCounter/templates/partials/_nav_items.html:19
-msgid "Peritaje Forense"
-msgstr ""
+#: WordCounter/templates/partials/_nav_items.html:11
+#: WordCounter/templates/partials/_nav_items.html:16
+#: WordCounter/templates/partials/_nav_items.html:75
+#: WordCounter/templates/partials/_nav_items.html:80
+#, fuzzy
+#| msgid "Cantidad"
+msgid "Opacidad"
+msgstr "Quantity"
 
-#: WordCounter/templates/partials/_nav_items.html:22
-#: WordCounter/templates/partials/_nav_items.html:98
+#: WordCounter/templates/partials/_nav_items.html:11
+#: WordCounter/templates/partials/_nav_items.html:75
 msgid "Detección Forense de Opacidad Contractual"
 msgstr ""
 
-#: WordCounter/templates/partials/_nav_items.html:34
-msgid "Plataforma"
-msgstr ""
-
-#: WordCounter/templates/partials/_nav_items.html:45
-#, fuzzy
-#| msgid "Espacios de Trabajo"
-msgid "Espacios de Trabajo y Proyectos"
-msgstr "Workspaces"
-
-#: WordCounter/templates/partials/_nav_items.html:59
-msgid "Auditoría & Expedientes"
-msgstr ""
-
-#: WordCounter/templates/partials/_nav_items.html:62
-#: WordCounter/templates/partials/_nav_items.html:66
-msgid "Subir / Ingesta OCR"
-msgstr ""
-
-#: WordCounter/templates/partials/_nav_items.html:62
+#: WordCounter/templates/partials/_nav_items.html:42
 #, fuzzy
 #| msgid "Subir Reporte"
 msgid "Subir Reportes e Ingesta OCR"
 msgstr "Upload Report"
 
-#: WordCounter/templates/partials/_nav_items.html:69
+#: WordCounter/templates/partials/_nav_items.html:50
+#: WordCounter/templates/partials/_nav_items.html:55
+#, fuzzy
+#| msgid "Ver detalles"
+msgid "Expedientes"
+msgstr "View details"
+
+#: WordCounter/templates/partials/_nav_items.html:50
 msgid "Catálogo de Reportes Contractuales"
 msgstr ""
 
-#: WordCounter/templates/partials/_nav_items.html:76
-#: WordCounter/templates/partials/_nav_items.html:80
-#, fuzzy
-#| msgid "Empresa no asignada"
-msgid "Empresas Auditadas"
-msgstr "Company not assigned"
-
-#: WordCounter/templates/partials/_nav_items.html:76
+#: WordCounter/templates/partials/_nav_items.html:59
 #, fuzzy
 #| msgid "Directorio de Empresas"
 msgid "Directorio de Empresas Auditadas"
 msgstr "Company Directory"
 
-#: WordCounter/templates/partials/_nav_items.html:88
-#, fuzzy
-#| msgid "Métricas y Densidad Léxica"
-msgid "Métricas & Léxico"
-msgstr "Metrics and Lexical Density"
-
-#: WordCounter/templates/partials/_nav_items.html:91
-#: WordCounter/templates/partials/_nav_items.html:95
+#: WordCounter/templates/partials/_nav_items.html:67
+#: WordCounter/templates/partials/_nav_items.html:71
 #, fuzzy
 #| msgid "Conteo Total"
-msgid "Conteo Consolidado"
+msgid "Conteo consolidado"
 msgstr "Total Count"
 
-#: WordCounter/templates/partials/_nav_items.html:91
-msgid "Conteo Consolidado de Palabras e Índices"
-msgstr ""
-
-#: WordCounter/templates/partials/_nav_items.html:105
-#: WordCounter/templates/partials/_nav_items.html:109
+#: WordCounter/templates/partials/_nav_items.html:67
 #, fuzzy
-#| msgid "Análisis comparativo"
-msgid "Análisis Comparativo"
-msgstr "Comparative Analysis"
+#| msgid "Conteo Total"
+msgid "Conteo Consolidado de Palabras"
+msgstr "Total Count"
 
-#: WordCounter/templates/partials/_nav_items.html:105
+#: WordCounter/templates/partials/_nav_items.html:85
 #, fuzzy
 #| msgid "Análisis comparativo"
 msgid "Análisis Comparativo entre Entidades"
 msgstr "Comparative Analysis"
 
-#: WordCounter/templates/partials/_nav_items.html:112
-#: WordCounter/templates/partials/_nav_items.html:116
+#: WordCounter/templates/partials/_nav_items.html:93
+#: WordCounter/templates/partials/_nav_items.html:98
 #, fuzzy
-#| msgid "Listas de expertos"
-msgid "Listas de Expertos"
-msgstr "Expert Lists"
+#| msgid "Usuarios"
+msgid "Vocabularios"
+msgstr "Users"
 
-#: WordCounter/templates/partials/_nav_items.html:128
+#: WordCounter/templates/partials/_nav_items.html:103
 #, fuzzy
 #| msgid "Gestión de Usuarios"
 msgid "Gestión de Usuarios y Roles"
 msgstr "User Management"
 
 #: WordCounter/templates/partials/_sidebar.html:27
-#, fuzzy
-#| msgid "Gestionar Espacios"
-msgid "Gestionar"
-msgstr "Manage Workspaces"
+#: WordCounter/templates/partials/_sidebar.html:28
+msgid "Ocultar barra lateral"
+msgstr ""
 
-#: WordCounter/templates/partials/_sidebar.html:57
+#: WordCounter/templates/partials/_sidebar.html:71
 msgid "Seleccionar Espacio"
 msgstr "Select Workspace"
 
 #: WordCounter/templates/partials/_sidebar.html:74
 #, fuzzy
+#| msgid "Espacios de trabajo"
+msgid "Espacio de trabajo"
+msgstr "Workspaces"
+
+#: WordCounter/templates/partials/_sidebar.html:83
+#, fuzzy
 #| msgid "Cambiar espacio"
 msgid "Cambiar Espacio"
 msgstr "Switch workspace"
 
-#: WordCounter/templates/partials/_sidebar.html:75
+#: WordCounter/templates/partials/_sidebar.html:84
 #, fuzzy
 #| msgid "Ver todos"
 msgid "Ver Todos"
 msgstr "View all"
 
-#: WordCounter/templates/partials/_sidebar.html:106
+#: WordCounter/templates/partials/_sidebar.html:115
 #, fuzzy
 #| msgid "No hay expertos registrados"
 msgid "Sin espacios registrados"
 msgstr "No experts registered"
 
-#: WordCounter/templates/partials/_sidebar.html:130
-msgid "Seleccionar idioma (ES / EN)"
+#: WordCounter/templates/partials/_sidebar.html:124
+msgid "Navegación principal"
 msgstr ""
 
-#: WordCounter/templates/partials/_sidebar.html:182
-msgid "Modo Oscuro"
-msgstr ""
-
-#: WordCounter/templates/partials/_sidebar.html:192
-msgid "Colapsar Barra"
-msgstr ""
-
-#: WordCounter/templates/partials/_sidebar.html:192
-msgid "Expandir Barra"
-msgstr ""
-
-#: WordCounter/templates/partials/_sidebar.html:193
-#: WordCounter/templates/partials/_topbar.html:5
-msgid "Colapsar / Expandir barra lateral"
-msgstr ""
-
-#: WordCounter/templates/partials/_sidebar.html:207
+#: WordCounter/templates/partials/_sidebar.html:135
 #, fuzzy
 #| msgid "Nombre de usuario"
 msgid "Opciones de usuario"
 msgstr "Username"
 
-#: WordCounter/templates/partials/_sidebar.html:246
+#: WordCounter/templates/partials/_sidebar.html:146
+#, fuzzy
+#| msgid "Administrador"
+msgid "Administrador principal"
+msgstr "Administrator"
+
+#: WordCounter/templates/partials/_sidebar.html:146
+#, fuzzy
+#| msgid "Auditoría interna"
+msgid "Auditor principal"
+msgstr "Internal audit"
+
+#: WordCounter/templates/partials/_sidebar.html:171
 msgid "Sesión activa"
 msgstr "Active session"
 
-#: WordCounter/templates/partials/_sidebar.html:293
+#: WordCounter/templates/partials/_sidebar.html:206
+msgid "Acceder"
+msgstr "Access"
+
+#: WordCounter/templates/partials/_sidebar.html:209
 #, fuzzy
 #| msgid "Registrarse"
 msgid "Registro"
 msgstr "Register"
 
-#: WordCounter/templates/partials/_topbar.html:32
-msgid "Nuevo Informe"
+#: WordCounter/templates/partials/_topbar.html:7
+#: WordCounter/templates/partials/_topbar.html:8
+msgid "Mostrar barra lateral"
 msgstr ""
+
+#: WordCounter/templates/partials/_topbar.html:19
+msgid "Centro de inteligencia documental"
+msgstr ""
+
+#: WordCounter/templates/partials/_topbar.html:26
+#: WordCounter/templates/partials/_topbar.html:31
+msgid "Buscar en el corpus"
+msgstr ""
+
+#: WordCounter/templates/partials/_topbar.html:39
+msgid "Seleccionar idioma (ES / EN)"
+msgstr ""
+
+#: WordCounter/templates/partials/_topbar.html:98
+#, fuzzy
+#| msgid "Nueva Lista"
+msgid "Nueva ingesta"
+msgstr "New List"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:17
+msgid "Panel de administración"
+msgstr "Admin Panel"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:27
+msgid ""
+"Contraste multivariante por Co-Inercia, evolución temporal longitudinal y "
+"auditoría de congruencia con expertos."
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:37
+#, fuzzy
+#| msgid "Ver Listas de Expertos"
+msgid "Ver Listas de Expertos"
+msgstr "View Expert Lists"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:51
+msgid "1. Co-Inercia & Grafo en Estrella (Diagrama Radial)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:60
+msgid "2. Evolución por Empresa (Micro)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:68
+#, fuzzy
+#| msgid "Comparar reporte con lista de experto"
+msgid "3. Comparar reporte con lista de experto"
+msgstr "Compare report with expert list"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:85
+#, fuzzy
+#| msgid "Año del reporte"
+msgid "Año de Referencia (Pivote)"
+msgstr "Report year"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:90
+msgid "Más reciente"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:98
+#, fuzzy
+#| msgid "Listas de expertos"
+msgid "Lista de Experto a Contrastar"
+msgstr "Expert Lists"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:101
+#, fuzzy
+#| msgid "Lista de experto"
+msgid "Todas las listas de expertos"
+msgstr "Expert list"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:104
+msgid "Peritaje"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:115
+msgid "Recalcular Matrices y Co-Inercia"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:127
+msgid "Coeficiente RV de Escoufier"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:138
+msgid "Acoplamiento entre matriz general y marco pericial."
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:145
+msgid "Significancia Estadística (p-valor)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:162
+#, fuzzy
+#| msgid "Empresa / Año"
+msgid "Empresas en Año Base"
+msgstr "Company / Year"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:170
+msgid "Filas comunes alineadas en las matrices de co-inercia."
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:177
+#, fuzzy
+#| msgid "Análisis comparativo"
+msgid "Términos Contrastados"
+msgstr "Comparative Analysis"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:189
+msgid "Columnas de las matrices X e Y respectivamente."
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:200
+#, fuzzy
+#| msgid "Sin descripción especificada."
+msgid "Interpretación Estadística"
+msgstr "No description provided."
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:225
+msgid "Grafo en Estrella de Co-Inercia (Red de Distancias)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:228
+msgid "Centro: año base"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:228
+msgid ""
+"Vértices: años históricos. Distancia radial proporcional a la divergencia"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:235
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:616
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1137
+msgid "Matriz General"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:238
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1142
+#, fuzzy
+#| msgid "Guardar Experto"
+msgid "Matriz Experto"
+msgstr "Save Expert"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:241
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1147
+msgid "Grafo Dual"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:248
+msgid "Órbitas Métricas (d)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:249
+msgid "d &le; 0.55 (Alta afinidad)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:250
+msgid "0.55 &lt; d &le; 0.85 (Concordante)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:251
+msgid "0.85 &lt; d &le; 1.10 (Distante)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:252
+msgid "d &gt; 1.10 (Ruptura léxica)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:603
+msgid ""
+"Haz clic o pasa el cursor sobre cualquier vértice para inspeccionar los "
+"indicadores forenses"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:613
+msgid "Inspección Forense de Vértice"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:627
+msgid "vs. Año Base"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:631
+msgid ""
+"Selecciona o pasa el cursor sobre cualquier vértice del grafo para explorar "
+"su métrica de co-inercia."
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:639
+msgid "Distancia Euclidiana (d)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:651
+msgid "Similitud Co-Inercia (RV)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:662
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1198
+msgid "Alta Afinidad"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:670
+#, fuzzy
+#| msgid "Empresa / Edificio"
+msgid "Empresas Coincidentes"
+msgstr "Company / Building"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:676
+msgid ""
+"Filas comunes alineadas en las matrices para garantizar la congruencia "
+"dimensional multivariante."
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:683
+msgid "Topología de Red"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:684
+msgid ""
+"Los vértices más cercanos al nodo central comparten matrices casi idénticas "
+"con el año base. Años repelidos hacia las órbitas externas sufrieron "
+"rupturas léxicas o modificaciones en sus reportes."
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:697
+msgid "Analizar empresas individuales en"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:708
+msgid "Matriz de Similitud y Distancia Euclidiana Inter-anual"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:711
+msgid "Comparación detallada de cada periodo histórico contra el año"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:720
+msgid "Año Histórico"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:721
+#, fuzzy
+#| msgid "Empresas"
+msgid "Empresas Comunes"
+msgstr "Companies"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:722
+msgid "Similitud General (RV)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:723
+msgid "Distancia General (d)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:724
+msgid "Similitud Experto (RV)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:725
+#, fuzzy
+#| msgid "Listas de expertos"
+msgid "Distancia Experto (d)"
+msgstr "Expert Lists"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:726
+msgid "Conclusión Forense"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:770
+msgid "Alta Continuidad"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:774
+msgid "Concordancia Moderada"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:778
+msgid "Divergencia Estructural"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:803
+msgid "Comparar el léxico de una misma empresa entre dos años"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:814
+#, fuzzy
+#| msgid "Selecciona una empresa:"
+msgid "Seleccione una empresa"
+msgstr "Select a company:"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:825
+msgid "Año Base (Inicial)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:836
+msgid "Año de Contraste (Final)"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:850
+#, fuzzy
+#| msgid "Comparar"
+msgid "Comparar Periodos"
+msgstr "Compare"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:865
+#, fuzzy
+#| msgid "Sin listas de vocabulario asignadas"
+msgid "Similitud de Vocabulario (Jaccard)"
+msgstr "No vocabulary lists assigned"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:869
+#, fuzzy
+#| msgid "Análisis comparativo"
+msgid "Términos Comunes"
+msgstr "Comparative Analysis"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:873
+#, fuzzy
+#| msgid "Análisis comparativo"
+msgid "Términos Nuevos en"
+msgstr "Comparative Analysis"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:877
+#, fuzzy
+#| msgid "Análisis comparativo"
+msgid "Términos Omitidos de"
+msgstr "Comparative Analysis"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:887
+msgid "Mayor Desplazamiento de Frecuencia"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:901
+msgid "Sin términos comunes suficientes."
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:909
+#, fuzzy
+#| msgid "Vocabularios y Listas de Expertos"
+msgid "Vocabulario Nuevo en"
+msgstr "Vocabularies and Expert Lists"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:918
+msgid "No se incorporaron palabras exclusivas."
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:926
+#, fuzzy
+#| msgid "Vocabularios y Listas de Expertos"
+msgid "Vocabulario Abandonado de"
+msgstr "Vocabularies and Expert Lists"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:935
+msgid "No se omitieron términos previos."
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:975
+msgid "Reporte / Empresa"
+msgstr "Report / Company"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:993
+msgid "Comparar"
+msgstr "Compare"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1004
+msgid "Palabras encontradas en ambos"
+msgstr "Words found in both"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1013
+#, fuzzy
+#| msgid "Revisiones encontradas"
+msgid "Sin coincidencias encontradas."
+msgstr "Reviews found"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1020
+#, fuzzy
+#| msgid "Solo en reporte"
+msgid "Solo en el documento"
+msgstr "Only in report"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1029
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1045
+#, fuzzy
+#| msgid "Ninguna"
+msgid "Ninguna."
+msgstr "None"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1036
+#, fuzzy
+#| msgid "Lista de experto"
+msgid "Solo en la lista experta"
+msgstr "Expert list"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1086
+#, fuzzy
+#| msgid "Palabras del reporte"
+msgid "Error al cargar reportes"
+msgstr "Report words"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1201
+msgid "Concordante"
+msgstr ""
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1204
+#, fuzzy
+#| msgid "Nueva Lista"
+msgid "Distante"
+msgstr "New List"
+
+#: cambios-sin-commitear/Counter/templates/comparative_analysis.html:1207
+msgid "Divergencia Severa"
+msgstr ""
+
+#, fuzzy
+#~| msgid "Sin listas de vocabulario asignadas"
+#~ msgid "Venn de vocabularios"
+#~ msgstr "No vocabulary lists assigned"
+
+#, fuzzy
+#~| msgid "Comparar reporte con lista de experto"
+#~ msgid "Enfocar términos solo en la lista de experto"
+#~ msgstr "Compare report with expert list"
+
+#, fuzzy
+#~| msgid "Registro de Auditoría"
+#~ msgid "Resultados de auditoría"
+#~ msgstr "Audit Log"
+
+#, fuzzy
+#~| msgid "Párrafos encontrados para:"
+#~ msgid "Párrafos encontrados para"
+#~ msgstr "Paragraphs found for:"
+
+#~ msgid "en"
+#~ msgstr "in"
+
+#~ msgid "Total encontrados"
+#~ msgstr "Total found"
+
+#, fuzzy
+#~| msgid "Espacio activo:"
+#~ msgid "Espacio activo"
+#~ msgstr "Active workspace:"
+
+#~ msgid ""
+#~ "Auditoría documental, análisis de complejidad léxica y métricas de "
+#~ "legibilidad."
+#~ msgstr ""
+#~ "Document auditing, lexical complexity analysis and readability metrics."
+
+#~ msgid "Cambiar espacio"
+#~ msgstr "Switch workspace"
+
+#, fuzzy
+#~| msgid "Cantidad"
+#~ msgid "entidades"
+#~ msgstr "Quantity"
+
+#, fuzzy
+#~| msgid "Ver detalles"
+#~ msgid "Ver entidades"
+#~ msgstr "View details"
+
+#, fuzzy
+#~| msgid "No hay expertos registrados"
+#~ msgid "Analistas registrados"
+#~ msgstr "No experts registered"
+
+#, fuzzy
+#~| msgid "Gestionar Espacios"
+#~ msgid "Gestionar equipo"
+#~ msgstr "Manage Workspaces"
+
+#, fuzzy
+#~| msgid "No tienes acceso a este espacio de trabajo."
+#~ msgid "Accesos del espacio de trabajo"
+#~ msgstr "You do not have access to this workspace."
+
+#~ msgid "Revisa y gestiona las empresas registradas."
+#~ msgstr "Review and manage registered companies."
+
+#~ msgid "Revisa y gestiona los reportes subidos."
+#~ msgstr "Review and manage uploaded reports."
+
+#~ msgid "Revisa el acumulado total de palabras."
+#~ msgstr "Review the consolidated word total."
+
+#~ msgid "Subida y análisis"
+#~ msgstr "Upload & Analysis"
+
+#~ msgid "Carga un reporte al sistema para procesarlo."
+#~ msgstr "Upload a report to the system for processing."
+
+#~ msgid "Crea una lista de palabras específicamente para el análisis."
+#~ msgstr "Create a list of words specifically for analysis."
+
+#~ msgid "Revisa párrafos para ver si existe información oculta."
+#~ msgstr "Review paragraphs to detect concealed information."
+
+#~ msgid "Compara listas de expertos para identificar palabras comunes."
+#~ msgstr "Compare expert lists to identify common words."
+
+#~ msgid "Administración de usuarios y roles de usuarios."
+#~ msgstr "User administration and role management."
+
+#~ msgid "Ver conteo de palabras"
+#~ msgstr "View word count"
+
+#, fuzzy
+#~| msgid "Año del reporte"
+#~ msgid "Catálogo de reportes"
+#~ msgstr "Report year"
+
+#, fuzzy
+#~| msgid "Subir Reporte Individual (PDF)"
+#~ msgid "Reporte individual"
+#~ msgstr "Upload Individual Report (PDF)"
+
+#, fuzzy
+#~| msgid "Procesando documento..."
+#~ msgid "varios documentos"
+#~ msgstr "Processing document..."
+
+#~ msgid "opcional si está en el texto"
+#~ msgstr "optional if present in text"
+
+#, fuzzy
+#~| msgid "Título o Nombre del Reporte"
+#~ msgid "Título o nombre del reporte"
+#~ msgstr "Report Title or Name"
+
+#~ msgid "Arrastra tu documento PDF aquí, o"
+#~ msgstr "Drag your PDF document here, or"
+
+#~ msgid "haz clic para examinar"
+#~ msgstr "click to browse"
+
+#~ msgid "Sobrescribir si ya existe un reporte para la misma empresa y año"
+#~ msgstr "Overwrite if a report already exists for the same company and year"
+
+#, fuzzy
+#~| msgid ""
+#~| "Si ya está registrado, reemplazará el archivo y recalculará las palabras "
+#~| "clave sin duplicar las estadísticas globales."
+#~ msgid ""
+#~ "Si ya está registrado, reemplazará el archivo y recalculará las "
+#~ "estadísticas sin duplicar datos."
+#~ msgstr ""
+#~ "If already registered, it will replace the file and recalculate keywords "
+#~ "without duplicating global statistics."
+
+#, fuzzy
+#~| msgid "Subida y Procesamiento de Reportes"
+#~ msgid "Procesamiento por lote"
+#~ msgstr "Report Upload & Processing"
+
+#, fuzzy
+#~| msgid ""
+#~| "Si todos los PDFs del ZIP pertenecen a la misma empresa, selecciónala "
+#~| "aquí. Si el ZIP incluye documentos de varias empresas distintas, déjalo "
+#~| "vacío para que el sistema las identifique automáticamente por el "
+#~| "contenido del PDF."
+#~ msgid ""
+#~ "Si todos los PDFs del ZIP pertenecen a la misma entidad, selecciónala "
+#~ "aquí. Si incluye varias empresas, déjalo vacío para autodetección por OCR."
+#~ msgstr ""
+#~ "If every PDF in the ZIP belongs to the same company, select it here. If "
+#~ "the ZIP contains documents from several different companies, leave this "
+#~ "empty so the system identifies them automatically from the content of "
+#~ "each PDF."
+
+#~ msgid "Archivo ZIP comprimido"
+#~ msgstr "Compressed ZIP file"
+
+#~ msgid "Arrastra tu archivo comprimido .ZIP aquí, o"
+#~ msgstr "Drag your compressed .ZIP file here, or"
+
+#~ msgid "Sobrescribir reportes con el mismo nombre si ya existen"
+#~ msgstr "Overwrite reports with the same name if they already exist"
+
+#, fuzzy
+#~| msgid "Detección de ocultamiento"
+#~ msgid "Detección de entidad"
+#~ msgstr "Concealment Detection"
+
+#, fuzzy
+#~| msgid "Alta complejidad"
+#~ msgid "Conteo y complejidad"
+#~ msgstr "High complexity"
+
+#, fuzzy, python-format
+#~| msgid "%(counter)s Reporte"
+#~| msgid_plural "%(counter)s Reportes"
+#~ msgid "%(counter)s entidad disponible"
+#~ msgid_plural "%(counter)s entidades disponibles"
+#~ msgstr[0] "%(counter)s Report"
+#~ msgstr[1] "%(counter)s Reports"
+
+#, fuzzy
+#~| msgid "Abrir menú de navegación"
+#~ msgid "Menú de Navegación"
+#~ msgstr "Open navigation menu"
+
+#, fuzzy
+#~| msgid "Espacios de Trabajo"
+#~ msgid "Espacios de Trabajo y Proyectos"
+#~ msgstr "Workspaces"
+
+#, fuzzy
+#~| msgid "Empresa no asignada"
+#~ msgid "Empresas Auditadas"
+#~ msgstr "Company not assigned"
+
+#, fuzzy
+#~| msgid "Métricas y Densidad Léxica"
+#~ msgid "Métricas & Léxico"
+#~ msgstr "Metrics and Lexical Density"
+
+#, fuzzy
+#~| msgid "Análisis comparativo"
+#~ msgid "Análisis Comparativo"
+#~ msgstr "Comparative Analysis"
+
+#, fuzzy
+#~| msgid "Gestionar Espacios"
+#~ msgid "Gestionar"
+#~ msgstr "Manage Workspaces"
 
 #, fuzzy
 #~| msgid "Entrar al Panel"
 #~ msgid "Entrar al panel"
 #~ msgstr "Open Dashboard"
-
-#~ msgid "Panel de administración"
-#~ msgstr "Admin Panel"
 
 #, python-format
 #~ msgid "Mostrando %(counter)s empresa"
@@ -4101,18 +4880,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Compare keywords and clauses of a report against lists structured by "
 #~ "legal experts."
-
-#~ msgid "Reporte / Empresa"
-#~ msgstr "Report / Company"
-
-#~ msgid "Comparar"
-#~ msgstr "Compare"
-
-#~ msgid "Palabras encontradas en ambos"
-#~ msgstr "Words found in both"
-
-#~ msgid "Ninguna"
-#~ msgstr "None"
 
 #~ msgid "Total de ocurrencias válidas"
 #~ msgstr "Total valid occurrences"
@@ -4348,9 +5115,6 @@ msgstr ""
 
 #~ msgid "Ver todos los espacios"
 #~ msgstr "View all workspaces"
-
-#~ msgid "Espacios"
-#~ msgstr "Workspaces"
 
 #~ msgid "Sesión iniciada como"
 #~ msgstr "Signed in as"
