@@ -113,6 +113,11 @@ def workspace_list_view(request):
     active_ws = get_active_workspace(request)
 
     workspaces_data = []
+    total_companies_all = 0
+    total_reports_all = 0
+    total_words_all = 0
+    unique_users = set()
+
     for ws in workspaces_qs:
         rep_count = ws.reports.count()
         comp_count = ws.companies.count()
@@ -120,6 +125,32 @@ def workspace_list_view(request):
 
         can_manage = _es_admin_del_espacio(request, ws)
         members = _datos_miembros(ws)
+        for m in members:
+            unique_users.add(m["user_id"])
+
+        total_companies_all += comp_count
+        total_reports_all += rep_count
+        total_words_all += words_sum
+
+        # Rol del usuario en este espacio
+        user_role = _("Lector")
+        if request.user.is_superuser or request.user.is_staff:
+            user_role = _("Superadmin")
+        else:
+            membership = ws.memberships.filter(user=request.user).first()
+            if membership:
+                user_role = membership.get_role_display()
+            elif ws.created_by_id == request.user.id:
+                user_role = _("Administrador")
+
+        # Monogramas de los primeros 3 miembros para la pila de avatares
+        member_avatars = []
+        for m in members[:3]:
+            u_name = m["username"]
+            member_avatars.append({
+                "initial": u_name[:1].upper() if u_name else "U",
+                "username": u_name,
+            })
 
         workspaces_data.append({
             "workspace": ws,
@@ -130,13 +161,32 @@ def workspace_list_view(request):
             # Solo el admin del espacio (o el staff) gestiona sus miembros.
             "can_manage": can_manage,
             "members_count": len(members),
+            "members_preview": member_avatars,
+            "extra_members_count": max(0, len(members) - 3),
+            "user_role": user_role,
         })
+
+    # Datos específicos del espacio activo para la tarjeta destacada
+    active_ws_data = None
+    if active_ws:
+        for item in workspaces_data:
+            if item["workspace"].id == active_ws.id:
+                active_ws_data = item
+                break
+    elif workspaces_data:
+        active_ws_data = workspaces_data[0]
+        active_ws = active_ws_data["workspace"]
 
     context = {
         "workspaces_data": workspaces_data,
         "active_workspace": active_ws,
+        "active_workspace_data": active_ws_data,
         "search": search,
         "total_workspaces": len(workspaces_data),
+        "total_collaborators": len(unique_users),
+        "total_reports_all": total_reports_all,
+        "total_companies_all": total_companies_all,
+        "total_words_all": total_words_all,
     }
     return render(request, "workspaces.html", context)
 

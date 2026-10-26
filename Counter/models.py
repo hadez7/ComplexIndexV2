@@ -23,6 +23,38 @@ class Workspace(models.Model):
     def __str__(self):
         return self.name
 
+    @property
+    def monogram(self):
+        """Genera el monograma de 2 letras mayúsculas para la insignia estilo Figma."""
+        if not self.name:
+            return "WS"
+        stop_words = {"de", "del", "la", "las", "el", "los", "y", "en", "a", "por", "para", "con"}
+        clean_parts = [w for w in self.name.split() if w.lower() not in stop_words and w]
+        if len(clean_parts) >= 2:
+            return f"{clean_parts[0][0]}{clean_parts[1][0]}".upper()
+        elif clean_parts:
+            return clean_parts[0][:2].upper()
+        return self.name[:2].upper()
+
+    @property
+    def color_tone(self):
+        """Mapea el color del espacio a los tonos del diseño Figma (blue, cyan, violet, slate, amber, red)."""
+        mapping = {
+            "blue": "blue",
+            "purple": "violet",
+            "violet": "violet",
+            "green": "cyan",
+            "teal": "cyan",
+            "cyan": "cyan",
+            "amber": "amber",
+            "orange": "amber",
+            "indigo": "violet",
+            "red": "red",
+            "slate": "slate",
+            "gray": "slate",
+        }
+        return mapping.get((self.color or "").lower(), "blue")
+
 
 class WorkspaceMembership(models.Model):
     ROLE_CHOICES = [

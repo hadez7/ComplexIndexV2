@@ -2457,6 +2457,563 @@
 }
 
 /* ========================================================================= */
+/* ELI Rediseño: SpacesScreen (Espacios de trabajo)                          */
+/* ========================================================================= */
+
+.workspace-overview {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 900px) {
+  .workspace-overview {
+    grid-template-columns: minmax(320px, 0.85fr) minmax(380px, 1.15fr);
+  }
+}
+
+.workspace-current {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(99, 161, 255, 0.22);
+  border-radius: 18px;
+  background: radial-gradient(circle at 90% 0%, rgba(75, 212, 232, 0.18), transparent 36%), #071a36;
+  padding: 22px;
+  color: #ffffff;
+  box-shadow: 0 18px 45px rgba(10, 39, 82, 0.14);
+}
+
+.workspace-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #8ce7d0;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.workspace-live i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+  display: inline-block;
+  animation: pulse-dot 2s infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.workspace-mark {
+  display: flex;
+  width: 52px;
+  height: 52px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(136, 188, 255, 0.35);
+  border-radius: 16px;
+  background: rgba(78, 136, 255, 0.18);
+  color: #a8caff;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.workspace-current h2 {
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+}
+
+.workspace-current h2 + p {
+  margin-top: 4px;
+  color: rgba(197, 221, 250, 0.65);
+  font-size: 10px;
+}
+
+.workspace-current-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 18px;
+}
+
+.workspace-current-stats > div + div {
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  padding-left: 16px;
+}
+
+.workspace-current-stats strong,
+.workspace-current-stats span {
+  display: block;
+}
+
+.workspace-current-stats strong {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.workspace-current-stats span {
+  margin-top: 4px;
+  color: rgba(197, 221, 250, 0.5);
+  font-size: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.workspace-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--line);
+}
+
+.workspace-stat {
+  background: var(--surface);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.workspace-stat > span {
+  display: flex;
+  width: 32px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+
+.workspace-stat strong {
+  display: block;
+  margin-top: 16px;
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.workspace-stat p {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.workspace-toolbar {
+  display: flex;
+  min-height: 76px;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--line);
+  padding: 18px 20px;
+}
+
+@media (min-width: 640px) {
+  .workspace-toolbar {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.workspace-toolbar h2 {
+  margin-top: 4px;
+  font-size: 16px;
+  font-weight: 650;
+  color: var(--ink);
+  letter-spacing: -0.02em;
+}
+
+.workspace-search {
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 0 11px;
+  color: var(--faint);
+  background: var(--canvas);
+  transition: border-color 140ms ease;
+}
+
+.workspace-search:focus-within {
+  border-color: var(--blue);
+}
+
+.workspace-search input {
+  min-width: 0;
+  background: transparent;
+  padding: 8px 8px;
+  color: var(--ink);
+  font-size: 10px;
+  outline: none;
+  border: 0;
+}
+
+.workspace-search input::placeholder {
+  color: var(--faint);
+}
+
+.workspace-row {
+  display: grid;
+  grid-template-columns: 42px minmax(130px, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  padding: 14px 18px;
+  transition: background-color 160ms ease;
+  position: relative;
+}
+
+.workspace-row:last-child {
+  border-bottom: 0;
+}
+
+.workspace-row:hover {
+  background: var(--surface-hover);
+}
+
+.workspace-row.active {
+  box-shadow: inset 3px 0 var(--blue);
+  background: var(--surface-hover);
+}
+
+@media (min-width: 768px) {
+  .workspace-row {
+    grid-template-columns: 42px minmax(150px, 1.2fr) 95px 76px auto;
+    gap: 16px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .workspace-row {
+    grid-template-columns: 42px minmax(160px, 1fr) 100px 95px 76px auto;
+  }
+}
+
+.workspace-avatar {
+  display: flex;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.workspace-avatar.blue { background: var(--blue-soft); color: var(--blue); }
+.workspace-avatar.cyan { background: var(--teal-soft); color: var(--teal); }
+.workspace-avatar.violet { background: var(--violet-soft); color: var(--violet); }
+.workspace-avatar.slate { background: var(--surface-hover); color: var(--muted); border: 1px solid var(--line); }
+.workspace-avatar.amber { background: var(--amber-soft); color: var(--amber); }
+.workspace-avatar.red { background: var(--red-soft); color: var(--red); }
+
+.workspace-identity h3 {
+  font-size: 12px;
+  font-weight: 650;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+
+.workspace-identity p {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 9px;
+  line-height: 1.35;
+}
+
+.active-chip {
+  border-radius: 999px;
+  background: var(--blue-soft);
+  padding: 2px 7px;
+  color: var(--blue);
+  font-family: var(--font-mono);
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.archived-chip {
+  border-radius: 999px;
+  background: var(--surface-hover);
+  border: 1px solid var(--line);
+  padding: 2px 7px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 7.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.workspace-meta {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .workspace-meta {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.workspace-meta span {
+  color: var(--faint);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.workspace-meta strong {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 9px;
+  font-weight: 600;
+}
+
+.workspace-activity {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .workspace-activity {
+    display: flex;
+  }
+}
+
+.workspace-people {
+  display: none;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .workspace-people {
+    display: flex;
+  }
+}
+
+.workspace-people i {
+  display: flex;
+  width: 24px;
+  height: 24px;
+  margin-left: -6px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  background: var(--blue-soft);
+  color: var(--blue);
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  font-style: normal;
+}
+
+.workspace-people i:first-child { margin-left: 0; }
+.workspace-people span { margin-left: 5px; color: var(--faint); font-size: 8px; font-weight: 600; }
+
+.workspace-open-button,
+.workspace-active-button {
+  border-radius: 9px;
+  padding: 6px 12px;
+  font-size: 9px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  transition: 150ms ease;
+  white-space: nowrap;
+}
+
+.workspace-open-button {
+  border: 1px solid var(--line);
+  color: var(--muted);
+  background: var(--surface);
+}
+
+.workspace-open-button:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--blue-soft);
+}
+
+.workspace-active-button {
+  background: var(--blue-soft);
+  color: var(--blue);
+  cursor: default;
+  border: 1px solid transparent;
+}
+
+.workspace-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+}
+
+.workspace-menu-btn {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.workspace-menu-btn:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--blue-soft);
+}
+
+.workspace-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 175px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 12px 28px rgba(10, 31, 68, 0.14);
+  padding: 6px;
+  z-index: 40;
+  display: none;
+}
+
+.workspace-menu-dropdown.is-open {
+  display: block;
+}
+
+.workspace-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  font-size: 9px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 120ms ease;
+}
+
+.workspace-menu-item:hover {
+  background: var(--surface-hover);
+  color: var(--blue);
+}
+
+.workspace-menu-item.danger {
+  color: var(--red);
+}
+
+.workspace-menu-item.danger:hover {
+  background: var(--red-soft);
+  color: var(--red);
+}
+
+.workspace-empty {
+  padding: 50px 20px;
+  color: var(--muted);
+  font-size: 11px;
+  text-align: center;
+}
+
+/* Gobernanza institucional (aside lateral) */
+.workspace-governance {
+  display: flex;
+  flex-direction: column;
+}
+
+.governance-icon {
+  display: flex;
+  width: 34px;
+  height: 34px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  background: var(--blue-soft);
+  color: var(--blue);
+}
+
+.governance-item {
+  border-bottom: 1px solid var(--line);
+  padding: 14px 0;
+}
+
+.governance-item:first-child { padding-top: 0; }
+.governance-item div { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.governance-item span { color: var(--faint); font-size: 7.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+.governance-item strong { font-size: 9.5px; font-weight: 650; color: var(--ink); }
+.governance-item small { display: block; margin-top: 3px; color: var(--muted); font-size: 8px; }
+
+.governance-button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--muted);
+  font-size: 8.5px;
+  font-weight: 700;
+  background: var(--surface);
+  transition: all 140ms ease;
+}
+
+.governance-button:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+}
+
+.workspace-plan {
+  margin: 0 18px 18px;
+  border-radius: 12px;
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  padding: 14px;
+}
+
+.workspace-plan span,
+.workspace-plan strong { font-family: var(--font-mono); font-size: 7.5px; }
+.workspace-plan span { color: var(--faint); font-weight: 700; letter-spacing: 0.06em; }
+.workspace-plan strong { color: var(--ink); font-weight: 600; }
+.workspace-plan > div:nth-child(2) { overflow: hidden; height: 5px; margin-top: 10px; border-radius: 9px; background: var(--blue-soft); }
+.workspace-plan i { display: block; height: 100%; border-radius: inherit; background: var(--blue); }
+.workspace-plan p { margin-top: 7px; color: var(--muted); font-size: 7.5px; }
+
+/* ========================================================================= */
 /* FASE 11 — Usuarios: tarjetas de rol y métricas                           */
 /* ========================================================================= */
 

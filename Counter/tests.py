@@ -573,6 +573,28 @@ class WorkspaceIsolationTests(TestCase):
         self.assertIn('Espacio Legal', content)
         self.assertIn('Corporativo', content)
         self.assertIn('Legal', content)
+        # Verificación del rediseño ELI / Figma:
+        self.assertIn('workspace-overview', content)
+        self.assertIn('workspace-current', content)
+        self.assertIn('workspace-stat-grid', content)
+        self.assertIn('Gobernanza', content)
+        self.assertIn('total_workspaces', resp.context)
+        self.assertEqual(resp.context['total_workspaces'], 2)
+        self.assertIsNotNone(resp.context['active_workspace_data'])
+
+    def test_workspace_monogram_and_color_tone(self):
+        ws_audit = Workspace.objects.create(name="Auditoría Regional 2026", color="purple")
+        ws_single = Workspace.objects.create(name="Finanzas", color="green")
+        ws_stopwords = Workspace.objects.create(name="Centro de Investigaciones", color="amber")
+
+        self.assertEqual(ws_audit.monogram, "AR")
+        self.assertEqual(ws_audit.color_tone, "violet")
+
+        self.assertEqual(ws_single.monogram, "FI")
+        self.assertEqual(ws_single.color_tone, "cyan")
+
+        self.assertEqual(ws_stopwords.monogram, "CI")
+        self.assertEqual(ws_stopwords.color_tone, "amber")
 
     def test_workspace_select_and_filtering(self):
         # Seleccionar Workspace 1
