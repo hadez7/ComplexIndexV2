@@ -172,7 +172,7 @@
     <!-- ===================================================================== -->
     <section class="mt-6">
         <!-- Directorio de Todos los Espacios -->
-        <div class="surface-panel overflow-visible">
+        <div class="surface-panel workspace-directory-panel">
             <div class="workspace-toolbar">
                 <div>
                     <p class="eyebrow">{% trans "Directorio" %}</p>
@@ -884,16 +884,34 @@ async function toggleArchiveWorkspace(id, name, isArchived) {
 function toggleWorkspaceDropdown(event, dropdownId) {
     event.stopPropagation();
     const targetDropdown = document.getElementById(dropdownId);
-    const isOpen = targetDropdown && targetDropdown.classList.contains('is-open');
+    if (!targetDropdown) return;
+
+    const isOpen = targetDropdown.classList.contains('is-open');
     closeAllWorkspaceDropdowns();
-    if (!isOpen && targetDropdown) {
-        targetDropdown.classList.add('is-open');
+    if (isOpen) return;
+
+    targetDropdown.classList.add('is-open');
+    const row = targetDropdown.closest('.workspace-row');
+    if (row) {
+        row.classList.add('menu-open');
+    }
+
+    // Detectar si queda poco espacio inferior en el viewport y abrir hacia arriba
+    const rect = targetDropdown.getBoundingClientRect();
+    if (rect.bottom > window.innerHeight - 16) {
+        targetDropdown.classList.add('open-upwards');
+    } else {
+        targetDropdown.classList.remove('open-upwards');
     }
 }
 
 function closeAllWorkspaceDropdowns() {
     document.querySelectorAll('.workspace-menu-dropdown.is-open').forEach(menu => {
         menu.classList.remove('is-open');
+        menu.classList.remove('open-upwards');
+    });
+    document.querySelectorAll('.workspace-row.menu-open').forEach(row => {
+        row.classList.remove('menu-open');
     });
 }
 
