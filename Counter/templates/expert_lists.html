@@ -136,45 +136,71 @@
              data-list-words="{{ lista.clean_words|join:' '|lower }}"
              data-has-terms="{% if lista.words %}true{% else %}false{% endif %}">
 
-      <!-- Parte Superior: Monograma circular e insignia + Acciones rápidas -->
+      <!-- Fila superior: Monograma circular a la izquierda + Botón '>' a la derecha -->
       <div>
         <div class="flex items-start justify-between">
-          <!-- Insignia circular con monograma de 2 letras -->
+          <!-- Insignia circular con monograma de 2 letras estilo Figma -->
           <div class="vocab-monogram {{ lista.color_theme.badge }}"
                title="{{ lista.name }}">
             <span>{{ lista.monogram }}</span>
           </div>
 
-          <!-- Acciones de cabecera de tarjeta: Copiar, Eliminar -->
-          <div class="flex items-center gap-1 opacity-70 transition-opacity group-hover:opacity-100">
+          <!-- Botón '>' para desplegar opciones del vocabulario -->
+          <div class="relative">
             <button type="button"
-                    class="copy-list-btn inline-flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--line)] text-[var(--muted)] transition hover:border-[var(--blue)] hover:text-[var(--blue)] hover:bg-[var(--surface-hover)]"
-                    data-words="{{ lista.raw_terms_string|escapejs }}"
-                    title="{% trans 'Copiar términos al portapapeles' %}">
-              <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                    class="vocab-arrow-btn"
+                    aria-label="{% trans 'Opciones del vocabulario' %}"
+                    title="{% trans 'Opciones' %}">
+              <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
               </svg>
             </button>
 
-            <button type="button"
-                    class="delete-list-btn inline-flex h-7 w-7 items-center justify-center rounded-lg border border-[var(--line)] text-[var(--muted)] transition hover:border-[var(--red)] hover:text-[var(--red)] hover:bg-[var(--red-soft)]"
-                    data-id="{{ lista.id }}"
-                    data-name="{{ lista.name }}"
-                    title="{% trans 'Eliminar lista' %}">
-              <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-              </svg>
-            </button>
+            <!-- Menú contextual desplegable al pulsar '>' -->
+            <div class="vocab-options-menu hidden absolute right-0 top-full mt-1.5 z-30 w-44 rounded-xl border border-[var(--line)] bg-[var(--surface)] p-1.5 shadow-xl">
+              <button type="button"
+                      class="copy-list-btn flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-[var(--ink)] transition hover:bg-[var(--surface-hover)]"
+                      data-words="{{ lista.raw_terms_string|escapejs }}">
+                <svg class="h-3.5 w-3.5 text-[var(--muted)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"/>
+                </svg>
+                <span>{% trans "Copiar términos" %}</span>
+              </button>
+
+              <button type="button"
+                      class="edit-list-btn flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-[var(--ink)] transition hover:bg-[var(--surface-hover)]"
+                      data-id="{{ lista.id }}"
+                      data-expert-id="{{ lista.expert.id }}"
+                      data-name="{{ lista.name }}"
+                      data-words="{{ lista.raw_terms_string|escapejs }}">
+                <svg class="h-3.5 w-3.5 text-[var(--blue)]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                </svg>
+                <span>{% trans "Editar lista" %}</span>
+              </button>
+
+              <div class="my-1 border-t border-[var(--line)]"></div>
+
+              <button type="button"
+                      class="delete-list-btn flex w-full items-center gap-2 rounded-lg px-2.5 py-1.5 text-xs text-[var(--red)] transition hover:bg-[var(--red-soft)]"
+                      data-id="{{ lista.id }}"
+                      data-name="{{ lista.name }}">
+                <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+                <span>{% trans "Eliminar" %}</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Área pericial / Especialidad -->
-        <p class="mt-5 text-[9px] font-bold uppercase tracking-[0.16em] text-[var(--blue)]">
+        <!-- Área pericial / Especialidad (Figma uppercase tracking-wider) -->
+        <p class="mt-6 text-[8px] font-bold uppercase tracking-[0.16em] text-[var(--blue)]">
           {% if lista.expert.profession %}{{ lista.expert.profession }}{% else %}{% trans "Especialista legal" %}{% endif %}
         </p>
 
         <!-- Título del Vocabulario -->
-        <h2>{{ lista.name }}</h2>
+        <h2 class="mt-1 line-clamp-2">{{ lista.name }}</h2>
 
         <!-- Autor / Curador pericial -->
         <small class="vocab-author mt-1 flex items-center gap-1.5">
@@ -188,47 +214,9 @@
           </span>
           <span class="font-mono text-[9px] text-[var(--faint)]">(@{{ lista.expert.user.username }})</span>
         </small>
-
-        <!-- Píldoras de términos interactivas (Tag Pills) -->
-        <div class="vocab-terms-container">
-          {% for item in lista.parsed_words|slice:":7" %}
-            <span class="term-pill weight-{{ item.weight }}" title="{% if item.weight == 'alta' %}{% trans 'Criticidad Alta' %}{% elif item.weight == 'media' %}{% trans 'Criticidad Media' %}{% else %}{% trans 'Ponderación estándar' %}{% endif %}">
-              <span>{{ item.term }}</span>
-              {% if item.weight == 'alta' %}
-                <span class="weight-indicator alta"></span>
-              {% elif item.weight == 'media' %}
-                <span class="weight-indicator media"></span>
-              {% endif %}
-            </span>
-          {% empty %}
-            <span class="text-[10px] italic text-[var(--faint)]">{% trans "Sin términos asignados." %}</span>
-          {% endfor %}
-
-          {% if lista.parsed_words|length > 7 %}
-            <button type="button"
-                    class="card-expand-terms-btn inline-flex items-center rounded-md border border-dashed border-[var(--line)] bg-[var(--surface-hover)] px-2 py-0.5 font-mono text-[9px] font-semibold text-[var(--blue)] transition hover:border-[var(--blue)] hover:bg-[var(--blue-soft)]"
-                    data-expanded="false"
-                    title="{% trans 'Ver todos los términos' %}">
-              +{{ lista.parsed_words|length|add:"-7" }} {% trans "más" %}
-            </button>
-            <!-- Contenedor oculto con los términos restantes -->
-            <div class="hidden-card-terms-box hidden flex flex-wrap gap-1.5 pt-1 w-full">
-              {% for item in lista.parsed_words|slice:"7:" %}
-                <span class="term-pill weight-{{ item.weight }}">
-                  <span>{{ item.term }}</span>
-                  {% if item.weight == 'alta' %}
-                    <span class="weight-indicator alta"></span>
-                  {% elif item.weight == 'media' %}
-                    <span class="weight-indicator media"></span>
-                  {% endif %}
-                </span>
-              {% endfor %}
-            </div>
-          {% endif %}
-        </div>
       </div>
 
-      <!-- Pie de tarjeta: Conteo de términos y Botón Gestionar / Editar -->
+      <!-- Pie de tarjeta idéntico a Figma: conteo a la izquierda y EDITAR a la derecha -->
       <div class="mt-6 flex items-end justify-between border-t border-[var(--line)] pt-4">
         <div>
           <strong>{{ lista.words|length }}</strong>
@@ -236,31 +224,28 @@
         </div>
 
         <button type="button"
-                class="edit-list-btn inline-flex items-center gap-1.5 rounded-lg border border-[var(--line)] bg-[var(--surface-hover)] px-3 py-1.5 text-[9px] font-bold tracking-wider uppercase text-[var(--ink)] transition hover:border-[var(--blue)] hover:bg-[var(--blue-soft)] hover:text-[var(--blue)]"
+                class="edit-list-btn font-mono text-[10px] font-bold uppercase tracking-wider text-[var(--muted)] transition hover:text-[var(--blue)]"
                 data-id="{{ lista.id }}"
                 data-expert-id="{{ lista.expert.id }}"
                 data-name="{{ lista.name }}"
                 data-words="{{ lista.raw_terms_string|escapejs }}"
-                title="{% trans 'Editar vocabulario y gestionar ponderación' %}">
-          <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-          </svg>
-          <span>{% trans "Editar" %}</span>
+                title="{% trans 'Editar vocabulario y gestionar términos' %}">
+          {% trans "EDITAR" %}
         </button>
       </div>
     </article>
     {% endfor %}
 
-    <!-- Tarjeta de Acción Rápida: + Nuevo Vocabulario (Figma dashed card) -->
+    <!-- Tarjeta de Acción Rápida: + Nuevo Vocabulario (Figma dashed card ~220px) -->
     <button type="button"
             onclick="openNewListModal(this)"
-            class="group flex min-h-[260px] flex-col items-center justify-center rounded-[18px] border-2 border-dashed border-[var(--line-strong)] bg-[var(--surface)]/40 p-6 text-[var(--muted)] transition-all duration-200 hover:border-[var(--blue)] hover:bg-[var(--blue-soft)]/20 hover:text-[var(--blue)]">
-      <div class="flex h-12 w-12 items-center justify-center rounded-full bg-[var(--canvas)] text-[var(--muted)] transition-transform duration-200 group-hover:scale-110 group-hover:bg-[var(--blue-soft)] group-hover:text-[var(--blue)] shadow-sm">
-        <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            class="group flex min-h-[220px] flex-col items-center justify-center rounded-[17px] border-2 border-dashed border-[var(--line-strong)] bg-[var(--surface)]/40 p-6 text-[var(--muted)] transition-all duration-200 hover:border-[var(--blue)] hover:bg-[var(--blue-soft)]/20 hover:text-[var(--blue)]">
+      <div class="flex h-11 w-11 items-center justify-center rounded-full bg-[var(--canvas)] text-[var(--muted)] transition-transform duration-200 group-hover:scale-110 group-hover:bg-[var(--blue-soft)] group-hover:text-[var(--blue)] shadow-sm">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
         </svg>
       </div>
-      <span class="mt-3 text-[10px] font-bold uppercase tracking-[0.14em]">{% trans "Nuevo vocabulario" %}</span>
+      <span class="mt-3 text-[9px] font-bold uppercase tracking-[0.14em]">{% trans "Nuevo vocabulario" %}</span>
       <span class="mt-1 text-[10px] text-[var(--faint)]">{% trans "Añadir lista y términos" %}</span>
     </button>
   </section>
@@ -454,7 +439,7 @@
 <!-- Modal 2: Crear / Editar Vocabulario y Gestión de Términos (Tag Studio) -->
 <!-- ===================================================================== -->
 <div id="expertModal" class="fixed inset-0 z-50 flex hidden items-center justify-center bg-[rgba(3,10,22,0.72)] p-4 backdrop-blur-sm">
-  <div class="w-full max-w-2xl rounded-[20px] border border-[var(--line)] bg-[var(--surface)] shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+  <div class="w-full max-w-3xl rounded-[20px] border border-[var(--line)] bg-[var(--surface)] shadow-2xl overflow-hidden flex flex-col max-h-[92vh]">
 
     <!-- Cabecera del Modal -->
     <div class="flex items-start justify-between border-b border-[var(--line)] bg-[var(--surface-hover)] p-5">
@@ -469,7 +454,7 @@
             {% trans "Nuevo vocabulario controlado" %}
           </h3>
           <p class="text-[10px] text-[var(--muted)]">
-            {% trans "Define los términos, cláusulas y su ponderación de criticidad." %}
+            {% trans "Define el vocabulario pericial clasificado por niveles de criticidad y ponderación." %}
           </p>
         </div>
       </div>
@@ -508,38 +493,38 @@
         </div>
       </div>
 
-      <!-- Fila 2: Gestor interactivo de términos (Tag Studio) -->
-      <div class="flex-1 flex flex-col min-h-0 space-y-2">
-        <div class="flex flex-wrap items-center justify-between gap-2">
-          <span class="text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
-            {% trans "Gestión interactiva de términos" %}
-          </span>
-
+      <!-- Fila 2: Gestor Estructurado de Términos (Tag Studio) -->
+      <div class="flex-1 flex flex-col min-h-0 space-y-2.5">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-[var(--line)] pb-2">
           <div class="flex items-center gap-2">
+            <span class="text-[9px] font-bold uppercase tracking-[0.14em] text-[var(--muted)]">
+              {% trans "Estudio de Términos y Ponderación" %}
+            </span>
             <span id="wordsCountBadge" class="tab-badge">0 {% trans "términos" %}</span>
-            <button type="button"
-                    id="toggleInputModeBtn"
-                    class="text-[9px] font-semibold text-[var(--blue)] transition hover:underline">
-              {% trans "Modo texto masivo" %}
-            </button>
           </div>
+
+          <button type="button"
+                  id="toggleInputModeBtn"
+                  class="text-[9px] font-semibold text-[var(--blue)] transition hover:underline">
+            {% trans "Modo texto masivo" %}
+          </button>
         </div>
 
-        <!-- Modo Píldoras Interactivas -->
-        <div id="pillsModeContainer" class="flex flex-col flex-1 min-h-0 space-y-2.5">
-          <!-- Barra de añadir término con selector de ponderación -->
+        <!-- Modo Paneles Estructurados por Criticidad -->
+        <div id="pillsModeContainer" class="flex flex-col flex-1 min-h-0 space-y-3">
+          <!-- Barra de añadir término rápido -->
           <div class="flex flex-wrap sm:flex-nowrap gap-2 items-center bg-[var(--surface-hover)] p-2.5 rounded-xl border border-[var(--line)]">
             <div class="relative flex-1 min-w-[200px]">
               <input type="text"
                      id="termQuickInput"
-                     placeholder="{% trans 'Escribe un término y pulsa Enter (o separa por comas)...' %}"
+                     placeholder="{% trans 'Añadir término (o varios separados por comas)...' %}"
                      class="eli-input !h-9 !text-xs !bg-[var(--surface)]">
             </div>
 
             <!-- Selector de ponderación -->
             <div class="flex items-center gap-1 shrink-0">
               <span class="text-[9px] font-medium text-[var(--muted)] hidden sm:inline">{% trans "Criticidad:" %}</span>
-              <select id="termWeightSelect" class="eli-input !h-9 !py-1 !text-xs !w-auto !bg-[var(--surface)]">
+              <select id="termWeightSelect" class="eli-input !h-9 !py-1 !text-xs !w-auto !bg-[var(--surface)] font-medium">
                 <option value="normal">{% trans "Normal (1x)" %}</option>
                 <option value="media">{% trans "Media (2x)" %}</option>
                 <option value="alta">{% trans "Alta (3x)" %}</option>
@@ -548,7 +533,7 @@
 
             <button type="button"
                     id="addTermBtn"
-                    class="dialog-confirm !h-9 !px-3.5 !py-1 !text-xs shrink-0">
+                    class="dialog-confirm !h-9 !px-4 !py-1 !text-xs shrink-0">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
               </svg>
@@ -556,29 +541,88 @@
             </button>
           </div>
 
-          <!-- Tablero de píldoras / chips interactivos -->
-          <div class="flex-1 overflow-y-auto max-h-[220px] rounded-xl border border-[var(--line)] bg-[var(--surface)] p-3">
-            <div id="termsChipsContainer" class="flex flex-wrap gap-2 items-start">
-              <!-- Se puebla dinámicamente con píldoras interactivas -->
-            </div>
-            <div id="termsEmptyNotice" class="text-center py-8 text-[11px] text-[var(--faint)]">
-              {% trans "No hay términos en este vocabulario. Escribe uno arriba para comenzar." %}
-            </div>
+          <!-- Filtro rápido interno de términos en modal -->
+          <div class="relative">
+            <input type="text"
+                   id="modalTermFilterInput"
+                   placeholder="{% trans 'Filtrar términos cargados en este vocabulario...' %}"
+                   class="eli-input !h-8 !text-xs !pl-8">
+            <span class="pointer-events-none absolute inset-y-0 left-2.5 flex items-center text-[var(--faint)]">
+              <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </span>
           </div>
 
-          <p class="text-[9px] text-[var(--muted)] flex items-center justify-between">
-            <span>{% trans "Haz clic en la etiqueta de criticidad de una píldora para alternar su peso (Normal → Media → Alta)." %}</span>
+          <!-- Área scrollable con los 3 Paneles de Criticidad -->
+          <div class="flex-1 overflow-y-auto space-y-3 max-h-[300px] pr-1">
+
+            <!-- Panel 1: Criticidad Alta (Factor 3x) -->
+            <div class="rounded-xl border border-[rgba(239,68,68,0.25)] bg-[rgba(239,68,68,0.03)] p-3">
+              <div class="flex items-center justify-between border-b border-[rgba(239,68,68,0.15)] pb-2 mb-2.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="h-2 w-2 rounded-full bg-[var(--red)]"></span>
+                  <span class="font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--red)]">
+                    {% trans "Criticidad Alta (Factor 3x · Ofuscación Crítica)" %}
+                  </span>
+                </div>
+                <span id="altaCountBadge" class="tab-badge !bg-[rgba(239,68,68,0.15)] !text-[var(--red)]">0</span>
+              </div>
+              <div id="chipsAltaContainer" class="flex flex-wrap gap-1.5 items-start"></div>
+              <p id="emptyAltaNotice" class="text-[10px] italic text-[var(--faint)] py-2">
+                {% trans "Sin términos de criticidad alta asignados." %}
+              </p>
+            </div>
+
+            <!-- Panel 2: Criticidad Media (Factor 2x) -->
+            <div class="rounded-xl border border-[rgba(245,158,11,0.25)] bg-[rgba(245,158,11,0.03)] p-3">
+              <div class="flex items-center justify-between border-b border-[rgba(245,158,11,0.15)] pb-2 mb-2.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="h-2 w-2 rounded-full bg-[var(--amber)]"></span>
+                  <span class="font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--amber)]">
+                    {% trans "Criticidad Media (Factor 2x · Relevancia Sectorial)" %}
+                  </span>
+                </div>
+                <span id="mediaCountBadge" class="tab-badge !bg-[rgba(245,158,11,0.15)] !text-[var(--amber)]">0</span>
+              </div>
+              <div id="chipsMediaContainer" class="flex flex-wrap gap-1.5 items-start"></div>
+              <p id="emptyMediaNotice" class="text-[10px] italic text-[var(--faint)] py-2">
+                {% trans "Sin términos de criticidad media asignados." %}
+              </p>
+            </div>
+
+            <!-- Panel 3: Ponderación Estándar (Factor 1x) -->
+            <div class="rounded-xl border border-[var(--line)] bg-[var(--surface-hover)] p-3">
+              <div class="flex items-center justify-between border-b border-[var(--line)] pb-2 mb-2.5">
+                <div class="flex items-center gap-1.5">
+                  <span class="h-2 w-2 rounded-full bg-[var(--muted)]"></span>
+                  <span class="font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--muted)]">
+                    {% trans "Ponderación Estándar (Factor 1x · Vocabulario Base)" %}
+                  </span>
+                </div>
+                <span id="normalCountBadge" class="tab-badge">0</span>
+              </div>
+              <div id="chipsNormalContainer" class="flex flex-wrap gap-1.5 items-start"></div>
+              <p id="emptyNormalNotice" class="text-[10px] italic text-[var(--faint)] py-2">
+                {% trans "Sin términos de ponderación estándar asignados." %}
+              </p>
+            </div>
+
+          </div>
+
+          <div class="flex items-center justify-between text-[9px] text-[var(--muted)] pt-1">
+            <span>{% trans "Pulsa sobre la etiqueta de un término para alternar su nivel de criticidad." %}</span>
             <button type="button" id="clearAllTermsBtn" class="text-[var(--red)] hover:underline hidden">
-              {% trans "Limpiar todos" %}
+              {% trans "Limpiar todos los términos" %}
             </button>
-          </p>
+          </div>
         </div>
 
         <!-- Modo Texto Masivo (Alternativo / Textarea) -->
         <div id="rawTextModeContainer" class="hidden flex-1 flex flex-col space-y-1.5">
           <textarea id="list-words"
                     name="words"
-                    rows="6"
+                    rows="8"
                     class="eli-input !font-mono !leading-6 flex-1 !text-xs"
                     placeholder="{% trans 'ej: secreto, confidencial:alta, no divulgación:media, penalidad contractual' %}"></textarea>
           <p class="text-[9px] text-[var(--muted)]">
@@ -630,5 +674,5 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{% static 'js/expert_lists.js' %}?v=eli-33"></script>
+<script src="{% static 'js/expert_lists.js' %}?v=eli-34"></script>
 {% endblock %}
