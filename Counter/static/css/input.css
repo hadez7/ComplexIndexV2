@@ -2729,7 +2729,6 @@
 }
 
 .workspace-row.active {
-  box-shadow: inset 3px 0 var(--blue);
   background: var(--surface-hover);
 }
 
