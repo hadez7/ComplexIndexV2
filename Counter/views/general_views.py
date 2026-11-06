@@ -12,9 +12,10 @@ from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.conf import settings
 from django.db import models, IntegrityError
-from ..models import Company, TotalCountReport, Report, Workspace, WorkspaceMembership, TotalCount, ConcealmentReview
+from ..models import Company, TotalCountReport, Report, Workspace, WorkspaceMembership, TotalCount, ConcealmentReview, ExpertWord
 from ..forms import IndividualReportUploadForm, ZipUploadForm, ComparativeAnalysisForm
 from ..main import process_report, process_zip
+from ..coinertia import run_longitudinal_coinertia_analysis, compare_company_across_years
 from ..workspace_utils import get_active_workspace, is_expert_user
 from ..utils import calcular_complejidad_general
 from User.models import Expert, PROFESSION_CHOICES
@@ -494,8 +495,58 @@ def comparative_analysis_view(request):
     resultado = None
     resultado_interanual = None
     error_interanual = None
+    coinertia_data = None
+    company_diff = None
 
-    modo = request.POST.get("modo") or request.GET.get("modo") or "experto"
+    # Determinamos la pestaña activa unificando 'modo' y 'tab'
+    tab_param = request.GET.get("tab") or request.POST.get("tab")
+    modo_param = request.POST.get("modo") or request.GET.get("modo")
+
+    if tab_param == "coinertia" or modo_param == "coinertia":
+        modo = "coinertia"
+    elif tab_param == "company" or modo_param == "interanual":
+        modo = "interanual"
+    elif tab_param == "report" or modo_param == "experto":
+        modo = "experto"
+    elif modo_param:
+        modo = modo_param
+    elif tab_param:
+        modo = tab_param
+    else:
+        modo = "experto"
+
+    active_tab = "coinertia" if modo == "coinertia" else ("company" if modo == "interanual" else "report")
+
+    # Años disponibles en el espacio activo
+    available_years = list(
+        Report.objects.filter(workspace=current_ws)
+        .exclude(year=None)
+        .values_list("year", flat=True)
+        .distinct()
+        .order_by("-year")
+    )
+    expert_lists = ExpertWord.objects.filter(workspace=current_ws).order_by("name")
+
+    # 1. Modo Co-Inercia (Longitudinal Macro)
+    base_year_param = request.GET.get("base_year") or request.POST.get("base_year")
+    try:
+        base_year = int(base_year_param) if base_year_param else (available_years[0] if available_years else 2025)
+    except (ValueError, TypeError):
+        base_year = available_years[0] if available_years else 2025
+
+    selected_expert_list_id = request.GET.get("expert_list_id") or request.POST.get("expert_list_id")
+    try:
+        selected_expert_list_id = int(selected_expert_list_id) if selected_expert_list_id else None
+    except (ValueError, TypeError):
+        selected_expert_list_id = None
+
+    if modo == "coinertia":
+        coinertia_data = run_longitudinal_coinertia_analysis(
+            current_ws,
+            base_year=base_year,
+            expert_list_id=selected_expert_list_id,
+            top_k=80
+        )
 
     def normalize_words(word_list):
         return set(
@@ -515,6 +566,8 @@ def comparative_analysis_view(request):
     selected_company_id = request.POST.get("company_id") or request.GET.get("company_id") or ""
     selected_report_a_id = request.POST.get("report_a_id") or request.GET.get("report_a_id") or ""
     selected_report_b_id = request.POST.get("report_b_id") or request.GET.get("report_b_id") or ""
+    year1 = request.GET.get("year1") or request.POST.get("year1") or ""
+    year2 = request.GET.get("year2") or request.POST.get("year2") or ""
 
     company_reports = Report.objects.none()
     if selected_company_id:
@@ -523,6 +576,23 @@ def comparative_analysis_view(request):
             .filter(company_id=selected_company_id, workspace=current_ws)
             .order_by("-year", "name")
         )
+
+        # Si se pasa company_id junto a year1 y year2 (por ejemplo desde el enlace de Co-Inercia o tab=company)
+        if year1 and year2:
+            try:
+                company_diff = compare_company_across_years(
+                    current_ws,
+                    int(selected_company_id),
+                    int(year1),
+                    int(year2)
+                )
+                if company_diff and company_diff.get("report1") and company_diff.get("report2"):
+                    if not selected_report_a_id:
+                        selected_report_a_id = str(company_diff["report1"].id)
+                    if not selected_report_b_id:
+                        selected_report_b_id = str(company_diff["report2"].id)
+            except (ValueError, TypeError):
+                company_diff = None
 
     # 1. Pestaña Experto (POST)
     if request.method == "POST" and modo == "experto":
@@ -683,11 +753,20 @@ def comparative_analysis_view(request):
             "resultado_interanual": resultado_interanual,
             "error_interanual": error_interanual,
             "modo": modo,
+            "active_tab": active_tab,
             "companies": companies,
             "selected_company_id": str(selected_company_id),
             "selected_report_a_id": str(selected_report_a_id),
             "selected_report_b_id": str(selected_report_b_id),
             "company_reports": company_reports,
+            "available_years": available_years,
+            "base_year": base_year,
+            "expert_lists": expert_lists,
+            "selected_expert_list_id": selected_expert_list_id,
+            "coinertia_data": coinertia_data,
+            "company_diff": company_diff,
+            "year1": str(year1),
+            "year2": str(year2),
         }
     )
 

@@ -1396,4 +1396,91 @@ class LinguisticProcessingEngineTests(TestCase):
         self.assertNotIn("nistracion", palabras)
 
 
+class CoinertiaAnalysisTests(TestCase):
+    def setUp(self):
+        import numpy as np
+        self.np = np
+        self.user = User.objects.create_user(username='coinertia_user', password='password123')
+        self.client.login(username='coinertia_user', password='password123')
+        self.ws = Workspace.objects.create(name='Espacio Co-Inercia', created_by=self.user)
+
+        self.comp1 = Company.objects.create(workspace=self.ws, name='CIA UNO', ruc='1111111111001')
+        self.comp2 = Company.objects.create(workspace=self.ws, name='CIA DOS', ruc='2222222222001')
+        self.comp3 = Company.objects.create(workspace=self.ws, name='CIA TRES', ruc='3333333333001')
+
+        self.rep24_1 = Report.objects.create(workspace=self.ws, company=self.comp1, year=2024, name='R24_1')
+        self.rep24_2 = Report.objects.create(workspace=self.ws, company=self.comp2, year=2024, name='R24_2')
+        self.rep24_3 = Report.objects.create(workspace=self.ws, company=self.comp3, year=2024, name='R24_3')
+
+        self.rep25_1 = Report.objects.create(workspace=self.ws, company=self.comp1, year=2025, name='R25_1')
+        self.rep25_2 = Report.objects.create(workspace=self.ws, company=self.comp2, year=2025, name='R25_2')
+        self.rep25_3 = Report.objects.create(workspace=self.ws, company=self.comp3, year=2025, name='R25_3')
+
+        for rep in [self.rep24_1, self.rep24_2, self.rep24_3, self.rep25_1, self.rep25_2, self.rep25_3]:
+            TotalCountReport.objects.create(report=rep, word='ingresos', quantity=10)
+            TotalCountReport.objects.create(report=rep, word='gastos', quantity=5)
+            TotalCountReport.objects.create(report=rep, word='activo', quantity=8)
+
+        self.expert_user = User.objects.create_user(username='perito_test', password='password123')
+        self.expert = Expert.objects.create(user=self.expert_user, profession='Perito Contable')
+        self.exp_list = ExpertWord.objects.create(
+            expert=self.expert,
+            workspace=self.ws,
+            name='Lista Pericial Test',
+            words=['ingresos', 'activo']
+        )
+
+    def test_compute_rv_coefficient_math(self):
+        from Counter.coinertia import compute_rv_coefficient
+        import numpy as np
+
+        # Identical matrices should have RV = 1.0, distance = 0.0
+        X = np.array([[1.0, 2.0], [3.0, 4.0], [5.0, 6.0]])
+        rv, dist = compute_rv_coefficient(X, X)
+        self.assertAlmostEqual(rv, 1.0, places=5)
+        self.assertAlmostEqual(dist, 0.0, places=5)
+
+        # Empty / degenerate matrices
+        rv_empty, dist_empty = compute_rv_coefficient(np.array([]), np.array([]))
+        self.assertEqual(rv_empty, 0.0)
+
+    def test_run_longitudinal_coinertia_analysis(self):
+        from Counter.coinertia import run_longitudinal_coinertia_analysis
+        result = run_longitudinal_coinertia_analysis(self.ws, base_year=2025, expert_list_id=self.exp_list.id)
+        self.assertIsNotNone(result)
+        self.assertEqual(result['base_year'], 2025)
+        self.assertIn('co_inertia', result)
+        self.assertIn('star_graph', result)
+        self.assertEqual(result['star_graph']['center_node']['year'], 2025)
+        self.assertEqual(len(result['star_graph']['orbits']), 4)
+        self.assertTrue(len(result['star_graph']['nodes_general']) >= 1)
+        self.assertIn('radial_chart', result)
+        self.assertEqual(len(result['radial_chart']['rings']), 5)
+        self.assertTrue(len(result['radial_chart']['axes']) >= 1)
+
+    def test_compare_company_across_years(self):
+        from Counter.coinertia import compare_company_across_years
+        diff = compare_company_across_years(self.ws, self.comp1.id, 2024, 2025)
+        self.assertIsNotNone(diff)
+        self.assertEqual(diff['jaccard_similarity'], 100.0)
+        self.assertEqual(diff['common_count'], 3)
+        self.assertEqual(diff['added_count'], 0)
+
+    def test_view_coinertia_and_company_tabs(self):
+        # Tab coinertia
+        resp = self.client.get(reverse('comparative_analysis') + '?tab=coinertia&base_year=2025')
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Co-Inercia')
+        self.assertContains(resp, 'Diagrama Radial')
+        self.assertContains(resp, 'Grafo en Estrella')
+        self.assertContains(resp, 'starGraphSvg')
+
+        # Tab company
+        url = f"{reverse('comparative_analysis')}?tab=company&company_id={self.comp1.id}&year1=2024&year2=2025"
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, 'Similitud de Vocabulario (Jaccard)')
+
+
+
 

@@ -1,18 +1,24 @@
+import os
+from django.conf import settings
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 import openpyxl
 from Counter.models import Company, Province, Workspace
 
+DEFAULT_EXCEL_PATH = os.path.join(
+    settings.BASE_DIR, 'Counter', 'resources', 'Empresas.xlsx'
+)
+
 
 class Command(BaseCommand):
-    help = 'Importar empresas desde el archivo Empresas.xlsx'
+    help = 'Importar empresas desde el catálogo base en Counter/resources/Empresas.xlsx'
 
     def add_arguments(self, parser):
         parser.add_argument(
             '--file',
             type=str,
-            default='Empresas.xlsx',
-            help='Ruta del archivo xlsx a importar (default: Empresas.xlsx)'
+            default=DEFAULT_EXCEL_PATH,
+            help='Ruta del archivo xlsx a importar (default: Counter/resources/Empresas.xlsx)'
         )
         parser.add_argument(
             '--workspace',

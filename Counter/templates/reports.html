@@ -64,15 +64,15 @@
                    autocomplete="off">
         </label>
 
-        <button type="submit" class="h-[38px]">
+        <button type="submit" class="h-[42px] px-5 text-xs font-bold">
             {% trans "Buscar" %}
         </button>
 
         {% if query %}
         <a href="{% url 'reports' %}?order_by={{ order_by }}&dir={{ order_dir }}&page_size={{ page_size }}"
-           class="inline-flex h-[38px] items-center gap-1.5 rounded-[9px] border border-[var(--line)] bg-[var(--surface)] px-3 text-[9px] font-semibold text-[var(--muted)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]"
+           class="inline-flex h-[42px] items-center gap-1.5 rounded-[10px] border border-[var(--line)] bg-[var(--surface)] px-4 text-xs font-semibold text-[var(--muted)] transition hover:border-[var(--blue)] hover:text-[var(--blue)]"
            title="{% trans 'Limpiar búsqueda' %}">
-            <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
             </svg>
             {% trans "Limpiar" %}

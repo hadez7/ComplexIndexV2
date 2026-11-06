@@ -72,12 +72,12 @@
             </select>
         </div>
 
-        <button type="submit" class="h-[38px] w-full sm:w-auto">{% trans "Filtrar" %}</button>
+        <button type="submit" class="h-[42px] px-5 text-xs font-bold w-full sm:w-auto">{% trans "Filtrar" %}</button>
 
         {% if search or province_filter %}
         <a href="{% url 'companies' %}"
-           class="inline-flex h-[38px] w-full items-center justify-center gap-1.5 rounded-[9px] border border-[var(--line)] bg-[var(--surface)] px-3 text-[9px] font-semibold text-[var(--muted)] transition hover:border-[var(--blue)] hover:text-[var(--blue)] sm:w-auto">
-            <svg class="h-3 w-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+           class="inline-flex h-[42px] w-full items-center justify-center gap-1.5 rounded-[10px] border border-[var(--line)] bg-[var(--surface)] px-4 text-xs font-semibold text-[var(--muted)] transition hover:border-[var(--blue)] hover:text-[var(--blue)] sm:w-auto">
+            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
             </svg>
             {% trans "Limpiar" %}

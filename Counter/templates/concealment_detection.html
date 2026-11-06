@@ -56,6 +56,7 @@
                 <select id="year"
                         name="year"
                         data-custom-select="true"
+                        data-placeholder="{% trans 'Seleccione un año' %}"
                         data-selected="{{ selected_year }}"
                         class="eli-input">
                     <option value="">{% trans "Seleccione un año" %}</option>
@@ -73,8 +74,10 @@
                         id="report"
                         required
                         data-custom-select="true"
+                        data-placeholder="{% trans 'Seleccione una empresa' %}"
                         data-selected="{% if selected_report %}{{ selected_report.id }}{% endif %}"
                         class="eli-input">
+                    <option value="">{% trans "Seleccione una empresa" %}</option>
                     {% for report in reports %}
                         <option value="{{ report.id }}" {% if selected_report and report.id == selected_report.id %}selected{% endif %}>
                             {% if report.company %}{% if report.clean_company %}{{ report.clean_company }}{% else %}{{ report.company.name }}{% endif %}{% if report.name and report.name != report.year|stringformat:"s" and report.name.lower != "reporte" %} - {{ report.name }}{% endif %}{% else %}{{ report.name }}{% endif %}
@@ -105,6 +108,7 @@
                 <select id="lista-experto"
                         name="lista_experto"
                         data-custom-select="true"
+                        data-placeholder="{% trans 'Seleccione una lista' %}"
                         class="eli-input">
                     <option value="">{% trans "Seleccione una lista" %}</option>
                     {% for lista in expert_lists %}
@@ -120,9 +124,11 @@
                 <select name="palabra"
                         id="palabra"
                         data-custom-select="true"
+                        data-placeholder="{% trans 'Seleccione una palabra' %}"
                         data-selected="{{ palabra }}"
                         required
                         class="eli-input">
+                    <option value="">{% trans "Seleccione una palabra" %}</option>
                     {% for word in report_words %}
                         <option value="{{ word }}" {% if word == palabra %}selected{% endif %}>
                             {{ word }}

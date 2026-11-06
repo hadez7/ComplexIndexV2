@@ -63,14 +63,15 @@
     const searchContainer = document.createElement('div');
     searchContainer.className = 'p-2 border-b border-gray-100 bg-gray-50/70';
     searchContainer.innerHTML = `
-      <div class="relative">
-        <span class="absolute inset-y-0 left-2.5 flex items-center text-gray-400 pointer-events-none">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div class="relative flex items-center">
+        <span class="absolute left-2.5 top-1/2 -translate-y-1/2 flex items-center text-gray-400 pointer-events-none z-10">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
           </svg>
         </span>
         <input type="text"
-               class="custom-select-search w-full pl-8 pr-3 py-1.5 text-xs text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 font-normal transition"
+               class="custom-select-search w-full pr-3 py-1.5 text-xs text-gray-700 bg-white border border-gray-200 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 placeholder-gray-400 font-normal transition"
+               style="padding-left: 34px !important;"
                placeholder="Buscar..."
                autocomplete="off"
                spellcheck="false" />
@@ -140,60 +141,91 @@
         searchContainer.classList.remove('hidden');
       }
 
-      options.forEach(function (opt, idx) {
-        const item = document.createElement('div');
-        item.className =
-          'custom-select-item px-3.5 py-2.5 text-sm cursor-pointer flex items-center justify-between transition-colors duration-150 select-none hover:bg-blue-50 hover:text-blue-700 text-gray-700';
-        item.setAttribute('role', 'option');
-        item.dataset.value = opt.value;
-        item.dataset.label = (opt.text || "").trim();
-        item.dataset.index = idx;
+      if (options.length === 0) {
+        const emptyItem = document.createElement('div');
+        emptyItem.className = 'px-3.5 py-3 text-xs text-gray-400 italic text-center select-none';
+        emptyItem.textContent = select.dataset.placeholder || select.getAttribute('placeholder') || 'No hay opciones disponibles';
+        optionsList.appendChild(emptyItem);
+      } else {
+        options.forEach(function (opt, idx) {
+          const item = document.createElement('div');
+          item.className =
+            'custom-select-item px-3.5 py-2.5 text-sm cursor-pointer flex items-center justify-between transition-colors duration-150 select-none hover:bg-blue-50 hover:text-blue-700 text-gray-700';
+          item.setAttribute('role', 'option');
+          item.dataset.value = opt.value;
+          item.dataset.label = (opt.text || "").trim();
+          item.dataset.index = idx;
 
-        const isPlaceholder = !opt.value || opt.value === '';
-        const isSelected = opt.selected || select.value === opt.value;
+          const isPlaceholder = !opt.value || opt.value === '';
+          const isSelected = opt.selected || select.value === opt.value;
 
-        const textSpan = document.createElement('span');
-        textSpan.className = 'truncate';
-        textSpan.textContent = (opt.text || "").trim();
+          const textSpan = document.createElement('span');
+          textSpan.className = 'truncate';
+          textSpan.textContent = (opt.text || "").trim();
 
-        if (isPlaceholder) {
-          textSpan.classList.add('text-gray-400', 'font-normal');
-        }
+          if (isPlaceholder) {
+            textSpan.classList.add('text-gray-400', 'font-normal');
+          }
 
-        const checkIcon = document.createElement('span');
-        checkIcon.className = 'custom-select-check ml-2 flex-shrink-0 ' + (isSelected ? 'text-blue-600' : 'hidden');
-        checkIcon.innerHTML = `
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
-          </svg>
-        `;
+          const checkIcon = document.createElement('span');
+          checkIcon.className = 'custom-select-check ml-2 flex-shrink-0 ' + (isSelected ? 'text-blue-600' : 'hidden');
+          checkIcon.innerHTML = `
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path>
+            </svg>
+          `;
 
-        if (isSelected) {
-          item.classList.add('bg-blue-50/70', 'text-blue-700', 'font-medium');
-        }
+          if (isSelected) {
+            item.classList.add('bg-blue-50/70', 'text-blue-700', 'font-medium');
+          }
 
-        item.appendChild(textSpan);
-        item.appendChild(checkIcon);
+          item.appendChild(textSpan);
+          item.appendChild(checkIcon);
 
-        item.addEventListener('click', function (e) {
-          e.stopPropagation();
-          selectValue(opt.value);
-          closeDropdown();
-          trigger.focus();
+          item.addEventListener('click', function (e) {
+            e.stopPropagation();
+            selectValue(opt.value);
+            closeDropdown();
+            trigger.focus();
+          });
+
+          optionsList.appendChild(item);
         });
-
-        optionsList.appendChild(item);
-      });
+      }
 
       updateTriggerDisplay();
     }
 
     function updateTriggerDisplay() {
       syncDisabled();
-      const selectedOption = select.options[select.selectedIndex];
+      let selectedOption = (select.selectedIndex >= 0 && select.selectedIndex < select.options.length) 
+        ? select.options[select.selectedIndex] 
+        : null;
+
+      // Si no hay opción seleccionada pero hay opciones y el valor está vacío, apuntar a la primera
+      if (!selectedOption && select.options.length > 0) {
+        select.selectedIndex = 0;
+        selectedOption = select.options[0];
+      }
+
+      const placeholderAttr = (select.dataset.placeholder || select.getAttribute('placeholder') || '').trim();
       const isPlaceholder = !selectedOption || !selectedOption.value || selectedOption.value === '';
 
-      label.textContent = selectedOption ? selectedOption.text : '';
+      let text = '';
+      if (selectedOption && selectedOption.value !== '') {
+        text = (selectedOption.text || '').trim();
+      } else if (selectedOption && selectedOption.text && selectedOption.text.trim() !== '') {
+        text = selectedOption.text.trim();
+      } else if (placeholderAttr) {
+        text = placeholderAttr;
+      } else if (select.options.length === 0) {
+        text = placeholderAttr || 'Sin opciones';
+      } else {
+        text = 'Seleccione una opción';
+      }
+
+      label.textContent = text;
+      trigger.setAttribute('title', text);
 
       if (isPlaceholder) {
         label.classList.add('text-gray-400', 'font-normal');
@@ -230,14 +262,21 @@
     function adjustPosition() {
       const rect = trigger.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
-      const estimatedHeight = 270;
+      const spaceAbove = rect.top;
+      const minPreferredBelow = 180;
 
-      if (spaceBelow < estimatedHeight && rect.top > estimatedHeight) {
+      // Preferir abrir hacia abajo siempre que haya espacio razonable (>= 180px)
+      // Solo abrir hacia arriba si abajo realmente no cabe (< 180px) y arriba hay más espacio que abajo (y al menos 240px).
+      if (spaceBelow < minPreferredBelow && spaceAbove > spaceBelow && spaceAbove >= 240) {
         dropdown.classList.add('bottom-full', 'mb-1.5');
         dropdown.classList.remove('mt-1.5');
+        const maxListHeight = Math.min(224, Math.max(120, spaceAbove - 80));
+        optionsList.style.maxHeight = maxListHeight + 'px';
       } else {
         dropdown.classList.remove('bottom-full', 'mb-1.5');
         dropdown.classList.add('mt-1.5');
+        const maxListHeight = Math.min(224, Math.max(120, spaceBelow - 80));
+        optionsList.style.maxHeight = maxListHeight + 'px';
       }
     }
 

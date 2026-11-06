@@ -14,34 +14,53 @@
     <!-- --------------------------------------------------------------------- -->
     <header class="sticky top-0 z-30 shrink-0 border-b border-[var(--line)] bg-[var(--header)] backdrop-blur-md">
         <div class="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between gap-4 px-5 sm:px-7 lg:px-9">
-            <a href="{% url 'index' %}" class="flex min-w-0 items-center gap-3">
-                <div class="logo-orbit logo-orbit-sm"><span>e</span></div>
+            <a href="{% url 'index' %}" class="flex min-w-0 items-center gap-3 group" title="Enterprise Lex Index">
+                <div class="relative shrink-0 flex items-center justify-center">
+                    <svg class="h-9 w-9 transition-transform duration-300 group-hover:scale-105" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <defs>
+                            <linearGradient id="eliLogoGradHeader" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#1d4ed8"/>
+                                <stop offset="50%" stop-color="#2563eb"/>
+                                <stop offset="100%" stop-color="#38bdf8"/>
+                            </linearGradient>
+                            <filter id="eliLogoGlowHeader" x="-20%" y="-20%" width="140%" height="140%">
+                                <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#2563eb" flood-opacity="0.32"/>
+                            </filter>
+                        </defs>
+                        <rect width="36" height="36" rx="10" fill="url(#eliLogoGradHeader)" filter="url(#eliLogoGlowHeader)"/>
+                        <rect x="0.75" y="0.75" width="34.5" height="34.5" rx="9.25" stroke="white" stroke-opacity="0.3" stroke-width="1.5"/>
+                        <ellipse cx="18" cy="18" rx="13" ry="5.2" transform="rotate(-30 18 18)" stroke="#7dd3fc" stroke-opacity="0.8" stroke-width="1.2" stroke-dasharray="2.5 1.5"/>
+                        <text x="18" y="22" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="11" font-weight="900" letter-spacing="0.5" fill="#ffffff" text-anchor="middle">ELI</text>
+                        <rect x="13.5" y="25" width="9" height="1.6" rx="0.8" fill="#7dd3fc"/>
+                    </svg>
+                </div>
                 <div class="min-w-0 leading-tight">
-                    <span class="block truncate text-sm font-black tracking-tight text-[var(--ink)]">Enterprise Lex</span>
-                    <span class="block truncate font-mono text-[8px] font-semibold uppercase tracking-[0.18em] text-[var(--faint)]">{% trans "Auditoría Contractual" %}</span>
+                    <span class="block truncate text-sm font-bold tracking-tight text-[var(--ink)] group-hover:text-[var(--blue)] transition-colors">Enterprise Lex</span>
+                    <span class="block truncate font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--blue)]">INTELLIGENCE</span>
                 </div>
             </a>
 
-            <nav class="hidden items-center gap-7 text-[11px] font-semibold text-[var(--muted)] lg:flex">
+            <nav class="hidden items-center gap-7 text-sm font-medium text-[var(--muted)] lg:flex">
                 <a href="#programa" class="transition hover:text-[var(--blue)]">{% trans "El programa" %}</a>
                 <a href="#proceso" class="transition hover:text-[var(--blue)]">{% trans "Cómo funciona" %}</a>
                 <a href="#modulos" class="transition hover:text-[var(--blue)]">{% trans "Módulos" %}</a>
                 <a href="#perfiles" class="transition hover:text-[var(--blue)]">{% trans "Para quién" %}</a>
             </nav>
 
-            <div class="flex items-center gap-2">
-                <form action="{% url 'set_language' %}" method="post" class="flex items-center gap-1">
+            <div class="flex items-center gap-2.5">
+                <form action="{% url 'set_language' %}" method="post" class="inline-flex rounded-xl border border-[var(--line)] bg-[var(--surface)] p-0.5 shadow-2xs">
                     {% csrf_token %}
                     <input type="hidden" name="next" value="{{ request.get_full_path }}">
                     <button type="submit" name="language" value="es"
-                            class="rounded-lg border px-2 py-1.5 font-mono text-[9px] font-bold transition {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}border-[var(--blue)] bg-[var(--blue)] text-white{% else %}border-[var(--line)] text-[var(--muted)] hover:border-[var(--line-strong)] hover:text-[var(--ink)]{% endif %}">ES</button>
+                            class="rounded-lg px-2.5 py-1 font-mono text-xs font-bold transition {% if LANGUAGE_CODE == 'es' or not LANGUAGE_CODE %}bg-[var(--blue)] text-white shadow-xs{% else %}text-[var(--muted)] hover:text-[var(--ink)]{% endif %}">ES</button>
                     <button type="submit" name="language" value="en"
-                            class="rounded-lg border px-2 py-1.5 font-mono text-[9px] font-bold transition {% if LANGUAGE_CODE == 'en' %}border-[var(--blue)] bg-[var(--blue)] text-white{% else %}border-[var(--line)] text-[var(--muted)] hover:border-[var(--line-strong)] hover:text-[var(--ink)]{% endif %}">EN</button>
+                            class="rounded-lg px-2.5 py-1 font-mono text-xs font-bold transition {% if LANGUAGE_CODE == 'en' %}bg-[var(--blue)] text-white shadow-xs{% else %}text-[var(--muted)] hover:text-[var(--ink)]{% endif %}">EN</button>
                 </form>
 
                 <button type="button" onclick="toggleTheme()"
-                        class="rounded-lg border border-[var(--line)] p-2 text-[var(--muted)] transition hover:border-[var(--line-strong)] hover:text-[var(--blue)]"
-                        title="{% trans 'Alternar tema claro / oscuro' %}">
+                        class="h-8 w-8 inline-flex items-center justify-center rounded-xl border border-[var(--line)] bg-[var(--surface)] text-[var(--muted)] hover:border-[var(--line-strong)] hover:text-[var(--ink)] transition btn-interactive shadow-2xs"
+                        title="{% trans 'Alternar tema claro / oscuro' %}"
+                        aria-label="{% trans 'Alternar tema claro / oscuro' %}">
                     <span id="themeTopIcon" class="flex h-4 w-4 items-center justify-center shrink-0">
                         <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
                     </span>
@@ -49,19 +68,19 @@
 
                 {% if user.is_authenticated %}
                     {% if is_expert_user %}
-                    <a href="{% url 'concealment_detection' %}" class="primary-action whitespace-nowrap px-4 py-2.5">
+                    <a href="{% url 'concealment_detection' %}" class="primary-action whitespace-nowrap px-4 py-2 text-xs">
                         <span>{% trans "Detección de Opacidad" %}</span>
                     </a>
                     {% else %}
-                    <a href="{% url 'panel' %}" class="primary-action whitespace-nowrap px-4 py-2.5">
+                    <a href="{% url 'panel' %}" class="primary-action whitespace-nowrap px-4 py-2 text-xs">
                         <span>{% trans "Observatorio" %}</span>
                     </a>
                     {% endif %}
                 {% else %}
-                <a href="{% url 'login' %}" class="secondary-action hidden whitespace-nowrap px-4 py-2.5 sm:inline-flex">
+                <a href="{% url 'login' %}" class="secondary-action hidden whitespace-nowrap px-3.5 py-2 text-xs font-semibold sm:inline-flex">
                     {% trans "Iniciar Sesión" %}
                 </a>
-                <a href="{% url 'register' %}" class="primary-action whitespace-nowrap px-4 py-2.5">
+                <a href="{% url 'register' %}" class="primary-action whitespace-nowrap px-4 py-2 text-xs font-bold">
                     {% trans "Crear Cuenta" %}
                 </a>
                 {% endif %}
@@ -84,14 +103,14 @@
                             <div class="flex flex-wrap items-center gap-3">
                                 <p class="eyebrow">{% trans "Plataforma Integral de Auditoría & Complejidad Contractual" %}</p>
                                 <span class="h-px w-10 bg-[var(--line-strong)]"></span>
-                                <span class="font-mono text-[9px] font-semibold tracking-[0.14em] text-[var(--faint)]">ELI / 2026</span>
+                                <span class="font-mono text-xs font-semibold tracking-[0.12em] text-[var(--faint)]">ELI / 2026</span>
                             </div>
 
                             <h1 class="mt-6 max-w-3xl text-4xl font-semibold leading-[1.02] tracking-[-0.06em] text-[var(--ink)] sm:text-5xl lg:text-6xl">
                                 {% trans "Claridad para decisiones que no admiten ambigüedad." %}
                             </h1>
 
-                            <p class="mt-6 max-w-xl text-sm leading-7 text-[var(--muted)]">
+                            <p class="mt-6 max-w-xl text-[15px] leading-relaxed text-[var(--muted)]">
                                 {% trans "Evalúa la complejidad lingüística, detecta riesgos normativos y audita reportes corporativos mediante algoritmos cuantitativos y vocabularios de expertos." %}
                             </p>
 
@@ -132,7 +151,7 @@
                             </div>
 
                             {% if not user.is_authenticated %}
-                            <a href="#proceso" class="mt-5 inline-flex items-center gap-1.5 text-[10px] font-bold text-[var(--blue)] transition hover:gap-2.5">
+                            <a href="#proceso" class="mt-5 inline-flex items-center gap-1.5 text-xs font-bold text-[var(--blue)] transition hover:gap-2.5">
                                 {% trans "Ver cómo funciona" %}
                                 <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
                             </a>
@@ -140,54 +159,149 @@
 
                             <div class="mt-12 grid max-w-xl grid-cols-3 gap-4 border-t border-[var(--line)] pt-5">
                                 <div>
-                                    <p class="font-mono text-[9px] font-semibold tracking-[0.16em] text-[var(--faint)]">01</p>
-                                    <p class="mt-1 text-[10px] font-semibold text-[var(--ink)]">{% trans "Corpus" %}</p>
-                                    <p class="mt-0.5 text-[9px] text-[var(--muted)]">{% trans "Lectura ejecutiva" %}</p>
+                                    <p class="font-mono text-xs font-bold tracking-[0.14em] text-[var(--blue)]">01</p>
+                                    <p class="mt-1 text-xs font-bold uppercase tracking-wider text-[var(--ink)]">{% trans "Corpus" %}</p>
+                                    <p class="mt-0.5 text-xs text-[var(--muted)]">{% trans "Lectura ejecutiva" %}</p>
                                 </div>
                                 <div>
-                                    <p class="font-mono text-[9px] font-semibold tracking-[0.16em] text-[var(--faint)]">02</p>
-                                    <p class="mt-1 text-[10px] font-semibold text-[var(--ink)]">{% trans "Riesgo léxico" %}</p>
-                                    <p class="mt-0.5 text-[9px] text-[var(--muted)]">{% trans "Señales de opacidad" %}</p>
+                                    <p class="font-mono text-xs font-bold tracking-[0.14em] text-[var(--violet)]">02</p>
+                                    <p class="mt-1 text-xs font-bold uppercase tracking-wider text-[var(--ink)]">{% trans "Riesgo léxico" %}</p>
+                                    <p class="mt-0.5 text-xs text-[var(--muted)]">{% trans "Señales de opacidad" %}</p>
                                 </div>
                                 <div>
-                                    <p class="font-mono text-[9px] font-semibold tracking-[0.16em] text-[var(--faint)]">03</p>
-                                    <p class="mt-1 text-[10px] font-semibold text-[var(--ink)]">{% trans "Evidencia" %}</p>
-                                    <p class="mt-0.5 text-[9px] text-[var(--muted)]">{% trans "Trazabilidad" %}</p>
+                                    <p class="font-mono text-xs font-bold tracking-[0.14em] text-[var(--teal)]">03</p>
+                                    <p class="mt-1 text-xs font-bold uppercase tracking-wider text-[var(--ink)]">{% trans "Evidencia" %}</p>
+                                    <p class="mt-0.5 text-xs text-[var(--muted)]">{% trans "Trazabilidad" %}</p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Órbita ELI: visual de señal y lectura -->
-                        <div class="relative hidden min-h-[430px] items-center justify-center lg:flex" aria-hidden="true">
-                            <div class="absolute h-[370px] w-[370px] rounded-full border border-[var(--line)]"></div>
-                            <div class="absolute h-[292px] w-[292px] rounded-full border border-dashed border-[var(--line-strong)]"></div>
-                            <div class="absolute h-[206px] w-[206px] rounded-full bg-[var(--blue-soft)]"></div>
-                            <div class="absolute h-[112px] w-[112px] rounded-full border border-[var(--line)] bg-[var(--surface)]"></div>
+                        <!-- Órbita ELI: visual de señal y lectura de auditoría con animación de desplazamiento y flotación -->
+                        <div class="eli-hero-stage" aria-hidden="true">
+                            <!-- Anillos orbitales concéntricos -->
+                            <div class="eli-hero-orbit-outer"></div>
+                            <div class="eli-hero-orbit-mid eli-spinning-slow"></div>
+                            <div class="eli-hero-orbit-inner"></div>
 
-                            <div class="relative flex h-24 w-24 items-center justify-center rounded-[26px] bg-[var(--blue)] text-4xl font-black text-white shadow-[0_22px_60px_rgba(36,99,235,0.32)]">
-                                e
+                            <!-- Núcleo Orbital Central: Emblema Oficial ELI con levitación continua -->
+                            <div class="eli-hero-core-wrap eli-floating">
+                                <div class="eli-hero-core-ring eli-spinning-slow"></div>
+                                
+                                <div class="eli-hero-core-badge shadow-[0_24px_50px_rgba(37,99,235,0.45)]">
+                                    <div class="relative flex flex-col items-center justify-center text-center select-none z-10">
+                                        <div class="flex items-center gap-1.5 mb-1">
+                                            <span class="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_8px_#38bdf8] animate-ping"></span>
+                                            <svg class="h-5 w-5 text-sky-100" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                            </svg>
+                                            <span class="h-1.5 w-1.5 rounded-full bg-sky-200"></span>
+                                        </div>
+                                        <span class="eli-brand-title">ELI</span>
+                                        <div class="mt-1 h-0.5 w-8 rounded-full bg-cyan-300 shadow-[0_0_6px_#38bdf8]"></div>
+                                        <span class="eli-brand-sub">LEX INDEX</span>
+                                    </div>
+                                </div>
+
+                                <span class="eli-hero-satellite-1"></span>
+                                <span class="eli-hero-satellite-2"></span>
                             </div>
 
-                            <div class="absolute left-0 top-8 w-40 rounded-[14px] border border-[var(--line)] bg-[var(--surface)] p-3 shadow-[0_12px_30px_rgba(21,58,102,0.08)]">
-                                <p class="eyebrow">{% trans "Corpus" %}</p>
-                                <p class="mt-1.5 text-[11px] font-semibold text-[var(--ink)]">{% trans "Documento" %}</p>
-                                <div class="mt-2 h-1 w-full overflow-hidden rounded-full bg-[var(--canvas)]">
-                                    <div class="h-full w-[78%] rounded-full bg-[var(--blue)]"></div>
+                            <!-- Tarjeta Flotante 1: CORPUS / Documento (desplazamiento con lag) -->
+                            <div class="eli-hero-card-left eli-floating-lag">
+                                <div class="flex items-center justify-between">
+                                    <p class="eyebrow">{% trans "Corpus" %}</p>
+                                    <span class="font-mono text-[10.5px] font-bold text-[var(--blue)]">PDF · OCR</span>
+                                </div>
+                                <p class="mt-1.5 text-xs font-bold text-[var(--ink)]">{% trans "Documento" %}</p>
+                                <div class="mt-2.5">
+                                    <div class="h-1.5 w-full overflow-hidden rounded-full bg-[var(--canvas)]">
+                                        <div class="h-full w-[82%] rounded-full bg-gradient-to-r from-blue-600 to-cyan-400"></div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="absolute bottom-7 right-0 w-44 rounded-[14px] border border-[var(--line)] bg-[var(--surface)] p-3 shadow-[0_12px_30px_rgba(21,58,102,0.08)]">
-                                <p class="eyebrow">{% trans "Lectura" %}</p>
-                                <p class="mt-1.5 text-[11px] font-semibold text-[var(--ink)]">{% trans "Complejidad léxica" %}</p>
-                                <div class="mt-2 flex items-center gap-1.5">
-                                    <span class="h-1.5 w-1.5 rounded-full bg-[var(--teal)]"></span>
-                                    <span class="font-mono text-[8px] font-semibold text-[var(--muted)]">{% trans "Señal estable" %}</span>
+                            <!-- Tarjeta Flotante 2: LECTURA / Complejidad Léxica (desplazamiento armónico) -->
+                            <div class="eli-hero-card-right eli-floating">
+                                <div class="flex items-center justify-between">
+                                    <p class="eyebrow">{% trans "Lectura" %}</p>
+                                    <span class="flex items-center gap-1.5">
+                                        <span class="h-1.5 w-1.5 rounded-full bg-[var(--teal)] animate-pulse"></span>
+                                        <span class="font-mono text-[10px] font-bold text-[var(--muted)]">{% trans "Señal estable" %}</span>
+                                    </span>
+                                </div>
+                                <p class="mt-1.5 text-xs font-bold text-[var(--ink)]">{% trans "Complejidad léxica" %}</p>
+                                <div class="mt-2.5">
+                                    <div class="h-1.5 w-full overflow-hidden rounded-full bg-[var(--canvas)]">
+                                        <div class="h-full w-[68%] rounded-full bg-gradient-to-r from-teal-500 to-emerald-400"></div>
+                                    </div>
                                 </div>
                             </div>
 
-                            <div class="absolute bottom-2 left-12 rounded-full border border-[var(--line)] bg-[var(--surface)] px-3 py-1.5 font-mono text-[8px] font-semibold tracking-[0.12em] text-[var(--muted)]">
-                                {% trans "EVIDENCIA / 03" %}
+                            <!-- Badge Flotante 3: EVIDENCIA -->
+                            <div class="eli-hero-badge-bottom">
+                                <span class="h-1.5 w-1.5 rounded-full bg-[var(--blue)]"></span>
+                                <span>{% trans "EVIDENCIA / 03" %}</span>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ===================================================================== -->
+            <!-- Cintillo de Desplazamiento Continuo: Capacidades y Señales Forenses     -->
+            <!-- ===================================================================== -->
+            <section class="mx-auto w-full max-w-[1440px] px-5 py-3 sm:px-7 lg:px-9" aria-label="{% trans 'Capacidades destacadas' %}">
+                <div class="eli-marquee-wrapper py-3 border-y border-[var(--line)]">
+                    <div class="eli-marquee-track">
+                        <div class="eli-marquee-item">
+                            <span class="h-1.5 w-1.5 rounded-full bg-[var(--blue)]"></span>
+                            <span>{% trans "Ingesta documental" %}</span>
+                        </div>
+                        <div class="eli-marquee-item">
+                            <span class="h-1.5 w-1.5 rounded-full bg-[var(--violet)]"></span>
+                            <span>{% trans "Métricas de Complejidad" %}</span>
+                        </div>
+                        <div class="eli-marquee-item">
+                            <span class="h-1.5 w-1.5 rounded-full bg-[var(--teal)]"></span>
+                            <span>{% trans "Legibilidad Inflesz" %}</span>
+                        </div>
+                        <div class="eli-marquee-item">
+                            <span class="h-1.5 w-1.5 rounded-full bg-[var(--amber)]"></span>
+                            <span>{% trans "Detección de Ocultamiento" %}</span>
+                        </div>
+                        <div class="eli-marquee-item">
+                            <span class="h-1.5 w-1.5 rounded-full bg-[var(--indigo)]"></span>
+                            <span>{% trans "Validación de Expertos" %}</span>
+                        </div>
+                        <div class="eli-marquee-item">
+                            <span class="h-1.5 w-1.5 rounded-full bg-[var(--pink)]"></span>
+                            <span>{% trans "Trazabilidad léxica" %}</span>
+                        </div>
+
+                        <!-- Duplicado para loop continuo infinito sin interrupciones -->
+                        <div class="eli-marquee-item" aria-hidden="true">
+                            <span class="h-1.5 w-1.5 rounded-full bg-[var(--blue)]"></span>
+                            <span>{% trans "Ingesta documental" %}</span>
+                        </div>
+                        <div class="eli-marquee-item" aria-hidden="true">
+                            <span class="h-1.5 w-1.5 rounded-full bg-[var(--violet)]"></span>
+                            <span>{% trans "Métricas de Complejidad" %}</span>
+                        </div>
+                        <div class="eli-marquee-item" aria-hidden="true">
+                            <span class="h-1.5 w-1.5 rounded-full bg-[var(--teal)]"></span>
+                            <span>{% trans "Legibilidad Inflesz" %}</span>
+                        </div>
+                        <div class="eli-marquee-item" aria-hidden="true">
+                            <span class="h-1.5 w-1.5 rounded-full bg-[var(--amber)]"></span>
+                            <span>{% trans "Detección de Ocultamiento" %}</span>
+                        </div>
+                        <div class="eli-marquee-item" aria-hidden="true">
+                            <span class="h-1.5 w-1.5 rounded-full bg-[var(--indigo)]"></span>
+                            <span>{% trans "Validación de Expertos" %}</span>
+                        </div>
+                        <div class="eli-marquee-item" aria-hidden="true">
+                            <span class="h-1.5 w-1.5 rounded-full bg-[var(--pink)]"></span>
+                            <span>{% trans "Trazabilidad léxica" %}</span>
                         </div>
                     </div>
                 </div>
@@ -203,14 +317,14 @@
                         <h2 class="mt-3 text-2xl font-semibold tracking-[-0.04em] text-[var(--ink)] sm:text-4xl">
                             {% trans "Lectura objetiva para documentos que exigen precisión" %}
                         </h2>
-                        <p class="mt-5 text-sm leading-7 text-[var(--muted)]">
+                        <p class="mt-5 text-[15px] leading-relaxed text-[var(--muted)]">
                             {% trans "Enterprise Lex Index convierte reportes y contratos en métricas reproducibles: extrae el texto, normaliza el vocabulario y calcula índices de complejidad, densidad léxica y señales de opacidad, con evidencia trazable para cada hallazgo." %}
                         </p>
                         <div class="mt-6 flex flex-wrap gap-2">
-                            <span class="rounded-full border border-[var(--line)] bg-[var(--surface)] px-3 py-1.5 font-mono text-[9px] font-semibold text-[var(--muted)]">{% trans "OCR e ingesta" %}</span>
-                            <span class="rounded-full border border-[var(--line)] bg-[var(--surface)] px-3 py-1.5 font-mono text-[9px] font-semibold text-[var(--muted)]">{% trans "Índices léxicos" %}</span>
-                            <span class="rounded-full border border-[var(--line)] bg-[var(--surface)] px-3 py-1.5 font-mono text-[9px] font-semibold text-[var(--muted)]">{% trans "Trazabilidad" %}</span>
-                            <span class="rounded-full border border-[var(--line)] bg-[var(--surface)] px-3 py-1.5 font-mono text-[9px] font-semibold text-[var(--muted)]">{% trans "Control de expertos" %}</span>
+                            <span class="rounded-full border border-[var(--line)] bg-[var(--surface)] px-3.5 py-1.5 font-mono text-xs font-semibold text-[var(--muted)]">{% trans "OCR e ingesta" %}</span>
+                            <span class="rounded-full border border-[var(--line)] bg-[var(--surface)] px-3.5 py-1.5 font-mono text-xs font-semibold text-[var(--muted)]">{% trans "Índices léxicos" %}</span>
+                            <span class="rounded-full border border-[var(--line)] bg-[var(--surface)] px-3.5 py-1.5 font-mono text-xs font-semibold text-[var(--muted)]">{% trans "Trazabilidad" %}</span>
+                            <span class="rounded-full border border-[var(--line)] bg-[var(--surface)] px-3.5 py-1.5 font-mono text-xs font-semibold text-[var(--muted)]">{% trans "Control de expertos" %}</span>
                         </div>
                     </div>
 
@@ -222,10 +336,10 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
                                     </svg>
                                 </div>
-                                <span class="font-mono text-[9px] font-semibold tracking-[0.14em] text-[var(--faint)]">01</span>
+                                <span class="font-mono text-xs font-bold tracking-[0.14em] text-[var(--faint)]">01</span>
                             </div>
                             <h3 class="mt-5 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Ingesta documental" %}</h3>
-                            <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                            <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                                 {% trans "PDF individuales o lotes ZIP con extracción de texto y detección de entidad y periodo." %}
                             </p>
                         </article>
@@ -237,10 +351,10 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                                     </svg>
                                 </div>
-                                <span class="font-mono text-[9px] font-semibold tracking-[0.14em] text-[var(--faint)]">02</span>
+                                <span class="font-mono text-xs font-bold tracking-[0.14em] text-[var(--faint)]">02</span>
                             </div>
                             <h3 class="mt-5 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Métricas de Complejidad" %}</h3>
-                            <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                            <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                                 {% trans "Legibilidad, densidad léxica y recuento silábico calculados por documento." %}
                             </p>
                         </article>
@@ -253,10 +367,10 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                     </svg>
                                 </div>
-                                <span class="font-mono text-[9px] font-semibold tracking-[0.14em] text-[var(--faint)]">03</span>
+                                <span class="font-mono text-xs font-bold tracking-[0.14em] text-[var(--faint)]">03</span>
                             </div>
                             <h3 class="mt-5 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Detección de Ocultamiento" %}</h3>
-                            <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                            <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                                 {% trans "Patrones de lenguaje ambiguo y omisiones sobre fragmentos y cláusulas críticas." %}
                             </p>
                         </article>
@@ -268,10 +382,10 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                                     </svg>
                                 </div>
-                                <span class="font-mono text-[9px] font-semibold tracking-[0.14em] text-[var(--faint)]">04</span>
+                                <span class="font-mono text-xs font-bold tracking-[0.14em] text-[var(--faint)]">04</span>
                             </div>
                             <h3 class="mt-5 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Validación de Expertos" %}</h3>
-                            <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                            <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                                 {% trans "Vocabularios controlados revisados por especialistas en derecho y auditoría." %}
                             </p>
                         </article>
@@ -291,7 +405,7 @@
                                 {% trans "De la ingesta a la evidencia en tres pasos" %}
                             </h2>
                         </div>
-                        <p class="max-w-lg text-xs leading-6 text-[var(--muted)]">
+                        <p class="max-w-lg text-sm leading-relaxed text-[var(--muted)]">
                             {% trans "El flujo completo se ejecuta dentro del espacio de trabajo y deja constancia de cada transformación." %}
                         </p>
                     </div>
@@ -299,31 +413,31 @@
                     <ol class="mt-6 grid gap-4 md:grid-cols-3">
                         <li class="company-card list-none">
                             <div class="flex items-center justify-between">
-                                <span class="font-mono text-[9px] font-semibold tracking-[0.16em] text-[var(--blue)]">01</span>
+                                <span class="font-mono text-xs font-bold tracking-[0.16em] text-[var(--blue)]">01</span>
                                 <span class="h-1.5 w-1.5 rounded-full bg-[var(--blue)]"></span>
                             </div>
                             <h3 class="mt-5 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Ingesta" %}</h3>
-                            <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                            <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                                 {% trans "Carga un PDF o un lote ZIP; ELI extrae el texto con OCR cuando hace falta y clasifica entidad y periodo." %}
                             </p>
                         </li>
                         <li class="company-card list-none">
                             <div class="flex items-center justify-between">
-                                <span class="font-mono text-[9px] font-semibold tracking-[0.16em] text-[var(--blue)]">02</span>
+                                <span class="font-mono text-xs font-bold tracking-[0.16em] text-[var(--blue)]">02</span>
                                 <span class="h-1.5 w-1.5 rounded-full bg-[var(--violet)]"></span>
                             </div>
                             <h3 class="mt-5 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Análisis" %}</h3>
-                            <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                            <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                                 {% trans "Normaliza el vocabulario y calcula frecuencias, complejidad, legibilidad y señales de opacidad." %}
                             </p>
                         </li>
                         <li class="company-card list-none">
                             <div class="flex items-center justify-between">
-                                <span class="font-mono text-[9px] font-semibold tracking-[0.16em] text-[var(--blue)]">03</span>
+                                <span class="font-mono text-xs font-bold tracking-[0.16em] text-[var(--blue)]">03</span>
                                 <span class="h-1.5 w-1.5 rounded-full bg-[var(--teal)]"></span>
                             </div>
                             <h3 class="mt-5 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Evidencia" %}</h3>
-                            <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                            <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                                 {% trans "Consulta reportes, contrasta listas de expertos y exporta resultados con historial de auditoría." %}
                             </p>
                         </li>
@@ -342,7 +456,7 @@
                             {% trans "Herramientas para leer el riesgo" %}
                         </h2>
                     </div>
-                    <p class="max-w-lg text-xs leading-6 text-[var(--muted)]">
+                    <p class="max-w-lg text-sm leading-relaxed text-[var(--muted)]">
                         {% trans "Herramientas especializadas para equipos de auditoría, firmas legales y analistas corporativos." %}
                     </p>
                 </div>
@@ -355,10 +469,10 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                                 </svg>
                             </div>
-                            <span class="font-mono text-[9px] font-semibold tracking-[0.14em] text-[var(--faint)]">M1</span>
+                            <span class="font-mono text-xs font-bold tracking-[0.14em] text-[var(--faint)]">M1</span>
                         </div>
                         <h3 class="mt-5 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Frecuencia y Distribución Léxica Consolidada" %}</h3>
-                        <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                        <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                             {% trans "Ranking consolidado de términos por reporte, entidad y periodo, con exportación a Excel." %}
                         </p>
                     </article>
@@ -371,10 +485,10 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                                 </svg>
                             </div>
-                            <span class="font-mono text-[9px] font-semibold tracking-[0.14em] text-[var(--faint)]">M2</span>
+                            <span class="font-mono text-xs font-bold tracking-[0.14em] text-[var(--faint)]">M2</span>
                         </div>
                         <h3 class="mt-5 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Detector de Ocultamiento de Información" %}</h3>
-                        <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                        <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                             {% trans "Localiza fragmentos con lenguaje ambiguo u omisiones y valida o descarta cada ocurrencia." %}
                         </p>
                     </article>
@@ -386,10 +500,10 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M3 6l3 18h12l3-18H3zm3 3h12"/>
                                 </svg>
                             </div>
-                            <span class="font-mono text-[9px] font-semibold tracking-[0.14em] text-[var(--faint)]">M3</span>
+                            <span class="font-mono text-xs font-bold tracking-[0.14em] text-[var(--faint)]">M3</span>
                         </div>
                         <h3 class="mt-5 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Análisis Comparativo de Vocabulario" %}</h3>
-                        <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                        <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                             {% trans "Contrasta un reporte con una lista de experto: coincidencias, términos exclusivos e intersección." %}
                         </p>
                     </article>
@@ -401,10 +515,10 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
                                 </svg>
                             </div>
-                            <span class="font-mono text-[9px] font-semibold tracking-[0.14em] text-[var(--faint)]">M4</span>
+                            <span class="font-mono text-xs font-bold tracking-[0.14em] text-[var(--faint)]">M4</span>
                         </div>
                         <h3 class="mt-5 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Vocabularios y Listas de Control" %}</h3>
-                        <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                        <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                             {% trans "Administra vocabularios controlados, cláusulas de referencia y palabras clave por especialista." %}
                         </p>
                     </article>
@@ -416,10 +530,10 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                 </svg>
                             </div>
-                            <span class="font-mono text-[9px] font-semibold tracking-[0.14em] text-[var(--faint)]">M5</span>
+                            <span class="font-mono text-xs font-bold tracking-[0.14em] text-[var(--faint)]">M5</span>
                         </div>
                         <h3 class="mt-5 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Historial de Auditoría de Ocultamiento" %}</h3>
-                        <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                        <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                             {% trans "Trazabilidad de revisiones, auditores y párrafos analizados con filtros por año y entidad." %}
                         </p>
                     </article>
@@ -431,10 +545,10 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                 </svg>
                             </div>
-                            <span class="font-mono text-[9px] font-semibold tracking-[0.14em] text-[var(--faint)]">M6</span>
+                            <span class="font-mono text-xs font-bold tracking-[0.14em] text-[var(--faint)]">M6</span>
                         </div>
                         <h3 class="mt-5 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Catálogo de Reportes" %}</h3>
-                        <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                        <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                             {% trans "Gestiona subidas, empresas, periodos y duplicados desde un catálogo central." %}
                         </p>
                     </article>
@@ -453,30 +567,30 @@
                                 {% trans "Diseñado para equipos que rinden cuentas" %}
                             </h2>
                         </div>
-                        <p class="max-w-lg text-xs leading-6 text-[var(--muted)]">
+                        <p class="max-w-lg text-sm leading-relaxed text-[var(--muted)]">
                             {% trans "Cada equipo trabaja sobre su espacio de trabajo con permisos, vocabularios y reportes propios de su rol." %}
                         </p>
                     </div>
 
                     <div class="mt-6 grid gap-4 md:grid-cols-3">
                         <article class="company-card">
-                            <p class="font-mono text-[9px] font-semibold tracking-[0.16em] text-[var(--blue)]">01</p>
+                            <p class="font-mono text-xs font-bold tracking-[0.16em] text-[var(--blue)]">01</p>
                             <h3 class="mt-4 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Auditoría interna" %}</h3>
-                            <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                            <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                                 {% trans "Compara periodos y entidades con métricas homogéneas y reportes exportables." %}
                             </p>
                         </article>
                         <article class="company-card">
-                            <p class="font-mono text-[9px] font-semibold tracking-[0.16em] text-[var(--violet)]">02</p>
+                            <p class="font-mono text-xs font-bold tracking-[0.16em] text-[var(--violet)]">02</p>
                             <h3 class="mt-4 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Firmas legales" %}</h3>
-                            <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                            <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                                 {% trans "Audita contratos y cláusulas detectando lenguaje opaco antes de firmar." %}
                             </p>
                         </article>
                         <article class="company-card">
-                            <p class="font-mono text-[9px] font-semibold tracking-[0.16em] text-[var(--teal)]">03</p>
+                            <p class="font-mono text-xs font-bold tracking-[0.16em] text-[var(--teal)]">03</p>
                             <h3 class="mt-4 text-base font-semibold tracking-tight text-[var(--ink)]">{% trans "Analistas corporativos" %}</h3>
-                            <p class="mt-2 text-[11px] leading-6 text-[var(--muted)]">
+                            <p class="mt-2 text-sm leading-relaxed text-[var(--muted)]">
                                 {% trans "Obtén vocabulario clave y distribuciones de frecuencia para tus estudios." %}
                             </p>
                         </article>
@@ -495,7 +609,7 @@
                             <h2 class="mt-3 max-w-2xl text-2xl font-semibold tracking-[-0.04em] text-white sm:text-4xl">
                                 {% trans "Comienza a auditar tus documentos" %}
                             </h2>
-                            <p class="mt-3 max-w-xl text-xs leading-6 text-[rgba(226,240,255,0.66)]">
+                            <p class="mt-3 max-w-xl text-sm leading-relaxed text-[rgba(226,240,255,0.78)]">
                                 {% trans "Accede a las herramientas de análisis comparativo, histórico de reportes y gestión de empresas." %}
                             </p>
                         </div>
@@ -503,14 +617,14 @@
                         <div class="flex flex-col gap-3 sm:flex-row">
                             {% if user.is_authenticated %}
                                 {% if is_expert_user %}
-                                <a href="{% url 'concealment_detection' %}" class="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-[11px] bg-white px-5 py-3 text-[10px] font-bold text-[var(--blue-deep)] transition hover:bg-[var(--blue-soft)] sm:w-auto">
+                                <a href="{% url 'concealment_detection' %}" class="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-[12px] bg-white px-6 py-3.5 text-sm font-bold text-[var(--blue-deep)] transition hover:bg-[var(--blue-soft)] shadow-md sm:w-auto">
                                     <span>{% trans "Ir a Detección de Opacidad" %}</span>
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                                     </svg>
                                 </a>
                                 {% else %}
-                                <a href="{% url 'panel' %}" class="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-[11px] bg-white px-5 py-3 text-[10px] font-bold text-[var(--blue-deep)] transition hover:bg-[var(--blue-soft)] sm:w-auto">
+                                <a href="{% url 'panel' %}" class="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-[12px] bg-white px-6 py-3.5 text-sm font-bold text-[var(--blue-deep)] transition hover:bg-[var(--blue-soft)] shadow-md sm:w-auto">
                                     <span>{% trans "Ir al Observatorio" %}</span>
                                     <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
@@ -518,13 +632,13 @@
                                 </a>
                                 {% endif %}
                             {% else %}
-                            <a href="{% url 'register' %}" class="inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-[11px] bg-white px-5 py-3 text-[10px] font-bold text-[var(--blue-deep)] transition hover:bg-[var(--blue-soft)] sm:w-auto">
+                            <a href="{% url 'register' %}" class="inline-flex w-full items-center justify-center gap-2.5 whitespace-nowrap rounded-[12px] bg-white px-6 py-3.5 text-sm font-bold text-[var(--blue-deep)] transition hover:bg-[var(--blue-soft)] shadow-md sm:w-auto">
                                 <span>{% trans "Comenzar Ahora — Crear Cuenta" %}</span>
                                 <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
                                 </svg>
                             </a>
-                            <a href="{% url 'login' %}" class="inline-flex w-full items-center justify-center whitespace-nowrap rounded-[11px] border border-[rgba(226,240,255,0.22)] px-5 py-3 text-[10px] font-bold text-[rgba(226,240,255,0.86)] transition hover:border-[var(--cyan)] hover:text-white sm:w-auto">
+                            <a href="{% url 'login' %}" class="inline-flex w-full items-center justify-center whitespace-nowrap rounded-[12px] border border-[rgba(226,240,255,0.28)] px-6 py-3.5 text-sm font-semibold text-white transition hover:border-[var(--cyan)] hover:bg-white/5 sm:w-auto">
                                 {% trans "Iniciar Sesión" %}
                             </a>
                             {% endif %}
@@ -538,23 +652,38 @@
         <!-- Pie público                                                            -->
         <!-- --------------------------------------------------------------------- -->
         <footer class="border-t border-[var(--line)] bg-[var(--surface)]">
-            <div class="mx-auto flex w-full max-w-[1440px] flex-col gap-5 px-5 py-7 sm:px-7 md:flex-row md:items-center md:justify-between lg:px-9">
-                <div class="flex items-center gap-3">
-                    <div class="logo-orbit logo-orbit-sm"><span>e</span></div>
+            <div class="mx-auto flex w-full max-w-[1440px] flex-col gap-5 px-5 py-8 sm:px-7 md:flex-row md:items-center md:justify-between lg:px-9">
+                <div class="flex items-center gap-3.5 group">
+                    <div class="relative shrink-0 flex items-center justify-center">
+                        <svg class="h-9 w-9 transition-transform duration-300 group-hover:scale-105" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="eliLogoGradFooter" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#1d4ed8"/>
+                                    <stop offset="50%" stop-color="#2563eb"/>
+                                    <stop offset="100%" stop-color="#38bdf8"/>
+                                </linearGradient>
+                            </defs>
+                            <rect width="36" height="36" rx="10" fill="url(#eliLogoGradFooter)"/>
+                            <rect x="0.75" y="0.75" width="34.5" height="34.5" rx="9.25" stroke="white" stroke-opacity="0.3" stroke-width="1.5"/>
+                            <ellipse cx="18" cy="18" rx="13" ry="5.2" transform="rotate(-30 18 18)" stroke="#7dd3fc" stroke-opacity="0.8" stroke-width="1.2" stroke-dasharray="2.5 1.5"/>
+                            <text x="18" y="22" font-family="'IBM Plex Mono', ui-monospace, monospace" font-size="11" font-weight="900" letter-spacing="0.5" fill="#ffffff" text-anchor="middle">ELI</text>
+                            <rect x="13.5" y="25" width="9" height="1.6" rx="0.8" fill="#7dd3fc"/>
+                        </svg>
+                    </div>
                     <div class="leading-tight">
-                        <span class="block text-xs font-black tracking-tight text-[var(--ink)]">Enterprise Lex Index</span>
-                        <span class="block font-mono text-[8px] font-semibold uppercase tracking-[0.16em] text-[var(--faint)]">{% trans "Plataforma Integral de Auditoría & Complejidad Contractual" %}</span>
+                        <span class="block text-sm font-bold tracking-tight text-[var(--ink)]">Enterprise Lex Index</span>
+                        <span class="block font-mono text-xs font-semibold uppercase tracking-[0.12em] text-[var(--blue)]">{% trans "Plataforma Integral de Auditoría & Complejidad Contractual" %}</span>
                     </div>
                 </div>
 
-                <nav class="flex flex-wrap gap-5 text-[10px] font-semibold text-[var(--muted)]">
+                <nav class="flex flex-wrap gap-6 text-sm font-medium text-[var(--muted)]">
                     <a href="#programa" class="transition hover:text-[var(--blue)]">{% trans "El programa" %}</a>
                     <a href="#proceso" class="transition hover:text-[var(--blue)]">{% trans "Cómo funciona" %}</a>
                     <a href="#modulos" class="transition hover:text-[var(--blue)]">{% trans "Módulos" %}</a>
                     <a href="#perfiles" class="transition hover:text-[var(--blue)]">{% trans "Para quién" %}</a>
                 </nav>
 
-                <p class="font-mono text-[9px] text-[var(--faint)]">
+                <p class="font-mono text-xs font-medium text-[var(--muted)]">
                     &copy; 2026 Enterprise Lex Index · {% trans "Todos los derechos reservados." %}
                 </p>
             </div>

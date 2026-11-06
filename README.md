@@ -1,436 +1,200 @@
-# Pestaña de "Índice de Complejidad" - Módulo de Conteo de Palabras
+# ELI — Enterprise Lex Index
 
-## 📋 Descripción General
+> **Plataforma Integral de Auditoría Lingüística, Complejidad Contractual y Análisis Léxico Multivariante.**
 
-Se ha agregado una nueva pestaña llamada **"Índice de Complejidad"** al módulo de conteo total de palabras. Esta pestaña permite visualizar 8 parámetros clave que miden la complejidad de los informes financieros, con filtros dinámicos por año y empresa.
-
----
-
-## 🎯 Funcionalidades
-
-### 1. **Dos Pestañas Principales**
-- **Conteo Total**: Muestra la tabla tradicional de frecuencia de palabras
-- **Índice de Complejidad**: Muestra los 8 parámetros de complejidad
-
-### 2. **Información de Contexto**
-Cuando está visible la pestaña de complejidad, se muestra:
-- **RUC**: Número de identificación de la empresa (si está seleccionada)
-- **Nombre de Empresa**: Razón social completa (si está seleccionada, o "Todas")
-- **Año**: Año filtrado (o "Todos" si no hay filtro)
-- **Cantidad de Reportes**: Número de reportes procesados con los filtros aplicados
-
-### 3. **Los 8 Parámetros de Complejidad**
-
-#### **Parámetros Básicos:**
-1. **Total de Palabras** 
-   - 📊 Promedio de palabras por informe
-   - Mayor valor = documentos más extensos
-
-2. **Palabras Únicas**
-   - 📝 Vocabulario promedio usado
-   - Indica la variedad de términos
-
-3. **Total de Oraciones**
-   - 📄 Número promedio de oraciones
-   - Estructura del documento
-
-4. **Longitud Promedio de Palabras**
-   - 📏 Caracteres por palabra
-   - Mayor = palabras más complejas
-
-5. **Palabras por Oración**
-   - 🎯 Promedio de palabras por oración
-   - Indicador de densidad sintáctica
-
-6. **Palabras Técnicas**
-   - 🔬 Promedio de términos especializados
-   - Basado en listas de expertos
-
-#### **Índices Derivados:**
-7. **Índice de Diversidad Léxica** (%)
-   - Fórmula: (Palabras únicas / Total de palabras) × 100
-   - Mayor % = más vocabulario variado
-   - Rango: 0-100%
-
-8. **Índice de Legibilidad** (%)
-   - Fórmula: 100 - (Palabras por oración)
-   - Mayor % = oraciones más cortas = mejor legibilidad
-   - Rango: 0-100%
+ELI es una solución diseñada para evaluar la complejidad lingüística, detectar riesgos de opacidad normativa y contrastar reportes corporativos contra marcos periciales mediante algoritmos cuantitativos y estadística multivariante.
 
 ---
 
-## 📊 Cómo Funciona con Filtros
+## 💻 Stack Tecnológico
 
-### **Sin Filtros (Todos los años, todas las empresas)**
-```
-Año: Todos
-Empresa: Todas
-Parámetros: Promedios calculados sobre TODOS los reportes
-```
-
-### **Filtro por Año (Ej: 2023)**
-```
-Año: 2023
-Empresa: Todas
-Parámetros: Solo reportes del año 2023
-```
-
-### **Filtro por Empresa (Ej: ABSORPELSA)**
-```
-Año: Todos
-Empresa: ABSORPELSA
-RUC: 1791353455001
-Parámetros: Solo reportes de esa empresa (todos los años)
-```
-
-### **Filtro por Año + Empresa**
-```
-Año: 2023
-Empresa: ABSORPELSA
-RUC: 1791353455001
-Parámetros: Solo reportes de 2023 de esa empresa
-```
+| Capa | Tecnologías |
+|---|---|
+| **Backend & Web** | Python 3.13 · Django 5.2.1 · SQLite / PostgreSQL |
+| **Estadística & NLP** | NumPy · Pipeline léxico de lematización y desguionización multilínea · Stopwords personalizadas |
+| **Ingesta & OCR** | PyMuPDF (`fitz`) · Tesseract OCR local · Poppler (`pdftoppm`) · OpenAI Vision (respaldo) · OpenPyXL |
+| **Frontend & UI** | Sistema de diseño ELI · Tailwind CSS · Vanilla JS modular · SVG interactivo · Manrope & JetBrains Mono |
+| **Internacionalización**| GNU Gettext (bilingüe Español / Inglés al 100%) |
 
 ---
 
-## 🔧 Cambios Técnicos Realizados
+## 🚀 Módulos Principales
 
-### **Backend (`total_count_views.py`)**
-
-#### Nueva función: `get_complexity_metrics(request)`
-```python
-def get_complexity_metrics(request):
-    """
-    Calcula métricas de complejidad filtradas por año y empresa.
-    
-    Retorna diccionario con:
-    - total_words_avg: Promedio de palabras totales
-    - unique_words_avg: Promedio de palabras únicas
-    - total_sentences_avg: Promedio de oraciones
-    - avg_word_length: Promedio de caracteres por palabra
-    - avg_sentence_length: Promedio de palabras por oración
-    - technical_words_avg: Promedio de palabras técnicas
-    - diversity_index: Índice de diversidad léxica (%)
-    - readability_index: Índice de legibilidad (%)
-    - reports_count: Total de reportes procesados
-    """
-```
-
-#### Vista actualizada: `total_count_view()`
-Ahora calcula y pasa al template:
-- `complexity_metrics`: Diccionario con los 9 valores
-- `selected_company`: Objeto de la empresa seleccionada (o None)
-
-### **Frontend (template `totalcount.html`)**
-- Sistema de pestañas con JavaScript
-- 8 tarjetas de métrica con colores y iconos
-- Sección de información de contexto
-- Guía de interpretación
-- Mensaje cuando no hay datos
+1. **Observatorio Ejecutivo (Dashboard)**:
+   - Panel de control en tiempo real con *Signal Board* de telemetría léxica.
+   - Indicadores agregados de diversidad léxica, densidad técnica, legibilidad (INFLESZ) y estado del corpus documental.
+2. **Ingesta Documental y Pipeline OCR**:
+   - Procesamiento de archivos PDF individuales y cargas masivas comprimidas (`.zip`).
+   - Pipeline de limpieza léxica, desguionización multilínea y reconocimiento óptico de caracteres local (Tesseract/Poppler) con respaldo opcional de visión artificial.
+3. **Auditoría de Opacidad**:
+   - Detección algorítmica de fragmentos con lenguaje potencialmente ambiguo, vago o disuasorio.
+   - Flujo de revisión forense y registro de bitácora de hallazgos.
+4. **Análisis Comparativo de Vocabulario**:
+   - **Contraste Micro (Venn)**: Coincidencias y divergencias entre un reporte corporativo y una lista pericial experta.
+   - **Evolución Interanual**: Contraste longitudinal entre reportes de la misma empresa (términos omitidos, persistentes y emergentes).
+   - **Acoplamiento Macro (Co-Inercia)**: Análisis multivariante de matrices documentales mediante el **Coeficiente RV de Escoufier**, test de significancia estadística Monte Carlo y proyección visual en **Grafo en Estrella (Radial Star Plot)**.
+5. **Marcos de Conocimiento y Listas de Expertos**:
+   - Gestión de vocabularios técnicos por peritos acreditados y profesiones normalizadas.
+6. **Espacios de Trabajo Aislados (Multi-tenant)**:
+   - Separación estricta de datos, expedientes y permisos por equipo o área de auditoría.
+7. **Internacionalización y Accesibilidad**:
+   - Soporte bilingüe completo (`es` / `en`) y sistema de diseño adaptativo con soporte para modo claro y oscuro.
 
 ---
 
-## 🎨 Diseño Visual
+## 👥 Roles de Usuario y Permisos
 
-### Estructura de Pestañas
-```
-┌────────────────────────────────────────┐
-│ 📊 Conteo Total | 📈 Índice de Complejidad │
-├────────────────────────────────────────┤
-│                                           │
-│  Contenido de la pestaña seleccionada    │
-│                                           │
-└────────────────────────────────────────┘
-```
-
-### Tarjetas de Métrica
-Cada métrica se muestra en una tarjeta con:
-- Título y icono representativo
-- Valor principal en grande y osado
-- Explicación pequeña del significado
-- Bordes de color distintivos
-
-### Colores por Métrica
-- **Total de Palabras**: Purple
-- **Palabras Únicas**: Blue
-- **Oraciones**: Green
-- **Longitud Promedio**: Yellow
-- **Palabras por Oración**: Red
-- **Palabras Técnicas**: Indigo
-- **Diversidad Léxica**: Pink
-- **Legibilidad**: Teal
+- **Administrador**: Control total del sistema, configuración de espacios de trabajo, gestión de usuarios, catálogos y auditoría global.
+- **Auditor**: Gestión de entidades corporativas, subida de expedientes, análisis de opacidad, conteos léxicos y comparativas multivariantes.
+- **Experto / Perito**: Rol especializado enfocado en el registro y mantenimiento de marcos de vocabulario técnico de contraste.
 
 ---
 
-## 📱 Ejemplo de Uso
+## 🛠️ Requisitos Previos
 
-### Flujo de usuario:
+- **Python** 3.12 o 3.13
+- **Dependencias del Sistema**:
+  - `poppler-utils` (renderizado y conversión de PDFs a imagen)
+  - `tesseract-ocr` + paquete de idioma español (`tessdata/spa`)
+  - `gettext` (compilación de traducciones internacionales)
 
-1. **Accede a "Conteo Total"** desde el panel
-2. **Selecciona filtros** (año, empresa, lista de experto)
-3. **Hace clic en "Filtrar"**
-4. **Ve la pestaña "Conteo Total"** con palabras agrupadas
-5. **Hace clic en "Índice de Complejidad"**
-6. **Ve los 8 parámetros** con los filtros aplicados
-7. **Interpreta los resultados** usando la guía incluida
-
-### Interpretación Práctica:
-
-**Si "Índice de Diversidad Léxica" = 35%:**
-- ✅ 35% de vocabulario único
-- 📌 El documento reutiliza muchas palabras clave
-- 💡 Complejidad léxica = Baja-Media
-
-**Si "Legibilidad" = 25%:**
-- ⚠️ Oraciones muy largas (promedio 75 palabras)
-- 📌 Difícil de leer y entender
-- 💡 Complejidad sintáctica = Alta
-
-**Si "Palabras Técnicas" = 120:**
-- ✅ 120 términos especializados encontrados
-- 📌 Documento altamente técnico
-- 💡 Densidad técnica = Alta
+Consulta la guía detallada de instalación en [docs/setup/dependencies.md](docs/setup/dependencies.md).
 
 ---
 
-## 💡 Casos de Uso
+## ⚡ Instalación y Puesta en Marcha
 
-### Análisis Comparativo:
-```
-"Comparar complejidad entre 2023 y 2023 para la misma empresa"
-→ Usar filtros por año para ver evolución temporal
-```
-
-### Benchmarking:
-```
-"¿Cuál es la legibilidad promedio en toda la industria?"
-→ Sin filtro de empresa, ver promedio sectorial
-```
-
-### Auditoría:
-```
-"¿El informe de ABSORPELSA 2023 tiene más vocabulario técnico que otros?"
-→ Filtrar empresa + año específico
-```
-
----
-
-## ⚠️ Consideraciones Importantes
-
-1. **Los datos dependen de que los reportes hayan sido procesados**
-   - Si no hay reportes con los filtros, mostrará: "No hay datos de complejidad"
-   
-2. **Las métricas se calculan en tiempo real**
-   - Basadas en los campos del modelo Report
-   - Requiere que los reportes tengan completados: total_words, unique_words, etc.
-
-3. **Interpretación contextual**
-   - Los valores "altos" o "bajos" dependen del industria y tipo de documento
-   - Usar como referencia comparativa, no como valor absoluto
-
-4. **Performance**
-   - Filtrar por empresa específica = consultas más rápidas
-   - Filtro "Todos" puede ser lento con muchos reportes
-
----
-
-## 🔄 Integración con Sistema Existente
-
-La nueva funcionalidad se integra seamlessly con:
-- ✅ Sistema de filtros existente (año, empresa, lista de experto)
-- ✅ Panel de administración
-- ✅ Autenticación de usuarios
-- ✅ Modelos de BD (Report, Company, ExpertWord)
-- ✅ Exportación a Excel (solo aplica a Conteo Total por ahora)
-
----
-
-## 📝 Archivos Modificados
-
-1. **Counter/views/total_count_views.py**
-   - Agregada función `get_complexity_metrics()`
-   - Actualizada vista `total_count_view()`
-
-2. **Counter/templates/totalcount.html**
-   - Agregado sistema de pestañas
-   - Agregadas tarjetas de métricas
-   - Agregada guía de interpretación
-   - Agregado JavaScript para funcionalidad de pestañas
-
----
-
-## 🚀 Próximas Mejoras Sugeridas
-
-1. **Exportación de Complejidad a Excel**
-   - Agregar botón de exportación específico para métricas
-   
-2. **Gráficos Temporales**
-   - Línea de tendencia de complejidad por año
-   - Radar chart de all 8 metrics
-
-3. **Comparación entre Empresas**
-   - Vista lado a lado de complejidad de varias empresas
-   - Ranking de empresas por complejidad
-
-4. **Alertas de Complejidad**
-   - Notificar cuando legibilidad es muy baja
-   - Alertas de vocabulario duplicado excesivo
-
-5. **Machine Learning**
-   - Predecir complejidad de nuevos reportes
-   - Clustering de reportes por tipo de complejidad
-
----
-
-versión: 1.0  
-fecha: 2026-06-24
-
-# ELI - Enterprise Lex Index
-
-Aplicación Django para analizar reportes financieros, extraer texto y calcular métricas como índice de complejidad, legibilidad, diversidad léxica y densidad técnica.
-
-## Requisitos
-
-- Git
-- Python 3.12+ (recomendado 3.12 o 3.13)
-- `pip`
-
-## 1. Clonar el repositorio
-
+### 1. Clonar el repositorio
 ```bash
-git clone <URL_DEL_REPOSITORIO>
-cd ELI
+git clone <URL_DEL_REPOSITORIO> ComplexIndexV2
+cd ComplexIndexV2
 ```
 
-## 2. Crear y activar entorno virtual
-
-### Windows (PowerShell)
-
-```powershell
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-```
-
-### Windows (CMD)
-
-```bat
-python -m venv venv
-venv\Scripts\activate.bat
-```
-
-### Linux / macOS
-
+### 2. Configurar el entorno virtual de Python
 ```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-## 3. Instalar dependencias
-
-```bash
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## 4. Configurar variables de entorno
-
-Crea un archivo `.env` en la raíz del proyecto:
-
-```env
-OPENAI_API_KEY=sk-tu-api-key-aqui
+### 3. Configurar variables de entorno
+Copia la plantilla `.env.example` y define las variables locales:
+```bash
+cp .env.example .env
 ```
+*(Para detalles de configuración de API keys opcionales, consulta [docs/setup/api_keys.md](docs/setup/api_keys.md)).*
 
-Sin esta variable, el procesamiento OCR con OpenAI no funcionaría.
-
-## 5. Ejecutar migraciones
-
+### 4. Migraciones de Base de Datos y Compilación de Idiomas
 ```bash
 python manage.py migrate
+python manage.py compilemessages -l en
 ```
 
-## 6. (Opcional) Crear superusuario
-
+### 5. Crear usuario administrador
 ```bash
 python manage.py createsuperuser
 ```
 
-## 7. (Opcional) Cargar cat�logo de empresas desde Excel
-
-Si usarás la carga inicial de empresas:
-
-```bash
-python manage.py import_companies --file Empresas.xlsx
-```
-
-## 8. Levantar el servidor
-
+### 6. Iniciar el servidor de desarrollo
 ```bash
 python manage.py runserver
 ```
+Accede a la plataforma desde tu navegador en: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
-Abre en navegador:
+---
+
+## 📂 Comandos de Gestión y Mantenimiento
+
+El sistema incluye comandos Django CLI para administración y saneamiento de datos:
+
+### 1. Importar catálogo base de empresas
+Puebla un espacio de trabajo con el dataset corporativo oficial (442 empresas ecuatorianas):
+```bash
+python manage.py import_companies --workspace <ID_ESPACIO>
+```
+*(Utiliza por defecto `Counter/resources/Empresas.xlsx`, o puedes especificar un archivo personalizado con `--file /ruta/archivo.xlsx`).*
+
+### 2. Reprocesar reportes con el nuevo motor lingüístico
+Recalcula métricas de complejidad, legibilidad INFLESZ y sincroniza palabras en expedientes existentes:
+```bash
+python manage.py reprocess_reports --workspace-id <ID_ESPACIO>
+```
+*(Opcionalmente agrega `--from-file` para re-analizar el archivo PDF físico en disco).*
+
+### 3. Depuración de reportes duplicados
+Elimina expedientes duplicados por espacio, empresa y año, preservando el que posea mayor cantidad de texto procesado:
+```bash
+# Simular sin aplicar cambios:
+python manage.py clean_duplicate_reports --dry-run
+
+# Ejecutar limpieza real:
+python manage.py clean_duplicate_reports
+```
+
+### 4. Saneamiento léxico de conteos
+Depura ruido OCR residual y palabras fusionadas, sincronizando las tablas analíticas:
+```bash
+python manage.py purge_invalid_words --workspace-id <ID_ESPACIO>
+```
+
+---
+
+## 🧪 Pruebas Automatizadas
+
+El proyecto cuenta con una suite integral de 94 pruebas unitarias y de integración que validan el pipeline léxico, la seguridad de autenticación, el aislamiento multitenant, los filtros de opacidad y el motor matemático de Co-Inercia:
+
+```bash
+python manage.py test Counter User
+```
+
+---
+
+## 📁 Arquitectura del Repositorio
 
 ```text
-http://127.0.0.1:8000/
+ComplexIndexV2/
+├── Counter/                   # Aplicación principal de auditoría y análisis léxico
+│   ├── management/commands/   # Comandos CLI (importación, reprocesamiento, saneamiento)
+│   ├── resources/             # Datasets base (diccionario_es.txt, Empresas.xlsx)
+│   ├── static/                # CSS (Tailwind/Shell), JS interactivo e iconos
+│   ├── templates/             # Plantillas Django con diseño ELI
+│   ├── coinertia.py           # Motor de Co-Inercia multivariante y Coeficiente RV
+│   ├── cleaner.py             # Pipeline de depuración, stopwords y lematización
+│   ├── utils.py               # Fórmulas de legibilidad (INFLESZ) y métricas
+│   └── views/                 # Controladores organizados por dominio
+├── User/                      # Autenticación, perfiles periciales y permisos
+├── WordCounter/               # Configuración central del framework Django
+├── locale/                    # Catálogos de internacionalización (ES / EN)
+├── docs/                      # Documentación técnica organizada
+│   ├── CHANGELOG.md           # Registro formal de versiones y fases
+│   ├── architecture/          # Especificaciones de diseño, métricas y OCR
+│   ├── setup/                 # Guías de instalación de dependencias y APIs
+│   └── audits/                # Informes históricos de auditoría técnica
+├── manage.py
+└── requirements.txt           # Dependencias de producción
 ```
 
 ---
 
-## Flujo rápido de uso
-
-1. Inicia sesión.
-2. Sube reportes PDF (individual o ZIP).
-3. El sistema procesa texto y calcula métricas.
-4. Revisa:
-   - Conteos globales
-   - Conteo por reporte
-   - índice de complejidad
-   - Módulo de listas de expertos
-
----
-
-## Comandos útiles
-
-Recalcular métricas faltantes en reportes:
-
-```bash
-python manage.py recalculate_report_metrics --solo-faltantes
-```
-
-Simular sin cambios (dry-run):
-
-```bash
-python manage.py recalculate_report_metrics --dry-run
-```
-
----
-
-## Solución de problemas
+## ❓ Preguntas Frecuentes y Solución de Problemas
 
 ### Error: `No module named django`
+El entorno virtual no está activo. Ejecuta `source .venv/bin/activate` (o activa tu entorno correspondiente) antes de correr comandos `manage.py`.
 
-No está activo el entorno virtual o faltan dependencias.
+### Error: `pdftoppm: command not found` o fallo en OCR
+Faltan las dependencias de sistema. Revisa [docs/setup/dependencies.md](docs/setup/dependencies.md) e instala `poppler-utils` y `tesseract-ocr`.
 
+### Las traducciones no se reflejan en inglés
+Asegúrate de haber compilado los catálogos gettext con:
 ```bash
-pip install -r requirements.txt
+python manage.py compilemessages -l en
 ```
-
-### Error: `OPENAI_API_KEY no configurada`
-
-Verifica que `.env` exista en la raíz y contenga:
-
-```env
-OPENAI_API_KEY=...
-```
-
-### Archivos estáticos JS/CSS no reflejan cambios
-
-Haz recarga dura del navegador (`Ctrl + F5`).
 
 ---
 
-## Estructura principal
+## 📄 Documentación Adicional
 
-- `WordCounter/` - configuración de Django
-- `Counter/` - lógica principal del análisis
-- `User/` - autenticación, perfiles y expertos
-- `media/` - archivos subidos (local)
+- [Sistema de Diseño ELI](docs/architecture/design_system.md)
+- [Especificación de Métricas e Índices de Complejidad](docs/architecture/metrics_specification.md)
+- [Pipeline de Extracción y OCR](docs/architecture/ocr_implementation.md)
+- [Registro de Versiones y Fases (Changelog)](docs/CHANGELOG.md)
