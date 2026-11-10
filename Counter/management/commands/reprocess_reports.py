@@ -35,11 +35,30 @@ class Command(BaseCommand):
             default=None,
             help="Límite máximo de reportes a reprocesar.",
         )
+        parser.add_argument(
+            "--only-residual",
+            action="store_true",
+            help="Filtra solo reportes con texto residual (entre 1 y 19 palabras).",
+        )
+        parser.add_argument(
+            "--only-pending",
+            action="store_true",
+            help="Filtra solo reportes pendientes sin palabras (total_words NULL).",
+        )
+        parser.add_argument(
+            "--report-ids",
+            type=str,
+            default=None,
+            help="Lista de IDs de reportes separados por comas (ej. --report-ids 21,223,770).",
+        )
 
     def handle(self, *args, **options):
         ws_id = options["workspace_id"]
         from_file = options["from_file"]
         limit = options["limit"]
+        only_residual = options.get("only_residual", False)
+        only_pending = options.get("only_pending", False)
+        report_ids_str = options.get("report_ids")
 
         self.stdout.write(self.style.MIGRATE_HEADING("=== REPROCESAMIENTO LINGÜÍSTICO DE REPORTES ==="))
 
@@ -47,7 +66,17 @@ class Command(BaseCommand):
         if ws_id:
             qs = qs.filter(workspace_id=ws_id)
 
-        if not from_file:
+        if report_ids_str:
+            ids = [int(i.strip()) for i in report_ids_str.split(",") if i.strip().isdigit()]
+            qs = qs.filter(id__in=ids)
+            from_file = True
+        elif only_residual:
+            qs = qs.filter(total_words__gt=0, total_words__lt=20)
+            from_file = True
+        elif only_pending:
+            qs = qs.filter(total_words__isnull=True)
+            from_file = True
+        elif not from_file:
             # Por defecto procesa los que ya tienen texto extraído (ultra rápido)
             qs = qs.exclude(extracted_text__isnull=True).exclude(extracted_text="")
 

@@ -40,20 +40,70 @@ def extraer_texto_pdf(path: str) -> str:
 def extraer_texto_ocr_tesseract(path: str) -> str:
     """
     Extrae texto de PDF escaneado utilizando Tesseract OCR local.
-    Renderiza cada página en memoria vía PyMuPDF (sin requerir poppler pdftoppm)
-    y prioriza el modelo en español ('spa').
+    Prioriza el motor OCR integrado de PyMuPDF (en memoria C, sin requerir binarios externos de SO)
+    y utiliza como respaldo pytesseract si estuviera disponible.
     """
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    local_tessdata = os.path.join(base_dir, "tessdata")
+    tessdata_param = local_tessdata if (os.path.isdir(local_tessdata) and os.path.isfile(os.path.join(local_tessdata, "spa.traineddata"))) else None
+
+    # Estrategia 1: PyMuPDF OCR Nativo integrado (directo en memoria C)
+    try:
+        texto_paginas = []
+        with fitz.open(path) as doc:
+            if len(doc) == 0:
+                return ""
+
+            for idx, page in enumerate(doc):
+                try:
+                    kwargs = {"language": "spa", "dpi": 150}
+                    if tessdata_param:
+                        kwargs["tessdata"] = tessdata_param
+                    tp = page.get_textpage_ocr(**kwargs)
+                    texto_pag = page.get_text(textpage=tp)
+
+                    # Si el texto extraído contiene caracteres de control o glifos binarios corruptos,
+                    # rasterizamos la página a imagen limpia y ejecutamos el OCR sobre el render visual:
+                    num_control_chars = sum(1 for c in (texto_pag or "") if ord(c) < 32 and c not in "\n\r\t")
+                    if num_control_chars > 5 or (texto_pag and len(texto_pag.strip()) < 10):
+                        try:
+                            pix = page.get_pixmap(dpi=150)
+                            img_doc = fitz.open()
+                            img_page = img_doc.new_page(width=page.rect.width, height=page.rect.height)
+                            img_page.insert_image(img_page.rect, stream=pix.tobytes("png"))
+                            tp_clean = img_page.get_textpage_ocr(**kwargs)
+                            texto_clean = img_page.get_text(textpage=tp_clean)
+                            img_doc.close()
+                            if texto_clean and len(texto_clean.strip()) > 10:
+                                texto_pag = texto_clean
+                        except Exception:
+                            pass
+
+                    if texto_pag and texto_pag.strip():
+                        texto_paginas.append(texto_pag.strip())
+                except Exception:
+                    # Intento secundario con configuración base si español falla en alguna página
+                    try:
+                        tp = page.get_textpage_ocr(dpi=150)
+                        texto_pag = page.get_text(textpage=tp)
+                        if texto_pag and texto_pag.strip():
+                            texto_paginas.append(texto_pag.strip())
+                    except Exception as e_page:
+                        print(f"Aviso OCR PyMuPDF en pág {idx + 1}: {e_page}")
+                        continue
+
+        texto_nativo = "\n\n".join(texto_paginas).strip()
+        if texto_nativo:
+            return texto_nativo
+    except Exception as e:
+        print(f"Aviso: PyMuPDF OCR nativo no disponible ({e}), intentando pytesseract...")
+
+    # Estrategia 2: Respaldo con pytesseract si PyMuPDF OCR nativo no pudo ejecutarse
     if pytesseract is None:
-        print("pytesseract no está disponible en el entorno.")
         return ""
 
     try:
-        base_dir = os.path.dirname(os.path.abspath(__file__))
-        local_tessdata = os.path.join(base_dir, "tessdata")
-        config_params = ""
-        if os.path.isdir(local_tessdata) and os.path.isfile(os.path.join(local_tessdata, "spa.traineddata")):
-            config_params = f'--tessdata-dir "{local_tessdata}"'
-
+        config_params = f'--tessdata-dir "{local_tessdata}"' if tessdata_param else ""
         texto_paginas = []
         with fitz.open(path) as doc:
             if len(doc) == 0:
@@ -63,8 +113,6 @@ def extraer_texto_ocr_tesseract(path: str) -> str:
                 try:
                     pix = page.get_pixmap(dpi=150)
                     img = Image.open(BytesIO(pix.tobytes("png")))
-
-                    # Intentar en español; si el idioma no está disponible, usar inglés o configuración base
                     try:
                         texto_pag = pytesseract.image_to_string(img, lang="spa", config=config_params)
                     except Exception:
@@ -72,13 +120,12 @@ def extraer_texto_ocr_tesseract(path: str) -> str:
 
                     if texto_pag and texto_pag.strip():
                         texto_paginas.append(texto_pag.strip())
-                except Exception as e_page:
-                    print(f"Error en OCR Tesseract para página {idx + 1}: {e_page}")
+                except Exception:
                     continue
 
         return "\n\n".join(texto_paginas).strip()
     except Exception as e:
-        print(f"Error general en OCR Tesseract: {e}")
+        print(f"Error general en OCR Tesseract (pytesseract): {e}")
         return ""
 
 
@@ -89,8 +136,7 @@ def extraer_texto_ocr_gpt4omini(path: str) -> str:
     Verifica previamente que OPENAI_API_KEY esté configurada antes de cualquier intento.
     """
     api_key = os.getenv("OPENAI_API_KEY")
-    if not api_key or not api_key.strip():
-        print("OPENAI_API_KEY no configurada. Omitiendo OCR de OpenAI.")
+    if not api_key or not api_key.strip() or api_key.strip() in ["TU_API_KEY_AQUI", "tu_api_key_aqui", "None"]:
         return ""
 
     try:
@@ -152,23 +198,47 @@ def extraer_texto_pdf_inteligente(path: str) -> str:
     """
     Pipeline inteligente en 3 niveles:
     1. Extracción digital nativa con PyMuPDF (rápida y de alta fidelidad).
-    2. Si el texto está vacío (PDF escaneado), OCR local gratuito con Tesseract en español.
+    2. Si el texto digital es escaso o el documento es escaneado, OCR local gratuito con Tesseract en español.
     3. Si el OCR local no extrajo texto y existe OPENAI_API_KEY, respaldo con OpenAI gpt-4o-mini.
     """
     texto = extraer_texto_pdf(path)
-    if not texto or len(texto.strip()) < 30:
-        # Nivel 2: OCR local gratuito
-        texto_tesseract = extraer_texto_ocr_tesseract(path)
-        if texto_tesseract and len(texto_tesseract.strip()) >= 30:
-            return texto_tesseract
 
-        # Nivel 3: Respaldo con OpenAI gpt-4o-mini si hay API KEY disponible
+    # Determinar si el documento requiere OCR:
+    # 1. Si no hay texto o tiene menos de 50 caracteres.
+    # 2. Si el texto digital contiene caracteres de control inusuales (glifos de fuentes corruptas sin ToUnicode).
+    # 3. O si tiene múltiples páginas y la proporción de palabras por página es muy baja (< 15 palabras/pág),
+    #    lo que delata páginas escaneadas con texto residual/marcas de agua ("Scanned by CamScanner", etc.).
+    necesita_ocr = False
+    num_control_chars = sum(1 for c in (texto or "") if ord(c) < 32 and c not in "\n\r\t")
+    if not texto or len(texto.strip()) < 50 or num_control_chars > 3:
+        necesita_ocr = True
+    else:
+        try:
+            with fitz.open(path) as doc:
+                total_paginas = len(doc)
+                palabras_digitales = len(texto.split())
+                if total_paginas > 0 and (palabras_digitales / total_paginas) < 15:
+                    necesita_ocr = True
+        except Exception:
+            pass
+
+    if necesita_ocr:
+        # Nivel 2: OCR local gratuito (PyMuPDF nativo con tessdata/spa)
+        texto_tesseract = extraer_texto_ocr_tesseract(path)
+        if texto_tesseract and len(texto_tesseract.strip()) >= 50:
+            # Si el texto digital original era corrupto (caracteres de control), o si el OCR extrajo más contenido:
+            if not texto or num_control_chars > 3 or len(texto_tesseract.strip()) > len(texto.strip()):
+                return texto_tesseract
+
+        # Nivel 3: Respaldo con OpenAI gpt-4o-mini si hay API KEY válida configurada
         texto_openai = extraer_texto_ocr_gpt4omini(path)
         if texto_openai and texto_openai.strip():
             return texto_openai
 
-        # Retornar lo mejor obtenido
-        return texto_tesseract if texto_tesseract else texto
+        # Retornar el mejor texto válido (descartando si tiene caracteres de control corruptos)
+        if texto and num_control_chars <= 3:
+            return texto
+        return texto_tesseract if texto_tesseract else ""
 
     return texto
 
