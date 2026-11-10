@@ -125,7 +125,7 @@
                         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                         </svg>
-                        {{ form.username|attr:"placeholder:Ingresa tu usuario"|attr:"autofocus:autofocus"|attr:"autocomplete:username" }}
+                        {{ form.username|attr:"placeholder:Ingresa tu usuario"|attr:"autofocus:autofocus"|attr:"autocomplete:username"|add_class:"border-0 bg-transparent outline-none ring-0 focus:ring-0 focus:outline-none shadow-none" }}
                     </div>
                     {% if form.username.errors %}
                     <p class="form-error">{{ form.username.errors|striptags }}</p>
@@ -138,7 +138,7 @@
                         <svg class="h-4 w-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                         </svg>
-                        {{ form.password|attr:"placeholder:Ingresa tu contraseña"|attr:"autocomplete:current-password" }}
+                        {{ form.password|attr:"placeholder:Ingresa tu contraseña"|attr:"autocomplete:current-password"|add_class:"border-0 bg-transparent outline-none ring-0 focus:ring-0 focus:outline-none shadow-none" }}
                         <button type="button" onclick="togglePasswordVisibility('{{ form.password.id_for_label }}', this)"
                                 class="auth-eye" aria-label="{% trans 'Mostrar u ocultar contraseña' %}">
                             <svg class="h-4 w-4 eye-icon" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">

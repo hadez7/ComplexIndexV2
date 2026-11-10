@@ -1040,15 +1040,15 @@
         background-color: #162032;
     }
 
-    /* Formularios, Inputs, Selectores y Checkboxes */
-    .dark body:not(.eli-theme) input,
+    /* Formularios, Inputs, Selectores y Checkboxes (se excluyen inputs en auth-form que cuentan con contenedor estilizado) */
+    .dark body:not(.eli-theme) input:not(.auth-form input),
     .dark body:not(.eli-theme) select,
     .dark body:not(.eli-theme) textarea {
         background-color: #0E1424 !important;
         border-color: #27354E !important;
         color: #F8FAFC !important;
     }
-    .dark body:not(.eli-theme) input:focus,
+    .dark body:not(.eli-theme) input:not(.auth-form input):focus,
     .dark body:not(.eli-theme) select:focus,
     .dark body:not(.eli-theme) textarea:focus {
         background-color: #0E1424 !important;
@@ -1567,18 +1567,52 @@
         padding: 0 14px !important;
     }
 
-    .auth-form input:not([type="checkbox"]) {
+    .auth-form input:not([type="checkbox"]),
+    .auth-form input:not([type="checkbox"]):focus,
+    .auth-form input:not([type="checkbox"]):focus-visible,
+    .auth-form input:not([type="checkbox"]):active,
+    .dark .auth-form input:not([type="checkbox"]),
+    .dark .auth-form input:not([type="checkbox"]):focus,
+    .dark .auth-form input:not([type="checkbox"]):focus-visible,
+    .dark .auth-form input:not([type="checkbox"]):active,
+    .dark body:not(.eli-theme) .auth-form input:not([type="checkbox"]),
+    .dark body:not(.eli-theme) .auth-form input:not([type="checkbox"]):focus,
+    .dark body:not(.eli-theme) .auth-form input:not([type="checkbox"]):focus-visible,
+    .dark body:not(.eli-theme) .auth-form input:not([type="checkbox"]):active {
         height: 100% !important;
         padding: 0 10px !important;
         font-size: 13.5px !important;
         line-height: normal !important;
         outline: none !important;
+        outline-style: none !important;
         box-shadow: none !important;
+        -webkit-box-shadow: none !important;
+        border: none !important;
+        border-width: 0 !important;
+        border-color: transparent !important;
+        background: transparent !important;
+        background-color: transparent !important;
     }
 
-    .auth-form input:focus {
-        outline: none !important;
-        box-shadow: none !important;
+    /* Neutralizar el fondo azul de autofill del navegador en inputs de autenticación */
+    .auth-form input:-webkit-autofill,
+    .auth-form input:-webkit-autofill:hover,
+    .auth-form input:-webkit-autofill:focus,
+    .auth-form input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0px 1000px var(--surface, #ffffff) inset !important;
+        box-shadow: 0 0 0px 1000px var(--surface, #ffffff) inset !important;
+        -webkit-text-fill-color: var(--ink, #0f172a) !important;
+        transition: background-color 5000s ease-in-out 0s !important;
+    }
+
+    .dark .auth-form input:-webkit-autofill,
+    .dark .auth-form input:-webkit-autofill:hover,
+    .dark .auth-form input:-webkit-autofill:focus,
+    .dark .auth-form input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0px 1000px #0d1b2d inset !important;
+        box-shadow: 0 0 0px 1000px #0d1b2d inset !important;
+        -webkit-text-fill-color: #f8fafc !important;
+        transition: background-color 5000s ease-in-out 0s !important;
     }
 
     .auth-eye {
