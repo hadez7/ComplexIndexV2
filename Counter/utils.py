@@ -54,6 +54,13 @@ def extraer_texto_ocr_tesseract(path: str) -> str:
             if len(doc) == 0:
                 return ""
 
+            if not doc.is_pdf:
+                pdf_doc = fitz.open()
+                for img_page in doc:
+                    p = pdf_doc.new_page(width=img_page.rect.width, height=img_page.rect.height)
+                    p.insert_image(p.rect, stream=img_page.get_pixmap().tobytes("png"))
+                doc = pdf_doc
+
             for idx, page in enumerate(doc):
                 try:
                     kwargs = {"language": "spa", "dpi": 150}
@@ -84,7 +91,11 @@ def extraer_texto_ocr_tesseract(path: str) -> str:
                 except Exception:
                     # Intento secundario con configuración base si español falla en alguna página
                     try:
-                        tp = page.get_textpage_ocr(dpi=150)
+                        kwargs_fallback = {"dpi": 150}
+                        if tessdata_param:
+                            kwargs_fallback["tessdata"] = tessdata_param
+                            kwargs_fallback["language"] = "spa"
+                        tp = page.get_textpage_ocr(**kwargs_fallback)
                         texto_pag = page.get_text(textpage=tp)
                         if texto_pag and texto_pag.strip():
                             texto_paginas.append(texto_pag.strip())
@@ -108,6 +119,13 @@ def extraer_texto_ocr_tesseract(path: str) -> str:
         with fitz.open(path) as doc:
             if len(doc) == 0:
                 return ""
+
+            if not doc.is_pdf:
+                pdf_doc = fitz.open()
+                for img_page in doc:
+                    p = pdf_doc.new_page(width=img_page.rect.width, height=img_page.rect.height)
+                    p.insert_image(p.rect, stream=img_page.get_pixmap().tobytes("png"))
+                doc = pdf_doc
 
             for idx, page in enumerate(doc):
                 try:
@@ -146,6 +164,13 @@ def extraer_texto_ocr_gpt4omini(path: str) -> str:
         with fitz.open(path) as doc:
             if len(doc) == 0:
                 return ""
+
+            if not doc.is_pdf:
+                pdf_doc = fitz.open()
+                for img_page in doc:
+                    p = pdf_doc.new_page(width=img_page.rect.width, height=img_page.rect.height)
+                    p.insert_image(p.rect, stream=img_page.get_pixmap().tobytes("png"))
+                doc = pdf_doc
 
             for idx, page in enumerate(doc):
                 try:
@@ -212,6 +237,13 @@ def extraer_texto_pdf_inteligente(path: str) -> str:
         with fitz.open(path) as doc:
             if len(doc) == 0:
                 return ""
+
+            if not doc.is_pdf:
+                pdf_doc = fitz.open()
+                for img_page in doc:
+                    p = pdf_doc.new_page(width=img_page.rect.width, height=img_page.rect.height)
+                    p.insert_image(p.rect, stream=img_page.get_pixmap().tobytes("png"))
+                doc = pdf_doc
 
             for idx, page in enumerate(doc):
                 texto_pag = page.get_text() or ""
