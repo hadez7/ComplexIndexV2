@@ -92,6 +92,7 @@ class Command(BaseCommand):
 
         procesados = 0
         errores = 0
+        palabras_pendientes_ws = {}
 
         for r in qs:
             try:
@@ -102,6 +103,17 @@ class Command(BaseCommand):
                         texto = r.extracted_text
 
                     if not texto or not texto.strip():
+                        r.extracted_text = ""
+                        r.total_words = 0
+                        r.unique_words = 0
+                        r.total_sentences = 0
+                        r.avg_word_length = 0.0
+                        r.avg_sentence_length = 0.0
+                        r.inflesz_score = 0.0
+                        r.total_syllables = 0
+                        r.technical_words_count = 0
+                        r.save()
+                        procesados += 1
                         continue
 
                     # Limpieza estructural
@@ -135,23 +147,45 @@ class Command(BaseCommand):
                     if palabras_eliminadas:
                         TotalCountReport.objects.filter(report=r, word__in=palabras_eliminadas).delete()
 
-                    # Actualizar conteos por reporte
-                    for palabra, cantidad in conteo.items():
-                        TotalCountReport.objects.update_or_create(
-                            report=r, word=palabra, defaults={"quantity": cantidad}
-                        )
+                    # Actualizar conteos por reporte de forma optimizada
+                    if not palabras_previas:
+                        tcr_objs = [
+                            TotalCountReport(report=r, word=palabra, quantity=cantidad)
+                            for palabra, cantidad in conteo.items()
+                        ]
+                        TotalCountReport.objects.bulk_create(tcr_objs, batch_size=500)
+                    else:
+                        for palabra, cantidad in conteo.items():
+                            TotalCountReport.objects.update_or_create(
+                                report=r, word=palabra, defaults={"quantity": cantidad}
+                            )
 
-                    # Sincronizar tabla agregada TotalCount
+                    # Acumular palabras afectadas para sincronización por lotes
                     todas_afectadas = palabras_previas | palabras_actuales
-                    sincronizar_palabras_total_count(todas_afectadas, workspace=r.workspace)
+                    ws_id = r.workspace_id
+                    if ws_id not in palabras_pendientes_ws:
+                        palabras_pendientes_ws[ws_id] = (r.workspace, set())
+                    palabras_pendientes_ws[ws_id][1].update(todas_afectadas)
 
                     procesados += 1
-                    if procesados % 25 == 0 or procesados == total:
+
+                    # Sincronizar TotalCount periódicamente cada 25 reportes para rendimiento óptimo
+                    if procesados % 25 == 0:
+                        for ws, palabras_set in palabras_pendientes_ws.values():
+                            if palabras_set:
+                                sincronizar_palabras_total_count(palabras_set, workspace=ws)
+                        palabras_pendientes_ws.clear()
                         self.stdout.write(f"  Progreso: {procesados}/{total} reportes reprocesados...")
 
             except Exception as e:
                 errores += 1
                 self.stdout.write(self.style.ERROR(f"Error en reporte ID {r.id} ({r.name}): {e}"))
+
+        # Sincronizar palabras residuales pendientes
+        for ws, palabras_set in palabras_pendientes_ws.values():
+            if palabras_set:
+                sincronizar_palabras_total_count(palabras_set, workspace=ws)
+        palabras_pendientes_ws.clear()
 
         self.stdout.write(self.style.SUCCESS(f"\n✓ Reprocesamiento completado: {procesados} exitosos, {errores} errores."))
 

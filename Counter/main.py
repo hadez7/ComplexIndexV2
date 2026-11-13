@@ -78,16 +78,31 @@ def sincronizar_palabras_total_count(palabras, workspace=None):
         )
         totales_dict = {item["word"]: item["total"] for item in sumas}
 
+        existentes = {tc.word: tc for tc in TotalCount.objects.filter(workspace=workspace, word__in=chunk)}
+        to_create = []
+        to_update = []
+        to_delete = []
+
         for p in chunk:
             tot = totales_dict.get(p, 0)
             if tot > 0:
-                TotalCount.objects.update_or_create(
-                    workspace=workspace,
-                    word=p,
-                    defaults={"quantity": tot}
-                )
+                if p in existentes:
+                    tc = existentes[p]
+                    if tc.quantity != tot:
+                        tc.quantity = tot
+                        to_update.append(tc)
+                else:
+                    to_create.append(TotalCount(workspace=workspace, word=p, quantity=tot))
             else:
-                TotalCount.objects.filter(workspace=workspace, word=p).delete()
+                if p in existentes:
+                    to_delete.append(p)
+
+        if to_create:
+            TotalCount.objects.bulk_create(to_create, batch_size=500)
+        if to_update:
+            TotalCount.objects.bulk_update(to_update, ["quantity"], batch_size=500)
+        if to_delete:
+            TotalCount.objects.filter(workspace=workspace, word__in=to_delete).delete()
 
 
 # --- Funciones principales ---
