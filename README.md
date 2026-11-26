@@ -52,17 +52,17 @@ ELI es una solución diseñada para evaluar la complejidad lingüística, detect
 
 ## 🛠️ Requisitos Previos
 
-- **Python** 3.12 o 3.13
+- **Python** 3.12 o 3.13 *(recomendado; versiones 3.14/3.15+ pueden fallar al compilar `lxml` o `PyMuPDF` si no usas `uv`)*
 - **Dependencias del Sistema**:
-  - `poppler-utils` (renderizado y conversión de PDFs a imagen)
-  - `tesseract-ocr` + paquete de idioma español (`tessdata/spa`)
-  - `gettext` (compilación de traducciones internacionales)
+  - `poppler-utils` / Poppler (renderizado y conversión de PDFs a imagen)
+  - `tesseract-ocr` + paquete de idioma español (`spa`)
+  - `gettext` *(opcional, solo si modificas traducciones `.po` para recompilar `.mo`)*
 
 Consulta la guía detallada de instalación en [docs/setup/dependencies.md](docs/setup/dependencies.md).
 
 ---
 
-## ⚡ Instalación y Puesta en Marcha
+## ⚡ Instalación y Puesta en Marcha (Linux y Windows)
 
 ### 1. Clonar el repositorio
 ```bash
@@ -70,36 +70,80 @@ git clone <URL_DEL_REPOSITORIO> ComplexIndexV2
 cd ComplexIndexV2
 ```
 
-### 2. Configurar el entorno virtual de Python
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-```
+### 2. Instalar dependencias del sistema (para OCR)
 
-### 3. Configurar variables de entorno
-Copia la plantilla `.env.example` y define las variables locales:
-```bash
-cp .env.example .env
-```
-*(Para detalles de configuración de API keys opcionales, consulta [docs/setup/api_keys.md](docs/setup/api_keys.md)).*
+- **Linux (Ubuntu / Debian)**:
+  ```bash
+  sudo apt update && sudo apt install -y poppler-utils tesseract-ocr tesseract-ocr-spa gettext
+  ```
+- **Linux (Fedora / RHEL)**:
+  ```bash
+  sudo dnf install -y poppler-utils tesseract tesseract-langpack-spa gettext
+  ```
+- **Windows**:
+  1. Descarga **Poppler** desde [poppler-windows](https://github.com/oschwartz10612/poppler-windows/releases), extráelo (ej. `C:\poppler`) y agrega `C:\poppler\Library\bin` al `PATH` (o configúralo en `.env` con `POPPLER_PATH`).
+  2. Instala **Tesseract OCR** desde [UB-Mannheim tesseract](https://github.com/UB-Mannheim/tesseract/wiki) marcando el idioma **Spanish (`spa`)** y agrégalo al `PATH`.
 
-### 4. Migraciones de Base de Datos y Compilación de Idiomas
+### 3. Crear el entorno virtual e instalar paquetes Python
+
+#### Opción A — Recomendada con `uv` (gestiona Python 3.13 automáticamente en cualquier SO)
+- **Linux**:
+  ```bash
+  curl -LsSf https://astral.sh/uv/install.sh | sh
+  uv venv --python 3.13 .venv
+  source .venv/bin/activate
+  uv pip install -r requirements.txt
+  ```
+- **Windows (PowerShell)**:
+  ```powershell
+  powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+  uv venv --python 3.13 .venv
+  .\.venv\Scripts\Activate.ps1
+  uv pip install -r requirements.txt
+  ```
+
+#### Opción B — Estándar con `venv` (si ya tienes Python 3.12 o 3.13 instalado)
+- **Linux**:
+  ```bash
+  python3 -m venv .venv
+  source .venv/bin/activate
+  pip install -r requirements.txt
+  ```
+- **Windows (PowerShell / CMD)**:
+  ```powershell
+  python -m venv .venv
+  # En PowerShell:
+  .\.venv\Scripts\Activate.ps1
+  # O en CMD:
+  .venv\Scripts\activate.bat
+
+  pip install -r requirements.txt
+  ```
+
+### 4. Configurar variables de entorno
+Copia la plantilla `.env.example` a `.env` y ajusta tus valores locales (`OPENAI_API_KEY` es opcional, `POPPLER_PATH` es útil en Windows si no agregaste Poppler al `PATH`):
+- **Linux**:
+  ```bash
+  cp .env.example .env
+  ```
+- **Windows**:
+  ```powershell
+  copy .env.example .env
+  ```
+*(Más detalles en [docs/setup/api_keys.md](docs/setup/api_keys.md)).*
+
+### 5. Migraciones, usuario administrador e inicio del servidor
+Con el entorno virtual activo (`.venv`):
 ```bash
 python manage.py migrate
-python manage.py compilemessages -l en
-```
-
-### 5. Crear usuario administrador
-```bash
-python manage.py createsuperuser
-```
-
-### 6. Iniciar el servidor de desarrollo
-```bash
+python manage.py createsuperuser   # Opcional si ya cuentas con db.sqlite3
 python manage.py runserver
 ```
+*(Opcional: si actualizas archivos de traducción `.po`, compílalos con `python manage.py compilemessages -l en`)*
+
 Accede a la plataforma desde tu navegador en: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+
+> **Nota sobre el módulo de Co-Inercia (`/comparative_analysis/?modo=coinertia`)**: La pestaña de *Co-Inercia & Red Multivariante* se entrega en una versión **maquetada y simplificada** (Grafo en Estrella, gráfico comparativo longitudinal y matriz de similitud/distancia inter-anual), lista para continuar su desarrollo una vez se definan las especificaciones finales.
 
 ---
 
@@ -179,10 +223,15 @@ ComplexIndexV2/
 ## ❓ Preguntas Frecuentes y Solución de Problemas
 
 ### Error: `No module named django`
-El entorno virtual no está activo. Ejecuta `source .venv/bin/activate` (o activa tu entorno correspondiente) antes de correr comandos `manage.py`.
+El entorno virtual no está activo. Actívalo antes de correr comandos `manage.py`:
+- **Linux**: `source .venv/bin/activate`
+- **Windows (PowerShell)**: `.\.venv\Scripts\Activate.ps1` (si PowerShell bloquea scripts, ejecuta antes `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`)
+
+### Error al instalar `lxml` o `PyMuPDF` en Python 3.14 / 3.15
+Usa Python **3.12 o 3.13**, o crea el entorno con `uv venv --python 3.13 .venv` como se indica en la sección de instalación.
 
 ### Error: `pdftoppm: command not found` o fallo en OCR
-Faltan las dependencias de sistema. Revisa [docs/setup/dependencies.md](docs/setup/dependencies.md) e instala `poppler-utils` y `tesseract-ocr`.
+Faltan las dependencias de sistema. Revisa [docs/setup/dependencies.md](docs/setup/dependencies.md) e instala `poppler-utils` y `tesseract-ocr` (en Windows verifica que `POPPLER_PATH` en `.env` apunte a `Library\bin`).
 
 ### Las traducciones no se reflejan en inglés
 Asegúrate de haber compilado los catálogos gettext con:
